@@ -11,7 +11,7 @@ on:
 
       remote_subdirectory:
         description: Subdirectory inside the base directory
-        required: true
+        required: false
         type: string
 
 env:
