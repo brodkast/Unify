@@ -1,0 +1,74 @@
+name: Deploy repo to Linode
+
+on:
+  workflow_dispatch:
+    inputs:
+      remote_subdirectory:
+        description: Subdirectory inside the base directory
+        required: true
+        type: string
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+  LINODE_HOST: 69.164.198.131
+  LINODE_USER: oscar
+  SSH_PORT: "22"
+  REMOTE_BASE_DIR: /var/www/bluecarbon.site/html
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Prepare SSH key
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.LINODE_SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+
+          ssh-keyscan \
+            -p "$SSH_PORT" \
+            -H "$LINODE_HOST" >> ~/.ssh/known_hosts
+
+      - name: Build remote directory path
+        id: remote-path
+        env:
+          SUBDIRECTORY: ${{ inputs.remote_subdirectory }}
+        run: |
+          base_dir="${REMOTE_BASE_DIR%/}"
+          subdirectory="${SUBDIRECTORY#/}"
+          subdirectory="${subdirectory%/}"
+
+          if [ -z "$subdirectory" ]; then
+            remote_dir="$base_dir"
+          else
+            remote_dir="$base_dir/$subdirectory"
+          fi
+
+          echo "remote_dir=$remote_dir" >> "$GITHUB_OUTPUT"
+
+      - name: Ensure remote directory exists
+        run: |
+          ssh \
+            -i ~/.ssh/id_ed25519 \
+            -p "$SSH_PORT" \
+            "$LINODE_USER@$LINODE_HOST" \
+            "mkdir -p '${{ steps.remote-path.outputs.remote_dir }}'"
+
+      - name: Upload repo contents
+        run: |
+          rsync -avz \
+            --exclude='.git' \
+            --exclude='.github' \
+            -e "ssh -i ~/.ssh/id_ed25519 -p $SSH_PORT" \
+            ./ \
+            "$LINODE_USER@$LINODE_HOST:${{ steps.remote-path.outputs.remote_dir }}/"
