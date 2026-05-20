@@ -1,12 +1,4088 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Basic Index</title>
+<meta charset="UTF-8" />
+<title>Unify Navigation — 2026 Redesign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Surface */
+    --bg: #f6f7f9;
+    --bg-elev: #ffffff;
+    --surface-tint: #fafafa;
+    --header-bg: #0a0a0c;
+    --menu-bg: #0a0a0c;
+    --menu-bg-2: #14141a;
+
+    /* Borders / lines */
+    --border: #e7e9ee;
+    --border-soft: #eef0f4;
+    --border-strong: #d6dae1;
+
+    /* Text */
+    --text: #0a0a0c;
+    --text-2: #46494f;
+    --text-3: #6b7077;
+    --text-4: #a0a4ab;
+    --text-on-dark: #f5f5f7;
+    --text-on-dark-2: #a0a4ab;
+
+    /* Brand & status */
+    --brand: #2563eb;
+    --brand-2: #3b82f6;
+    --accent: #f97316;
+    --success: #10b981;
+    --success-soft: #d1fae5;
+    --warning: #f59e0b;
+    --warning-soft: #fef3c7;
+    --danger: #ef4444;
+    --danger-soft: #fee2e2;
+    --info: #0ea5e9;
+
+    /* App icon palette (refined) */
+    --se: #2da7ff;
+    --dr: #16a394;
+    --crm-red: #d84a3f;
+    --crm-dark: #2a2a2a;
+    --fo: #ec4899;
+    --pa: #f59e0b;
+    --fi: #8b5cf6;
+    --dm: #64748b;
+    --is: #a855f7;
+    --us: #1f1f22;
+    --ca: #1f1f22;
+
+    /* Pills */
+    --pill-bg: #1a2740;
+    --pill-bg-2: #1f3050;
+
+    /* Chart colors */
+    --chart-1: #3b82f6;
+    --chart-2: #10b981;
+    --chart-3: #f59e0b;
+    --chart-4: #ef4444;
+    --chart-5: #8b5cf6;
+    --chart-6: #06b6d4;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    font-feature-settings: 'cv11', 'ss01';
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ----- Subtle background texture ----- */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(1200px 600px at 100% -10%, rgba(59, 130, 246, 0.06), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(139, 92, 246, 0.05), transparent 60%);
+  }
+
+  /* =================== ANIMATIONS =================== */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+  @keyframes slideInDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  @keyframes drawIn {
+    from { stroke-dashoffset: var(--len, 1000); }
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes growUp {
+    from { transform: scaleY(0); }
+    to { transform: scaleY(1); }
+  }
+  @keyframes pulseDot {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.4); opacity: 0.6; }
+  }
+  @keyframes spinSlow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .anim-fade-in-up { animation: fadeInUp 0.5s ease-out both; }
+  .anim-slide-in-down { animation: slideInDown 0.4s ease-out both; }
+  .anim-scale-in { animation: scaleIn 0.4s ease-out both; }
+  .anim-fade-in { animation: fadeIn 0.6s ease-out both; }
+
+  /* =================== HEADER =================== */
+  .header {
+    background: linear-gradient(180deg, #0a0a0c 0%, #0d0d10 100%);
+    height: 60px;
+    display: flex; align-items: center;
+    padding: 0 22px; gap: 18px;
+    color: var(--text-on-dark);
+    position: sticky; top: 0; z-index: 50;
+    border-bottom: 1px solid #1a1a1f;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.03);
+    animation: slideInDown 0.4s ease-out;
+  }
+  .logo {
+    font-weight: 700; letter-spacing: -0.2px; font-size: 14px;
+    background: linear-gradient(180deg, #ffffff 0%, #c5c8cf 100%);
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+  }
+
+  .menu-btn {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 7px 13px;
+    color: var(--text-on-dark);
+    font-size: 13px; font-weight: 500;
+    cursor: pointer; user-select: none;
+    transition: all 0.18s ease;
+  }
+  .menu-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.14); transform: translateY(-1px); }
+  .menu-btn.active { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.18); }
+  .menu-btn .grid-icon { display: grid; grid-template-columns: repeat(3, 3px); grid-template-rows: repeat(3, 3px); gap: 2px; }
+  .menu-btn .grid-icon span { background: white; border-radius: 1px; width: 3px; height: 3px; display: block; }
+  .menu-btn .caret { font-size: 10px; opacity: 0.7; transition: transform 0.25s ease; }
+  .menu-btn.active .caret { transform: rotate(180deg); }
+
+  .search {
+    flex: 1; max-width: 720px; margin: 0 auto;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 999px; height: 40px;
+    display: flex; align-items: center; padding: 0 18px;
+    gap: 10px; color: rgba(255,255,255,0.6); font-size: 13px;
+    backdrop-filter: blur(8px);
+    transition: all 0.2s ease;
+  }
+  .search:hover { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.16); }
+  .search:focus-within { background: white; color: var(--text-3); border-color: var(--brand); }
+
+  .right-icons { display: flex; align-items: center; gap: 6px; color: var(--text-on-dark); }
+  .icon-btn {
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; position: relative;
+    border-radius: 8px;
+    transition: background 0.18s;
+  }
+  .icon-btn:hover { background: rgba(255,255,255,0.06); }
+  .notif-badge {
+    position: absolute; top: 4px; right: 4px;
+    background: var(--danger); color: white; border-radius: 999px;
+    font-size: 10px; font-weight: 700; min-width: 16px; height: 16px;
+    padding: 0 4px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 0 2px var(--header-bg);
+  }
+  .notif-badge::before {
+    content: ''; position: absolute; inset: 0;
+    border-radius: 999px; background: var(--danger);
+    animation: pulseDot 2s ease-in-out infinite;
+    z-index: -1;
+  }
+
+  /* AIVA top-nav button — subtle, matches other header buttons */
+  .aiva-btn {
+    display: flex; align-items: center; gap: 5px;
+    background: transparent;
+    color: rgba(255,255,255,0.78);
+    padding: 6px 9px;
+    border-radius: 7px;
+    border: none;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.18s, color 0.18s;
+  }
+  .aiva-btn:hover { background: rgba(255,255,255,0.06); color: white; }
+  .aiva-btn:active { background: rgba(255,255,255,0.1); }
+  .aiva-btn svg { flex-shrink: 0; opacity: 0.85; }
+  .aiva-btn:hover svg { opacity: 1; }
+
+  /* Avatar + persona switcher */
+  .avatar-stack {
+    position: relative; margin-left: 8px;
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+  }
+  .avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, #f5f5f7 0%, #d4d4d8 100%);
+    color: #18181b;
+    font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.5);
+    transition: transform 0.15s;
+  }
+  .avatar:hover { transform: scale(1.05); }
+  .persona-chip {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: white;
+    font-size: 10px; font-weight: 600; letter-spacing: 0.1px;
+    padding: 3px 9px; border-radius: 999px;
+    display: flex; align-items: center; gap: 6px;
+    cursor: pointer; user-select: none; white-space: nowrap;
+    backdrop-filter: blur(8px);
+    transition: all 0.18s;
+  }
+  .persona-chip:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.2); }
+  .persona-chip .po-dot { width: 6px; height: 6px; border-radius: 50%; box-shadow: 0 0 8px currentColor; }
+  .persona-chip .chip-caret { font-size: 8px; opacity: 0.7; }
+
+  .persona-dropdown {
+    position: absolute; top: 76px; right: 0;
+    background: rgba(255,255,255,0.98);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.16), 0 2px 8px rgba(0,0,0,0.06);
+    min-width: 280px; padding: 8px;
+    z-index: 60; display: none;
+    transform-origin: top right;
+  }
+  .persona-dropdown.open { display: block; animation: scaleIn 0.18s ease-out; }
+  .persona-dropdown .pd-header {
+    font-size: 10px; font-weight: 700; color: var(--text-4);
+    text-transform: uppercase; letter-spacing: 0.8px;
+    padding: 10px 12px 6px;
+  }
+  .persona-option {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px; border-radius: 8px;
+    font-size: 13px; color: var(--text);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .persona-option:hover { background: var(--surface-tint); }
+  .persona-option.active { background: linear-gradient(180deg, rgba(37,99,235,0.06), rgba(37,99,235,0.04)); color: var(--brand); font-weight: 600; }
+  .persona-option .po-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* =================== MEGA MENU =================== */
+  .mega-menu {
+    background: linear-gradient(180deg, var(--menu-bg) 0%, var(--menu-bg-2) 100%);
+    color: white;
+    padding: 28px 32px 36px;
+    display: grid; grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 36px;
+    border-bottom: 1px solid #1a1a1f;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.32);
+    position: absolute; top: 60px; left: 0; right: 0;
+    z-index: 40;
+    max-height: 1200px; overflow: hidden;
+    transition: max-height 0.32s cubic-bezier(0.4, 0, 0.2, 1), padding 0.32s, opacity 0.22s;
+  }
+  .mega-menu.collapsed {
+    max-height: 0; padding-top: 0; padding-bottom: 0;
+    opacity: 0; border-bottom: 0; box-shadow: none; pointer-events: none;
+  }
+  .mega-menu::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(800px 200px at 50% 0%, rgba(59, 130, 246, 0.06), transparent 70%);
+  }
+
+  .col-header {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    margin-bottom: 22px; position: relative;
+  }
+  .col-header .col-icon { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; opacity: 0.85; }
+  .col-header .col-label { font-size: 12px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase; color: rgba(255,255,255,0.85); }
+  .col-header .col-caret { font-size: 9px; opacity: 0.5; }
+
+  /* Pills */
+  .pill-stack { display: flex; flex-direction: column; gap: 8px; }
+  .pill {
+    background: linear-gradient(180deg, var(--pill-bg-2) 0%, var(--pill-bg) 100%);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px; height: 40px;
+    display: flex; align-items: center;
+    padding: 0 14px 0 6px; gap: 10px;
+    color: white; font-size: 13px; overflow: hidden;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    will-change: transform;
+  }
+  .pill:hover {
+    transform: translateX(2px);
+    border-color: rgba(255,255,255,0.14);
+    background: linear-gradient(180deg, #243755 0%, #1d2c47 100%);
+  }
+  .pill-icon {
+    width: 28px; height: 28px; border-radius: 6px;
+    color: white; font-weight: 700; font-size: 11px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-style: italic;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  }
+  .pill-text { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+  .pill-type { color: rgba(255,255,255,0.55); font-weight: 400; }
+  .pill .dot {
+    width: 7px; height: 7px; border-radius: 999px;
+    background: var(--accent); flex-shrink: 0;
+    box-shadow: 0 0 8px rgba(249,115,22,0.5);
+  }
+
+  /* Tile grids */
+  .tile-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .tile {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px; height: 76px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 6px; color: white; font-size: 11px; text-align: center; padding: 4px;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    transition: all 0.18s ease;
+  }
+  .tile:hover {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.14);
+    transform: translateY(-2px);
+  }
+  .tile.faded { opacity: 0.32; cursor: default; }
+  .tile.faded:hover { transform: none; background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.06); }
+
+  .tile-icon {
+    width: 30px; height: 30px; border-radius: 7px;
+    color: white; font-weight: 700; font-size: 10px;
+    display: flex; align-items: center; justify-content: center; font-style: italic;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+    letter-spacing: -0.3px;
+  }
+  .tile-icon.se { background: linear-gradient(135deg, #4cb3ff, var(--se)); }
+  .tile-icon.dr { background: linear-gradient(135deg, #1bbfa8, var(--dr)); }
+  .tile-icon.crm-red { background: linear-gradient(135deg, #ee5d52, var(--crm-red)); }
+  .tile-icon.crm-dark { background: linear-gradient(135deg, #3a3a3a, var(--crm-dark)); border: 1px solid #4a4a4a; }
+  .tile-icon.fo { background: linear-gradient(135deg, #f06ba8, var(--fo)); }
+  .tile-icon.pa { background: linear-gradient(135deg, #fbbf24, var(--pa)); }
+  .tile-icon.fi { background: linear-gradient(135deg, #a78bfa, var(--fi)); }
+  .tile-icon.dm { background: linear-gradient(135deg, #94a3b8, var(--dm)); }
+  .tile-icon.is { background: linear-gradient(135deg, #c084fc, var(--is)); }
+  .tile-icon.us, .tile-icon.ca { background: linear-gradient(135deg, #2a2a2d, var(--us)); border: 1px solid #3a3a3d; font-style: normal; }
+  .tile-label { font-size: 10.5px; line-height: 1.25; max-width: 90px; color: rgba(255,255,255,0.85); }
+
+  /* Resources */
+  .resource-list { display: flex; flex-direction: column; gap: 8px; }
+  .resource {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px; height: 42px;
+    display: flex; align-items: center; padding: 0 14px;
+    gap: 12px; color: white; font-size: 13px;
+    cursor: pointer; transition: all 0.18s;
+  }
+  .resource:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.14); transform: translateX(2px); }
+  .resource .r-icon { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .resource .r-icon.u-icon { background: linear-gradient(135deg, #4cb3ff, var(--se)); border-radius: 5px; font-size: 10px; font-weight: 700; font-style: italic; }
+
+  /* =================== BASE PAGE =================== */
+  .alert-banner {
+    background: linear-gradient(180deg, #fef3e8 0%, #fde9d6 100%);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 11px 24px; font-size: 13px; color: var(--text);
+    border-bottom: 1px solid #f1d9b8;
+    position: relative; z-index: 1;
+  }
+  .alert-banner .left { display: flex; align-items: center; gap: 28px; }
+  .alert-banner .ts { color: var(--text-3); font-variant-numeric: tabular-nums; font-family: 'Geist Mono', monospace; font-size: 12px; }
+  .alert-banner .right { display: flex; align-items: center; gap: 18px; color: var(--text-3); }
+  .alert-banner a { color: var(--brand); text-decoration: none; font-weight: 500; cursor: pointer; }
+  .alert-banner .x { cursor: pointer; font-size: 16px; padding: 0 4px; }
+
+  .persona-banner {
+    margin: 18px 24px 0;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--brand);
+    border-radius: 12px;
+    font-size: 13px; color: var(--text);
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    position: relative; z-index: 1;
+  }
+  .persona-banner b { font-weight: 600; letter-spacing: -0.1px; }
+  .persona-banner .meta {
+    color: var(--text-3); font-size: 11px;
+    font-family: 'Geist Mono', monospace; letter-spacing: 0.2px;
+    background: var(--surface-tint); padding: 4px 9px; border-radius: 999px;
+    border: 1px solid var(--border-soft);
+  }
+
+  .campaign {
+    margin: 14px 24px 0; padding: 22px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(248,250,252,0.95));
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    display: flex; align-items: center; gap: 18px;
+    position: relative;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  }
+  .campaign .cdk-circle {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: linear-gradient(135deg, #1d1d1f, #0a0a0c);
+    color: white; font-weight: 800; font-size: 13px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  .campaign .copy { flex: 1; }
+  .campaign .copy h4 { margin: 0 0 4px; font-size: 14px; font-weight: 600; letter-spacing: -0.1px; }
+  .campaign .copy p { margin: 0; font-size: 13px; color: var(--text-3); line-height: 1.55; max-width: 760px; }
+  .campaign .learn-more {
+    background: var(--text); color: white; border: none;
+    padding: 9px 18px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .campaign .learn-more:hover { transform: scale(1.02); }
+  .campaign .pager-dots { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; }
+  .campaign .pager-dots span { width: 5px; height: 5px; border-radius: 50%; background: #cbd5e1; }
+  .campaign .pager-dots span.active { background: var(--text-2); }
+
+  /* Section heads */
+  .section-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 26px 24px 14px;
+  }
+  .section-head h3 {
+    margin: 0; font-size: 15px; font-weight: 600; letter-spacing: -0.2px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-head .sub { font-size: 12px; color: var(--text-3); margin-top: 2px; font-weight: 500; }
+  .section-head .right-actions { display: flex; gap: 16px; font-size: 13px; color: var(--text-3); }
+  .section-head .right-actions a {
+    color: var(--text-3); display: flex; align-items: center; gap: 6px; cursor: pointer;
+    padding: 5px 10px; border-radius: 7px; transition: background 0.15s;
+  }
+  .section-head .right-actions a:hover { background: var(--surface-tint); }
+
+  /* Cards */
+  .dash-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; padding: 0 24px; }
+  .card {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    min-height: 184px; position: relative;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02), 0 0 0 1px rgba(0,0,0,0.01);
+    transition: all 0.22s ease;
+    overflow: hidden;
+    min-width: 0;
+    display: flex; flex-direction: column;
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+    border-color: var(--border-strong);
+  }
+  .card .card-head {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 10.5px; font-weight: 600; margin-bottom: 8px;
+    color: var(--text-2); letter-spacing: 0.3px; text-transform: uppercase;
+    min-width: 0;
+  }
+  .card .card-head > span:first-child {
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
+  }
+  .card .chev { color: var(--text-4); cursor: pointer; flex-shrink: 0; padding-left: 8px; }
+
+  /* KPI big number */
+  .kpi-big {
+    font-family: 'Geist Mono', 'Geist', monospace;
+    font-size: 22px; font-weight: 700; letter-spacing: -0.6px;
+    color: var(--text);
+    display: flex; align-items: baseline; gap: 4px; flex-wrap: wrap;
+    line-height: 1.05;
+    margin: 2px 0 4px;
+    font-variant-numeric: tabular-nums;
+    min-width: 0;
+  }
+  .kpi-big .pre, .kpi-big .post {
+    font-size: 13px; color: var(--text-3); font-weight: 500;
+  }
+  .kpi-sub { font-size: 11px; color: var(--text-3); margin-bottom: 8px; font-weight: 500; line-height: 1.4; }
+  .kpi-trend {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 10px; font-weight: 600;
+    padding: 2px 6px; border-radius: 999px;
+    font-family: 'Geist Mono', monospace;
+    margin-left: 4px;
+    white-space: nowrap;
+  }
+  .kpi-trend.up { background: var(--success-soft); color: #047857; }
+  .kpi-trend.down { background: var(--danger-soft); color: #b91c1c; }
+  .kpi-trend.neutral { background: var(--surface-tint); color: var(--text-3); border: 1px solid var(--border); }
+
+  .kpi-list { padding-top: 2px; }
+  .kpi-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 5px 0; font-size: 11.5px; color: var(--text-3);
+    border-bottom: 1px solid var(--border-soft);
+    gap: 8px; min-width: 0;
+  }
+  .kpi-row > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+  .kpi-row:last-child { border-bottom: none; }
+  .kpi-row b { color: var(--text); font-weight: 600; font-family: 'Geist Mono', monospace; font-variant-numeric: tabular-nums; flex-shrink: 0; font-size: 11.5px; }
+  .kpi-row a { color: var(--brand); font-weight: 500; cursor: pointer; flex-shrink: 0; }
+
+  /* Sparkline */
+  .spark-wrap {
+    margin: 4px 0 6px;
+    height: 38px; display: flex; align-items: flex-end;
+    min-width: 0;
+  }
+  .spark-wrap svg { width: 100%; height: 100%; display: block; }
+  .spark-path {
+    fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+    stroke-dasharray: 1000;
+    animation: drawIn 1.4s ease-out forwards;
+    --len: 1000;
+  }
+  .spark-area { animation: fadeIn 1.6s ease-out 0.4s both; }
+
+  /* Donut card */
+  .donut-wrap {
+    display: flex; align-items: center; gap: 12px; margin-top: 4px;
+    min-width: 0;
+  }
+  .donut-svg { width: 86px; height: 86px; flex-shrink: 0; }
+  .donut-svg circle.bg { stroke: var(--border); }
+  .donut-svg circle.seg {
+    transform: rotate(-90deg); transform-origin: center;
+    transition: stroke-dashoffset 0.6s ease;
+    animation: drawIn 1.2s ease-out forwards;
+    --len: 1000;
+  }
+  .donut-center {
+    font-family: 'Geist Mono', monospace; font-weight: 700;
+    font-size: 17px; fill: var(--text); text-anchor: middle;
+    font-variant-numeric: tabular-nums;
+  }
+  .donut-center-label { font-size: 7px; fill: var(--text-3); font-family: 'Geist', sans-serif; text-anchor: middle; letter-spacing: 0.5px; text-transform: uppercase; }
+
+  .donut-legend { flex: 1; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .donut-legend .row { display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-3); gap: 6px; min-width: 0; }
+  .donut-legend .left-side { display: flex; align-items: center; gap: 6px; min-width: 0; overflow: hidden; }
+  .donut-legend .left-side > span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .donut-legend .swatch { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .donut-legend b { color: var(--text); font-weight: 600; font-family: 'Geist Mono', monospace; flex-shrink: 0; font-size: 11px; }
+
+  /* Bars / mini bars */
+  .bar-row { display: flex; gap: 3px; height: 28px; border-radius: 6px; overflow: hidden; margin: 10px 0 8px; background: var(--border-soft); }
+  .bar { display: flex; align-items: center; justify-content: center; color: white; font-size: 10.5px; font-weight: 700; font-family: 'Geist Mono', monospace; transform-origin: left center; animation: scaleIn 0.6s ease-out forwards; min-width: 0; overflow: hidden; }
+
+  .mini-bars { display: flex; align-items: flex-end; gap: 3px; height: 44px; padding: 4px 0; }
+  .mini-bars .mb {
+    flex: 1; min-width: 0;
+    background: linear-gradient(180deg, var(--chart-1), color-mix(in srgb, var(--chart-1) 60%, white));
+    border-radius: 3px 3px 0 0;
+    transform-origin: bottom; animation: growUp 0.7s cubic-bezier(0.4,0,0.2,1) forwards;
+    min-height: 6px;
+  }
+
+  /* Gauge */
+  .gauge-wrap { display: flex; align-items: center; gap: 12px; margin: 2px 0 4px; min-width: 0; }
+  .gauge-svg { width: 76px; height: 76px; flex-shrink: 0; }
+  .gauge-track { stroke: var(--border); fill: none; }
+  .gauge-bar {
+    fill: none; stroke-linecap: round;
+    transform: rotate(-90deg); transform-origin: center;
+    animation: drawIn 1.4s cubic-bezier(0.4,0,0.2,1) forwards;
+    --len: 1000;
+  }
+  .gauge-text { font-family: 'Geist Mono', monospace; font-weight: 700; font-size: 15px; fill: var(--text); text-anchor: middle; font-variant-numeric: tabular-nums; }
+  .gauge-meta { font-size: 11px; color: var(--text-3); display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+  .gauge-meta .kpi-row { padding: 3px 0 !important; font-size: 11px !important; }
+  .gauge-meta .kpi-row b { font-size: 11px !important; }
+  .gauge-meta .label { font-size: 10px; font-weight: 600; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.4px; }
+
+  /* Horizontal bar list */
+  .hbar-list { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+  .hbar { font-size: 11px; color: var(--text); min-width: 0; }
+  .hbar .hb-label { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 11px; gap: 8px; min-width: 0; }
+  .hbar .hb-label > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+  .hbar .hb-label b { font-family: 'Geist Mono', monospace; color: var(--text-2); font-weight: 600; flex-shrink: 0; font-size: 11px; }
+  .hbar .hb-track { height: 5px; background: var(--border-soft); border-radius: 999px; overflow: hidden; }
+  .hbar .hb-fill { height: 100%; border-radius: 999px; transform-origin: left; animation: scaleIn 0.7s cubic-bezier(0.4,0,0.2,1) forwards; }
+
+  /* Stacked progress (penetration) */
+  .stack-prog { display: flex; flex-direction: column; gap: 8px; margin-top: 2px; }
+
+  /* Bar legend (for bars-stacked card) */
+  .bar-legend {
+    display: flex; flex-wrap: wrap; gap: 4px 10px;
+    padding-top: 4px; font-size: 10.5px; color: var(--text-3);
+  }
+  .bar-legend .item { display: inline-flex; align-items: center; gap: 5px; }
+  .bar-legend .swatch { width: 7px; height: 7px; border-radius: 999px; flex-shrink: 0; }
+
+  /* Apps grid */
+  .apps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding: 0 24px; }
+  .app-card {
+    background: var(--bg-elev); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 18px; display: flex; align-items: center; gap: 14px;
+    font-size: 14px; font-weight: 500; cursor: pointer; min-height: 70px;
+    transition: all 0.18s ease;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  }
+  .app-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+    border-color: var(--border-strong);
+  }
+  .app-icon-lg {
+    width: 40px; height: 40px; border-radius: 9px;
+    color: white; font-weight: 700; font-size: 12px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-style: italic;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.18);
+    letter-spacing: -0.3px;
+  }
+  .app-icon-lg.se { background: linear-gradient(135deg, #4cb3ff, var(--se)); }
+  .app-icon-lg.dr { background: linear-gradient(135deg, #1bbfa8, var(--dr)); }
+  .app-icon-lg.crm-red { background: linear-gradient(135deg, #ee5d52, var(--crm-red)); }
+  .app-icon-lg.crm-dark { background: linear-gradient(135deg, #3a3a3a, var(--crm-dark)); }
+  .app-icon-lg.pa { background: linear-gradient(135deg, #fbbf24, var(--pa)); }
+  .app-icon-lg.fi { background: linear-gradient(135deg, #a78bfa, var(--fi)); }
+  .app-icon-lg.dm { background: linear-gradient(135deg, #94a3b8, var(--dm)); }
+  .app-icon-lg.fo { background: linear-gradient(135deg, #f06ba8, var(--fo)); }
+  .app-icon-lg.is { background: linear-gradient(135deg, #c084fc, var(--is)); }
+  .app-icon-lg.us, .app-icon-lg.ca { background: linear-gradient(135deg, #2a2a2d, var(--us)); font-style: normal; }
+
+  /* Workflows */
+  .wf-section { padding: 0 24px; }
+  .wf-card {
+    background: var(--bg-elev); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 18px; display: flex; align-items: center; gap: 14px;
+    font-size: 14px; font-weight: 500; margin-bottom: 14px; cursor: pointer;
+    transition: all 0.18s;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  }
+  .wf-card:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+  .wf-sub-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding-bottom: 32px; }
+  .wf-sub {
+    background: var(--bg-elev); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 18px; cursor: pointer;
+    transition: all 0.18s; box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  }
+  .wf-sub:hover { border-color: var(--border-strong); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.05); }
+  .wf-sub h5 { margin: 0 0 6px; font-size: 14px; font-weight: 600; letter-spacing: -0.1px; }
+  .wf-sub p { margin: 0; font-size: 12.5px; color: var(--text-3); line-height: 1.5; }
+
+  /* Stagger on first load */
+  .stagger > * {
+    opacity: 0;
+    animation: fadeInUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+  .stagger > *:nth-child(1) { animation-delay: 0.05s; }
+  .stagger > *:nth-child(2) { animation-delay: 0.10s; }
+  .stagger > *:nth-child(3) { animation-delay: 0.15s; }
+  .stagger > *:nth-child(4) { animation-delay: 0.20s; }
+  .stagger > *:nth-child(5) { animation-delay: 0.25s; }
+  .stagger > *:nth-child(6) { animation-delay: 0.30s; }
+  .stagger > *:nth-child(7) { animation-delay: 0.35s; }
+  .stagger > *:nth-child(8) { animation-delay: 0.40s; }
+  .stagger > *:nth-child(9) { animation-delay: 0.45s; }
+
+  /* TBD card */
+  .tbd-card {
+    margin: 22px; padding: 64px 24px;
+    background:
+      repeating-linear-gradient(45deg, rgba(248,250,252,0.6), rgba(248,250,252,0.6) 14px, rgba(241,245,249,0.6) 14px, rgba(241,245,249,0.6) 28px),
+      var(--bg-elev);
+    border: 2px dashed var(--border-strong); border-radius: 14px;
+    text-align: center; color: var(--text-3);
+  }
+  .tbd-card h2 { margin: 0 0 8px; color: var(--text); font-size: 20px; font-weight: 600; }
+
+  /* Note */
+  .note {
+    margin: 18px 24px 36px; padding: 16px 20px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(248,250,252,0.85));
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border); border-radius: 12px;
+    font-size: 12.5px; color: var(--text-3); line-height: 1.6;
+  }
+  .note h3 { margin: 0 0 4px; font-size: 13px; color: var(--text); font-weight: 600; }
+  .note code { background: var(--surface-tint); padding: 1px 6px; border-radius: 4px; font-size: 11.5px; color: var(--text); border: 1px solid var(--border-soft); font-family: 'Geist Mono', monospace; }
+
+  /* =================== PERSONALIZATION =================== */
+  .pin-section {
+    margin-bottom: 12px;
+  }
+  .pin-section-head {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 10px; font-weight: 700;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 0.5px; text-transform: uppercase;
+    padding: 0 4px 6px;
+  }
+  .pin-section-head .left { display: flex; align-items: center; gap: 6px; }
+  .pin-section-head svg { opacity: 0.7; }
+  .pin-section-head .count {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    padding: 1px 6px; border-radius: 999px;
+    font-size: 9px; font-weight: 600;
+    color: rgba(255,255,255,0.7);
+  }
+
+  .pill { position: relative; }
+  .pill .unpin-btn {
+    position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+    width: 18px; height: 18px; border-radius: 5px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.7);
+    display: none;
+    align-items: center; justify-content: center;
+    cursor: pointer; font-size: 11px; z-index: 2;
+  }
+  .pill:hover .unpin-btn { display: flex; }
+  .pill:hover .dot { display: none; }
+  .pill .unpin-btn:hover { background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.4); color: #fca5a5; }
+
+  .pin-empty {
+    border: 1.5px dashed rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+    color: rgba(255,255,255,0.5);
+    font-size: 11.5px; line-height: 1.5;
+  }
+  .pin-add-btn {
+    width: 100%; padding: 9px 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px dashed rgba(255,255,255,0.18);
+    border-radius: 8px;
+    color: rgba(255,255,255,0.7);
+    font-size: 12px; font-weight: 500;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    cursor: pointer; font-family: inherit;
+    transition: all 0.18s;
+    margin-top: 6px;
+  }
+  .pin-add-btn:hover {
+    background: rgba(99, 102, 241, 0.12);
+    border-color: rgba(99, 102, 241, 0.45);
+    border-style: solid;
+    color: white;
+  }
+
+  /* Pin star icon on Apps/Workflows tiles */
+  .tile { position: relative; }
+  .tile .pin-toggle {
+    position: absolute; top: 4px; right: 4px;
+    width: 18px; height: 18px; border-radius: 5px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.5);
+    display: none;
+    align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 11px;
+    backdrop-filter: blur(4px);
+    z-index: 2;
+  }
+  .tile:hover .pin-toggle { display: flex; }
+  .tile .pin-toggle:hover { background: rgba(245, 158, 11, 0.25); border-color: rgba(245, 158, 11, 0.5); color: #fbbf24; }
+  .tile .pin-toggle.is-pinned { display: flex; background: rgba(245, 158, 11, 0.25); border-color: rgba(245, 158, 11, 0.4); color: #fbbf24; }
+  .tile.faded .pin-toggle { display: none; }
+
+  /* =================== ADD PAGE PICKER (modal) =================== */
+  .picker-overlay {
+    position: fixed; inset: 0;
+    background: rgba(10, 10, 12, 0.55);
+    backdrop-filter: blur(6px);
+    z-index: 200;
+    display: none;
+    align-items: flex-start; justify-content: center;
+    padding-top: 100px;
+  }
+  .picker-overlay.open { display: flex; animation: fadeIn 0.2s ease-out; }
+  .picker-modal {
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.3);
+    width: 580px; max-width: calc(100vw - 32px);
+    max-height: 70vh;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+    animation: scaleIn 0.22s cubic-bezier(0.4,0,0.2,1);
+  }
+  .picker-search {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+    background: white;
+  }
+  .picker-search svg { color: var(--text-3); flex-shrink: 0; }
+  .picker-search input {
+    flex: 1; border: none; outline: none;
+    font-size: 14px; color: var(--text);
+    background: transparent; font-family: inherit;
+  }
+  .picker-search .esc {
+    font-size: 10px; color: var(--text-3);
+    padding: 3px 7px; border-radius: 5px;
+    background: var(--surface-tint); border: 1px solid var(--border-soft);
+    font-family: 'Geist Mono', monospace;
+  }
+  .picker-body { flex: 1; overflow-y: auto; padding: 8px; }
+  .picker-cat {
+    padding: 10px 10px 4px;
+    font-size: 10.5px; font-weight: 700;
+    color: var(--text-4);
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .picker-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 9px 12px; border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.12s;
+    font-size: 13px; color: var(--text);
+  }
+  .picker-item:hover { background: var(--surface-tint); }
+  .picker-item.is-pinned { background: rgba(245, 158, 11, 0.06); }
+  .picker-item .picker-icon {
+    width: 28px; height: 28px; border-radius: 6px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 700; font-size: 10px;
+    font-style: italic; letter-spacing: -0.3px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.18);
+  }
+  .picker-item .picker-icon.se { background: linear-gradient(135deg, #4cb3ff, var(--se)); }
+  .picker-item .picker-icon.dr { background: linear-gradient(135deg, #1bbfa8, var(--dr)); }
+  .picker-item .picker-icon.crm-red { background: linear-gradient(135deg, #ee5d52, var(--crm-red)); }
+  .picker-item .picker-icon.fo { background: linear-gradient(135deg, #f06ba8, var(--fo)); }
+  .picker-item .picker-icon.pa { background: linear-gradient(135deg, #fbbf24, var(--pa)); }
+  .picker-item .picker-icon.fi { background: linear-gradient(135deg, #a78bfa, var(--fi)); }
+  .picker-item .picker-icon.dm { background: linear-gradient(135deg, #94a3b8, var(--dm)); }
+  .picker-item .picker-icon.is { background: linear-gradient(135deg, #c084fc, var(--is)); }
+  .picker-item .picker-icon.ca, .picker-item .picker-icon.us { background: linear-gradient(135deg, #2a2a2d, var(--us)); font-style: normal; }
+  .picker-item .picker-body-cell { flex: 1; min-width: 0; }
+  .picker-item .picker-body-cell .h { font-weight: 500; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .picker-item .picker-body-cell .s { font-size: 11.5px; color: var(--text-3); }
+  .picker-item .picker-action {
+    font-size: 11px; padding: 4px 10px; border-radius: 999px;
+    background: var(--brand); color: white; font-weight: 600;
+    white-space: nowrap;
+  }
+  .picker-item.is-pinned .picker-action { background: var(--success-soft); color: #047857; }
+  .picker-empty {
+    padding: 32px 16px; text-align: center;
+    color: var(--text-3); font-size: 13px;
+  }
+  .picker-footer {
+    padding: 10px 18px;
+    border-top: 1px solid var(--border);
+    background: var(--surface-tint);
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 11px; color: var(--text-3);
+  }
+  .picker-footer .hint { display: flex; align-items: center; gap: 12px; }
+  .picker-footer kbd {
+    background: white; border: 1px solid var(--border);
+    padding: 2px 6px; border-radius: 4px;
+    font-family: 'Geist Mono', monospace; font-size: 10.5px;
+    color: var(--text-2);
+  }
+
+  /* =================== SCREEN SYSTEM =================== */
+  .screen { display: none; }
+  .screen.active { display: block; }
+  .screen-login.active, .screen-onboarding.active { display: flex; }
+
+  /* When prototype is active, hide the page-bg gradient that screens use */
+  body.in-login, body.in-onboarding {
+    background: #0a0a0c;
+  }
+  body.in-login::before, body.in-onboarding::before { display: none; }
+
+  /* =================== LOGIN SCREEN =================== */
+  .screen-login {
+    position: fixed; inset: 0;
+    background: #0a0a0c;
+    align-items: center; justify-content: center;
+    z-index: 100;
+    overflow-y: auto;
+  }
+  .login-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    width: 100%; max-width: 1200px;
+    padding: 40px;
+    gap: 40px;
+  }
+  .login-brand {
+    display: flex; align-items: center; gap: 22px;
+    justify-content: flex-end; padding-right: 60px;
+    animation: fadeInUp 0.6s ease-out;
+  }
+  .login-brand .cdk-circle {
+    width: 92px; height: 92px; border-radius: 50%;
+    background: white; color: #0a0a0c;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 22px; letter-spacing: -0.5px;
+  }
+  .login-brand .global-text {
+    color: white; font-weight: 700; font-size: 36px; letter-spacing: 4px;
+  }
+  .login-card {
+    background: white;
+    border-radius: 8px;
+    padding: 36px 44px;
+    width: 460px; max-width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    animation: fadeInUp 0.6s ease-out 0.15s both;
+  }
+  .login-card h2 {
+    margin: 0 0 22px; font-size: 26px; font-weight: 500;
+    letter-spacing: -0.4px; color: #0a0a0c;
+  }
+  .login-field {
+    position: relative;
+    border: 1px solid #aeb0b5;
+    border-radius: 4px;
+    padding: 8px 14px 6px;
+    margin-bottom: 16px;
+    transition: border-color 0.15s;
+  }
+  .login-field:focus-within { border-color: var(--brand); }
+  .login-field label {
+    display: block;
+    font-size: 11px;
+    color: #46494f;
+    font-weight: 400;
+    margin-bottom: 0;
+  }
+  .login-field input {
+    width: 100%; border: none; outline: none;
+    font-size: 15px; padding: 2px 0;
+    font-family: inherit;
+    color: #0a0a0c;
+    background: transparent;
+  }
+  .login-field input::placeholder { color: #9ca0a8; }
+  .login-field .eye-toggle {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    color: #6b7077; cursor: pointer; padding: 4px;
+  }
+  .login-remember {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 14px; font-size: 14px; color: #0a0a0c;
+    cursor: pointer; user-select: none;
+  }
+  .login-remember input[type="checkbox"] {
+    width: 16px; height: 16px; margin: 0;
+    accent-color: var(--brand);
+    cursor: pointer;
+  }
+  .login-btn {
+    width: 100%; padding: 14px; border: none;
+    background: #0a0a0c; color: white;
+    font-size: 14px; font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 8px;
+    font-family: inherit;
+    transition: background 0.15s, transform 0.15s;
+  }
+  .login-btn:hover { background: #1a1a1f; }
+  .login-btn:active { transform: scale(0.99); }
+  .login-forgot {
+    text-align: center; margin: 22px 0 14px;
+    font-size: 14px; font-weight: 700; color: #0a0a0c;
+    cursor: pointer;
+  }
+  .login-help {
+    text-align: center; font-size: 13px;
+    color: #46494f; line-height: 1.55;
+    margin: 12px 0;
+  }
+  .login-help b { font-weight: 700; }
+  .login-divider-thin {
+    border: none; border-top: 1px solid #e7e9ee;
+    margin: 18px 0 16px;
+  }
+  .login-signup {
+    display: block; width: 100%;
+    padding: 12px; border: 1.5px solid #0a0a0c;
+    background: white; color: #0a0a0c;
+    font-size: 14px; font-weight: 600;
+    border-radius: 4px; cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .login-signup:hover { background: #0a0a0c; color: white; }
+  .login-copyright {
+    text-align: center; font-size: 12px;
+    color: #6b7077; margin: 22px 0 6px;
+  }
+  .login-reset {
+    display: block; text-align: center;
+    font-size: 12px; color: #93c5fd;
+    cursor: pointer; text-decoration: none;
+  }
+
+  /* =================== ONBOARDING WIZARD =================== */
+  .screen-onboarding {
+    position: fixed; inset: 0;
+    background: linear-gradient(180deg, #fafafa 0%, #f0f2f6 100%);
+    flex-direction: column;
+    z-index: 100;
+    overflow-y: auto;
+  }
+  .ob-header {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 16px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 5;
+  }
+  .ob-brand {
+    display: flex; align-items: center; gap: 12px;
+    font-weight: 700; letter-spacing: -0.2px; font-size: 14px;
+  }
+  .ob-brand .cdk-mini {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #0a0a0c; color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 800;
+  }
+  .ob-counter {
+    font-size: 12px; color: var(--text-3);
+    font-family: 'Geist Mono', monospace;
+    background: var(--surface-tint);
+    padding: 5px 12px; border-radius: 999px;
+    border: 1px solid var(--border-soft);
+  }
+  .ob-exit {
+    color: var(--text-3); cursor: pointer; font-size: 13px;
+    padding: 8px 14px; border-radius: 8px; border: 1px solid var(--border);
+    background: white; font-family: inherit;
+  }
+  .ob-exit:hover { background: var(--surface-tint); }
+
+  .ob-progress {
+    background: white;
+    padding: 14px 32px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ob-progress-track {
+    height: 4px; background: var(--border-soft); border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .ob-progress-fill {
+    height: 100%; background: linear-gradient(90deg, var(--brand), #6366f1);
+    border-radius: 999px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .ob-steps {
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--text-4);
+    font-weight: 500;
+  }
+  .ob-step-label {
+    flex: 1; text-align: center;
+    transition: color 0.2s;
+    position: relative;
+  }
+  .ob-step-label.active { color: var(--brand); font-weight: 600; }
+  .ob-step-label.done { color: var(--success); }
+  .ob-step-label.done::before {
+    content: '✓ ';
+  }
+
+  .ob-content {
+    flex: 1; padding: 40px 32px;
+    display: flex; align-items: flex-start; justify-content: center;
+    min-height: 0;
+  }
+  .ob-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px 44px;
+    width: 100%; max-width: 760px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+    animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .ob-card.wide { max-width: 980px; }
+  .ob-card h1 {
+    margin: 0 0 8px; font-size: 26px; font-weight: 600;
+    letter-spacing: -0.5px;
+  }
+  .ob-card .ob-subtitle {
+    margin: 0 0 28px; font-size: 14px; color: var(--text-3); line-height: 1.55;
+  }
+  .ob-form { display: flex; flex-direction: column; gap: 16px; }
+  .ob-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .ob-input-wrap {
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px 8px;
+    background: white;
+    transition: border-color 0.15s;
+  }
+  .ob-input-wrap:focus-within { border-color: var(--brand); }
+  .ob-input-wrap label {
+    display: block; font-size: 11px; color: var(--text-3);
+    font-weight: 500; letter-spacing: 0.2px;
+  }
+  .ob-input-wrap input, .ob-input-wrap textarea, .ob-input-wrap select {
+    width: 100%; border: none; outline: none;
+    font-size: 14px; padding: 3px 0;
+    font-family: inherit; color: var(--text);
+    background: transparent;
+    resize: none;
+  }
+  .ob-section-label {
+    font-size: 12px; font-weight: 600; color: var(--text-2);
+    text-transform: uppercase; letter-spacing: 0.6px;
+    margin: 8px 0 12px;
+  }
+  .ob-role-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+  }
+  .ob-role {
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: white;
+    text-align: left;
+  }
+  .ob-role:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+  .ob-role.selected {
+    border-color: var(--brand);
+    background: linear-gradient(180deg, rgba(37,99,235,0.04), rgba(37,99,235,0.02));
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+  }
+  .ob-role-dot { width: 10px; height: 10px; border-radius: 50%; margin-bottom: 8px; }
+  .ob-role-name { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+  .ob-role-desc { font-size: 11px; color: var(--text-3); line-height: 1.4; }
+
+  .ob-upload {
+    border: 2px dashed var(--border-strong);
+    border-radius: 12px;
+    padding: 32px 24px;
+    text-align: center;
+    background: var(--surface-tint);
+    transition: all 0.18s;
+    cursor: pointer;
+  }
+  .ob-upload:hover { border-color: var(--brand); background: rgba(37,99,235,0.03); }
+  .ob-upload.has-file { border-style: solid; border-color: var(--success); background: var(--success-soft); }
+  .ob-upload-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    background: white; border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 12px;
+    color: var(--brand);
+  }
+  .ob-upload h4 { margin: 0 0 4px; font-size: 14px; font-weight: 600; color: var(--text); }
+  .ob-upload p { margin: 0; font-size: 12px; color: var(--text-3); }
+  .ob-upload .or-divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 14px 0; color: var(--text-4); font-size: 11px;
+    font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;
+  }
+  .ob-upload .or-divider::before,
+  .ob-upload .or-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .ob-secondary-btn {
+    background: white; color: var(--text);
+    border: 1.5px solid var(--border-strong);
+    padding: 8px 16px; border-radius: 8px;
+    font-size: 13px; font-weight: 500; cursor: pointer;
+    font-family: inherit;
+  }
+  .ob-secondary-btn:hover { background: var(--surface-tint); border-color: var(--text-3); }
+
+  .ob-table {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    background: white;
+  }
+  .ob-table-head {
+    display: grid;
+    background: var(--surface-tint);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 14px;
+    font-size: 11px; font-weight: 600; color: var(--text-2);
+    text-transform: uppercase; letter-spacing: 0.4px;
+  }
+  .ob-table-row {
+    display: grid;
+    padding: 10px 14px;
+    font-size: 13px; color: var(--text-2);
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .ob-table-row:last-child { border-bottom: none; }
+  .ob-table-row b { color: var(--text); font-family: 'Geist Mono', monospace; font-weight: 600; }
+
+  .ob-plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .ob-plan {
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+    cursor: pointer;
+    background: white;
+    transition: all 0.18s;
+    position: relative;
+  }
+  .ob-plan:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.05); }
+  .ob-plan.selected {
+    border-color: var(--brand);
+    background: linear-gradient(180deg, rgba(37,99,235,0.04), white);
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+  }
+  .ob-plan.popular::before {
+    content: 'POPULAR'; position: absolute; top: -10px; right: 18px;
+    background: var(--brand); color: white;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.6px;
+    padding: 4px 10px; border-radius: 999px;
+  }
+  .ob-plan h3 { margin: 0 0 4px; font-size: 16px; font-weight: 600; }
+  .ob-plan .price {
+    font-family: 'Geist Mono', monospace; font-size: 30px; font-weight: 700;
+    letter-spacing: -1px; margin: 6px 0; color: var(--text);
+  }
+  .ob-plan .price small { font-size: 12px; color: var(--text-3); font-weight: 500; }
+  .ob-plan ul { padding: 0; margin: 14px 0 0; list-style: none; font-size: 12.5px; color: var(--text-3); }
+  .ob-plan ul li { padding: 4px 0; display: flex; align-items: center; gap: 8px; }
+  .ob-plan ul li::before { content: '✓'; color: var(--success); font-weight: 700; }
+
+  .ob-product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .ob-product {
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    cursor: pointer;
+    background: white;
+    display: flex; align-items: center; gap: 12px;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .ob-product:hover { border-color: var(--border-strong); }
+  .ob-product.selected {
+    border-color: var(--brand);
+    background: linear-gradient(180deg, rgba(37,99,235,0.04), white);
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.12);
+  }
+  .ob-product .check {
+    width: 20px; height: 20px; border-radius: 6px;
+    border: 1.5px solid var(--border-strong);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .ob-product.selected .check {
+    background: var(--brand); border-color: var(--brand);
+    color: white;
+  }
+  .ob-product.selected .check::after { content: '✓'; font-size: 12px; font-weight: 700; }
+  .ob-product .body { flex: 1; }
+  .ob-product .body h5 { margin: 0 0 2px; font-size: 13.5px; font-weight: 600; }
+  .ob-product .body p { margin: 0; font-size: 11.5px; color: var(--text-3); line-height: 1.4; }
+  .ob-product .price-tag {
+    font-family: 'Geist Mono', monospace; font-size: 11.5px;
+    color: var(--text-2); font-weight: 600;
+    padding: 3px 8px; background: var(--surface-tint); border-radius: 6px;
+    border: 1px solid var(--border-soft);
+  }
+
+  .ob-footer {
+    background: white;
+    border-top: 1px solid var(--border);
+    padding: 16px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; bottom: 0;
+  }
+  .ob-back, .ob-next {
+    padding: 10px 22px;
+    border-radius: 10px;
+    font-size: 14px; font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .ob-back {
+    background: white; color: var(--text);
+    border: 1.5px solid var(--border-strong);
+  }
+  .ob-back:hover { background: var(--surface-tint); }
+  .ob-back:disabled { opacity: 0.4; cursor: not-allowed; }
+  .ob-next {
+    background: #0a0a0c; color: white; border: none;
+  }
+  .ob-next:hover { background: #1a1a1f; transform: translateY(-1px); }
+  .ob-next:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  /* Loading screen */
+  .ob-loading {
+    text-align: center; padding: 60px 24px;
+  }
+  .ob-spinner {
+    width: 56px; height: 56px;
+    border: 3px solid var(--border);
+    border-top-color: var(--brand);
+    border-radius: 50%;
+    margin: 0 auto 24px;
+    animation: spinSlow 0.9s linear infinite;
+  }
+  .ob-loading h2 { margin: 0 0 10px; font-size: 22px; font-weight: 600; letter-spacing: -0.4px; }
+  .ob-loading p { margin: 0; color: var(--text-3); font-size: 14px; }
+  .ob-status-list {
+    margin-top: 28px;
+    text-align: left;
+    max-width: 380px;
+    margin-left: auto; margin-right: auto;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .ob-status-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px; border-radius: 10px;
+    background: var(--surface-tint);
+    border: 1px solid var(--border-soft);
+    font-size: 13px; color: var(--text-3);
+    transition: all 0.3s;
+  }
+  .ob-status-row.active {
+    background: linear-gradient(90deg, rgba(37,99,235,0.06), rgba(37,99,235,0.02));
+    border-color: rgba(37,99,235,0.2);
+    color: var(--text);
+  }
+  .ob-status-row.done {
+    background: var(--success-soft);
+    border-color: rgba(16, 185, 129, 0.2);
+    color: #047857;
+  }
+  .ob-status-row .status-icon {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 2px solid var(--border-strong);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+  }
+  .ob-status-row.active .status-icon {
+    border-color: var(--brand);
+    border-top-color: transparent;
+    animation: spinSlow 0.8s linear infinite;
+  }
+  .ob-status-row.done .status-icon {
+    background: var(--success); border-color: var(--success); color: white;
+  }
+  .ob-status-row.done .status-icon::after { content: '✓'; font-weight: 700; }
+  /* ============================================================
+     APP WORKSPACE — desktop ERP shell for each product
+     ============================================================ */
+
+  /* When app screen is active, hide the home screen styling */
+  .screen-app { display: none; }
+  .screen-app.active {
+    display: flex; flex-direction: column;
+    position: fixed; inset: 0;
+    background: var(--bg);
+    z-index: 30;
+    overflow: hidden;
+  }
+
+  /* App sub-header (under the global CDK GLOBAL bar) */
+  .app-sub-header {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 56px;
+    display: flex; align-items: center; gap: 16px;
+    flex-shrink: 0;
+    z-index: 5;
+  }
+  .app-back {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: white;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--text-2);
+    font-family: inherit;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .app-back:hover { background: var(--surface-tint); border-color: var(--border-strong); }
+
+  .app-brand {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 14px; font-weight: 600;
+    letter-spacing: -0.1px;
+    color: var(--text);
+  }
+  .app-brand-icon {
+    width: 28px; height: 28px; border-radius: 7px;
+    color: white; font-weight: 700; font-size: 11px;
+    display: flex; align-items: center; justify-content: center;
+    font-style: italic; letter-spacing: -0.3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.18);
+  }
+  .app-brand-icon.se { background: linear-gradient(135deg, #4cb3ff, var(--se)); }
+  .app-brand-icon.dr { background: linear-gradient(135deg, #1bbfa8, var(--dr)); }
+  .app-brand-icon.crm-red { background: linear-gradient(135deg, #ee5d52, var(--crm-red)); }
+  .app-brand-icon.fo { background: linear-gradient(135deg, #f06ba8, var(--fo)); }
+  .app-brand-icon.pa { background: linear-gradient(135deg, #fbbf24, var(--pa)); }
+  .app-brand-icon.fi { background: linear-gradient(135deg, #a78bfa, var(--fi)); }
+  .app-brand-icon.dm { background: linear-gradient(135deg, #94a3b8, var(--dm)); }
+  .app-brand-icon.is { background: linear-gradient(135deg, #c084fc, var(--is)); }
+  .app-brand-icon.ca { background: linear-gradient(135deg, #2a2a2d, var(--us)); font-style: normal; }
+
+  .app-breadcrumb {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--text-3);
+    font-weight: 500;
+  }
+  .app-breadcrumb .sep { color: var(--text-4); font-size: 11px; }
+  .app-breadcrumb .crumb-current { color: var(--text); font-weight: 600; }
+
+  .app-sub-actions {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .app-search {
+    width: 320px; height: 34px;
+    background: var(--surface-tint);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex; align-items: center; padding: 0 12px;
+    gap: 8px; color: var(--text-3); font-size: 13px;
+    transition: all 0.15s;
+  }
+  .app-search:focus-within { background: white; border-color: var(--brand); }
+  .app-search input {
+    flex: 1; border: none; outline: none; background: transparent;
+    font-family: inherit; font-size: 13px; color: var(--text);
+  }
+  .btn {
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px; font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: all 0.15s;
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+  .btn-primary { background: var(--text); color: white; border-color: var(--text); }
+  .btn-primary:hover { background: #1a1a1f; transform: translateY(-1px); }
+  .btn-secondary { background: white; color: var(--text); border-color: var(--border-strong); }
+  .btn-secondary:hover { background: var(--surface-tint); }
+  .btn-ghost { background: transparent; color: var(--text-2); }
+  .btn-ghost:hover { background: var(--surface-tint); }
+
+  /* App body: sidebar + content */
+  .app-body {
+    flex: 1; min-height: 0;
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    overflow: hidden;
+  }
+  .app-sidebar {
+    background: white;
+    border-right: 1px solid var(--border);
+    padding: 20px 12px;
+    overflow-y: auto;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .app-sidebar-section {
+    font-size: 10px; font-weight: 700;
+    color: var(--text-4);
+    text-transform: uppercase; letter-spacing: 0.6px;
+    padding: 12px 12px 6px;
+    margin-top: 6px;
+  }
+  .app-sidebar-section:first-child { margin-top: 0; }
+  .app-nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px; color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.12s;
+    font-weight: 500;
+  }
+  .app-nav-item:hover { background: var(--surface-tint); color: var(--text); }
+  .app-nav-item.active {
+    background: linear-gradient(180deg, rgba(37, 99, 235, 0.08), rgba(37, 99, 235, 0.04));
+    color: var(--brand);
+    font-weight: 600;
+  }
+  .app-nav-item.active::before {
+    content: ''; width: 3px; height: 18px;
+    background: var(--brand);
+    border-radius: 2px;
+    margin-left: -12px; margin-right: 7px;
+  }
+  .app-nav-item .badge {
+    margin-left: auto;
+    background: var(--surface-tint);
+    border: 1px solid var(--border-soft);
+    color: var(--text-3);
+    font-size: 10px; font-weight: 600;
+    padding: 1px 7px; border-radius: 999px;
+    font-family: 'Geist Mono', monospace;
+  }
+  .app-nav-item.active .badge { background: rgba(37, 99, 235, 0.12); color: var(--brand); border-color: transparent; }
+
+  .app-content {
+    overflow-y: auto;
+    background: var(--bg);
+    padding: 0;
+  }
+
+  /* App page header (inside content) */
+  .app-page-head {
+    padding: 24px 28px 18px;
+    display: flex; align-items: flex-end; justify-content: space-between;
+    flex-wrap: wrap; gap: 14px;
+  }
+  .app-page-head h1 {
+    margin: 0 0 4px;
+    font-size: 22px; font-weight: 600;
+    letter-spacing: -0.4px;
+  }
+  .app-page-head p { margin: 0; font-size: 13px; color: var(--text-3); }
+  .app-page-head .head-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  /* Filter chip strip */
+  .filter-strip {
+    display: flex; align-items: center; gap: 8px;
+    padding: 0 28px 14px;
+    flex-wrap: wrap;
+  }
+  .filter-chip {
+    padding: 6px 12px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 12px; font-weight: 500;
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.15s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .filter-chip:hover { border-color: var(--text-3); }
+  .filter-chip.active {
+    background: var(--text); color: white; border-color: var(--text);
+  }
+  .filter-chip .count {
+    font-family: 'Geist Mono', monospace; font-size: 10.5px;
+    padding: 1px 5px; border-radius: 999px;
+    background: var(--surface-tint); color: var(--text-3);
+  }
+  .filter-chip.active .count { background: rgba(255,255,255,0.16); color: rgba(255,255,255,0.9); }
+
+  /* Generic data table */
+  .data-table-wrap {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin: 0 28px 24px;
+    overflow: hidden;
+  }
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .data-table thead th {
+    text-align: left;
+    padding: 11px 16px;
+    background: var(--surface-tint);
+    border-bottom: 1px solid var(--border);
+    font-size: 10.5px; font-weight: 700;
+    color: var(--text-2);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  .data-table tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-soft);
+    color: var(--text);
+    vertical-align: middle;
+  }
+  .data-table tbody tr { cursor: pointer; transition: background 0.1s; }
+  .data-table tbody tr:hover { background: var(--surface-tint); }
+  .data-table tbody tr:last-child td { border-bottom: none; }
+  .data-table .mono { font-family: 'Geist Mono', monospace; font-variant-numeric: tabular-nums; }
+  .data-table .num { text-align: right; }
+
+  /* Status pill (used in tables and detail views) */
+  .status-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 11px; font-weight: 600;
+    white-space: nowrap;
+  }
+  .status-pill::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: currentColor;
+  }
+  .status-ok { background: var(--success-soft); color: #047857; }
+  .status-warn { background: var(--warning-soft); color: #92400e; }
+  .status-danger { background: var(--danger-soft); color: #b91c1c; }
+  .status-info { background: rgba(37, 99, 235, 0.1); color: var(--brand); }
+  .status-neutral { background: var(--surface-tint); color: var(--text-2); border: 1px solid var(--border); }
+  .status-neutral::before { display: none; }
+  .status-purple { background: rgba(139, 92, 246, 0.12); color: #6d28d9; }
+
+  /* Activity feed (right-rail or panel) */
+  .activity-feed {
+    background: white; border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 18px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .activity-feed h4 { margin: 0 0 4px; font-size: 13px; font-weight: 600; letter-spacing: -0.1px; }
+  .activity-feed .feed-row {
+    display: flex; gap: 10px; padding: 8px 0;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .activity-feed .feed-row:last-child { border-bottom: none; }
+  .activity-feed .feed-icon {
+    width: 26px; height: 26px; border-radius: 7px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--surface-tint);
+    color: var(--text-2);
+  }
+  .activity-feed .feed-content { flex: 1; min-width: 0; }
+  .activity-feed .feed-content .head { font-size: 12.5px; font-weight: 500; color: var(--text); }
+  .activity-feed .feed-content .meta { font-size: 11.5px; color: var(--text-3); margin-top: 1px; }
+
+  /* Two-column dashboard inside app */
+  .app-grid-2 {
+    display: grid; grid-template-columns: 2fr 1fr; gap: 14px;
+    padding: 0 28px 24px;
+    align-items: start;
+  }
+
+  /* Section card (generic) */
+  .panel {
+    background: white; border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden;
+  }
+  .panel-head {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .panel-head h3 { margin: 0; font-size: 13px; font-weight: 600; letter-spacing: -0.1px; }
+  .panel-head .panel-actions { display: flex; gap: 8px; align-items: center; font-size: 12px; color: var(--text-3); }
+  .panel-body { padding: 14px 18px; }
+
+  /* Empty state */
+  .empty-state {
+    padding: 60px 24px;
+    text-align: center;
+    color: var(--text-3);
+  }
+  .empty-state h4 { margin: 0 0 6px; font-size: 15px; font-weight: 600; color: var(--text); }
+  .empty-state p { margin: 0; font-size: 13px; }
+
+  /* Kanban (used in MR pipeline) */
+  .kanban {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
+    padding: 0 28px 24px;
+    min-height: 420px;
+  }
+  .kanban-col {
+    background: var(--surface-tint);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    display: flex; flex-direction: column; gap: 8px;
+    overflow: hidden;
+  }
+  .kanban-col-head {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 11px; font-weight: 700; color: var(--text-2);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    padding: 0 4px 4px;
+  }
+  .kanban-col-head .ct {
+    background: white; border: 1px solid var(--border);
+    color: var(--text-2);
+    font-size: 10.5px; font-weight: 600;
+    padding: 1px 7px; border-radius: 999px;
+    font-family: 'Geist Mono', monospace;
+  }
+  .kanban-card {
+    background: white; border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 12px; cursor: pointer;
+    transition: all 0.15s;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .kanban-card:hover { border-color: var(--text-3); transform: translateY(-1px); }
+  .kanban-card .name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .kanban-card .meta { font-size: 11.5px; color: var(--text-3); }
+  .kanban-card .footer {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 4px;
+    font-size: 11px;
+  }
+
+  /* Inventory grid (MR) */
+  .inv-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px;
+    padding: 0 28px 24px;
+  }
+  .inv-card {
+    background: white; border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+  .inv-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
+  .inv-img {
+    height: 140px;
+    background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-4);
+    position: relative;
+  }
+  .inv-img-stock {
+    position: absolute; top: 8px; left: 8px;
+    background: rgba(0,0,0,0.7); color: white;
+    padding: 3px 7px; border-radius: 5px;
+    font-size: 10.5px; font-weight: 600;
+    font-family: 'Geist Mono', monospace;
+    backdrop-filter: blur(4px);
+  }
+  .inv-body { padding: 12px 14px; }
+  .inv-body .name { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+  .inv-body .price {
+    font-family: 'Geist Mono', monospace;
+    font-size: 17px; font-weight: 700; color: var(--text);
+    letter-spacing: -0.3px; margin-top: 6px;
+  }
+  .inv-body .meta { font-size: 11.5px; color: var(--text-3); margin-top: 1px; }
+
+  /* Detail drawer */
+  .detail-drawer-bg {
+    position: fixed; inset: 0;
+    background: rgba(10, 10, 12, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 110;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.22s;
+  }
+  .detail-drawer-bg.open { opacity: 1; pointer-events: auto; }
+  .detail-drawer {
+    position: fixed; right: 0; top: 0; bottom: 0;
+    width: 540px; max-width: calc(100vw - 60px);
+    background: white;
+    border-left: 1px solid var(--border);
+    box-shadow: -8px 0 30px rgba(0,0,0,0.1);
+    z-index: 111;
+    display: flex; flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .detail-drawer.open { transform: translateX(0); }
+  .detail-drawer-head {
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+    flex-shrink: 0;
+  }
+  .detail-drawer-head h3 { margin: 0; font-size: 15px; font-weight: 600; flex: 1; letter-spacing: -0.2px; }
+  .detail-drawer-close {
+    width: 30px; height: 30px; border-radius: 7px;
+    background: var(--surface-tint); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--text-2);
+  }
+  .detail-drawer-close:hover { background: var(--border); }
+  .detail-drawer-body { flex: 1; overflow-y: auto; padding: 18px 22px; }
+  .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-soft); font-size: 13px; }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-row .k { color: var(--text-3); }
+  .detail-row .v { color: var(--text); font-weight: 500; }
+  .detail-row .v.mono { font-family: 'Geist Mono', monospace; }
+
+  /* Stat row inside dashboards */
+  .stat-row {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+    padding: 0 28px 18px;
+  }
+  .stat-card {
+    background: white; border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .stat-card .stat-label {
+    font-size: 11px; font-weight: 600; color: var(--text-2);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .stat-card .stat-value {
+    font-family: 'Geist Mono', monospace;
+    font-size: 24px; font-weight: 700; color: var(--text);
+    letter-spacing: -0.5px;
+    display: flex; align-items: baseline; gap: 6px;
+  }
+  .stat-card .stat-value .pre, .stat-card .stat-value .post {
+    font-size: 13px; color: var(--text-3); font-weight: 500;
+  }
+  .stat-card .stat-meta { font-size: 11.5px; color: var(--text-3); margin-top: 4px; }
+
+  /* AIVA panel (slide-out from right) */
+  .aiva-panel {
+    position: fixed; top: 60px; right: 0; bottom: 0;
+    width: 380px;
+    background: white;
+    border-left: 1px solid var(--border);
+    box-shadow: -8px 0 30px rgba(0,0,0,0.1);
+    z-index: 90;
+    display: flex; flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .aiva-panel.open { transform: translateX(0); }
+  .aiva-head {
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.04), rgba(139, 92, 246, 0.04));
+  }
+  .aiva-orb {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #B6A6FF, #7B61FF 60%, #5A41E0);
+    box-shadow: 0 0 16px rgba(123, 97, 255, 0.45);
+    flex-shrink: 0;
+  }
+  .aiva-head .title { font-size: 14px; font-weight: 600; flex: 1; }
+  .aiva-head .meta { font-size: 11px; color: var(--text-3); margin-top: 1px; }
+  .aiva-close {
+    width: 28px; height: 28px; border-radius: 7px;
+    background: var(--surface-tint); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--text-2);
+  }
+  .aiva-body { flex: 1; overflow-y: auto; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; }
+  .aiva-suggestion {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.04), rgba(139, 92, 246, 0.04));
+    border: 1px solid rgba(99, 102, 241, 0.18);
+    border-radius: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .aiva-suggestion:hover { border-color: rgba(99, 102, 241, 0.4); background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(139, 92, 246, 0.06)); }
+  .aiva-suggestion h5 { margin: 0 0 4px; font-size: 12px; font-weight: 600; color: #4338ca; }
+  .aiva-suggestion p { margin: 0; font-size: 12px; color: var(--text-2); line-height: 1.5; }
+  .aiva-msg {
+    background: var(--surface-tint);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 13px; color: var(--text); line-height: 1.5;
+  }
+  .aiva-msg.from-aiva {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.06), rgba(139, 92, 246, 0.04));
+    border: 1px solid rgba(99, 102, 241, 0.14);
+  }
+  .aiva-foot {
+    padding: 12px 14px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .aiva-input {
+    background: var(--surface-tint);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .aiva-input input {
+    flex: 1; border: none; outline: none; background: transparent;
+    font-size: 13px; font-family: inherit; color: var(--text);
+  }
+  .aiva-mic {
+    width: 30px; height: 30px; border-radius: 999px;
+    background: radial-gradient(circle at 30% 30%, #B6A6FF, #7B61FF 60%, #5A41E0);
+    border: none;
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 28px; left: 50%;
+    transform: translateX(-50%);
+    background: #0a0a0c;
+    color: white;
+    padding: 11px 18px;
+    border-radius: 10px;
+    font-size: 13px; font-weight: 500;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    z-index: 300;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.22s, transform 0.22s;
+    transform: translateX(-50%) translateY(8px);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* Specific to Service - dispatch lane */
+  .lane-row {
+    display: grid; grid-template-columns: 160px 1fr;
+    border-bottom: 1px solid var(--border-soft);
+    min-height: 60px;
+  }
+  .lane-row:last-child { border-bottom: none; }
+  .lane-tech {
+    background: var(--surface-tint);
+    padding: 12px 16px;
+    display: flex; flex-direction: column; justify-content: center;
+    border-right: 1px solid var(--border);
+  }
+  .lane-tech .nm { font-size: 13px; font-weight: 600; }
+  .lane-tech .st { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+  .lane-jobs {
+    padding: 10px 12px;
+    display: flex; gap: 6px; flex-wrap: wrap;
+    align-items: center;
+  }
+  .lane-job {
+    padding: 6px 10px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 11.5px;
+    color: var(--text);
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .lane-job.active { background: rgba(37, 99, 235, 0.06); border-color: rgba(37, 99, 235, 0.3); color: var(--brand); }
+
+  /* Calendar (used in MR My Day) */
+  .schedule-list { padding: 0 18px; }
+  .schedule-item {
+    display: flex; gap: 14px; align-items: stretch;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .schedule-item:last-child { border-bottom: none; }
+  .schedule-time {
+    width: 60px; flex-shrink: 0;
+    font-family: 'Geist Mono', monospace;
+    font-size: 13px; font-weight: 600;
+    color: var(--text);
+    padding-top: 2px;
+  }
+  .schedule-time .ampm { font-size: 10px; font-weight: 500; color: var(--text-3); display: block; }
+  .schedule-content { flex: 1; }
+  .schedule-content .nm { font-size: 13.5px; font-weight: 600; }
+  .schedule-content .meta { font-size: 11.5px; color: var(--text-3); margin-top: 2px; }
+
+  /* App launcher hint when prototype loads */
+  .app-launcher-hint {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.06), rgba(139, 92, 246, 0.04));
+    border: 1px solid rgba(99, 102, 241, 0.18);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin: 14px 24px 0;
+    font-size: 12.5px;
+    color: var(--text-2);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .app-launcher-hint b { color: var(--text); }
+
+  /* Tile click hint */
+  .tile { cursor: pointer; }
+  .app-card { cursor: pointer; }
+
+  /* =================== MR-SPECIFIC STYLING =================== */
+
+  /* In-showroom active banner */
+  .mr-active-banner {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.06), rgba(16, 185, 129, 0.02));
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    border-left: 3px solid var(--success);
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 14px;
+  }
+  .mr-active-banner .live-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5);
+    animation: mrPulse 1.6s ease-out infinite;
+  }
+  @keyframes mrPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+    50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+  }
+  .mr-active-banner .nm { font-size: 14px; font-weight: 600; }
+  .mr-active-banner .meta { font-size: 11.5px; color: var(--text-3); margin-top: 2px; }
+
+  /* AIVA orb for live session */
+  .aiva-orb-mr {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #B6A6FF, #7B61FF 60%, #5A41E0);
+    box-shadow: 0 0 16px rgba(123, 97, 255, 0.45);
+    flex-shrink: 0;
+    position: relative;
+  }
+  .aiva-orb-mr.pulse::after {
+    content: ''; position: absolute; inset: -4px;
+    border-radius: 50%;
+    border: 2px solid rgba(123, 97, 255, 0.4);
+    animation: orbPulse 1.8s ease-out infinite;
+  }
+  @keyframes orbPulse {
+    0% { transform: scale(0.8); opacity: 1; }
+    100% { transform: scale(1.4); opacity: 0; }
+  }
+
+  /* SLA badge */
+  .sla-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 11px; font-weight: 600;
+    border: 1px solid;
+    font-family: 'Geist Mono', monospace;
+  }
+  .sla-ok { background: var(--success-soft); color: #047857; border-color: rgba(16, 185, 129, 0.3); }
+  .sla-warn { background: var(--warning-soft); color: #92400e; border-color: rgba(245, 158, 11, 0.35); }
+  .sla-err { background: var(--danger-soft); color: #b91c1c; border-color: rgba(239, 68, 68, 0.3); animation: slaTick 1.2s ease-in-out infinite; }
+  @keyframes slaTick {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
+  }
+
+  /* Avatar circle */
+  .mr-av {
+    border-radius: 50%; color: white;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 600; flex-shrink: 0;
+    letter-spacing: 0.3px;
+  }
+
+  /* F.O.R.M. card */
+  .form-card {
+    background: white; border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 14px;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .form-letter {
+    width: 32px; height: 32px; min-width: 32px;
+    border-radius: 50%;
+    background: var(--brand); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .form-content { flex: 1; min-width: 0; }
+  .form-content .label { font-size: 11.5px; color: var(--text-3); margin-bottom: 1px; }
+  .form-content .val { font-size: 13px; font-weight: 500; }
+  .conf-bar {
+    height: 4px; background: var(--border-soft); border-radius: 999px;
+    margin-top: 6px; overflow: hidden;
+  }
+  .conf-fill {
+    height: 100%; background: var(--brand);
+    border-radius: 999px;
+  }
+
+  /* AIVA insight strip */
+  .aiva-insight {
+    background: linear-gradient(135deg, rgba(123, 97, 255, 0.06), rgba(99, 102, 241, 0.04));
+    border: 1px solid rgba(123, 97, 255, 0.2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .aiva-insight .ico {
+    color: #5A41E0;
+    flex-shrink: 0;
+    font-size: 16px;
+  }
+  .aiva-insight .body { flex: 1; font-size: 12.5px; line-height: 1.5; color: var(--text); }
+  .aiva-insight .body b { color: #3B2E8A; }
+
+  /* Steps of Sale pips */
+  .sos-strip {
+    display: flex; gap: 4px;
+    margin-bottom: 6px;
+  }
+  .sos-pip {
+    flex: 1; height: 6px;
+    border-radius: 999px;
+    background: var(--border);
+  }
+  .sos-pip.done { background: var(--brand); }
+  .sos-pip.curr { background: rgba(37, 99, 235, 0.4); }
+  .sos-labels {
+    display: flex; justify-content: space-between;
+    font-size: 10.5px; color: var(--text-3);
+  }
+
+  /* Wizard bar (Quote → Credit → Hand-off → Done) */
+  .wiz-bar {
+    display: flex; align-items: center; gap: 6px;
+    padding: 10px 16px;
+    background: var(--surface-tint);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 14px;
+  }
+  .wiz-step {
+    width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11.5px; font-weight: 600;
+    background: var(--border);
+    color: var(--text-3);
+    flex-shrink: 0;
+  }
+  .wiz-step.curr { background: var(--brand); color: white; }
+  .wiz-step.done { background: var(--success); color: white; }
+  .wiz-line { flex: 1; height: 2px; background: var(--border); border-radius: 1px; }
+  .wiz-line.done { background: var(--success); }
+  .wiz-label { font-size: 11.5px; color: var(--text-2); margin: 0 4px; }
+
+  /* MR comms thread (split pane) */
+  .mr-comms { display: grid; grid-template-columns: 360px 1fr; gap: 14px; padding: 0 28px 24px; height: calc(100vh - 200px); min-height: 540px; }
+  .mr-comms .panel { overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Chat bubbles */
+  .chat-stream {
+    flex: 1; overflow-y: auto;
+    padding: 18px 22px;
+    display: flex; flex-direction: column; gap: 10px;
+    background: var(--surface-tint);
+  }
+  .chat-bubble {
+    max-width: 75%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 13px; line-height: 1.5;
+  }
+  .chat-bubble.in {
+    align-self: flex-start;
+    background: white; border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .chat-bubble.out {
+    align-self: flex-end;
+    background: var(--brand); color: white;
+  }
+  .chat-bubble.aiva {
+    align-self: flex-start;
+    background: linear-gradient(135deg, rgba(123, 97, 255, 0.06), rgba(99, 102, 241, 0.04));
+    border: 1px solid rgba(123, 97, 255, 0.18);
+    color: #3B2E8A;
+    max-width: 85%;
+  }
+  .chat-meta {
+    font-size: 10.5px; font-family: 'Geist Mono', monospace;
+    margin-top: 4px;
+    opacity: 0.7;
+  }
+
+  /* MR — Inventory match pill */
+  .match-pill {
+    background: linear-gradient(135deg, #c084fc, #8b5cf6);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 11px; font-weight: 700;
+    font-family: 'Geist Mono', monospace;
+    display: inline-flex; align-items: center; gap: 3px;
+  }
+
+  /* Detail drawer Customer view tabs */
+  .detail-tabs {
+    display: flex; gap: 4px;
+    border-bottom: 1px solid var(--border);
+    padding: 0 22px;
+    background: white;
+    flex-shrink: 0;
+  }
+  .detail-tab {
+    padding: 10px 14px;
+    font-size: 12.5px; font-weight: 500;
+    color: var(--text-3);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.15s;
+  }
+  .detail-tab:hover { color: var(--text); }
+  .detail-tab.active { color: var(--brand); border-bottom-color: var(--brand); }
+
+  /* Quick Action buttons */
+  .quick-action {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: left; width: 100%;
+    font-family: inherit;
+  }
+  .quick-action:hover { border-color: var(--text-3); background: var(--surface-tint); }
+  .quick-action .qa-icon {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 18px;
+  }
+  .quick-action .qa-body { flex: 1; min-width: 0; }
+  .quick-action .qa-label { font-size: 13px; font-weight: 600; color: var(--text); }
+  .quick-action .qa-sub { font-size: 11.5px; color: var(--text-3); margin-top: 1px; }
+
+</style>
 </head>
-<body>
-    <h1>Welcome</h1>
-    <p>This is a basic index page.</p>
+<body class="in-login">
+
+<!-- ============ LOGIN SCREEN ============ -->
+<div class="screen screen-login active" id="loginScreen">
+  <div class="login-wrap">
+    <div class="login-brand">
+      <div class="cdk-circle">CDK</div>
+      <div class="global-text">GLOBAL</div>
+    </div>
+    <div class="login-card">
+      <h2>Sign In</h2>
+      <div class="login-field">
+        <label>Email</label>
+        <input type="email" placeholder="Example@email.com" id="loginEmail" />
+      </div>
+      <label class="login-remember">
+        <input type="checkbox" />
+        <span>Remember me</span>
+      </label>
+      <div class="login-field">
+        <label>Password Input</label>
+        <input type="password" id="loginPassword" />
+        <span class="eye-toggle" onclick="togglePw()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </span>
+      </div>
+      <button class="login-btn" id="signInBtn">Sign In</button>
+      <div class="login-forgot">Forgot your password?</div>
+      <p class="login-help">Forgot your email or need to request an account?<br>Please contact your enterprise administrator.</p>
+      <p class="login-help">For additional assistance, please contact <b>CDK Support</b>.</p>
+
+      <hr class="login-divider-thin" />
+      <button class="login-signup" id="signUpBtn">New to CDK? Start free trial</button>
+
+      <p class="login-copyright">©2026 CDK Global, LLC</p>
+      <a class="login-reset">reset cache</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ONBOARDING WIZARD ============ -->
+<div class="screen screen-onboarding" id="onboardingScreen">
+  <div class="ob-header">
+    <div class="ob-brand">
+      <div class="cdk-mini">CDK</div>
+      <span>GLOBAL</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:14px;">
+      <div class="ob-counter" id="obCounter">Step 1 of 7</div>
+      <button class="ob-exit" id="obExit">Exit setup</button>
+    </div>
+  </div>
+
+  <div class="ob-progress">
+    <div class="ob-progress-track"><div class="ob-progress-fill" id="obProgressFill" style="width: 14%"></div></div>
+    <div class="ob-steps" id="obStepsBar"></div>
+  </div>
+
+  <div class="ob-content" id="obContent"></div>
+
+  <div class="ob-footer">
+    <button class="ob-back" id="obBack">← Back</button>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <button class="ob-secondary-btn" id="obSkip" style="display:none;">Skip for now</button>
+      <button class="ob-next" id="obNext">Continue →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PROTOTYPE SCREEN ============ -->
+<div class="screen screen-prototype" id="prototypeScreen">
+
+<!-- ============ HEADER ============ -->
+<div class="header">
+  <div class="logo">CDK GLOBAL</div>
+  <div class="menu-btn anim-fade-in-up" id="menuBtn" style="animation-delay:0.05s">
+    <div class="grid-icon"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <span>Menu</span>
+    <span class="caret">▾</span>
+  </div>
+
+  <div class="search anim-fade-in-up" style="animation-delay:0.1s">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <span>Search across CDK</span>
+  </div>
+
+  <div class="right-icons">
+    <div class="icon-btn anim-fade-in-up" style="animation-delay:0.15s"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg></div>
+    <div class="icon-btn anim-fade-in-up" style="animation-delay:0.18s"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1 1-1 1.7"/><circle cx="12" cy="17" r="0.6" fill="currentColor"/></svg></div>
+    <div class="icon-btn anim-fade-in-up" style="animation-delay:0.21s"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="notif-badge">2</span></div>
+
+    <button class="aiva-btn anim-scale-in" style="animation-delay:0.23s" id="aivaBtn" title="Ask AIVA">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/></svg>
+      <span>AIVA</span>
+    </button>
+
+    <div class="avatar-stack anim-scale-in" style="animation-delay:0.24s">
+      <div class="avatar">JP</div>
+      <div class="persona-chip" id="personaChip">
+        <span id="chipDot" class="po-dot" style="background:#2da7ff;color:#2da7ff;"></span>
+        <span id="chipLabel">Service Advisor</span>
+        <span class="chip-caret">▾</span>
+      </div>
+      <div class="persona-dropdown" id="personaDropdown">
+        <div class="pd-header">Switch persona</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MEGA MENU ============ -->
+<div class="mega-menu collapsed" id="megaMenu">
+  <div>
+    <div class="col-header">
+      <div class="col-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 12 7 12 10 4 14 20 17 12 21 12"/></svg></div>
+      <div class="col-label">My Activity</div>
+      <div class="col-caret">▾</div>
+    </div>
+    <div class="pill-stack stagger" id="activityCol"></div>
+  </div>
+  <div>
+    <div class="col-header">
+      <div class="col-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
+      <div class="col-label">Apps</div>
+      <div class="col-caret">▾</div>
+    </div>
+    <div class="tile-grid stagger" id="appsCol"></div>
+  </div>
+  <div>
+    <div class="col-header">
+      <div class="col-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
+      <div class="col-label">Workflows</div>
+      <div class="col-caret">▾</div>
+    </div>
+    <div class="tile-grid stagger" id="workflowsCol"></div>
+  </div>
+  <div>
+    <div class="col-header">
+      <div class="col-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+      <div class="col-label">Resources</div>
+      <div class="col-caret">▾</div>
+    </div>
+    <div class="resource-list stagger" id="resourcesCol"></div>
+  </div>
+</div>
+
+<!-- ============ BASE PAGE ============ -->
+<div id="basePage">
+  <div class="alert-banner anim-fade-in" style="animation-delay:0.2s">
+    <div class="left">
+      <b>Product Alerts</b>
+      <span>Appointment Data Issues - CDK Service</span>
+      <span class="ts">06/20/2024 8:23 AM CST</span>
+    </div>
+    <div class="right">
+      <a>Learn More</a>
+      <span>1 of 2 ›</span>
+      <span class="x">×</span>
+    </div>
+  </div>
+
+  <div class="persona-banner anim-fade-in-up" style="animation-delay:0.25s" id="personaBanner"></div>
+
+  <div class="campaign anim-fade-in-up" style="animation-delay:0.3s">
+    <div class="cdk-circle">CDK</div>
+    <div class="copy">
+      <h4>Automation test campaign</h4>
+      <p>CDK Unify is a flexible cloud-based interface that provides a personalized, secure and single sign-on experience to key CDK applications, workflows, and your favorites, all in a single dashboard.</p>
+    </div>
+    <button class="learn-more">Learn More</button>
+    <div class="pager-dots"><span class="active"></span><span></span><span></span></div>
+  </div>
+
+  <div id="pageBody"></div>
+</div>
+
+</div><!-- end #prototypeScreen -->
+
+<!-- ============ APP WORKSPACE SCREEN ============ -->
+<div class="screen screen-app" id="appScreen">
+  <!-- App-level header (slim CDK GLOBAL bar) -->
+  <div class="header" style="height:48px;">
+    <div class="logo" style="font-size:13px;">CDK GLOBAL</div>
+    <div class="search anim-fade-in-up" style="height:32px;font-size:12px;animation-delay:0s;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <span>Search across CDK</span>
+    </div>
+    <div class="right-icons">
+      <button class="aiva-btn" onclick="openAIVA()" title="Ask AIVA">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/></svg>
+        <span>AIVA</span>
+      </button>
+      <div class="icon-btn" title="Notifications" onclick="toast('No new notifications')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="notif-badge">2</span></div>
+      <div class="avatar" id="appAvatar" onclick="closeApp()" title="Back to home" style="cursor:pointer;">JP</div>
+    </div>
+  </div>
+
+  <!-- App sub-header -->
+  <div class="app-sub-header" id="appSubHeader"></div>
+
+  <!-- App body: sidebar + content -->
+  <div class="app-body">
+    <div class="app-sidebar" id="appSidebar"></div>
+    <div class="app-content" id="appContent"></div>
+  </div>
+</div>
+
+<!-- ============ AIVA PANEL ============ -->
+<div class="aiva-panel" id="aivaPanel">
+  <div class="aiva-head">
+    <div class="aiva-orb"></div>
+    <div style="flex:1;">
+      <div class="title">AIVA Assistant</div>
+      <div class="meta">Knowledge bot · ready</div>
+    </div>
+    <div class="aiva-close" onclick="closeAIVA()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </div>
+  </div>
+  <div class="aiva-body" id="aivaBody"></div>
+  <div class="aiva-foot">
+    <div class="aiva-input">
+      <input type="text" id="aivaInput" placeholder="Ask AIVA anything..." />
+      <button class="aiva-mic" onclick="toast('Voice capture would start here')" title="Voice">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ DETAIL DRAWER ============ -->
+<div class="detail-drawer-bg" id="detailDrawerBg" onclick="closeDetailDrawer()"></div>
+<div class="detail-drawer" id="detailDrawer">
+  <div class="detail-drawer-head">
+    <h3 id="detailDrawerTitle">Detail</h3>
+    <div class="detail-drawer-close" onclick="closeDetailDrawer()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </div>
+  </div>
+  <div class="detail-drawer-body" id="detailDrawerBody"></div>
+</div>
+
+<!-- ============ ADD PAGE PICKER MODAL ============ -->
+<div class="picker-overlay" id="pickerOverlay">
+  <div class="picker-modal">
+    <div class="picker-search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input type="text" id="pickerSearch" placeholder="Search apps, workflows, reports, resources..." autocomplete="off" />
+      <span class="esc">esc</span>
+    </div>
+    <div class="picker-body" id="pickerBody"></div>
+    <div class="picker-footer">
+      <span class="hint">
+        <span><kbd>↑↓</kbd> navigate</span>
+        <span><kbd>↵</kbd> add</span>
+        <span><kbd>esc</kbd> close</span>
+      </span>
+      <span id="pickerCount"></span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TOAST ============ -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   DATA HELPERS — synthetic time series for sparklines / charts
+   ============================================================ */
+function rng(seed) { let s = seed; return () => { s = (s * 9301 + 49297) % 233280; return s / 233280; }; }
+function series(seed, n, base, vary) {
+  const r = rng(seed); const out = [];
+  for (let i = 0; i < n; i++) out.push(base + (r() - 0.4) * vary + i * (vary * 0.04));
+  return out;
+}
+
+/* ============================================================
+   SVG BUILDERS
+   ============================================================ */
+function sparkline(values, color, w = 220, h = 44) {
+  const max = Math.max(...values), min = Math.min(...values);
+  const range = (max - min) || 1;
+  const pts = values.map((v, i) => {
+    const x = (i / (values.length - 1)) * (w - 4) + 2;
+    const y = h - 4 - ((v - min) / range) * (h - 8);
+    return [x, y];
+  });
+  const path = pts.map((p, i) => (i === 0 ? `M${p[0]},${p[1]}` : `L${p[0]},${p[1]}`)).join(' ');
+  const area = `${path} L${pts[pts.length-1][0]},${h} L${pts[0][0]},${h} Z`;
+  const id = 'g' + Math.random().toString(36).slice(2, 7);
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id="${id}" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0%" stop-color="${color}" stop-opacity="0.28"/>
+        <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <path d="${area}" fill="url(#${id})" class="spark-area"/>
+    <path d="${path}" stroke="${color}" class="spark-path"/>
+    <circle cx="${pts[pts.length-1][0]}" cy="${pts[pts.length-1][1]}" r="3" fill="${color}"/>
+  </svg>`;
+}
+
+function miniBars(values, color) {
+  const max = Math.max(...values);
+  return `<div class="mini-bars">${values.map((v, i) => {
+    const h = (v / max) * 100;
+    return `<div class="mb" style="height:${h}%; animation-delay:${i*40}ms; background:linear-gradient(180deg, ${color}, ${color}88);"></div>`;
+  }).join('')}</div>`;
+}
+
+function donut(percent, color, num, label, w = 86) {
+  const r = w/2 - 7, c = 2 * Math.PI * r;
+  const off = c - (percent / 100) * c;
+  return `<svg class="donut-svg" viewBox="0 0 ${w} ${w}">
+    <circle class="bg" cx="${w/2}" cy="${w/2}" r="${r}" fill="none" stroke-width="6"/>
+    <circle class="seg" cx="${w/2}" cy="${w/2}" r="${r}" fill="none"
+      stroke="${color}" stroke-width="6" stroke-linecap="round"
+      stroke-dasharray="${c}" stroke-dashoffset="${off}" style="--len:${c}"/>
+    <text class="donut-center" x="${w/2}" y="${w/2 + 2}">${num}</text>
+    ${label ? `<text class="donut-center-label" x="${w/2}" y="${w/2 + 14}">${label}</text>` : ''}
+  </svg>`;
+}
+
+function donutMulti(segments, num, label, w = 86) {
+  const r = w/2 - 7, c = 2 * Math.PI * r;
+  let rotation = -90;
+  let out = `<svg class="donut-svg" viewBox="0 0 ${w} ${w}">
+    <circle class="bg" cx="${w/2}" cy="${w/2}" r="${r}" fill="none" stroke-width="6"/>`;
+  segments.forEach((s, i) => {
+    const dash = (s.percent / 100) * c;
+    out += `<circle cx="${w/2}" cy="${w/2}" r="${r}" fill="none"
+      stroke="${s.color}" stroke-width="6" stroke-linecap="butt"
+      stroke-dasharray="${dash} ${c - dash}"
+      transform="rotate(${rotation} ${w/2} ${w/2})"
+      style="animation: drawIn 1.0s ${i*0.15}s cubic-bezier(.4,0,.2,1) both; --len:${c};"/>`;
+    rotation += (s.percent / 100) * 360;
+  });
+  out += `<text class="donut-center" x="${w/2}" y="${w/2 + 2}">${num}</text>`;
+  if (label) out += `<text class="donut-center-label" x="${w/2}" y="${w/2 + 14}">${label}</text>`;
+  out += `</svg>`;
+  return out;
+}
+
+function gauge(percent, color, label, w = 76) {
+  const r = w/2 - 7, c = 2 * Math.PI * r;
+  const off = c - (Math.min(100, percent) / 100) * c;
+  return `<svg class="gauge-svg" viewBox="0 0 ${w} ${w}">
+    <circle class="gauge-track" cx="${w/2}" cy="${w/2}" r="${r}" stroke-width="6"/>
+    <circle class="gauge-bar" cx="${w/2}" cy="${w/2}" r="${r}"
+      stroke="${color}" stroke-width="6"
+      stroke-dasharray="${c}" stroke-dashoffset="${off}" style="--len:${c}"/>
+    <text class="gauge-text" x="${w/2}" y="${w/2 + 2}">${percent}%</text>
+    ${label ? `<text class="donut-center-label" x="${w/2}" y="${w/2 + 14}">${label}</text>` : ''}
+  </svg>`;
+}
+
+function trendChip(direction, value) {
+  const cls = direction === 'up' ? 'up' : direction === 'down' ? 'down' : 'neutral';
+  const arrow = direction === 'up' ? '↑' : direction === 'down' ? '↓' : '·';
+  return `<span class="kpi-trend ${cls}">${arrow} ${value}</span>`;
+}
+
+function hbarList(items) {
+  return `<div class="hbar-list">${items.map((it, i) => `
+    <div class="hbar">
+      <div class="hb-label"><span>${it.k}</span><b>${it.v}</b></div>
+      <div class="hb-track">
+        <div class="hb-fill" style="width:${it.percent}%; background:${it.color || 'var(--brand)'}; animation-delay:${i*60}ms;"></div>
+      </div>
+    </div>
+  `).join('')}</div>`;
+}
+
+function stackedProgress(items) {
+  return `<div class="stack-prog">${items.map((it, i) => `
+    <div class="hbar">
+      <div class="hb-label"><span>${it.k}</span><b>${it.v}</b></div>
+      <div class="hb-track">
+        <div class="hb-fill" style="width:${it.percent}%; background:${it.color}; animation-delay:${i*60}ms;"></div>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+/* ============================================================
+   PERSONAS
+   ============================================================ */
+const RESOURCES = [
+  { type: 'u', label: 'CDK University' },
+  { type: 'msg', label: 'Customer Care' },
+  { type: 'doc', label: 'Documents' },
+];
+const CORE_APPS = [
+  { icon: 'dr',      label: 'Accounting' },
+  { icon: 'se',      label: 'Service' },
+  { icon: 'pa',      label: 'Parts' },
+  { icon: 'fi',      label: 'F&I' },
+  { icon: 'crm-red', label: 'Modern Retail' },
+  { icon: 'dm',      label: 'Document Mgmt' },
+  { icon: 'fo',      label: 'Fortellis' },
+  { icon: 'is',      label: 'Intelligence Suite' },
+  { icon: 'ca',      label: 'Common Admin' },
+];
+function appsFor(activeKeys) {
+  return CORE_APPS.filter(app => activeKeys.includes(app.icon));
+}
+
+const PERSONAS = {
+  owner: {
+    label: 'Owner / Dealer Principal',
+    short: 'Owner',
+    color: '#a855f7',
+    bannerNote: 'Strategic oversight · multi-store visibility · dashboards & goals.',
+    activity: [
+      { icon: 'is', text: 'Variable Operations Overview', sub: 'July 2026' },
+      { icon: 'is', text: 'Sales Leaderboard', sub: 'MTD ranking' },
+      { icon: 'is', text: 'F&I Overview', sub: 'PVR & penetration' },
+      { icon: 'is', text: 'Daily Operational Control', sub: '3 exceptions' },
+      { icon: 'is', text: 'Compliance Dashboard', sub: '2 alerts' },
+    ],
+    apps: appsFor(['dr','se','pa','fi','crm-red','dm','fo','is','ca']),
+    workflows: [
+      { icon: 'is', label: 'Variable Ops' }, { icon: 'is', label: 'Sales Leaderboard' }, { icon: 'is', label: 'F&I Overview' },
+      { icon: 'dr', label: 'Financial Statements' }, { icon: 'is', label: 'Goals & Forecasting' }, { icon: 'is', label: 'Daily Controls' },
+      { icon: 'is', label: 'Compliance' }, { icon: 'is', label: 'Customer Analysis' }, { icon: 'is', label: 'Vendor Expenses' },
+    ],
+    dashboardsLabel: 'Executive',
+    cards: [
+      { kind: 'kpi-spark', title: 'Cash Position', amount: '4.34', amountPrefix: '$', amountSuffix: 'M', label: 'Cash Balance · last 14 days',
+        trend: { dir: 'up', val: '+4.2%' }, sparkColor: 'var(--success)', sparkSeed: 11, sparkBase: 4.1, sparkVary: 0.6 },
+      { kind: 'gauge-card', title: 'Front Gross MTD', gaugePct: 68, gaugeColor: 'var(--brand)', gaugeLabel: 'GOAL',
+        meta: [{ k: 'MTD', v: '$152.4k' }, { k: 'Goal', v: '$225k' }, { k: 'YoY', v: '+12.4%' }] },
+      { kind: 'kpi-spark', title: 'F&I PVR', amount: '1,847', amountPrefix: '$', label: '6-month trend',
+        trend: { dir: 'up', val: '+3.1%' }, sparkColor: 'var(--fi)', sparkSeed: 7, sparkBase: 1.7, sparkVary: 0.18 },
+      { kind: 'hbar', title: 'Store Performance',
+        rows: [
+          { k: 'Statler Toyota', v: '102%', percent: 100, color: 'var(--success)' },
+          { k: 'Statler Honda', v: '94%', percent: 94, color: 'var(--brand)' },
+          { k: 'Statler Ford', v: '78%', percent: 78, color: 'var(--warning)' },
+          { k: 'Statler Mazda', v: '61%', percent: 61, color: 'var(--danger)' },
+        ] },
+    ],
+    myApps: ['dr','se','pa','fi','crm-red','is'],
+    myAppsLabels: ['Accounting','Service','Parts','F&I','Modern Retail','Intelligence Suite'],
+    workflowGroup: { icon: 'is', title: 'Executive Reporting',
+      subs: [
+        { h: 'Financial Statements', p: 'Cross-store P&L, balance sheet, and cash flow consolidated view.' },
+        { h: 'Sales Leaderboard', p: 'Real-time MTD ranking by store, salesperson, and segment.' },
+        { h: 'Goals & Forecasting', p: 'Track department goals and forecast performance by month.' },
+      ] },
+  },
+
+  ops: {
+    label: 'Fixed Ops Director', short: 'Fixed Ops', color: '#0ea5e9',
+    bannerNote: 'Manages entire service department — parts + service · operational health & reports.',
+    activity: [
+      { icon: 'is', text: 'Daily Operational Control', sub: 'Today · 3 variances' },
+      { icon: 'is', text: 'RO Aging Report', sub: '8 over 30 days' },
+      { icon: 'is', text: 'Service Gross Profit', sub: 'MTD · $284.6k' },
+      { icon: 'is', text: 'Tech Performance', sub: 'July 2026' },
+      { icon: 'dm', text: 'Support Case #PT-4419', sub: 'CDK Support · open' },
+    ],
+    apps: appsFor(['se','pa','is','dm']),
+    workflows: [
+      { icon: 'is', label: 'Daily Controls' }, { icon: 'is', label: 'Service Reports' }, { icon: 'is', label: 'Parts Reports' },
+      { icon: 'is', label: 'RO Aging' }, { icon: 'is', label: 'Tech Performance' }, { icon: 'dm', label: 'Support Cases' },
+      null, null, null,
+    ],
+    dashboardsLabel: 'Operations',
+    cards: [
+      { kind: 'kpi-bars', title: 'Service Throughput', amount: '47', label: 'Open ROs · last 7 days',
+        trend: { dir: 'up', val: '+8' }, barColor: 'var(--se)', bars: [32, 38, 41, 35, 42, 47, 47] },
+      { kind: 'kpi-spark', title: 'Parts Activity', amount: '12', label: 'Tickets · 14-day flow',
+        trend: { dir: 'down', val: '-2' }, sparkColor: 'var(--pa)', sparkSeed: 13, sparkBase: 11, sparkVary: 4 },
+      { kind: 'gauge-card', title: 'Daily Variances', gaugePct: 25, gaugeColor: 'var(--danger)', gaugeLabel: 'NEEDS REVIEW',
+        meta: [{ k: 'Service', v: '1' }, { k: 'Parts', v: '2' }, { k: 'Resolved', v: '8' }] },
+      { kind: 'hbar', title: 'Goals Snapshot',
+        rows: [
+          { k: 'Front Sales', v: '68%', percent: 68, color: 'var(--brand)' },
+          { k: 'F&I PVR', v: '97%', percent: 97, color: 'var(--success)' },
+          { k: 'Service Hrs', v: '82%', percent: 82, color: 'var(--info)' },
+          { k: 'Parts Margin', v: '54%', percent: 54, color: 'var(--warning)' },
+        ] },
+    ],
+    myApps: ['se','pa','is','dm'],
+    myAppsLabels: ['Service','Parts','Intelligence Suite','Document Mgmt'],
+    workflowGroup: { icon: 'se', title: 'Cross-Department Operations',
+      subs: [
+        { h: 'Daily Operational Controls', p: 'Variance review across Service, Parts, and Accounting departments.' },
+        { h: 'Employee Performance', p: 'Productivity, hours logged, and KPI tracking by employee or team.' },
+        { h: 'Department Goals', p: 'Monitor MTD progress against targets across all revenue centers.' },
+      ] },
+  },
+
+  serviceAdvisor: {
+    label: 'Service Advisor Manager', short: 'Service Advisor', color: '#2da7ff',
+    bannerNote: 'Open ROs, customer arrivals, and MPI approvals you\'re working on.',
+    activity: [
+      { icon: 'se', text: 'RO #124210', sub: 'Gray, S. · Working' },
+      { icon: 'se', text: '10:00 Arrival', sub: 'Kapoor, K. · Checked in' },
+      { icon: 'se', text: 'MPI Approval', sub: 'RO #98664 · Lacy, C.' },
+      { icon: 'se', text: 'RO #124211', sub: 'Murray, B. · Awaiting parts' },
+      { icon: 'crm-red', text: 'Message · RO #124209', sub: 'Daly, J. · 1 unread' },
+    ],
+    apps: appsFor(['se','pa','dm']),
+    workflows: [
+      { icon: 'se', label: 'Vehicle Check-In' }, { icon: 'se', label: 'Repair Order' }, { icon: 'se', label: 'Track Repair' },
+      { icon: 'se', label: 'MPI Approval' }, { icon: 'pa', label: 'Order Parts' }, { icon: 'se', label: 'Schedule Appt' },
+      { icon: 'se', label: 'Customer Pay' }, null, null,
+    ],
+    dashboardsLabel: 'Service',
+    cards: [
+      { kind: 'donut-multi', title: 'Open ROs', num: '47', label: 'ACTIVE',
+        segments: [
+          { k: 'Awaiting Parts', v: '8', percent: 17, color: 'var(--warning)' },
+          { k: 'Work in Progress', v: '24', percent: 51, color: 'var(--brand)' },
+          { k: 'Ready for Review', v: '15', percent: 32, color: 'var(--success)' },
+        ] },
+      { kind: 'kpi-bars', title: "Today's Appointments", amount: '42', label: 'Booked through 5 PM',
+        trend: { dir: 'up', val: '+4 vs avg' }, barColor: 'var(--se)', bars: [4, 6, 8, 7, 6, 5, 4, 2] },
+      { kind: 'kpi-spark', title: 'Carryover ROs', amount: '103', label: '14-day trend',
+        trend: { dir: 'down', val: '-6' }, sparkColor: 'var(--warning)', sparkSeed: 5, sparkBase: 105, sparkVary: 18 },
+      { kind: 'hbar', title: 'Tech Utilization',
+        rows: [
+          { k: 'Fabrizio Moretti', v: '4 ROs', percent: 50, color: 'var(--brand)' },
+          { k: 'Nikolai Fraiture', v: '10 ROs', percent: 100, color: 'var(--success)' },
+          { k: 'Julian Casablancas', v: '7 ROs', percent: 78, color: 'var(--info)' },
+          { k: 'Nick Valensi', v: '6 ROs', percent: 67, color: 'var(--brand)' },
+        ] },
+    ],
+    myApps: ['se','pa','dm'],
+    myAppsLabels: ['Service','Parts','Document Mgmt'],
+    workflowGroup: { icon: 'se', title: 'Service Operations',
+      subs: [
+        { h: 'Vehicle Check-In', p: 'Greet customers, capture vehicle details, and start the repair order.' },
+        { h: 'Assign Technician', p: 'Route ROs to available technicians based on skill and capacity.' },
+        { h: 'Complete Service', p: 'Final review, customer pickup, payment, and RO closeout.' },
+      ] },
+  },
+
+  parts: {
+    label: 'Parts Manager', short: 'Parts Mgr', color: '#f59e0b',
+    bannerNote: 'Parts tickets, special orders, vendor management, and POs in flight.',
+    activity: [
+      { icon: 'pa', text: 'Parts Ticket #12399', sub: 'Smith, J. · 3 parts · Aug 15' },
+      { icon: 'pa', text: 'Special Order SO-4471', sub: 'OEM Fuel Sensor Cartridge' },
+      { icon: 'dr', text: 'PO #178658', sub: 'Commercial Partner Supply · Needs Review' },
+      { icon: 'pa', text: 'Parts Invoice #8960', sub: 'Smith, J. · $342.18' },
+      { icon: 'dr', text: 'Vendor: 2028 Wyatt ARP', sub: 'Last PO Aug 10' },
+    ],
+    apps: appsFor(['pa','se','dm']),
+    workflows: [
+      { icon: 'pa', label: 'Order Parts' }, { icon: 'pa', label: 'Special Order' }, { icon: 'pa', label: 'Parts Ticket' },
+      { icon: 'pa', label: 'Receive Stock' }, { icon: 'pa', label: 'Inventory Count' }, { icon: 'pa', label: 'Counter Sale' },
+      { icon: 'pa', label: 'Returns' }, null, null,
+    ],
+    dashboardsLabel: 'Parts',
+    cards: [
+      { kind: 'kpi-spark', title: 'Inventory Value', amount: '847.3', amountPrefix: '$', amountSuffix: 'k',
+        label: 'On Hand · 30-day trend', trend: { dir: 'up', val: '+2.1%' },
+        sparkColor: 'var(--pa)', sparkSeed: 17, sparkBase: 820, sparkVary: 60 },
+      { kind: 'kpi-bars', title: 'Open Parts Tickets', amount: '12', label: 'Last 7 days',
+        trend: { dir: 'neutral', val: 'flat' }, barColor: 'var(--pa)', bars: [9, 11, 14, 10, 12, 13, 12] },
+      { kind: 'gauge-card', title: 'Special Orders', gaugePct: 62, gaugeColor: 'var(--info)', gaugeLabel: 'IN TRANSIT',
+        meta: [{ k: 'Pending', v: '8' }, { k: 'In Transit', v: '5' }, { k: 'Awaiting Vendor', v: '3' }] },
+      { kind: 'hbar', title: 'Top Vendors MTD',
+        rows: [
+          { k: 'ACME USA', v: '$24.2k', percent: 100, color: 'var(--pa)' },
+          { k: '2028 - Wyatt ARP', v: '$18.7k', percent: 77, color: 'var(--brand)' },
+          { k: '465 - Testenger', v: '$11.3k', percent: 47, color: 'var(--info)' },
+          { k: '7080 - Quality', v: '$6.1k', percent: 25, color: 'var(--success)' },
+        ] },
+    ],
+    myApps: ['pa','se','dm'],
+    myAppsLabels: ['Parts','Service','Document Mgmt'],
+    workflowGroup: { icon: 'pa', title: 'Parts Management',
+      subs: [
+        { h: 'Special Orders', p: 'Track parts ordered for specific customers and ROs through fulfillment.' },
+        { h: 'Vendor Management', p: 'Maintain vendor records, contact info, terms, and historical performance.' },
+        { h: 'Inventory Count', p: 'Schedule and reconcile periodic physical inventory counts by bin location.' },
+      ] },
+  },
+
+  tech: {
+    label: 'Service / Parts Tech', short: 'Tech', color: '#10b981',
+    bannerNote: 'Hands-on, single-task focus · ROs assigned to me, MPIs, and parts requests.',
+    activity: [
+      { icon: 'se', text: 'RO #124210 (Mine)', sub: 'Working · Ferrari GTC4' },
+      { icon: 'se', text: 'MPI: RO #98664', sub: 'Lacy, C. · Awaiting advisor' },
+      { icon: 'pa', text: 'Parts Request', sub: 'RO #124210 · Brake pads' },
+      { icon: 'se', text: 'Time Clock', sub: '5.2h logged today' },
+      { icon: 'se', text: 'RO #98733', sub: 'Ready for Review' },
+    ],
+    apps: appsFor(['se','pa']),
+    workflows: [
+      { icon: 'se', label: 'My ROs' }, { icon: 'se', label: 'Track Repair' }, { icon: 'se', label: 'MPI / Inspection' },
+      { icon: 'pa', label: 'Parts Lookup' }, { icon: 'pa', label: 'Order Parts' }, { icon: 'se', label: 'Complete Service' },
+      { icon: 'se', label: 'Time Clock' }, null, null,
+    ],
+    dashboardsLabel: 'My Bay',
+    cards: [
+      { kind: 'kpi-simple', title: 'My Open ROs', amount: '6', label: 'Assigned to Me',
+        list: [{ k: 'Awaiting Parts', v: '2' }, { k: 'In Progress', v: '3' }, { k: 'Ready for Review', v: '1' }] },
+      { kind: 'kpi-simple', title: "Today's Schedule", amount: '8', label: 'Jobs',
+        list: [{ k: 'Completed', v: '3' }, { k: 'Current', v: 'RO #124210' }, { k: 'Next Up', v: '11:30 AM' }] },
+      { kind: 'kpi-simple', title: 'Hours Logged', amount: '5.2', label: 'Today',
+        list: [{ k: 'Billable', v: '4.8h' }, { k: 'Indirect', v: '0.4h' }, { k: 'MTD', v: '142.6h' }] },
+      { kind: 'kpi-simple', title: 'My Parts Orders',
+        list: [
+          { k: 'Brake pads (RO 124210)', v: 'In Transit' },
+          { k: 'Rotor (RO 124210)', v: 'In Transit' },
+          { k: 'Filter (RO 98664)', v: 'Backorder' },
+        ] },
+    ],
+    myApps: ['se','pa'],
+    myAppsLabels: ['Service','Parts'],
+    workflowGroup: { icon: 'se', title: 'My Workbench',
+      subs: [
+        { h: 'My Repair Orders', p: 'See the ROs currently assigned to you with status and parts info.' },
+        { h: 'Order Parts', p: 'Request parts needed for an open RO and track their arrival.' },
+        { h: 'Time Clock', p: 'Log billable and indirect hours against ROs and shop time.' },
+      ] },
+  },
+
+  arap: {
+    label: 'AR / AP Clerk', short: 'AR/AP', color: '#dc2626',
+    bannerNote: 'Quote-to-cash and purchase-to-pay · invoices, payments, journal entries.',
+    activity: [
+      { icon: 'dr', text: 'AP Invoice #114051', sub: 'Testenger, INC · $62.88 · Parts' },
+      { icon: 'dr', text: 'PO #178658', sub: 'Commercial Partner Supply · Needs Review' },
+      { icon: 'dr', text: 'Waterson Auto #28405', sub: '61+ days · $4,829' },
+      { icon: 'dr', text: 'Apply Payments', sub: '3 unapplied · $1,247' },
+      { icon: 'dr', text: 'Journal Entry #JE-58812', sub: 'Posted today' },
+    ],
+    apps: appsFor(['dr','dm']),
+    workflows: [
+      { icon: 'dr', label: 'AR Dashboard' }, { icon: 'dr', label: 'Apply Payments' }, { icon: 'dr', label: 'AR Statements' },
+      { icon: 'dr', label: 'AP Invoice' }, { icon: 'dr', label: 'AP Payments' }, { icon: 'dr', label: 'GL Inquiry' },
+      { icon: 'dr', label: 'Journal Entry' }, { icon: 'dr', label: 'Vehicle Schedule' }, null,
+    ],
+    dashboardsLabel: 'Accounting',
+    cards: [
+      { kind: 'kpi-spark', title: 'Cash Balance', amount: '4.34', amountPrefix: '$', amountSuffix: 'M', label: 'Last 14 days',
+        trend: { dir: 'up', val: '+2.8%' }, sparkColor: 'var(--success)', sparkSeed: 21, sparkBase: 4.2, sparkVary: 0.4 },
+      { kind: 'donut-multi', title: 'Purchase Orders', num: '551', label: 'TOTAL',
+        segments: [
+          { k: 'Outstanding', v: '128', percent: 23.2, color: 'var(--brand)' },
+          { k: 'Voided', v: '323', percent: 58.6, color: 'var(--danger)' },
+          { k: 'Closed', v: '100', percent: 18.2, color: 'var(--success)' },
+        ] },
+      { kind: 'bars-stacked', title: 'Accounts Receivable', amount: '35.3', amountPrefix: '$', amountSuffix: 'k',
+        bars: [
+          { color: 'var(--warning)', label: 'Unposted', value: '10.8k', width: 30 },
+          { color: 'var(--success)', label: 'Posted', value: '23k', width: 60 },
+          { color: 'var(--brand)', label: 'Post Ahead', value: '3k', width: 10 },
+        ] },
+      { kind: 'hbar', title: 'AR Aging Buckets',
+        rows: [
+          { k: 'Current', v: '$22.4k', percent: 64, color: 'var(--success)' },
+          { k: '30-day', v: '$8.1k', percent: 23, color: 'var(--brand)' },
+          { k: '60-day', v: '$3.2k', percent: 9, color: 'var(--warning)' },
+          { k: '90+ day', v: '$1.6k', percent: 4, color: 'var(--danger)' },
+        ] },
+    ],
+    myApps: ['dr','dm'],
+    myAppsLabels: ['Accounting','Document Mgmt'],
+    workflowGroup: { icon: 'dr', title: 'Accounting',
+      subs: [
+        { h: '1099', p: '1099 manages vendor tax related information, vendor compensation and create' },
+        { h: 'AP Invoice', p: 'Use AP Invoice to enter invoices, credit memos, adjustments, or to update' },
+        { h: 'AP Payments', p: 'AP Payments tracks purchase invoices approved and ready for payment, then' },
+      ] },
+  },
+
+  fi: {
+    label: 'F&I Manager', short: 'F&I', color: '#8b5cf6',
+    bannerNote: 'Deal jacket assembly, contract validation, e-sign, and lender submission.',
+    activity: [
+      { icon: 'fi', text: 'Deal #129520', sub: 'Strick, C. · Pending · with bank' },
+      { icon: 'dm', text: 'Smart Deal Packet', sub: 'Strick, C. · May 3, 2026' },
+      { icon: 'fi', text: 'Signing Room', sub: 'Deal #129518 · 4 of 6 signed' },
+      { icon: 'fi', text: 'Credit App', sub: 'Deal #129521 · awaiting decision' },
+      { icon: 'fi', text: 'Contract Validation', sub: 'Deal #129522 · kicked back' },
+    ],
+    apps: appsFor(['fi','crm-red','dm']),
+    workflows: [
+      { icon: 'fi', label: 'Deal Jacket' }, { icon: 'fi', label: 'Smart Deal Packet' }, { icon: 'fi', label: 'Credit App' },
+      { icon: 'fi', label: 'Contract Valid.' }, { icon: 'fi', label: 'Signing Room' }, { icon: 'dm', label: 'Forms Library' },
+      { icon: 'fi', label: 'Vantage Menu' }, null, null,
+    ],
+    dashboardsLabel: 'F&I',
+    cards: [
+      { kind: 'kpi-bars', title: 'Deals in Flight', amount: '12', label: 'Last 7 days',
+        trend: { dir: 'up', val: '+3' }, barColor: 'var(--fi)', bars: [6, 8, 9, 7, 10, 11, 12] },
+      { kind: 'gauge-card', title: 'F&I PVR', gaugePct: 97, gaugeColor: 'var(--success)', gaugeLabel: 'OF GOAL',
+        meta: [{ k: 'Current', v: '$1,847' }, { k: 'Goal', v: '$1,900' }, { k: 'YoY', v: '+8.4%' }] },
+      { kind: 'stacked-prog', title: 'Product Penetration',
+        rows: [
+          { k: 'VSC', v: '64%', percent: 64, color: 'var(--brand)' },
+          { k: 'GAP', v: '52%', percent: 52, color: 'var(--fi)' },
+          { k: 'Maintenance', v: '38%', percent: 38, color: 'var(--info)' },
+          { k: 'Tire & Wheel', v: '24%', percent: 24, color: 'var(--warning)' },
+        ] },
+      { kind: 'donut-multi', title: 'Deal Status', num: '12', label: 'TOTAL',
+        segments: [
+          { k: 'Awaiting Bank', v: '5', percent: 42, color: 'var(--warning)' },
+          { k: 'Ready to Sign', v: '4', percent: 33, color: 'var(--brand)' },
+          { k: 'Booked Today', v: '3', percent: 25, color: 'var(--success)' },
+        ] },
+    ],
+    myApps: ['fi','crm-red','dm'],
+    myAppsLabels: ['F&I','Modern Retail','Document Mgmt'],
+    workflowGroup: { icon: 'fi', title: 'F&I Workflows',
+      subs: [
+        { h: 'Deal Jacket', p: 'Assemble forms, contracts, and supporting documents for the active deal.' },
+        { h: 'Signing Room', p: 'Open digital signing, review customer signatures, and finalize before booking.' },
+        { h: 'Contract Validation', p: 'Submit deal terms to the lender and resolve any returned exceptions.' },
+      ] },
+  },
+
+  salesManager: {
+    label: 'Sales Manager', short: 'Sales Mgr', color: '#ef4444',
+    bannerNote: 'Floor performance, salesperson leaderboard, contracts in transit, and pipeline pacing.',
+    activity: [
+      { icon: 'is',      text: 'Sales Leaderboard',           sub: 'MTD · 12 reps tracked' },
+      { icon: 'crm-red', text: 'CIT (Contracts in Transit)',  sub: '8 open · $312k pending bank' },
+      { icon: 'is',      text: 'Variable Operations Overview',sub: 'August 2026' },
+      { icon: 'crm-red', text: 'Deal #129520 · Awaiting Bank',sub: 'C. Strick · J. Reyes' },
+      { icon: 'is',      text: 'Daily Sales Recap',           sub: 'Yesterday · 4 booked · 2 lost' },
+    ],
+    apps: appsFor(['crm-red','fi','is','dm']),
+    workflows: [
+      { icon: 'is',      label: 'Sales Leaderboard' }, { icon: 'crm-red', label: 'Sales Pipeline' }, { icon: 'crm-red', label: 'CIT Report' },
+      { icon: 'crm-red', label: 'Desk Manager' },      { icon: 'is',      label: 'Sales Goals' },    { icon: 'crm-red', label: 'Trade Appraisal' },
+      { icon: 'is',      label: 'Lost Deal Analysis' },{ icon: 'crm-red', label: 'Inventory Aging' }, null,
+    ],
+    dashboardsLabel: 'Sales',
+    cards: [
+      { kind: 'kpi-bars', title: 'New + Used Sold MTD', amount: '47', label: 'Units · last 7 days',
+        trend: { dir: 'up', val: '+8' }, barColor: 'var(--crm-red)', bars: [4, 5, 7, 6, 8, 9, 8] },
+      { kind: 'gauge-card', title: 'Front Gross MTD', gaugePct: 68, gaugeColor: 'var(--brand)', gaugeLabel: 'OF GOAL',
+        meta: [{ k: 'MTD', v: '$152.4k' }, { k: 'Goal', v: '$225k' }, { k: 'YoY', v: '+12.4%' }] },
+      { kind: 'hbar', title: 'Top Salespeople (units MTD)',
+        rows: [
+          { k: 'Jamie Reyes',  v: '14', percent: 100, color: 'var(--success)' },
+          { k: 'Tom Chen',     v: '12', percent: 86,  color: 'var(--brand)' },
+          { k: 'Lisa Park',    v: '11', percent: 79,  color: 'var(--brand)' },
+          { k: 'Carlos Diaz',  v: '8',  percent: 57,  color: 'var(--warning)' },
+          { k: 'Sarah Webb',   v: '4',  percent: 29,  color: 'var(--danger)' },
+        ] },
+      { kind: 'donut-multi', title: 'Sales Mix MTD', num: '47', label: 'UNITS',
+        segments: [
+          { k: 'New',   v: '28', percent: 60, color: 'var(--brand)' },
+          { k: 'Used',  v: '14', percent: 30, color: 'var(--success)' },
+          { k: 'Lease', v: '5',  percent: 10, color: 'var(--warning)' },
+        ] },
+    ],
+    myApps: ['crm-red','fi','is','dm'],
+    myAppsLabels: ['Modern Retail','F&I','Intelligence Suite','Document Mgmt'],
+    workflowGroup: { icon: 'crm-red', title: 'Sales Management',
+      subs: [
+        { h: 'Sales Leaderboard',         p: 'Real-time MTD ranking by salesperson, by store, and by segment.' },
+        { h: 'CIT (Contracts in Transit)',p: 'Track deals booked but awaiting bank funding — escalate stale CITs before month-end.' },
+        { h: 'Goal Pacing',               p: 'Department and individual rep goal progress with end-of-month forecasts.' },
+      ] },
+  },
+
+  salesAssoc: {
+    label: 'Sales Associate', short: 'Sales Rep', color: '#f97316',
+    bannerNote: 'Showroom-floor companion — appointments, leads, and AIVA-powered customer sessions.',
+    activity: [
+      { icon: 'crm-red', text: 'Juan Gonzalez — In showroom',      sub: 'Step 4 of 7 · Test Drive · live' },
+      { icon: 'crm-red', text: '10:00 AM Test drive',              sub: 'Maria Hernandez · 2025 CR-V' },
+      { icon: 'crm-red', text: 'Internet Lead: David Kim',         sub: '2m · Telluride SX-P · Cars.com' },
+      { icon: 'crm-red', text: 'Follow-up overdue: Marcus Hill',   sub: '45 min · Silverado LTZ' },
+      { icon: 'crm-red', text: 'AIVA-drafted reply: Diana Reyes',  sub: 'Silverado lease comparison' },
+    ],
+    apps: appsFor(['crm-red']),
+    workflows: [
+      { icon: 'crm-red', label: 'My Day' },         { icon: 'crm-red', label: 'Hot Leads' },      { icon: 'crm-red', label: 'Test Drive' },
+      { icon: 'crm-red', label: 'AIVA Session' },   { icon: 'crm-red', label: 'Smart Scan' },     { icon: 'crm-red', label: 'Walk-around' },
+      { icon: 'crm-red', label: 'Quick Quote' },    null,                                          null,
+    ],
+    dashboardsLabel: 'My Performance',
+    cards: [
+      { kind: 'kpi-spark', title: 'My Units MTD', amount: '12', label: 'Sold · 14-day trend',
+        trend: { dir: 'up', val: '+3' }, sparkColor: 'var(--success)', sparkSeed: 9, sparkBase: 1, sparkVary: 1 },
+      { kind: 'gauge-card', title: 'My Goal Pace', gaugePct: 80, gaugeColor: 'var(--brand)', gaugeLabel: 'TO GOAL',
+        meta: [{ k: 'MTD', v: '12 units' }, { k: 'Goal', v: '15 units' }, { k: 'Pace', v: '+1 vs plan' }] },
+      { kind: 'kpi-spark', title: 'My Response Time', amount: '4.2', amountSuffix: 'm', label: 'Avg · 7-day trend',
+        trend: { dir: 'down', val: '-38%' }, sparkColor: 'var(--fi)', sparkSeed: 5, sparkBase: 6.8, sparkVary: 1.4 },
+      { kind: 'hbar', title: 'My Pipeline (this week)',
+        rows: [
+          { k: 'In Showroom', v: '1', percent: 14, color: 'var(--success)' },
+          { k: 'Test Drive',  v: '1', percent: 14, color: 'var(--brand)' },
+          { k: 'Quote Sent',  v: '1', percent: 14, color: 'var(--fi)' },
+          { k: 'Working',     v: '2', percent: 28, color: 'var(--brand)' },
+          { k: 'New',         v: '4', percent: 57, color: 'var(--text-3)' },
+        ] },
+    ],
+    myApps: ['crm-red'],
+    myAppsLabels: ['Modern Retail'],
+    workflowGroup: { icon: 'crm-red', title: 'Sales Rep Workflows',
+      subs: [
+        { h: 'Live Session with AIVA', p: 'AIVA listens during showroom conversations, auto-captures F.O.R.M. notes and key fields.' },
+        { h: 'Quick Quote',            p: 'Build a quote from the active session and send straight to the desk for approval.' },
+        { h: 'Smart Scan',             p: 'Scan VIN, license, or insurance card to autofill customer and vehicle records.' },
+      ] },
+  },
+
+  tbd: {
+    label: 'Pending Persona — TBD', short: 'TBD', color: '#9ca3af',
+    bannerNote: 'Tenth persona pending definition · placeholder shell.',
+    activity: [{ icon: 'ca', text: '[Placeholder]', sub: 'TBD' }, { icon: 'ca', text: '[Placeholder]', sub: 'TBD' },
+               { icon: 'ca', text: '[Placeholder]', sub: 'TBD' }, { icon: 'ca', text: '[Placeholder]', sub: 'TBD' },
+               { icon: 'ca', text: '[Placeholder]', sub: 'TBD' }],
+    apps: appsFor([]), workflows: Array(9).fill(null),
+    dashboardsLabel: 'TBD', cards: 'tbd', myApps: [], myAppsLabels: [], workflowGroup: null,
+  },
+};
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+
+const RESOURCE_ICONS = {
+  u:    () => `<div class="r-icon u-icon">U</div>`,
+  msg:  () => `<div class="r-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>`,
+  aiva: () => `<div class="r-icon"><svg width="22" height="14" viewBox="0 0 32 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 7 Q 6 1, 10 7 T 18 7 T 26 7 T 30 7"/></svg></div>`,
+  doc:  () => `<div class="r-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>`,
+};
+
+function iconLetters(icon) {
+  return ({ se: 'Se', dr: 'ACC', pa: 'Pa', fi: 'Fi', 'crm-red': 'CRM', 'crm-dark': 'CRM',
+           fo: 'Fo', dm: 'DM', is: 'IS', us: 'US', ca: 'CA' })[icon] || '·';
+}
+
+function renderActivity(items, personaKey) {
+  const pinned = USER_PINS[personaKey] || [];
+  const pinnedHTML = pinned.length
+    ? pinned.map(p => `
+        <div class="pill" data-pin-id="${p.id}">
+          <div class="pill-icon tile-icon ${p.icon}">${iconLetters(p.icon)}</div>
+          <div class="pill-text">${p.text}${p.sub ? ` <span class="pill-type">· ${p.sub}</span>` : ''}</div>
+          <div class="dot" style="background: var(--warning); box-shadow: 0 0 8px rgba(245,158,11,0.5);"></div>
+          <button class="unpin-btn" title="Unpin" data-unpin="${p.id}">×</button>
+        </div>`).join('')
+    : `<div class="pin-empty">No pinned items yet.<br/>Pin anything from below or click <b>+ Add</b>.</div>`;
+
+  const recentHTML = items.map((it, idx) => `
+    <div class="pill" data-recent-idx="${idx}">
+      <div class="pill-icon tile-icon ${it.icon}">${iconLetters(it.icon)}</div>
+      <div class="pill-text">${it.text}${it.sub ? ` <span class="pill-type">· ${it.sub}</span>` : ''}</div>
+      <div class="dot"></div>
+    </div>`).join('');
+
+  return `
+    <div class="pin-section">
+      <div class="pin-section-head">
+        <span class="left">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4.5L6 21l1.5-7.5L2 9h7z"/></svg>
+          Pinned
+        </span>
+        <span class="count">${pinned.length}</span>
+      </div>
+      ${pinnedHTML}
+      <button class="pin-add-btn" id="openPickerBtn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add anywhere
+      </button>
+    </div>
+    <div class="pin-section">
+      <div class="pin-section-head">
+        <span class="left">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Recently Opened
+        </span>
+        <span class="count">${items.length}</span>
+      </div>
+      ${recentHTML}
+    </div>
+  `;
+}
+
+function isPinned(personaKey, id) {
+  return (USER_PINS[personaKey] || []).some(p => p.id === id);
+}
+
+function renderTileGrid(tiles, personaKey, source) {
+  return tiles.filter(t => t).map((t, idx) => {
+    const id = `${source}:${t.label}:${idx}`;
+    const pinned = isPinned(personaKey, id);
+    return `<div class="tile ${t.faded ? 'faded' : ''}" data-tile-id="${id}" data-tile-label="${t.label}" data-tile-icon="${t.icon}" data-tile-source="${source}">
+      <button class="pin-toggle ${pinned ? 'is-pinned' : ''}" data-toggle-pin="${id}" title="${pinned ? 'Unpin' : 'Pin to top'}">${pinned ? '★' : '☆'}</button>
+      <div class="tile-icon ${t.icon}">${iconLetters(t.icon)}</div>
+      <div class="tile-label">${t.label}</div>
+    </div>`;
+  }).join('');
+}
+function renderResources() {
+  return RESOURCES.map(r => `<div class="resource">${RESOURCE_ICONS[r.type]()}<span>${r.label}</span></div>`).join('');
+}
+
+function renderCard(c) {
+  const head = `<div class="card-head"><span>${c.title}</span><span class="chev">→</span></div>`;
+
+  if (c.kind === 'kpi-spark') {
+    const data = series(c.sparkSeed || 1, 14, c.sparkBase, c.sparkVary);
+    return `<div class="card">${head}
+      <div class="kpi-big"><span class="pre">${c.amountPrefix||''}</span>${c.amount}<span class="post">${c.amountSuffix||''}</span>${c.trend ? trendChip(c.trend.dir, c.trend.val) : ''}</div>
+      <div class="kpi-sub">${c.label||''}</div>
+      <div class="spark-wrap">${sparkline(data, c.sparkColor || 'var(--brand)')}</div>
+    </div>`;
+  }
+
+  if (c.kind === 'kpi-bars') {
+    return `<div class="card">${head}
+      <div class="kpi-big"><span class="pre">${c.amountPrefix||''}</span>${c.amount}<span class="post">${c.amountSuffix||''}</span>${c.trend ? trendChip(c.trend.dir, c.trend.val) : ''}</div>
+      <div class="kpi-sub">${c.label||''}</div>
+      ${miniBars(c.bars, c.barColor || 'var(--brand)')}
+    </div>`;
+  }
+
+  if (c.kind === 'gauge-card') {
+    return `<div class="card">${head}
+      <div class="gauge-wrap">
+        ${gauge(c.gaugePct, c.gaugeColor || 'var(--brand)', c.gaugeLabel)}
+        <div class="gauge-meta">
+          ${c.meta.map(m => `<div class="kpi-row" style="padding:4px 0; font-size:12px;"><span>${m.k}</span><b>${m.v}</b></div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  if (c.kind === 'donut-multi') {
+    return `<div class="card">${head}
+      <div class="donut-wrap">
+        ${donutMulti(c.segments, c.num, c.label)}
+        <div class="donut-legend">
+          ${c.segments.map(s => `<div class="row"><div class="left-side"><div class="swatch" style="background:${s.color}"></div>${s.k}</div><b>${s.v}</b></div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  if (c.kind === 'hbar') {
+    return `<div class="card">${head}${hbarList(c.rows)}</div>`;
+  }
+
+  if (c.kind === 'stacked-prog') {
+    return `<div class="card">${head}${stackedProgress(c.rows)}</div>`;
+  }
+
+  if (c.kind === 'bars-stacked') {
+    return `<div class="card">${head}
+      <div class="kpi-big"><span class="pre">${c.amountPrefix||''}</span>${c.amount}<span class="post">${c.amountSuffix||''}</span></div>
+      <div class="kpi-sub">By status</div>
+      <div class="bar-row">
+        ${c.bars.map((b, i) => `<div class="bar" style="background:${b.color}; width:${b.width}%; animation-delay:${i*120}ms;">${b.value}</div>`).join('')}
+      </div>
+      <div class="bar-legend">
+        ${c.bars.map(b => `<span class="item"><span class="swatch" style="background:${b.color}"></span>${b.label}</span>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  if (c.kind === 'kpi-simple') {
+    return `<div class="card">${head}
+      ${c.amount ? `<div class="kpi-big">${c.amount}</div><div class="kpi-sub">${c.label||''}</div>` : ''}
+      <div class="kpi-list">
+        ${c.list.map(r => `<div class="kpi-row"><span>${r.k}</span><b>${r.v}</b></div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  return '';
+}
+
+function renderCards(cards) {
+  if (cards === 'tbd') {
+    return `<div class="tbd-card"><h2>Persona definition pending</h2><p>Dashboards, applications, and workflows for this role will be populated once the persona is finalized.</p></div>`;
+  }
+  return `<div class="dash-grid stagger">${cards.map(renderCard).join('')}</div>`;
+}
+
+function renderApps(p) {
+  if (!p.myApps.length) return '';
+  return `<div class="apps-grid stagger">${p.myApps.map((icon, i) => `
+    <div class="app-card"><div class="app-icon-lg ${icon}">${iconLetters(icon)}</div>${p.myAppsLabels[i]}</div>
+  `).join('')}</div>`;
+}
+function renderWorkflowGroup(g) {
+  if (!g) return '';
+  return `<div class="wf-section">
+    <div class="wf-card"><div class="app-icon-lg ${g.icon}" style="width:32px;height:32px;font-size:11px;">${iconLetters(g.icon)}</div>${g.title}</div>
+    <div class="wf-sub-grid stagger">${g.subs.map(s => `<div class="wf-sub"><h5>${s.h}</h5><p>${s.p}</p></div>`).join('')}</div>
+  </div>`;
+}
+
+function renderPersona(key) {
+  const p = PERSONAS[key];
+  document.getElementById('activityCol').innerHTML = renderActivity(p.activity, key);
+  document.getElementById('appsCol').innerHTML = renderTileGrid(p.apps, key, 'apps');
+  document.getElementById('workflowsCol').innerHTML = renderTileGrid(p.workflows, key, 'workflows');
+  document.getElementById('resourcesCol').innerHTML = renderResources();
+
+  wirePinHandlers(key);
+
+  document.getElementById('personaBanner').innerHTML = `
+    <span><b>${p.label}</b> — ${p.bannerNote}</span>
+    <span class="meta">Comp ${Object.keys(PERSONAS).indexOf(key)+1} of 8</span>`;
+  document.getElementById('personaBanner').style.borderLeftColor = p.color;
+
+  let body = `<div class="section-head anim-fade-in-up" style="animation-delay:0.35s">
+    <div><h3>My Dashboards</h3><div class="sub">${p.dashboardsLabel}</div></div>
+    <div class="right-actions">
+      <a><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21h6"/><path d="M12 17v4"/><path d="M12 3a6 6 0 0 0-4 10.5V17h8v-3.5A6 6 0 0 0 12 3z"/></svg> Submit an Idea</a>
+      <a><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg> Join a Pilot</a>
+    </div>
+  </div>`;
+  body += renderCards(p.cards);
+  if (p.myApps.length) {
+    body += `<div class="section-head"><h3>My Applications</h3></div>${renderApps(p)}`;
+  }
+  if (p.workflowGroup) {
+    body += `<div class="section-head"><h3>My Workflows</h3></div>${renderWorkflowGroup(p.workflowGroup)}`;
+  }
+  document.getElementById('pageBody').innerHTML = body;
+
+  document.getElementById('chipLabel').textContent = p.short;
+  document.getElementById('chipDot').style.background = p.color;
+  document.getElementById('chipDot').style.color = p.color;
+
+  document.querySelectorAll('.persona-option').forEach(el => {
+    el.classList.toggle('active', el.dataset.key === key);
+  });
+}
+
+/* Persona dropdown + menu toggle */
+function buildPersonaDropdown() {
+  const dd = document.getElementById('personaDropdown');
+  const opts = Object.entries(PERSONAS).map(([key, p]) => `
+    <div class="persona-option" data-key="${key}">
+      <span class="po-dot" style="background:${p.color}"></span>
+      <span>${p.label}</span>
+    </div>`).join('');
+  dd.insertAdjacentHTML('beforeend', opts);
+  dd.querySelectorAll('.persona-option').forEach(el => {
+    el.addEventListener('click', () => {
+      renderPersona(el.dataset.key);
+      dd.classList.remove('open');
+    });
+  });
+}
+const chip = document.getElementById('personaChip');
+const dropdown = document.getElementById('personaDropdown');
+chip.addEventListener('click', (e) => { e.stopPropagation(); dropdown.classList.toggle('open'); });
+document.addEventListener('click', (e) => {
+  if (!dropdown.contains(e.target) && !chip.contains(e.target)) dropdown.classList.remove('open');
+});
+
+const menuBtn = document.getElementById('menuBtn');
+const megaMenu = document.getElementById('megaMenu');
+menuBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  const willCollapse = !megaMenu.classList.contains('collapsed');
+  megaMenu.classList.toggle('collapsed', willCollapse);
+  menuBtn.classList.toggle('active', !willCollapse);
+});
+document.addEventListener('click', (e) => {
+  if (megaMenu.classList.contains('collapsed')) return;
+  if (!megaMenu.contains(e.target) && !menuBtn.contains(e.target)) {
+    megaMenu.classList.add('collapsed'); menuBtn.classList.remove('active');
+  }
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !megaMenu.classList.contains('collapsed')) {
+    megaMenu.classList.add('collapsed'); menuBtn.classList.remove('active');
+  }
+});
+
+/* ============================================================
+   PERSONALIZATION — pinned items + add page picker
+   ============================================================ */
+
+const USER_PINS = {}; // { personaKey: [ { id, icon, text, sub } ] }
+Object.keys(PERSONAS).forEach(k => USER_PINS[k] = []);
+
+// Master directory of every pinnable destination across the app
+const PAGE_DIRECTORY = [
+  // ----- Apps -----
+  { cat: 'Apps', icon: 'dr',      text: 'Accounting',           sub: 'AR, AP, GL, financial statements' },
+  { cat: 'Apps', icon: 'se',      text: 'Service',              sub: 'Repair orders, scheduling, dispatch' },
+  { cat: 'Apps', icon: 'pa',      text: 'Parts',                sub: 'Inventory, special orders, vendors' },
+  { cat: 'Apps', icon: 'fi',      text: 'F&I',                  sub: 'Deal jacket, contracts, e-sign' },
+  { cat: 'Apps', icon: 'crm-red', text: 'Modern Retail',        sub: 'Customer pipeline, leads' },
+  { cat: 'Apps', icon: 'dm',      text: 'Document Management',  sub: 'Centralized forms and e-sign' },
+  { cat: 'Apps', icon: 'fo',      text: 'Fortellis',            sub: 'API marketplace and integrations' },
+  { cat: 'Apps', icon: 'is',      text: 'Intelligence Suite',   sub: 'BI, dashboards, forecasting' },
+  { cat: 'Apps', icon: 'ca',      text: 'Common Admin',         sub: 'User permissions, settings' },
+
+  // ----- Service workflows -----
+  { cat: 'Service Workflows', icon: 'se', text: 'Vehicle Check-In',     sub: 'Greet customer, start RO' },
+  { cat: 'Service Workflows', icon: 'se', text: 'Repair Order',         sub: 'Open or modify an RO' },
+  { cat: 'Service Workflows', icon: 'se', text: 'Track Repair',         sub: 'Monitor RO progress' },
+  { cat: 'Service Workflows', icon: 'se', text: 'MPI Approval',         sub: 'Recommend services to customer' },
+  { cat: 'Service Workflows', icon: 'se', text: 'Schedule Appointment', sub: 'Book customer service appt' },
+  { cat: 'Service Workflows', icon: 'se', text: 'Complete Service',     sub: 'Customer pickup and closeout' },
+  { cat: 'Service Workflows', icon: 'se', text: 'Customer Pay',         sub: 'Take payment for RO' },
+  { cat: 'Service Workflows', icon: 'se', text: 'Time Clock',           sub: 'Log billable / indirect hours' },
+
+  // ----- Parts workflows -----
+  { cat: 'Parts Workflows', icon: 'pa', text: 'Order Parts',     sub: 'Request parts for an RO' },
+  { cat: 'Parts Workflows', icon: 'pa', text: 'Special Order',   sub: 'Order non-stocked part for customer' },
+  { cat: 'Parts Workflows', icon: 'pa', text: 'Parts Ticket',    sub: 'Open or close a parts ticket' },
+  { cat: 'Parts Workflows', icon: 'pa', text: 'Receive Stock',   sub: 'Process incoming inventory' },
+  { cat: 'Parts Workflows', icon: 'pa', text: 'Inventory Count', sub: 'Schedule physical count by bin' },
+  { cat: 'Parts Workflows', icon: 'pa', text: 'Counter Sale',    sub: 'Walk-in retail sale' },
+  { cat: 'Parts Workflows', icon: 'pa', text: 'Returns',         sub: 'Process a parts return' },
+  { cat: 'Parts Workflows', icon: 'pa', text: 'Parts Lookup',    sub: 'Search by part # or description' },
+
+  // ----- F&I workflows -----
+  { cat: 'F&I Workflows', icon: 'fi', text: 'Deal Jacket',        sub: 'Forms, contracts, supporting docs' },
+  { cat: 'F&I Workflows', icon: 'fi', text: 'Smart Deal Packet',  sub: 'Pre-built form set by deal type' },
+  { cat: 'F&I Workflows', icon: 'fi', text: 'Credit Application', sub: 'Submit to lender' },
+  { cat: 'F&I Workflows', icon: 'fi', text: 'Contract Validation',sub: 'Send terms, resolve exceptions' },
+  { cat: 'F&I Workflows', icon: 'fi', text: 'Signing Room',       sub: 'Customer e-sign session' },
+  { cat: 'F&I Workflows', icon: 'fi', text: 'F&I Dashboard',      sub: 'All deals in flight' },
+  { cat: 'F&I Workflows', icon: 'fi', text: 'Vantage Menu',       sub: 'Sell F&I products & coverage' },
+  { cat: 'F&I Workflows', icon: 'dm', text: 'Forms Library',      sub: 'Browse/select required forms' },
+
+  // ----- Accounting workflows -----
+  { cat: 'Accounting Workflows', icon: 'dr', text: 'AR Dashboard',     sub: 'Receivables overview' },
+  { cat: 'Accounting Workflows', icon: 'dr', text: 'Apply Payments',   sub: 'Match incoming payments to invoices' },
+  { cat: 'Accounting Workflows', icon: 'dr', text: 'AR Statements',    sub: 'Send customer statements' },
+  { cat: 'Accounting Workflows', icon: 'dr', text: 'AP Invoice',       sub: 'Enter vendor invoices' },
+  { cat: 'Accounting Workflows', icon: 'dr', text: 'AP Payments',      sub: 'Process vendor payments' },
+  { cat: 'Accounting Workflows', icon: 'dr', text: 'Purchase Order',   sub: 'Create or review POs' },
+  { cat: 'Accounting Workflows', icon: 'dr', text: 'GL Inquiry',       sub: 'Search the general ledger' },
+  { cat: 'Accounting Workflows', icon: 'dr', text: 'Journal Entry',    sub: 'Create or post journal entries' },
+  { cat: 'Accounting Workflows', icon: 'dr', text: 'Vehicle Schedule', sub: 'Costs accumulated per vehicle' },
+  { cat: 'Accounting Workflows', icon: 'dr', text: '1099',             sub: 'Vendor tax reporting' },
+
+  // ----- Reports & Dashboards -----
+  { cat: 'Reports & Dashboards', icon: 'is', text: 'Variable Operations Overview', sub: 'Variable ops summary' },
+  { cat: 'Reports & Dashboards', icon: 'is', text: 'Sales Leaderboard',            sub: 'MTD ranking by salesperson' },
+  { cat: 'Reports & Dashboards', icon: 'is', text: 'F&I Overview',                 sub: 'PVR & product penetration' },
+  { cat: 'Reports & Dashboards', icon: 'is', text: 'Daily Operational Control',   sub: 'Cross-dept variance review' },
+  { cat: 'Reports & Dashboards', icon: 'is', text: 'RO Aging Report',              sub: 'Open ROs by age bucket' },
+  { cat: 'Reports & Dashboards', icon: 'is', text: 'Tech Performance',             sub: 'Productivity by technician' },
+  { cat: 'Reports & Dashboards', icon: 'is', text: 'Compliance Dashboard',         sub: 'Compliance alerts & audits' },
+  { cat: 'Reports & Dashboards', icon: 'is', text: 'Customer Analysis',            sub: 'Customer behavior & retention' },
+  { cat: 'Reports & Dashboards', icon: 'is', text: 'Vendor Expenses',              sub: 'Spend by vendor MTD' },
+  { cat: 'Reports & Dashboards', icon: 'dr', text: 'Financial Statements',         sub: 'P&L, balance sheet, cash flow' },
+  { cat: 'Reports & Dashboards', icon: 'is', text: 'Goals & Forecasting',          sub: 'Track department goals MTD' },
+
+  // ----- Resources -----
+  { cat: 'Resources', icon: 'is', text: 'CDK University',  sub: 'Training & certification' },
+  { cat: 'Resources', icon: 'crm-red', text: 'Customer Care', sub: 'Open or track support cases' },
+  { cat: 'Resources', icon: 'dm', text: 'Documents',       sub: 'GCM document library' },
+];
+
+let pickerIndex = 0;
+let pickerFiltered = [];
+
+function openPicker() {
+  document.getElementById('pickerOverlay').classList.add('open');
+  document.getElementById('pickerSearch').value = '';
+  pickerIndex = 0;
+  renderPicker();
+  setTimeout(() => document.getElementById('pickerSearch').focus(), 50);
+}
+function closePicker() {
+  document.getElementById('pickerOverlay').classList.remove('open');
+}
+
+function renderPicker() {
+  const q = document.getElementById('pickerSearch').value.trim().toLowerCase();
+  const personaKey = currentPersonaKey();
+  pickerFiltered = PAGE_DIRECTORY.filter(it =>
+    !q || it.text.toLowerCase().includes(q) || (it.sub || '').toLowerCase().includes(q) || it.cat.toLowerCase().includes(q)
+  );
+  const body = document.getElementById('pickerBody');
+  if (!pickerFiltered.length) {
+    body.innerHTML = `<div class="picker-empty">No matches for "<b>${q}</b>". Try a different keyword.</div>`;
+    document.getElementById('pickerCount').textContent = '0 results';
+    return;
+  }
+  // Group by category
+  const groups = {};
+  pickerFiltered.forEach(it => { (groups[it.cat] = groups[it.cat] || []).push(it); });
+  let html = '';
+  let runningIdx = 0;
+  Object.entries(groups).forEach(([cat, items]) => {
+    html += `<div class="picker-cat">${cat}</div>`;
+    items.forEach(it => {
+      const id = `picker:${it.cat}:${it.text}`;
+      const pinned = isPinned(personaKey, id);
+      const active = runningIdx === pickerIndex ? 'selected' : '';
+      html += `<div class="picker-item ${pinned ? 'is-pinned' : ''} ${active}" data-picker-id="${id}" data-picker-idx="${runningIdx}">
+        <div class="picker-icon ${it.icon}">${iconLetters(it.icon)}</div>
+        <div class="picker-body-cell">
+          <div class="h">${it.text}</div>
+          <div class="s">${it.sub || ''}</div>
+        </div>
+        <div class="picker-action">${pinned ? '✓ Pinned' : '+ Pin'}</div>
+      </div>`;
+      runningIdx++;
+    });
+  });
+  body.innerHTML = html;
+  document.getElementById('pickerCount').textContent = `${pickerFiltered.length} result${pickerFiltered.length === 1 ? '' : 's'}`;
+
+  // Wire item clicks
+  body.querySelectorAll('.picker-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const idx = parseInt(el.dataset.pickerIdx, 10);
+      togglePin(pickerFiltered[idx]);
+    });
+  });
+}
+
+function togglePin(item) {
+  const personaKey = currentPersonaKey();
+  const id = `picker:${item.cat}:${item.text}`;
+  const arr = USER_PINS[personaKey];
+  const idx = arr.findIndex(p => p.id === id);
+  if (idx >= 0) {
+    arr.splice(idx, 1);
+  } else {
+    arr.push({ id, icon: item.icon, text: item.text, sub: item.sub || item.cat });
+  }
+  // Re-render
+  renderPicker();
+  refreshActivityColumn();
+}
+
+function refreshActivityColumn() {
+  const personaKey = currentPersonaKey();
+  document.getElementById('activityCol').innerHTML = renderActivity(PERSONAS[personaKey].activity, personaKey);
+  // Also refresh tile pin states
+  document.getElementById('appsCol').innerHTML = renderTileGrid(PERSONAS[personaKey].apps, personaKey, 'apps');
+  document.getElementById('workflowsCol').innerHTML = renderTileGrid(PERSONAS[personaKey].workflows, personaKey, 'workflows');
+  wirePinHandlers(personaKey);
+}
+
+function currentPersonaKey() {
+  // Whichever persona is active - use chip label as proxy
+  const label = document.getElementById('chipLabel').textContent;
+  return Object.entries(PERSONAS).find(([k, p]) => p.short === label)?.[0] || 'serviceAdvisor';
+}
+
+function wirePinHandlers(personaKey) {
+  // "Add anywhere" button
+  const addBtn = document.getElementById('openPickerBtn');
+  if (addBtn) addBtn.addEventListener('click', (e) => { e.stopPropagation(); openPicker(); });
+
+  // Unpin buttons on pinned pills
+  document.querySelectorAll('[data-unpin]').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id = el.dataset.unpin;
+      USER_PINS[personaKey] = USER_PINS[personaKey].filter(p => p.id !== id);
+      refreshActivityColumn();
+    });
+  });
+
+  // Pin toggles on tiles
+  document.querySelectorAll('[data-toggle-pin]').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const tile = el.closest('.tile');
+      const id = tile.dataset.tileId;
+      const icon = tile.dataset.tileIcon;
+      const text = tile.dataset.tileLabel;
+      const source = tile.dataset.tileSource;
+      const arr = USER_PINS[personaKey];
+      const idx = arr.findIndex(p => p.id === id);
+      if (idx >= 0) {
+        arr.splice(idx, 1);
+      } else {
+        arr.push({ id, icon, text, sub: source === 'apps' ? 'App' : 'Workflow' });
+      }
+      refreshActivityColumn();
+    });
+  });
+}
+
+// Picker modal events
+document.getElementById('pickerSearch').addEventListener('input', () => {
+  pickerIndex = 0;
+  renderPicker();
+});
+document.getElementById('pickerOverlay').addEventListener('click', (e) => {
+  if (e.target.id === 'pickerOverlay') closePicker();
+});
+document.addEventListener('keydown', (e) => {
+  const overlay = document.getElementById('pickerOverlay');
+  if (!overlay.classList.contains('open')) return;
+  if (e.key === 'Escape') { e.preventDefault(); closePicker(); }
+  if (e.key === 'ArrowDown') { e.preventDefault(); pickerIndex = Math.min(pickerFiltered.length - 1, pickerIndex + 1); renderPicker(); document.querySelector('.picker-item.selected')?.scrollIntoView({ block: 'nearest' }); }
+  if (e.key === 'ArrowUp')   { e.preventDefault(); pickerIndex = Math.max(0, pickerIndex - 1); renderPicker(); document.querySelector('.picker-item.selected')?.scrollIntoView({ block: 'nearest' }); }
+  if (e.key === 'Enter' && pickerFiltered[pickerIndex]) { e.preventDefault(); togglePin(pickerFiltered[pickerIndex]); }
+});
+
+buildPersonaDropdown();
+renderPersona('serviceAdvisor');
+
+/* ============================================================
+   SCREEN MANAGEMENT — login → onboarding → prototype
+   ============================================================ */
+
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(name + 'Screen').classList.add('active');
+  document.body.classList.remove('in-login', 'in-onboarding');
+  if (name === 'login') document.body.classList.add('in-login');
+  if (name === 'onboarding') document.body.classList.add('in-onboarding');
+  window.scrollTo(0, 0);
+}
+
+document.getElementById('signInBtn').addEventListener('click', () => showScreen('prototype'));
+document.getElementById('signUpBtn').addEventListener('click', () => {
+  showScreen('onboarding');
+  goToStep(0);
+});
+document.getElementById('obExit').addEventListener('click', () => {
+  if (confirm('Exit setup? Your progress will be lost.')) showScreen('login');
+});
+
+function togglePw() {
+  const i = document.getElementById('loginPassword');
+  i.type = i.type === 'password' ? 'text' : 'password';
+}
+
+/* ============================================================
+   ONBOARDING WIZARD
+   ============================================================ */
+
+const OB_STEPS = [
+  { id: 'about',     label: 'About you',  required: ['name', 'dealershipName', 'role'] },
+  { id: 'inventory', label: 'Inventory',  required: [] },
+  { id: 'crm',       label: 'Customers',  required: [] },
+  { id: 'accounting',label: 'Accounting', required: [] },
+  { id: 'payment',   label: 'Payment',    required: ['plan'] },
+  { id: 'products',  label: 'Products',   required: [] },
+  { id: 'finish',    label: 'Setting up', required: [] },
+];
+
+const obData = {
+  name: '',
+  dealershipName: '',
+  dealershipAddress: '',
+  role: 'serviceAdvisor',
+  inventory: [],
+  customers: [],
+  coa: null,
+  plan: 'pro',
+  card: { num: '', exp: '', cvc: '' },
+  products: ['dr', 'se', 'pa', 'fi', 'crm-red', 'dm'],
+};
+let obStep = 0;
+
+function goToStep(idx) {
+  obStep = Math.max(0, Math.min(OB_STEPS.length - 1, idx));
+  renderStep();
+}
+
+function renderStep() {
+  const step = OB_STEPS[obStep];
+  // Update progress
+  const pct = ((obStep + 1) / OB_STEPS.length) * 100;
+  document.getElementById('obProgressFill').style.width = pct + '%';
+  document.getElementById('obCounter').textContent = `Step ${obStep + 1} of ${OB_STEPS.length}`;
+  // Update steps bar
+  document.getElementById('obStepsBar').innerHTML = OB_STEPS.map((s, i) => `
+    <div class="ob-step-label ${i === obStep ? 'active' : i < obStep ? 'done' : ''}">${s.label}</div>
+  `).join('');
+  // Update footer buttons
+  document.getElementById('obBack').disabled = obStep === 0;
+  document.getElementById('obBack').style.visibility = (obStep === OB_STEPS.length - 1) ? 'hidden' : 'visible';
+
+  const next = document.getElementById('obNext');
+  const skip = document.getElementById('obSkip');
+  skip.style.display = ['inventory', 'crm', 'accounting'].includes(step.id) ? 'inline-block' : 'none';
+
+  if (step.id === 'finish') {
+    next.style.display = 'none';
+    runFinishSequence();
+  } else {
+    next.style.display = 'inline-block';
+    next.textContent = obStep === OB_STEPS.length - 2 ? 'Complete setup →' : 'Continue →';
+  }
+
+  // Render step content
+  document.getElementById('obContent').innerHTML = renderStepContent(step.id);
+
+  // Wire interactions for current step
+  wireStepHandlers(step.id);
+}
+
+function renderStepContent(id) {
+  if (id === 'about') {
+    const personas = Object.entries(PERSONAS).filter(([k]) => k !== 'tbd');
+    return `<div class="ob-card">
+      <h1>Tell us about your dealership</h1>
+      <p class="ob-subtitle">A few quick details so we can tailor your dashboard, applications, and workflows to fit your role.</p>
+      <div class="ob-form">
+        <div class="ob-input-wrap">
+          <label>Your full name</label>
+          <input type="text" id="ob-name" placeholder="Jane Park" value="${obData.name}" />
+        </div>
+        <div class="ob-row">
+          <div class="ob-input-wrap">
+            <label>Dealership name</label>
+            <input type="text" id="ob-dealership" placeholder="Statler Toyota" value="${obData.dealershipName}" />
+          </div>
+          <div class="ob-input-wrap">
+            <label>Dealership address</label>
+            <input type="text" id="ob-address" placeholder="123 Main St, Springfield IL" value="${obData.dealershipAddress}" />
+          </div>
+        </div>
+        <div>
+          <div class="ob-section-label">Choose your primary role</div>
+          <div class="ob-role-grid">
+            ${personas.map(([key, p]) => {
+              const desc = personaDescription(key);
+              return `<button class="ob-role ${obData.role === key ? 'selected' : ''}" data-role="${key}">
+                <div class="ob-role-dot" style="background:${p.color}"></div>
+                <div class="ob-role-name">${p.short}</div>
+                <div class="ob-role-desc">${desc}</div>
+              </button>`;
+            }).join('')}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  if (id === 'inventory') {
+    return `<div class="ob-card wide">
+      <h1>Add your vehicle inventory</h1>
+      <p class="ob-subtitle">Upload your existing inventory or start with a sample list. You can always add more later from the Unit Stocking app.</p>
+      <div class="ob-upload" id="ob-upload-inv">
+        <div class="ob-upload-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </div>
+        <h4>Drop your inventory CSV here</h4>
+        <p>or click to browse files · max 50MB · CSV / XLSX</p>
+        <div class="or-divider">or</div>
+        <button class="ob-secondary-btn" id="ob-load-sample-inv">Load sample inventory</button>
+      </div>
+      <div id="ob-inv-preview" style="margin-top:18px; ${obData.inventory.length ? '' : 'display:none;'}">
+        <div class="ob-section-label">Inventory preview · ${obData.inventory.length} vehicles</div>
+        <div class="ob-table">
+          <div class="ob-table-head" style="grid-template-columns: 1fr 1fr 1fr 1.5fr 1fr;">
+            <span>Stock #</span><span>Year/Make/Model</span><span>VIN</span><span>Status</span><span>Price</span>
+          </div>
+          ${obData.inventory.slice(0, 5).map(v => `
+            <div class="ob-table-row" style="grid-template-columns: 1fr 1fr 1fr 1.5fr 1fr;">
+              <b>${v.stock}</b><span>${v.ymm}</span><span style="font-family:'Geist Mono',monospace; font-size:11px;">${v.vin}</span><span>${v.status}</span><b>${v.price}</b>
+            </div>`).join('')}
+          ${obData.inventory.length > 5 ? `<div class="ob-table-row" style="justify-content:center; color:var(--text-3); font-size:12px;">+ ${obData.inventory.length - 5} more vehicles</div>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  if (id === 'crm') {
+    return `<div class="ob-card wide">
+      <h1>Add your CRM customers</h1>
+      <p class="ob-subtitle">Import your customer database to enable the Modern Retail CRM and unlock personalized workflows.</p>
+      <div class="ob-upload" id="ob-upload-crm">
+        <div class="ob-upload-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <h4>Drop your customer CSV here</h4>
+        <p>Required fields: Name, Phone, Email · max 50MB</p>
+        <div class="or-divider">or</div>
+        <button class="ob-secondary-btn" id="ob-load-sample-crm">Load sample customers</button>
+      </div>
+      <div id="ob-crm-preview" style="margin-top:18px; ${obData.customers.length ? '' : 'display:none;'}">
+        <div class="ob-section-label">Customer preview · ${obData.customers.length} contacts</div>
+        <div class="ob-table">
+          <div class="ob-table-head" style="grid-template-columns: 1.2fr 1.2fr 1.5fr 1.4fr;">
+            <span>Name</span><span>Phone</span><span>Email</span><span>Vehicle of Interest</span>
+          </div>
+          ${obData.customers.slice(0, 5).map(c => `
+            <div class="ob-table-row" style="grid-template-columns: 1.2fr 1.2fr 1.5fr 1.4fr;">
+              <b>${c.name}</b><span>${c.phone}</span><span>${c.email}</span><span>${c.voi}</span>
+            </div>`).join('')}
+          ${obData.customers.length > 5 ? `<div class="ob-table-row" style="justify-content:center; color:var(--text-3); font-size:12px;">+ ${obData.customers.length - 5} more contacts</div>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  if (id === 'accounting') {
+    return `<div class="ob-card wide">
+      <h1>Set up your accounting</h1>
+      <p class="ob-subtitle">Upload your existing Chart of Accounts or start from a CDK-recommended template designed for automotive dealerships.</p>
+      <div class="ob-upload" id="ob-upload-coa">
+        <div class="ob-upload-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+        </div>
+        <h4>Drop your Chart of Accounts here</h4>
+        <p>CSV or XLSX format · we'll map columns automatically</p>
+        <div class="or-divider">or</div>
+        <button class="ob-secondary-btn" id="ob-load-coa-template">Use CDK Standard Template</button>
+      </div>
+      <div id="ob-coa-preview" style="margin-top:18px; ${obData.coa ? '' : 'display:none;'}">
+        <div class="ob-section-label">Chart of Accounts · ${obData.coa ? obData.coa.length + ' accounts loaded' : ''}</div>
+        <div class="ob-table">
+          <div class="ob-table-head" style="grid-template-columns: 1fr 2.5fr 1.5fr;">
+            <span>Account #</span><span>Description</span><span>Type</span>
+          </div>
+          ${(obData.coa || []).slice(0, 6).map(a => `
+            <div class="ob-table-row" style="grid-template-columns: 1fr 2.5fr 1.5fr;">
+              <b>${a.num}</b><span>${a.desc}</span><span>${a.type}</span>
+            </div>`).join('')}
+          ${(obData.coa || []).length > 6 ? `<div class="ob-table-row" style="justify-content:center; color:var(--text-3); font-size:12px;">+ ${obData.coa.length - 6} more accounts</div>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  if (id === 'payment') {
+    return `<div class="ob-card wide">
+      <h1>Choose your plan</h1>
+      <p class="ob-subtitle">Pick the tier that fits your dealership today. You can upgrade or downgrade any time from billing settings.</p>
+      <div class="ob-plans">
+        <button class="ob-plan ${obData.plan === 'starter' ? 'selected' : ''}" data-plan="starter">
+          <h3>Starter</h3>
+          <div class="price">$499<small>/mo</small></div>
+          <p style="font-size:12px;color:var(--text-3);margin:0;">For single-store dealerships</p>
+          <ul>
+            <li>Up to 5 users</li>
+            <li>Service & Parts</li>
+            <li>Basic reporting</li>
+          </ul>
+        </button>
+        <button class="ob-plan popular ${obData.plan === 'pro' ? 'selected' : ''}" data-plan="pro">
+          <h3>Pro</h3>
+          <div class="price">$1,499<small>/mo</small></div>
+          <p style="font-size:12px;color:var(--text-3);margin:0;">Most dealerships choose this</p>
+          <ul>
+            <li>Unlimited users</li>
+            <li>All applications</li>
+            <li>Intelligence Suite</li>
+            <li>F&I integration</li>
+          </ul>
+        </button>
+        <button class="ob-plan ${obData.plan === 'enterprise' ? 'selected' : ''}" data-plan="enterprise">
+          <h3>Enterprise</h3>
+          <div class="price">Custom<small></small></div>
+          <p style="font-size:12px;color:var(--text-3);margin:0;">Multi-store / dealer groups</p>
+          <ul>
+            <li>Everything in Pro</li>
+            <li>Multi-rooftop dashboards</li>
+            <li>Dedicated success manager</li>
+            <li>Priority support SLA</li>
+          </ul>
+        </button>
+      </div>
+
+      <div class="ob-section-label" style="margin-top: 28px;">Billing details</div>
+      <div class="ob-form">
+        <div class="ob-input-wrap">
+          <label>Card number</label>
+          <input type="text" placeholder="•••• •••• •••• ••••" value="${obData.card.num}" id="ob-card-num" />
+        </div>
+        <div class="ob-row">
+          <div class="ob-input-wrap">
+            <label>Expiration</label>
+            <input type="text" placeholder="MM / YY" value="${obData.card.exp}" id="ob-card-exp" />
+          </div>
+          <div class="ob-input-wrap">
+            <label>CVC</label>
+            <input type="text" placeholder="123" value="${obData.card.cvc}" id="ob-card-cvc" />
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  if (id === 'products') {
+    const products = [
+      { key: 'dr', name: 'Accounting', desc: 'AR, AP, GL, financial statements', price: '$199/mo' },
+      { key: 'se', name: 'Service', desc: 'Repair orders, scheduling, technician dispatch', price: '$249/mo' },
+      { key: 'pa', name: 'Parts', desc: 'Inventory, special orders, vendor management', price: '$179/mo' },
+      { key: 'fi', name: 'F&I', desc: 'Deal jacket, contract validation, e-sign', price: '$229/mo' },
+      { key: 'crm-red', name: 'Modern Retail CRM', desc: 'Customer pipeline, leads, follow-up', price: '$159/mo' },
+      { key: 'dm', name: 'Document Management', desc: 'Centralized forms, e-sign, retention', price: '$99/mo' },
+      { key: 'fo', name: 'Fortellis', desc: 'API marketplace and third-party integrations', price: 'Free' },
+      { key: 'is', name: 'Intelligence Suite', desc: 'Multi-store BI, dashboards, forecasting', price: '$299/mo' },
+    ];
+    return `<div class="ob-card wide">
+      <h1>Choose your applications</h1>
+      <p class="ob-subtitle">We've pre-selected the apps that fit your role. Tweak as needed — you can enable additional apps any time from the admin panel.</p>
+      <div class="ob-product-grid">
+        ${products.map(p => `
+          <button class="ob-product ${obData.products.includes(p.key) ? 'selected' : ''}" data-product="${p.key}">
+            <div class="check"></div>
+            <div class="app-icon-lg ${p.key}" style="width:36px;height:36px;font-size:11px;">${iconLetters(p.key)}</div>
+            <div class="body">
+              <h5>${p.name}</h5>
+              <p>${p.desc}</p>
+            </div>
+            <div class="price-tag">${p.price}</div>
+          </button>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  if (id === 'finish') {
+    const tasks = [
+      'Creating your CDK Global account',
+      'Provisioning Service & Parts modules',
+      `Importing ${obData.inventory.length} vehicles to inventory`,
+      `Loading ${obData.customers.length} customer records into CRM`,
+      'Configuring Chart of Accounts',
+      'Activating selected applications',
+      'Setting up your dashboard',
+      'Personalizing for ' + (PERSONAS[obData.role]?.label || 'your role'),
+    ];
+    return `<div class="ob-card">
+      <div class="ob-loading">
+        <div class="ob-spinner"></div>
+        <h2>Setting up your dealership</h2>
+        <p>This will only take a moment. We're configuring everything based on your selections.</p>
+        <div class="ob-status-list" id="ob-status-list">
+          ${tasks.map((t, i) => `
+            <div class="ob-status-row" data-i="${i}">
+              <div class="status-icon"></div>
+              <span>${t}</span>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  return '';
+}
+
+function personaDescription(key) {
+  return ({
+    owner: 'Multi-store oversight, executive reports.',
+    ops: 'Cross-department flow & operations.',
+    serviceAdvisor: 'Service ROs, appointments, technicians.',
+    parts: 'Inventory, special orders, vendors.',
+    tech: 'Hands-on, single-task focus.',
+    arap: 'Invoices, statements, payments.',
+    fi: 'Deal jacket, contracts, e-sign.',
+    salesManager: 'Floor performance, leaderboard, CITs.',
+    salesAssoc: 'Showroom companion, leads, AIVA.',
+  })[key] || '';
+}
+
+function wireStepHandlers(id) {
+  if (id === 'about') {
+    document.querySelectorAll('.ob-role').forEach(b => {
+      b.addEventListener('click', () => {
+        obData.role = b.dataset.role;
+        document.querySelectorAll('.ob-role').forEach(x => x.classList.remove('selected'));
+        b.classList.add('selected');
+      });
+    });
+    document.getElementById('ob-name').addEventListener('input', e => obData.name = e.target.value);
+    document.getElementById('ob-dealership').addEventListener('input', e => obData.dealershipName = e.target.value);
+    document.getElementById('ob-address').addEventListener('input', e => obData.dealershipAddress = e.target.value);
+  }
+
+  if (id === 'inventory') {
+    document.getElementById('ob-upload-inv').addEventListener('click', loadSampleInventory);
+    document.getElementById('ob-load-sample-inv').addEventListener('click', (e) => { e.stopPropagation(); loadSampleInventory(); });
+  }
+
+  if (id === 'crm') {
+    document.getElementById('ob-upload-crm').addEventListener('click', loadSampleCustomers);
+    document.getElementById('ob-load-sample-crm').addEventListener('click', (e) => { e.stopPropagation(); loadSampleCustomers(); });
+  }
+
+  if (id === 'accounting') {
+    document.getElementById('ob-upload-coa').addEventListener('click', loadCoaTemplate);
+    document.getElementById('ob-load-coa-template').addEventListener('click', (e) => { e.stopPropagation(); loadCoaTemplate(); });
+  }
+
+  if (id === 'payment') {
+    document.querySelectorAll('.ob-plan').forEach(b => {
+      b.addEventListener('click', () => {
+        obData.plan = b.dataset.plan;
+        document.querySelectorAll('.ob-plan').forEach(x => x.classList.remove('selected'));
+        b.classList.add('selected');
+      });
+    });
+    document.getElementById('ob-card-num').addEventListener('input', e => obData.card.num = e.target.value);
+    document.getElementById('ob-card-exp').addEventListener('input', e => obData.card.exp = e.target.value);
+    document.getElementById('ob-card-cvc').addEventListener('input', e => obData.card.cvc = e.target.value);
+  }
+
+  if (id === 'products') {
+    document.querySelectorAll('.ob-product').forEach(b => {
+      b.addEventListener('click', () => {
+        const k = b.dataset.product;
+        if (obData.products.includes(k)) {
+          obData.products = obData.products.filter(x => x !== k);
+          b.classList.remove('selected');
+        } else {
+          obData.products.push(k);
+          b.classList.add('selected');
+        }
+      });
+    });
+  }
+}
+
+function loadSampleInventory() {
+  obData.inventory = [
+    { stock: 'T1024', ymm: '2025 Toyota Camry SE',     vin: '4T1G11AK5RU321889', status: 'Available',   price: '$28,450' },
+    { stock: 'T1025', ymm: '2024 Toyota RAV4 Hybrid',  vin: 'JTMRWRFV5RD123456', status: 'In Transit',  price: '$34,200' },
+    { stock: 'T1026', ymm: '2025 Toyota Tacoma TRD',   vin: '3TYCZ5AN9RT012834', status: 'Available',   price: '$42,800' },
+    { stock: 'T1027', ymm: '2024 Toyota Corolla LE',   vin: '5YFEPMAE0RP234567', status: 'On Hold',     price: '$23,995' },
+    { stock: 'T1028', ymm: '2025 Toyota Highlander XLE',vin:'5TDJZRBH8RS890123', status: 'Available',   price: '$48,650' },
+    { stock: 'T1029', ymm: '2024 Toyota 4Runner SR5',  vin: 'JTEKU5JR8R5456789', status: 'Available',   price: '$45,300' },
+    { stock: 'T1030', ymm: '2025 Toyota Sienna XSE',   vin: '5TDXRKEC6RS678901', status: 'Reserved',    price: '$52,100' },
+    { stock: 'T1031', ymm: '2024 Toyota Prius LE',     vin: 'JTDKAMFP3R3789012', status: 'Available',   price: '$28,995' },
+  ];
+  renderStep();
+}
+
+function loadSampleCustomers() {
+  obData.customers = [
+    { name: 'Christine Strick', phone: '(555) 234-1908', email: 'cstrick@example.com',   voi: '2025 Honda CR-V EX' },
+    { name: 'Shawn Gray',       phone: '(555) 891-0023', email: 'sgray@example.com',     voi: '2016 Ferrari GTC4 Lusso' },
+    { name: 'Kelly Kapoor',     phone: '(555) 442-9981', email: 'kkapoor@example.com',   voi: '2020 Ford Edge Titanium' },
+    { name: 'Darrell Wells',    phone: '(555) 117-2034', email: 'dwells@example.com',    voi: '2022 Escape SE Hybrid' },
+    { name: 'Bonita Murray',    phone: '(555) 553-7720', email: 'bmurray@example.com',   voi: '2025 Toyota Camry SE' },
+    { name: 'Matthew Gallagher',phone: '(555) 880-1145', email: 'mgallagher@example.com',voi: '2022 Ford Edge SEL' },
+    { name: 'Carolina Lacy',    phone: '(555) 226-3318', email: 'clacy@example.com',     voi: '2007 Alfa Romeo 156' },
+    { name: 'Jack Daly',        phone: '(555) 904-5572', email: 'jdaly@example.com',     voi: '1978 Dome Zero' },
+  ];
+  renderStep();
+}
+
+function loadCoaTemplate() {
+  obData.coa = [
+    { num: '1000', desc: 'Cash - Operating',                 type: 'Asset' },
+    { num: '1100', desc: 'Accounts Receivable - Customers',  type: 'Asset' },
+    { num: '1200', desc: 'New Vehicle Inventory',            type: 'Asset' },
+    { num: '1210', desc: 'Used Vehicle Inventory',           type: 'Asset' },
+    { num: '1300', desc: 'Parts Inventory',                  type: 'Asset' },
+    { num: '2000', desc: 'Accounts Payable - Trade',         type: 'Liability' },
+    { num: '2100', desc: 'Floor Plan Liability',             type: 'Liability' },
+    { num: '3000', desc: 'Owner\'s Equity',                  type: 'Equity' },
+    { num: '4000', desc: 'New Vehicle Sales',                type: 'Revenue' },
+    { num: '4100', desc: 'Used Vehicle Sales',               type: 'Revenue' },
+    { num: '4200', desc: 'Service Labor Sales',              type: 'Revenue' },
+    { num: '4300', desc: 'Parts Sales',                      type: 'Revenue' },
+    { num: '5000', desc: 'Cost of Vehicle Sales',            type: 'Cost of Sales' },
+    { num: '6000', desc: 'Salaries & Wages',                 type: 'Expense' },
+    { num: '6100', desc: 'Advertising',                      type: 'Expense' },
+    { num: '6200', desc: 'Rent / Lease',                     type: 'Expense' },
+  ];
+  renderStep();
+}
+
+function runFinishSequence() {
+  const rows = document.querySelectorAll('#ob-status-list .ob-status-row');
+  let i = 0;
+  function tick() {
+    if (i > 0) {
+      rows[i - 1].classList.remove('active');
+      rows[i - 1].classList.add('done');
+    }
+    if (i < rows.length) {
+      rows[i].classList.add('active');
+      i++;
+      setTimeout(tick, 480 + Math.random() * 280);
+    } else {
+      // Apply persona selection and route to prototype
+      setTimeout(() => {
+        renderPersona(obData.role);
+        showScreen('prototype');
+      }, 700);
+    }
+  }
+  setTimeout(tick, 350);
+}
+
+document.getElementById('obBack').addEventListener('click', () => goToStep(obStep - 1));
+document.getElementById('obNext').addEventListener('click', () => {
+  // Validation gate
+  const step = OB_STEPS[obStep];
+  if (step.id === 'about') {
+    if (!obData.name.trim() || !obData.dealershipName.trim()) {
+      alert('Please enter your name and dealership name to continue.');
+      return;
+    }
+  }
+  goToStep(obStep + 1);
+});
+document.getElementById('obSkip').addEventListener('click', () => goToStep(obStep + 1));
+</script>
+
 </body>
 </html>
