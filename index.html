@@ -561,39 +561,89 @@
     50%      { transform: scale(1.07); }
   }
 
-  /* ===== Sidebar Nav (opt-in alternative to the top nav) =====
-     Narrow left rail that lives outside both screens. Activates when
-     <body> has the .sidebar-mode class. */
+  /* ===== Sidebar Nav (vertical global nav, opt-in alternative to the top mega-menu) =====
+     Full-height left panel that mirrors the mega-menu's 5 sections stacked
+     vertically. Activates when <body> has the .sidebar-mode class. */
 
   .sidebar-nav {
     position: fixed;
     top: 60px; left: 0; bottom: 0;
-    width: 56px;
-    background: var(--header-bg);
-    border-right: 1px solid rgba(255,255,255,0.06);
-    z-index: 98;
+    width: 300px;
+    background: linear-gradient(180deg, var(--menu-bg) 0%, var(--menu-bg-2) 100%);
+    border-right: 1px solid rgba(255,255,255,0.07);
+    z-index: 110;
     display: flex; flex-direction: column;
-    align-items: center;
-    padding: 12px 0 14px;
-    gap: 4px;
+    align-items: stretch;
     transform: translateX(-100%);
-    transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1),
-                width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.35);
   }
   body.sidebar-mode .sidebar-nav { transform: translateX(0); }
+
+  /* Sidebar scroll area holds all five nav sections */
+  .sidebar-scroll {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 14px 10px 12px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.12) transparent;
+  }
+  .sidebar-scroll::-webkit-scrollbar { width: 4px; }
+  .sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
+
+  /* Section header row within the sidebar */
+  .sb-section {
+    margin-bottom: 16px;
+  }
+  .sb-section-head {
+    display: flex; align-items: center; gap: 7px;
+    font-size: 10px; font-weight: 600;
+    color: rgba(255,255,255,0.38);
+    letter-spacing: 0.7px; text-transform: uppercase;
+    padding: 0 4px 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    margin-bottom: 8px;
+  }
+  .sb-section-head svg { opacity: 0.7; flex-shrink: 0; }
+
+  /* Pills inside sidebar keep the same design but fill full width */
+  .sidebar-nav .pill { width: 100%; box-sizing: border-box; }
+
+  /* Tile grid inside sidebar: 2 equal columns */
+  .sb-tile-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 7px;
+  }
+  .sb-tile-grid .tile {
+    height: 66px;
+    font-size: 10px;
+  }
+  .sb-tile-grid .tile-label { max-width: none; font-size: 10px; }
+
+  /* Resource list needs no change — already vertical */
+
+  /* Sidebar footer — collapse button */
+  .sb-footer {
+    padding: 10px 12px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    display: flex; align-items: center; justify-content: flex-end;
+    flex-shrink: 0;
+  }
 
   /* Global header stays visible in sidebar mode; hide old per-screen header rules */
   body.sidebar-mode .screen-prototype .header,
   /* screen-app header removed — global header is always fixed */
 
-  /* Shift the prototype and app-screen content right to make room */
-  body.sidebar-mode .screen-prototype { padding-left: 56px; }
-  body.sidebar-mode .screen-app .app-sub-header,
-  body.sidebar-mode .screen-app .app-body { margin-left: 56px; }
+  /* Sidebar overlays the content — no layout shift */
+  /* body.sidebar-mode .screen-prototype { padding-left: 240px; } — intentionally removed */
+  /* body.sidebar-mode .screen-app .app-sub-header,                                        */
+  /* body.sidebar-mode .screen-app .app-body { margin-left: 240px; } — intentionally removed */
 
-  /* Slide the mega menu so it doesn't underlap the sidebar */
-  body.sidebar-mode .mega-menu { left: 56px; top: 0; right: 0; }
+  /* Mega menu still aligns to the sidebar edge when both are open */
+  body.sidebar-mode .mega-menu { left: 240px; top: 0; right: 0; }
 
 
 
@@ -621,38 +671,11 @@
   .sn-collapse-btn:hover { background: rgba(255,255,255,0.1); color: white; }
   .sn-collapse-btn svg { transition: transform 0.24s; }
 
-  .sidebar-pull-tab {
-    position: fixed;
-    left: 0; top: 50%;
-    transform: translate(-100%, -50%);
-    width: 18px; height: 64px;
-    background: var(--header-bg);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-left: none;
-    border-radius: 0 8px 8px 0;
-    display: flex; align-items: center; justify-content: center;
-    color: rgba(255,255,255,0.7);
-    cursor: pointer;
-    z-index: 109;
-    transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1), color 0.16s;
-  }
-  .sidebar-pull-tab:hover { color: white; }
-
   body.sidebar-mode.sidebar-collapsed .sidebar-nav {
     transform: translateX(-100%);
   }
-  body.sidebar-mode.sidebar-collapsed .sidebar-pull-tab {
-    transform: translate(0, -50%);
-  }
-  body.sidebar-mode.sidebar-collapsed .screen-prototype { padding-left: 0; }
-  body.sidebar-mode.sidebar-collapsed .screen-app .app-sub-header,
-  body.sidebar-mode.sidebar-collapsed .screen-app .app-body { margin-left: 0; }
+  /* No padding/margin to reset since the sidebar never pushed content */
   body.sidebar-mode.sidebar-collapsed .mega-menu { left: 0; }
-
-  /* Hide pull tab when not in sidebar mode */
-  body:not(.sidebar-mode) .sidebar-pull-tab,
-  body.in-login .sidebar-pull-tab,
-  body.in-onboarding .sidebar-pull-tab { display: none; }
 
   /* AIVA top-nav button — subtle, matches other header buttons */
   .aiva-btn {
@@ -5812,7 +5835,7 @@
     <div class="app-launcher-dropdown" id="appLauncherDropdown"></div>
 
     <div class="icon-cluster anim-fade-in-up" style="animation-delay:0.21s">
-      <div class="icon-btn icon-hidden layout-toggle-btn" title="Switch to sidebar layout" onclick="setLayoutMode(document.body.classList.contains('sidebar-mode') ? 'top' : 'side')">
+      <div class="icon-btn icon-hidden layout-toggle-btn" title="Switch to sidebar layout" onclick="toggleSideNav()">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
       </div>
       <div class="icon-btn icon-hidden" title="Help">
@@ -6004,15 +6027,65 @@
 
 <!-- ============ SIDEBAR NAV (opt-in alternative to top nav) ============ -->
 <div class="sidebar-nav" id="sidebarNav">
-  <button class="sn-collapse-btn" id="sidebarCollapseBtn" title="Collapse sidebar">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-  </button>
+  <!-- Scrollable content: 5 vertical sections mirroring the mega-menu columns -->
+  <div class="sidebar-scroll" id="sidebarScroll">
+
+    <!-- 1. AI Smart Activity -->
+    <div class="sb-section">
+      <div class="sb-section-head">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 12 7 12 10 4 14 20 17 12 21 12"/></svg>
+        AI Smart Activity
+      </div>
+      <div class="pill-stack" id="sbActivityCol"></div>
+    </div>
+
+    <!-- 2. Recently Opened -->
+    <div class="sb-section">
+      <div class="sb-section-head">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Recently Opened
+      </div>
+      <div class="pill-stack" id="sbRecentCol"></div>
+    </div>
+
+    <!-- 3. Apps -->
+    <div class="sb-section">
+      <div class="sb-section-head">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Apps
+      </div>
+      <div class="sb-tile-grid" id="sbAppsCol"></div>
+    </div>
+
+    <!-- 4. Workflows -->
+    <div class="sb-section">
+      <div class="sb-section-head">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        Workflows
+      </div>
+      <div class="sb-tile-grid" id="sbWorkflowsCol"></div>
+    </div>
+
+    <!-- 5. Resources -->
+    <div class="sb-section">
+      <div class="sb-section-head">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        Resources
+      </div>
+      <div class="resource-list" id="sbResourcesCol"></div>
+    </div>
+
+  </div><!-- end .sidebar-scroll -->
+
+  <!-- Footer: collapse button -->
+  <div class="sb-footer">
+    <button class="sn-collapse-btn" id="sidebarCollapseBtn" title="Collapse sidebar">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+  </div>
 </div>
 
-<!-- Pull-tab — visible only when the sidebar is collapsed. Click to bring back. -->
-<div class="sidebar-pull-tab" id="sidebarPullTab" title="Show sidebar">
-  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-</div>
+
 
 <!-- ============ AIVA PANEL (persistent floating assistant) ============ -->
 <div class="aiva-panel" id="aivaPanel">
@@ -7536,26 +7609,66 @@ updateAivaWelcome('owner');
 function setLayoutMode(mode) {
   const useSidebar = (mode === 'side');
   document.body.classList.toggle('sidebar-mode', useSidebar);
-  // Switching back to top nav implicitly un-collapses the sidebar so it's
-  // ready next time the user enables sidebar mode.
   if (!useSidebar) document.body.classList.remove('sidebar-collapsed');
-  // Reflect active state + title on every layout-toggle button in the headers
+  updateLayoutToggleState();
+}
+
+/* Update the visual active state of every layout-toggle button.
+   Active = sidebar mode ON (indicates current mode, not whether panel is open). */
+function updateLayoutToggleState() {
+  const inSidebar = document.body.classList.contains('sidebar-mode');
   document.querySelectorAll('.layout-toggle-btn').forEach(btn => {
-    btn.classList.toggle('is-active', useSidebar);
-    btn.setAttribute('title', useSidebar ? 'Switch to top layout' : 'Switch to sidebar layout');
+    btn.classList.toggle('is-active', inSidebar);
+    btn.setAttribute('title', inSidebar ? 'Switch to horizontal nav' : 'Switch to vertical nav');
   });
-  // Nothing sidebar-specific needs resetting on layout switch
+}
+
+/* Layout-toggle button: switches between horizontal and vertical nav modes only.
+   Does NOT open or close the sidebar panel — that is the Menu button's job. */
+function toggleSideNav() {
+  const inSidebar = document.body.classList.contains('sidebar-mode');
+  if (inSidebar) {
+    // Exit sidebar mode → restore horizontal mega-menu
+    document.body.classList.remove('sidebar-mode');
+    document.body.classList.remove('sidebar-collapsed');
+    // Ensure menu btn active state is cleared
+    document.getElementById('menuBtn')?.classList.remove('active');
+  } else {
+    // Enter sidebar mode; start with panel collapsed — Menu btn opens it
+    document.body.classList.add('sidebar-mode');
+    document.body.classList.add('sidebar-collapsed');
+  }
+  updateLayoutToggleState();
+}
+
+function closeSideNav() {
+  if (!document.body.classList.contains('sidebar-mode')) return;
+  document.body.classList.add('sidebar-collapsed');
+  document.getElementById('menuBtn')?.classList.remove('active');
+  updateLayoutToggleState();
 }
 
 function initSidebarNav() {
-  // ── Sidebar collapse: chevron at sidebar bottom + pull-tab to restore ──
-  const collapseBtn = document.getElementById('sidebarCollapseBtn');
-  const pullTab = document.getElementById('sidebarPullTab');
-  collapseBtn?.addEventListener('click', () => {
-    document.body.classList.add('sidebar-collapsed');
+  // Collapse chevron at sidebar bottom
+  document.getElementById('sidebarCollapseBtn')?.addEventListener('click', () => {
+    closeSideNav();
   });
-  pullTab?.addEventListener('click', () => {
-    document.body.classList.remove('sidebar-collapsed');
+// Click-outside: close sidebar when user clicks anywhere outside it
+  document.addEventListener('click', (e) => {
+    if (!document.body.classList.contains('sidebar-mode')) return;
+    if (document.body.classList.contains('sidebar-collapsed')) return;
+    const path = e.composedPath();
+    const sidebar = document.getElementById('sidebarNav');
+    const toggleBtns = document.querySelectorAll('.layout-toggle-btn');
+    const insideSidebar = sidebar && path.includes(sidebar);
+    const insideToggle  = [...toggleBtns].some(btn => path.includes(btn));
+    const insideMenuBtn = path.includes(document.getElementById('menuBtn'));
+    if (!insideSidebar && !insideToggle && !insideMenuBtn) closeSideNav();
+  });
+
+  // Escape key: close sidebar
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeSideNav();
   });
 }
 
@@ -7839,6 +7952,9 @@ function rerenderActivity() {
   // when a persona switch should re-animate the column.
   col.classList.remove('stagger');
   col.innerHTML = renderActivity(key);
+  // Keep the sidebar mirror in sync
+  const sbCol = document.getElementById('sbActivityCol');
+  if (sbCol) sbCol.innerHTML = renderActivity(key);
 }
 
 /* ----- 1Hz tick — increments visible timers without full re-render ----- */
@@ -7847,19 +7963,24 @@ let widgetTickInterval = null;
 function startWidgetTicker() {
   if (widgetTickInterval) return;
   widgetTickInterval = setInterval(() => {
-    // Only tick when the mega menu is open (perf + realism)
+    // Only tick when the mega menu is open OR the sidebar is visible (perf + realism)
     const menu = document.getElementById('megaMenu');
-    if (!menu || menu.classList.contains('collapsed')) return;
+    const sidebar = document.getElementById('sidebarNav');
+    const sidebarVisible = document.body.classList.contains('sidebar-mode') &&
+                           !document.body.classList.contains('sidebar-collapsed');
+    if ((!menu || menu.classList.contains('collapsed')) && !sidebarVisible) return;
 
     if (WIDGET_STATE.clockedIn && !WIDGET_STATE.onLunch) {
       WIDGET_STATE.clockedSec += 1;
-      const el = document.querySelector('[data-clock-elapsed]');
-      if (el) el.textContent = formatHMS(WIDGET_STATE.clockedSec);
+      document.querySelectorAll('[data-clock-elapsed]').forEach(el => {
+        el.textContent = formatHMS(WIDGET_STATE.clockedSec);
+      });
     }
     if (WIDGET_STATE.roTimer.active) {
       WIDGET_STATE.roTimer.elapsedSec += 1;
-      const el = document.querySelector('[data-ro-elapsed]');
-      if (el) el.textContent = formatHMS(WIDGET_STATE.roTimer.elapsedSec);
+      document.querySelectorAll('[data-ro-elapsed]').forEach(el => {
+        el.textContent = formatHMS(WIDGET_STATE.roTimer.elapsedSec);
+      });
     }
   }, 1000);
 }
@@ -8062,6 +8183,18 @@ function renderPersona(key) {
   document.getElementById('workflowsCol').innerHTML = renderTileGrid(p.workflows, key, 'workflows');
   document.getElementById('resourcesCol').innerHTML = renderResources();
 
+  // ── Mirror all five columns into the vertical sidebar nav ──────────────
+  const sbActivity = document.getElementById('sbActivityCol');
+  if (sbActivity) sbActivity.innerHTML = renderActivity(key);
+  const sbRecent = document.getElementById('sbRecentCol');
+  if (sbRecent) sbRecent.innerHTML = renderRecentlyOpened(p.activity);
+  const sbApps = document.getElementById('sbAppsCol');
+  if (sbApps) sbApps.innerHTML = renderTileGrid(p.apps, key, 'apps');
+  const sbWorkflows = document.getElementById('sbWorkflowsCol');
+  if (sbWorkflows) sbWorkflows.innerHTML = renderTileGrid(p.workflows, key, 'workflows');
+  const sbResources = document.getElementById('sbResourcesCol');
+  if (sbResources) sbResources.innerHTML = renderResources();
+
   wirePinHandlers(key);
 
   document.getElementById('personaBanner').innerHTML = `
@@ -8160,16 +8293,21 @@ const menuBtn = document.getElementById('menuBtn');
 const megaMenu = document.getElementById('megaMenu');
 menuBtn.addEventListener('click', (e) => {
   e.stopPropagation();
-  const willCollapse = !megaMenu.classList.contains('collapsed');
-  megaMenu.classList.toggle('collapsed', willCollapse);
-  menuBtn.classList.toggle('active', !willCollapse);
+  if (document.body.classList.contains('sidebar-mode')) {
+    // Vertical mode — Menu button opens/closes the sidebar panel
+    const isCollapsed = document.body.classList.contains('sidebar-collapsed');
+    document.body.classList.toggle('sidebar-collapsed', !isCollapsed);
+    menuBtn.classList.toggle('active', isCollapsed);
+    updateLayoutToggleState();
+  } else {
+    // Horizontal mode — Menu button opens/closes the mega-menu
+    const willCollapse = !megaMenu.classList.contains('collapsed');
+    megaMenu.classList.toggle('collapsed', willCollapse);
+    menuBtn.classList.toggle('active', !willCollapse);
+  }
 });
 document.addEventListener('click', (e) => {
   if (megaMenu.classList.contains('collapsed')) return;
-  // Use composedPath() instead of contains(e.target): the path is captured at
-  // dispatch time, so it stays correct even if the click handler re-renders the
-  // DOM (e.g. widget toggles, configure menu) and detaches e.target before this
-  // listener runs.
   const path = e.composedPath();
   if (!path.includes(megaMenu) && !path.includes(menuBtn)) {
     megaMenu.classList.add('collapsed'); menuBtn.classList.remove('active');
@@ -10024,6 +10162,37 @@ function initAppTileLaunchers() {
 
   // ── Resources column → Documents opens Doc Mgmt ─────────────
   document.getElementById('resourcesCol')?.addEventListener('click', (e) => {
+    const r = e.target.closest('.resource');
+    if (!r) return;
+    const label = (r.textContent || '').trim();
+    if (/document/i.test(label)) { openAppTab('documentMgmt'); return; }
+    toast(label);
+  });
+
+  // ── Sidebar mirrors — same behaviour as mega-menu columns ────
+  document.getElementById('sbAppsCol')?.addEventListener('click', (e) => {
+    const tile = e.target.closest('.tile');
+    if (!tile) return;
+    openAppFromIcon(tile.dataset.tileIcon, tile.dataset.tileLabel);
+  });
+
+  document.getElementById('sbWorkflowsCol')?.addEventListener('click', (e) => {
+    const tile = e.target.closest('.tile');
+    if (!tile) return;
+    openAppFromIcon(tile.dataset.tileIcon, tile.dataset.tileLabel);
+  });
+
+  document.getElementById('sbRecentCol')?.addEventListener('click', (e) => {
+    const pill = e.target.closest('.pill');
+    if (!pill) return;
+    const iconEl = pill.querySelector('.pill-icon');
+    if (!iconEl) return;
+    const iconKey = [...iconEl.classList].find(c => c in ICON_TO_APP_KEY);
+    const label = pill.querySelector('.pill-text')?.textContent?.trim();
+    openAppFromIcon(iconKey, label);
+  });
+
+  document.getElementById('sbResourcesCol')?.addEventListener('click', (e) => {
     const r = e.target.closest('.resource');
     if (!r) return;
     const label = (r.textContent || '').trim();
