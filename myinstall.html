@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyInstall Control Panel — Prototype v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --topbar-bg:#000000;
+    --nav-bg:#efefef;
+    --nav-item-hover:#e2e2e2;
+    --nav-item-selected:#c9c9c9;
+    --nav-text:#1f1f1f;
+    --divider:#e0e0e0;
+    --text-primary:#1a1a1a;
+    --text-secondary:#5f6368;
+    --blue:#1a73e8;
+    --blue-dark:#1765cc;
+    --blue-chip-bg:#e8f0fe;
+    --navy:#0d3b7c;
+    --red:#d93025;
+    --red-bg:#fce8e6;
+    --amber:#e8710a;
+    --amber-bg:#fef2e3;
+    --green:#1e8e3e;
+    --green-bg:#e6f4ea;
+    --purple:#7627bb;
+    --purple-bg:#f3e8fd;
+    --gray-badge:#757575;
+    --gray-chip-bg:#f1f3f4;
+    --stripe:#f5f5f5;
+    --focus:#1a73e8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Roboto','Helvetica Neue',Arial,sans-serif;
+    font-size:13px;color:var(--text-primary);background:#fff;overflow:hidden;
+  }
+  button{font-family:inherit;cursor:pointer;background:none;border:none;font-size:inherit;color:inherit}
+  a{color:var(--blue);text-decoration:none}
+  a:hover{text-decoration:underline}
+  :focus-visible{outline:2px solid var(--focus);outline-offset:1px;border-radius:4px}
+
+  /* ================= TOP BAR ================= */
+  .topbar{height:44px;background:var(--topbar-bg);color:#fff;display:flex;align-items:center;padding:0 16px;gap:16px;position:relative;z-index:30}
+  .topbar .logo{font-weight:700;font-size:15px;letter-spacing:.5px;white-space:nowrap}
+  .topbar .search{position:absolute;left:50%;transform:translateX(-50%);width:min(440px,38vw);height:30px;background:#2d2d2d;border-radius:16px;display:flex;align-items:center;padding:0 12px;gap:8px}
+  .topbar .search input{flex:1;background:transparent;border:none;color:#fff;font-size:13px;outline:none}
+  .topbar .search input::placeholder{color:#9aa0a6}
+  .topbar .right{margin-left:auto;display:flex;align-items:center;gap:6px}
+  .icon-btn{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+  .icon-btn:hover{background:rgba(255,255,255,.14)}
+  .avatar{width:28px;height:28px;border-radius:50%;background:#fff;color:#000;font-size:12px;font-weight:500;display:flex;align-items:center;justify-content:center;margin-left:4px}
+  .notif-dot{position:relative}
+  .notif-dot::after{content:"";position:absolute;top:6px;right:7px;width:7px;height:7px;border-radius:50%;background:var(--red);border:1.5px solid #000}
+
+  .frame{display:flex;height:calc(100vh - 44px)}
+
+  /* ================= LEFT NAV (Admin Config screenshot styling) ================= */
+  .nav{width:236px;flex:none;background:var(--nav-bg);display:flex;flex-direction:column;border-right:1px solid #d5d5d5}
+  .nav-app{margin:10px 10px 8px;background:#dedede;border-radius:8px;display:flex;align-items:center;gap:10px;padding:8px 10px;width:calc(100% - 20px);text-align:left}
+  .nav-app .app-icon{width:26px;height:26px;border-radius:5px;background:#000;color:#fff;font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none;letter-spacing:.3px}
+  .nav-app .app-name{font-weight:500;font-size:13.5px;line-height:1.15;color:var(--text-primary)}
+  .nav-app svg{margin-left:auto;flex:none}
+  .nav-scroll{flex:1;overflow-y:auto;padding:2px 10px 8px}
+
+  .nav-item{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:9px 10px;border-radius:20px;color:var(--nav-text);font-size:14px;margin:1px 0}
+  .nav-item:hover{background:var(--nav-item-hover)}
+  .nav-item[aria-current="page"]{background:var(--nav-item-selected);font-weight:500}
+  .nav-item svg.nav-ico{flex:none;color:#1f1f1f}
+
+  .nav-sect{display:flex;align-items:center;width:100%;text-align:left;padding:10px 10px 8px;font-size:14px;color:var(--nav-text);gap:8px}
+  .nav-sect:hover{color:#000}
+  .nav-sect .chev{margin-left:auto;transition:transform .18s ease;color:#3c4043}
+  .nav-sect[aria-expanded="false"] .chev{transform:rotate(-90deg)}
+  .nav-sub{overflow:hidden;max-height:0;transition:max-height .2s ease}
+  .nav-sub.open{max-height:400px}
+  .nav-sub .nav-item{padding-left:14px;width:calc(100% - 8px);margin-left:8px}
+  .nav-divider{height:1px;background:#d5d5d5;margin:8px 4px}
+  .nav-toollabel{font-size:10.5px;font-weight:700;letter-spacing:.8px;color:#5f6368;padding:10px 10px 2px;text-transform:uppercase}
+
+  .nav-bottom{padding:10px 14px;display:flex;align-items:center;gap:6px}
+  .nav-bottom .bico{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#1f1f1f}
+  .nav-bottom .bico:hover{background:var(--nav-item-hover)}
+  .collapse-btn{margin-left:auto;width:28px;height:28px;border-radius:8px;background:#dedede;display:flex;align-items:center;justify-content:center;color:#5f6368}
+  .collapse-btn:hover{background:#d0d0d0}
+
+  /* ================= SHARED MAIN ================= */
+  .main{flex:1;display:flex;flex-direction:column;min-width:0;background:#fff}
+  .view{display:none;flex-direction:column;min-height:0;flex:1}
+  .view.on{display:flex}
+  .page-head{display:flex;align-items:center;padding:18px 28px 6px;gap:12px;flex:none}
+  .page-head h1{font-size:26px;font-weight:700;letter-spacing:-.3px}
+  .page-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .btn-text{color:var(--blue);font-weight:500;font-size:13.5px;padding:8px 14px;border-radius:6px}
+  .btn-text:hover{background:var(--blue-chip-bg)}
+  .btn-primary{background:var(--blue);color:#fff;font-weight:500;font-size:13.5px;padding:9px 16px;border-radius:6px;display:inline-flex;align-items:center;gap:8px}
+  .btn-primary:hover{background:var(--blue-dark)}
+  .btn-outline{border:1px solid #dadce0;border-radius:6px;padding:7px 14px;font-size:12.5px;color:var(--blue);font-weight:500;background:#fff}
+  .btn-outline:hover{background:var(--blue-chip-bg)}
+
+  /* tabs (Question Bank screenshot) */
+  .tabs{display:flex;gap:26px;padding:8px 28px 0;border-bottom:1px solid var(--divider);flex:none}
+  .tab{font-size:14px;padding:8px 2px 10px;color:var(--text-secondary);border-bottom:3px solid transparent;font-weight:400}
+  .tab.on{color:#000;font-weight:500;border-bottom-color:#000}
+  .tab:hover{color:#000}
+
+  /* filter chips */
+  .filters{display:flex;align-items:center;gap:10px;padding:16px 28px 12px;flex-wrap:wrap;flex:none}
+  .chip{display:inline-flex;align-items:center;gap:7px;border:1px solid #bdbdbd;border-radius:18px;background:#fff;padding:7px 14px;font-size:13.5px;color:var(--text-primary);white-space:nowrap;position:relative}
+  .chip:hover{background:#f8f9fa}
+  .chip .caret{color:#5f6368}
+  .chip.active-filter{background:var(--blue-chip-bg);border-color:var(--blue);color:var(--blue);font-weight:500}
+  .chip.radio.on{background:var(--blue-chip-bg);border-color:var(--blue);color:var(--blue);font-weight:500}
+  .chip .dot{width:13px;height:13px;border-radius:50%;border:2px solid #9aa0a6;flex:none;position:relative}
+  .chip.radio.on .dot{border-color:var(--blue)}
+  .chip.radio.on .dot::after{content:"";position:absolute;inset:2px;background:var(--blue);border-radius:50%}
+  .chip-sep{width:1px;height:22px;background:var(--divider);margin:0 2px}
+  .filters .spacer{flex:1}
+  .tbl-search{display:flex;align-items:center;gap:9px;border:1px solid #9e9e9e;border-radius:8px;padding:0 14px;height:38px;width:300px;background:#fff}
+  .tbl-search input{border:none;outline:none;flex:1;font-size:13.5px;font-family:inherit}
+
+  .switch-wrap{display:inline-flex;align-items:center;gap:8px;font-size:12.5px}
+  .switch{width:34px;height:18px;border-radius:10px;background:#bdbdbd;position:relative;transition:background .15s;flex:none}
+  .switch::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left .15s;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+  .switch[aria-checked="true"]{background:var(--blue)}
+  .switch[aria-checked="true"]::after{left:18px}
+
+  .menu{position:absolute;top:calc(100% + 4px);left:0;background:#fff;border:1px solid var(--divider);border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.15);min-width:190px;z-index:20;padding:4px;display:none}
+  .menu.open{display:block}
+  .menu button{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:8px 10px;border-radius:5px;font-size:13px}
+  .menu button:hover{background:var(--gray-chip-bg)}
+  .menu button .chk{width:14px;flex:none;color:var(--blue)}
+  .menu.right{left:auto;right:0}
+
+  /* ================= TABLES (striped per screenshot) ================= */
+  .tbl-wrap{flex:1;overflow:auto;position:relative;padding:0 28px}
+  table{width:100%;border-collapse:collapse;min-width:1000px}
+  thead th{
+    position:sticky;top:0;background:#fff;z-index:5;font-size:13px;font-weight:500;color:#000;
+    text-align:left;padding:10px 14px;border-bottom:1px solid #cfcfcf;border-top:1px solid #cfcfcf;
+    white-space:nowrap;border-right:1px solid #e6e6e6;
+  }
+  thead th:last-child{border-right:none}
+  thead th.sortable{cursor:pointer;user-select:none}
+  thead th .arrows{font-size:9px;color:#9aa0a6;margin-left:3px}
+  thead th.sorted .arrows{color:var(--blue)}
+  thead th.num, td.num{text-align:right}
+  tbody td{padding:11px 14px;font-size:13.5px;white-space:nowrap;vertical-align:middle}
+  tbody tr:nth-child(even) td{background:var(--stripe)}
+  tbody tr{cursor:pointer;border-bottom:1px solid #ececec}
+  tbody tr:hover td{background:#eef1f4}
+  tbody tr.selected td{background:var(--blue-chip-bg)}
+  td .sub{color:var(--text-secondary);font-size:11.5px;display:block;margin-top:1px}
+
+  .cbx{width:16px;height:16px;accent-color:var(--blue);cursor:pointer}
+
+  /* brick chips */
+  .brick{display:inline-flex;align-items:center;border:1px solid #bdbdbd;border-radius:16px;padding:4px 12px;font-size:12.5px;background:#fff;margin-right:6px}
+  .brick.more{padding:4px 9px;font-weight:500}
+
+  /* status badges (outlined, per screenshot) */
+  .badge{display:inline-flex;align-items:center;border:1.5px solid;border-radius:5px;padding:2px 9px;font-size:12px;font-weight:700;background:#fff;white-space:nowrap}
+  .b-draft{color:var(--amber);border-color:var(--amber);background:#fff8ef}
+  .b-active{color:var(--green);border-color:var(--green);background:#f1faf3}
+  .b-review{color:var(--blue);border-color:var(--blue);background:#eef4fe}
+  .b-inactive{color:var(--gray-badge);border-color:#bdbdbd;background:#f4f4f4}
+  /* Control Panel status badges — same visual grammar as screenshot, extended semantics */
+  .b-blocked{color:var(--red);border-color:var(--red);background:#fdf0ee}
+  .b-waiting{color:var(--amber);border-color:var(--amber);background:#fff8ef}
+  .b-progress{color:var(--blue);border-color:var(--blue);background:#eef4fe}
+  .b-needsreview{color:var(--purple);border-color:var(--purple);background:#f7effd}
+  .b-ready{color:var(--green);border-color:var(--green);background:#f1faf3}
+
+  .kebab{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#3c4043;position:relative}
+  .kebab:hover{background:#e4e7ea}
+
+  /* home-specific bits */
+  .ctx-row{padding:2px 28px 10px;flex:none}
+  .ctx-select{display:inline-flex;flex-direction:column;border:1px solid #bdbdbd;border-radius:5px;padding:5px 10px;min-width:180px;text-align:left}
+  .ctx-select .lbl{font-size:10.5px;color:var(--text-secondary)}
+  .ctx-select .val{font-size:13px;display:flex;align-items:center;gap:6px}
+  .ctx-select .val svg{margin-left:auto}
+  .section-row{display:flex;align-items:center;padding:2px 28px 8px;gap:12px;flex:none}
+  .section-row h2{font-size:16px;font-weight:700}
+  .view-toggle{display:inline-flex;border:1px solid #dadce0;border-radius:16px;overflow:hidden;margin-left:4px}
+  .view-toggle button{padding:5px 14px;font-size:12.5px;color:var(--text-secondary);background:#fff}
+  .view-toggle button.on{background:var(--blue-chip-bg);color:var(--blue);font-weight:500}
+  .section-tools{margin-left:auto;display:flex;align-items:center;gap:8px}
+  .tool-ico{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#454746}
+  .tool-ico:hover{background:var(--gray-chip-bg)}
+
+  .pri{display:inline-flex;align-items:center;gap:5px;font-weight:500;font-size:11.5px}
+  .pri .bar{width:3px;height:14px;border-radius:2px;flex:none}
+  .pri.p-high{color:var(--red)} .pri.p-high .bar{background:var(--red)}
+  .pri.p-med{color:var(--amber)} .pri.p-med .bar{background:var(--amber)}
+  .pri.p-low{color:var(--text-secondary)} .pri.p-low .bar{background:#9aa0a6}
+  .reason{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:11px;font-size:11.5px;font-weight:500}
+  .r-red{background:var(--red-bg);color:var(--red)}
+  .r-amber{background:var(--amber-bg);color:#b05a00}
+  .r-blue{background:var(--blue-chip-bg);color:var(--blue)}
+  .r-green{background:var(--green-bg);color:var(--green)}
+  .r-purple{background:var(--purple-bg);color:var(--purple)}
+  .status{display:inline-flex;align-items:center;gap:6px;font-size:12.5px}
+  .status .sdot{width:8px;height:8px;border-radius:50%;flex:none}
+  .s-blocked .sdot{background:var(--red)}
+  .s-waiting .sdot{background:#e8710a}
+  .s-progress .sdot{background:var(--blue)}
+  .s-review .sdot{background:var(--purple)}
+  .s-ready .sdot{background:var(--green)}
+  .age-over{color:var(--red);font-weight:500}
+
+  .empty{padding:56px 24px;text-align:center;display:none}
+  .empty.show{display:block}
+  .empty h3{font-size:15px;font-weight:500;margin-bottom:6px}
+  .empty p{color:var(--text-secondary);margin-bottom:16px;font-size:13px}
+  .empty .empty-actions{display:flex;gap:10px;justify-content:center}
+
+  .pag-row{display:flex;align-items:center;justify-content:flex-end;gap:20px;padding:10px 28px;color:var(--text-secondary);font-size:12.5px;flex:none}
+  .pag-row select{font-family:inherit;font-size:12.5px;border:none;color:var(--text-primary);background:transparent}
+  .pag-btns{display:flex;gap:2px;align-items:center}
+  .pag-btns button{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#9aa0a6}
+  .pag-btns button.en{color:#3c4043}
+  .pag-btns button.en:hover{background:var(--gray-chip-bg)}
+  .pag-btns .pglbl{padding:0 8px;color:var(--text-secondary)}
+
+  .totals{display:flex;align-items:stretch;border-top:1px solid var(--divider);flex:none;background:#fff}
+  .totals .t-label{display:flex;align-items:center;font-weight:500;padding:0 28px;font-size:13px}
+  .totals .t-cells{margin-left:auto;display:flex}
+  .t-cell{padding:9px 18px;border-left:1px solid var(--divider);min-width:104px;display:flex;flex-direction:column;justify-content:center;align-items:flex-end;gap:1px}
+  .t-cell .v{font-size:14px;font-weight:700}
+  .t-cell .l{font-size:10.5px;color:var(--text-secondary)}
+  .t-cell.hero{background:var(--navy);color:#fff}
+  .t-cell.hero .l{color:#c8d6ee}
+  .t-cell.hot .v{color:var(--red)}
+  .t-cell.warn .v{color:#b05a00}
+  button.t-cell:hover:not(.hero){background:#f8f9fa}
+  button.t-cell.filtering{background:var(--blue-chip-bg)}
+  button.t-cell.filtering .v,button.t-cell.filtering .l{color:var(--blue)}
+
+  /* bulk bar */
+  .bulkbar{display:none;align-items:center;gap:14px;margin:0 28px 10px;background:var(--blue-chip-bg);border:1px solid #c6dafc;border-radius:8px;padding:8px 14px;font-size:13px;color:var(--blue);font-weight:500}
+  .bulkbar.show{display:flex}
+  .bulkbar .btn-outline{border-color:#c6dafc}
+
+  /* drawer + modal + toast */
+  .drawer{position:fixed;top:44px;right:-400px;width:380px;height:calc(100vh - 44px);background:#fff;border-left:1px solid var(--divider);box-shadow:-4px 0 16px rgba(0,0,0,.08);z-index:25;transition:right .22s ease;display:flex;flex-direction:column}
+  .drawer.open{right:0}
+  .drawer-head{padding:16px 20px 12px;border-bottom:1px solid var(--divider)}
+  .drawer-head .d-close{float:right;color:#5f6368;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+  .drawer-head .d-close:hover{background:var(--gray-chip-bg)}
+  .drawer-head h3{font-size:15px;font-weight:700;margin-bottom:2px}
+  .drawer-head .d-ctx{color:var(--text-secondary);font-size:12px}
+  .drawer-body{flex:1;overflow-y:auto;padding:16px 20px}
+  .d-block{margin-bottom:18px}
+  .d-block h4{font-size:11px;font-weight:500;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px}
+  .d-kv{display:flex;justify-content:space-between;padding:5px 0;font-size:12.5px;border-bottom:1px solid #f1f3f4}
+  .d-kv .k{color:var(--text-secondary)}
+  .d-dod{background:#f8f9fa;border-radius:8px;padding:10px 12px;font-size:12.5px;list-style:none}
+  .d-dod li{padding:2px 0}
+  .d-dod li.done{color:var(--green)}
+  .drawer-foot{padding:12px 20px;border-top:1px solid var(--divider);display:flex;gap:8px;flex-wrap:wrap}
+  .scrim{position:fixed;inset:44px 0 0 0;background:transparent;z-index:24;display:none}
+  .scrim.show{display:block}
+
+  .modal-scrim{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:50;display:none;align-items:center;justify-content:center}
+  .modal-scrim.show{display:flex}
+  .modal{background:#fff;border-radius:12px;width:520px;max-width:92vw;max-height:86vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.3)}
+  .modal-head{padding:18px 22px 10px;display:flex;align-items:center}
+  .modal-head h3{font-size:17px;font-weight:700}
+  .modal-head .d-close{margin-left:auto;color:#5f6368;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+  .modal-head .d-close:hover{background:var(--gray-chip-bg)}
+  .modal-body{padding:6px 22px;overflow-y:auto}
+  .fld{margin-bottom:14px}
+  .fld label{display:block;font-size:12px;font-weight:500;color:var(--text-secondary);margin-bottom:5px}
+  .fld input[type=text],.fld select,.fld textarea{
+    width:100%;border:1px solid #bdbdbd;border-radius:6px;padding:9px 11px;font-size:13.5px;font-family:inherit;background:#fff;
+  }
+  .fld input:focus,.fld select:focus,.fld textarea:focus{outline:2px solid var(--blue);outline-offset:-1px;border-color:var(--blue)}
+  .fld .hint{font-size:11px;color:var(--text-secondary);margin-top:4px}
+  .brick-picks{display:flex;flex-wrap:wrap;gap:7px}
+  .brick-pick{border:1px solid #bdbdbd;border-radius:16px;padding:5px 13px;font-size:12.5px;background:#fff}
+  .brick-pick.on{background:var(--blue-chip-bg);border-color:var(--blue);color:var(--blue);font-weight:500}
+  .modal-foot{padding:14px 22px 18px;display:flex;justify-content:flex-end;gap:10px}
+
+  /* ================= DEALER PORTAL (MyInstall Portal) ================= */
+  .dealer-wrap{flex:1;overflow-y:auto;background:#fafafa;display:flex;flex-direction:column}
+  .d-ctxbar{position:sticky;top:0;z-index:8;background:#fff;border-bottom:1px solid var(--divider);padding:10px 28px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .d-ctxbar .store{font-weight:700;font-size:14.5px}
+  .d-ctxbar .storeid{color:var(--text-secondary);font-size:12px}
+  .d-prodchip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--blue);color:var(--blue);background:var(--blue-chip-bg);border-radius:16px;padding:4px 13px;font-size:12.5px;font-weight:500}
+  .saved-chip{display:inline-flex;align-items:center;gap:6px;color:var(--green);font-size:12px;font-weight:500}
+  .d-progresswrap{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text-secondary)}
+  .pbar{width:150px;height:6px;background:#e6e6e6;border-radius:3px;overflow:hidden}
+  .pbar>span{display:block;height:100%;background:var(--blue);border-radius:3px;transition:width .3s ease}
+  .d-body{width:100%;max-width:920px;margin:0 auto;padding:24px 24px 80px}
+  .dcard{background:#fff;border:1px solid #e3e3e3;border-radius:12px;padding:22px 24px;margin-bottom:16px}
+  .dcard h2{font-size:20px;font-weight:700;margin-bottom:6px}
+  .dcard .lead{color:var(--text-secondary);font-size:13.5px;line-height:1.55}
+  .presence-chip{display:inline-flex;align-items:center;gap:7px;background:var(--gray-chip-bg);border-radius:14px;padding:4px 12px;font-size:12px;color:var(--text-secondary);margin-top:12px}
+  .presence-chip .pdot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+  .minreq{border:1px solid #f0c37f;background:#fff8ef;border-radius:12px;padding:16px 20px;margin-bottom:16px}
+  .minreq h3{font-size:13.5px;font-weight:700;color:#8a4b00;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+  .minreq p{font-size:12.5px;color:#7a5a2e;margin-bottom:10px}
+  .minreq li{list-style:none;font-size:13px;padding:3px 0;display:flex;align-items:center;gap:8px}
+  .minreq li.done{color:var(--green)}
+  .sec-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:760px){.sec-grid{grid-template-columns:1fr}}
+  .sec-card{background:#fff;border:1px solid #e3e3e3;border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:8px;text-align:left;cursor:pointer;transition:box-shadow .15s}
+  .sec-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.08)}
+  .sec-card .sc-top{display:flex;align-items:center;gap:10px}
+  .sc-num{width:26px;height:26px;border-radius:50%;border:2px solid #bdbdbd;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;color:#5f6368;flex:none}
+  .sec-card.done .sc-num{background:var(--green);border-color:var(--green);color:#fff}
+  .sec-card h4{font-size:14.5px;font-weight:700}
+  .sec-card .sc-desc{font-size:12.5px;color:var(--text-secondary);line-height:1.45}
+  .sec-card .sc-foot{display:flex;align-items:center;margin-top:auto;gap:8px}
+  .sc-count{font-size:11.5px;color:var(--text-secondary)}
+  .sc-go{margin-left:auto;color:var(--blue);font-weight:500;font-size:12.5px}
+  .wiz{display:flex;gap:24px;align-items:flex-start}
+  .stepper{width:232px;flex:none;background:#fff;border:1px solid #e3e3e3;border-radius:12px;padding:10px;position:sticky;top:70px}
+  .step-it{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;width:100%;text-align:left;font-size:13px;color:var(--nav-text)}
+  .step-it:hover{background:#f4f6f8}
+  .step-it.cur{background:var(--blue-chip-bg);font-weight:500;color:var(--blue)}
+  .step-it .step-num{width:22px;height:22px;border-radius:50%;border:2px solid #bdbdbd;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none;color:#5f6368}
+  .step-it.cur .step-num{border-color:var(--blue);color:var(--blue)}
+  .step-it.done .step-num{background:var(--green);border-color:var(--green);color:#fff}
+  .step-it .step-sub{display:block;font-size:10.5px;color:var(--text-secondary);font-weight:400}
+  .wiz-main{flex:1;min-width:0}
+  .q{padding:16px 0;border-bottom:1px solid #f0f0f0}
+  .q:last-of-type{border-bottom:none}
+  .q-label{font-size:14px;font-weight:500;display:flex;align-items:flex-start;gap:8px;line-height:1.35}
+  .q-req{color:var(--red);font-weight:700}
+  .q-helptext{font-size:12.5px;color:var(--text-secondary);margin:4px 0 10px;line-height:1.45}
+  .q input[type=text],.q select{width:100%;max-width:380px;border:1px solid #bdbdbd;border-radius:8px;padding:10px 12px;font-size:14px;font-family:inherit;background:#fff}
+  .q input:focus,.q select:focus{outline:2px solid var(--blue);outline-offset:-1px;border-color:var(--blue)}
+  .q input:disabled,.q select:disabled{background:#f5f5f5;color:#7d7d7d}
+  .in-affix{display:inline-flex;align-items:center;gap:8px;max-width:380px;width:100%}
+  .in-affix .affix{font-size:14px;color:var(--text-secondary);flex:none}
+  .yn{display:flex;gap:10px}
+  .yn button{border:1px solid #bdbdbd;border-radius:20px;padding:8px 26px;font-size:13.5px;background:#fff}
+  .yn button.on{background:var(--blue-chip-bg);border-color:var(--blue);color:var(--blue);font-weight:500}
+  .yn button:disabled{opacity:.6;cursor:default}
+  .prov-chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;border-radius:4px;padding:2px 8px;font-weight:500;margin-left:8px;vertical-align:middle}
+  .pv-pre{background:var(--blue-chip-bg);color:var(--blue)}
+  .pv-you{background:var(--green-bg);color:var(--green)}
+  .pv-flag{background:var(--amber-bg);color:#b05a00}
+  .idk{font-size:12.5px;color:var(--blue);margin-top:8px;display:inline-block}
+  .q-err{color:var(--red);font-size:12.5px;margin-top:6px;display:flex;align-items:center;gap:6px}
+  .q.error input,.q.error select{border-color:var(--red)}
+  .q.followup{margin-left:10px;border-left:3px solid #cfe0fb;padding-left:18px;background:#fbfdff;border-bottom:1px solid #eef2f7}
+  .err-summary{border:1px solid #f2b8b0;background:var(--red-bg);color:var(--red);border-radius:10px;padding:12px 16px;font-size:13px;margin-bottom:14px}
+  .wiz-foot{display:flex;gap:12px;margin-top:20px;align-items:center}
+  .wiz-foot .spacer{flex:1}
+  .locked-banner{border:1px solid #b7dfc2;background:var(--green-bg);color:#155a2a;border-radius:12px;padding:14px 18px;font-size:13.5px;margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .rev-sec{margin-bottom:20px}
+  .rev-sec h4{font-size:14px;font-weight:700;padding-bottom:6px;border-bottom:1px solid var(--divider);margin-bottom:2px;display:flex;align-items:center}
+  .rev-sec .rev-edit{margin-left:auto;font-size:12.5px;color:var(--blue);font-weight:500}
+  .rev-row{display:flex;justify-content:space-between;gap:18px;padding:8px 0;border-bottom:1px solid #f3f3f3;font-size:13px}
+  .rev-row .rk{color:var(--text-secondary);max-width:55%}
+  .rev-row .rv{text-align:right;font-weight:500}
+  .ack-row{display:flex;gap:10px;align-items:flex-start;margin:16px 0;font-size:13px;line-height:1.5}
+  .help-fab{position:fixed;bottom:22px;right:22px;background:var(--blue);color:#fff;border-radius:26px;padding:13px 22px;font-weight:500;font-size:13.5px;box-shadow:0 4px 14px rgba(0,0,0,.25);display:none;align-items:center;gap:9px;z-index:35}
+  .help-fab:hover{background:var(--blue-dark)}
+  body.dealerview .help-fab{display:flex}
+  .help-panel{position:fixed;bottom:76px;right:22px;width:330px;background:#fff;border:1px solid var(--divider);border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.22);padding:18px;display:none;z-index:35}
+  .help-panel.open{display:block}
+  .help-panel h4{font-size:14px;font-weight:700;margin-bottom:4px}
+  .help-panel .hp-ctx{font-size:11.5px;color:var(--blue);background:var(--blue-chip-bg);border-radius:6px;padding:6px 10px;margin:8px 0 10px}
+  .help-panel p{font-size:12.5px;color:var(--text-secondary);line-height:1.5;margin-bottom:12px}
+
+  .toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,80px);background:#202124;color:#fff;padding:11px 20px;border-radius:6px;font-size:13px;box-shadow:0 4px 12px rgba(0,0,0,.3);transition:transform .25s ease;z-index:60}
+  .toast.show{transform:translate(-50%,0)}
+
+  @media (prefers-reduced-motion: reduce){*,*::before,*::after{transition:none !important;animation:none !important}}
+  @media (max-width: 900px){.nav{display:none}.topbar .search{display:none}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <span class="logo">CDK GLOBAL</span>
+  <div class="search" role="search">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" stroke-width="2.4"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg>
+    <input type="text" placeholder="Search" aria-label="Search CDK applications">
+  </div>
+  <div class="right">
+    <button class="icon-btn" aria-label="Refresh"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/></svg></button>
+    <button class="icon-btn" aria-label="App launcher"><svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><circle cx="5" cy="5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg></button>
+    <button class="icon-btn" aria-label="Help"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.4 2.3c-.8.35-1.4 1-1.4 1.9v.3"/><circle cx="11.5" cy="17" r=".5" fill="#fff"/></svg></button>
+    <button class="icon-btn notif-dot" aria-label="Notifications, 3 unread"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6"/><path d="M10 19a2 2 0 0 0 4 0"/></svg></button>
+    <button class="avatar" aria-label="Account: Nadia Torres">NT</button>
+  </div>
+</header>
+
+<div class="frame">
+
+  <!-- ============ LEFT NAV ============ -->
+  <nav class="nav" aria-label="Navigation">
+    <button class="nav-app" aria-label="Switch application">
+      <span class="app-icon" id="appIcon">CP</span>
+      <span class="app-name" id="appName">MyInstall Control Panel</span>
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="2.6"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+
+    <div class="nav-scroll">
+      <button class="nav-item" data-view="home" aria-current="page" id="navHome">
+        <svg class="nav-ico" width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 3 10.5V21h6v-6h6v6h6V10.5L12 3z"/></svg>
+        Home
+      </button>
+
+      <!-- Control Panel groups (condensed) -->
+      <button class="nav-sect" aria-expanded="false" data-group="cpwork">
+        Control Panel
+        <svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="nav-sub" id="sub-cpwork">
+        <button class="nav-item" data-nav="Portfolio"><svg class="nav-ico" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4h4a2 2 0 0 1 2 2v1h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h3V6a2 2 0 0 1 2-2zm0 3h4V6h-4v1z"/></svg>Portfolio</button>
+        <button class="nav-item" data-nav="Execution"><svg class="nav-ico" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-8.5 13L6 11.5l1.4-1.4 3.1 3.1 6.1-6.1L18 8.5 10.5 16z"/></svg>Execution</button>
+        <button class="nav-item" data-nav="Automation"><svg class="nav-ico" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>Automation</button>
+        <button class="nav-item" data-nav="Exceptions"><svg class="nav-ico" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 2.5 20h19L12 3zm1 13h-2v2h2v-2zm0-7h-2v5h2V9z"/></svg>Exceptions</button>
+        <button class="nav-item" data-nav="Communications"><svg class="nav-ico" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21 11a8 8 0 0 1-8 8H4l2-3a8 8 0 1 1 15-5z"/></svg>Communications</button>
+        <button class="nav-item" data-nav="Publishing"><svg class="nav-ico" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4 5 11h4v7h6v-7h4l-7-7zM4 20h16v2H4v-2z"/></svg>Publishing</button>
+        <button class="nav-item" data-nav="Insights"><svg class="nav-ico" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4 20h2V10H4v10zm6 0h2V4h-2v16zm6 0h2v-7h-2v7zM2 22h20v-2H2v2z"/></svg>Insights</button>
+        <button class="nav-item" data-nav="Audit History"><svg class="nav-ico" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3a9 9 0 0 0-9 9H1l3.9 3.9L9 12H6a7 7 0 1 1 7 7v2a9 9 0 0 0 0-18zm-1 5v5l4.2 2.5.8-1.3-3.5-2.1V8H12z"/></svg>Audit History</button>
+      </div>
+
+      <div class="nav-divider"></div>
+      <div class="nav-toollabel">Admin Config Tool</div>
+
+      <!-- Content Authoring (from screenshot) -->
+      <button class="nav-sect" aria-expanded="true" data-group="authoring">
+        Content Authoring
+        <svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="nav-sub open" id="sub-authoring">
+        <button class="nav-item" data-view="qbank" id="navQuestions">
+          <svg class="nav-ico" width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 16h-2v-2h2v2zm1.6-6.1c-.7.6-1.1 1-1.1 2.1h-2c0-1.8.9-2.5 1.7-3.2.6-.5 1-.9 1-1.6a1.7 1.7 0 0 0-3.4 0h-2a3.7 3.7 0 1 1 7.4 0c0 1.3-.8 2.1-1.6 2.7z"/></svg>
+          Questions
+        </button>
+        <button class="nav-item" data-nav="Checklists"><svg class="nav-ico" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17 3h-2.2a3 3 0 0 0-5.6 0H7a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-5-1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zM8 9h8v2H8V9zm0 4h8v2H8v-2zm0 4h5v2H8v-2z"/></svg>Checklists</button>
+        <button class="nav-item" data-nav="Email Templates"><svg class="nav-ico" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>Email Templates</button>
+        <button class="nav-item" data-nav="Vendor Rules"><svg class="nav-ico" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z"/></svg>Vendor Rules</button>
+      </div>
+
+      <!-- Product & Scope -->
+      <button class="nav-sect" aria-expanded="false" data-group="scope">
+        Product &amp; Scope
+        <svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="nav-sub" id="sub-scope">
+        <button class="nav-item" data-nav="Product Catalog"><svg class="nav-ico" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-4V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2zM10 4h4v2h-4V4z"/></svg>Product Catalog</button>
+        <button class="nav-item" data-nav="Workstreams"><svg class="nav-ico" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m16 6 2.3 2.3-4.9 4.9-4-4L2 16.6 3.4 18l6-6 4 4 6.3-6.3L22 12V6h-6z"/></svg>Workstreams</button>
+        <button class="nav-item" data-nav="Role Definitions"><svg class="nav-ico" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-4 0-8 2-8 5v2h16v-2c0-3-4-5-8-5z"/></svg>Role Definitions</button>
+      </div>
+
+      <!-- Governance -->
+      <button class="nav-sect" aria-expanded="false" data-group="gov">
+        Governance
+        <svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="nav-sub" id="sub-gov">
+        <button class="nav-item" data-nav="Publish Queue"><svg class="nav-ico" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h10v2H4v-2z"/></svg>Publish Queue</button>
+        <button class="nav-item" data-nav="Audit Log"><svg class="nav-ico" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H6a2 2 0 0 0-2 2v14h2V3h10V1zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z"/></svg>Audit Log</button>
+        <button class="nav-item" data-nav="Version History"><svg class="nav-ico" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3a9 9 0 0 0-9 9H1l3.9 3.9L9 12H6a7 7 0 1 1 7 7v2a9 9 0 0 0 0-18zm-1 5v5l4.2 2.5.8-1.3-3.5-2.1V8H12z"/></svg>Version History</button>
+      </div>
+
+      <div class="nav-divider"></div>
+      <div class="nav-toollabel">4.1 Dealer Intake (MyInstall Portal)</div>
+      <div class="nav-sub open" id="sub-dealer">
+        <button class="nav-item" data-view="dealer" data-dstep="landing">
+          <svg class="nav-ico" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 3 10.5V21h6v-6h6v6h6V10.5L12 3z"/></svg>
+          Portal Landing
+        </button>
+        <button class="nav-item" data-view="dealer" data-dstep="0">
+          <svg class="nav-ico" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v4H4V4zm0 6h16v4H4v-4zm0 6h10v4H4v-4z"/></svg>
+          Setup Wizard
+        </button>
+        <button class="nav-item" data-view="dealer" data-dstep="review">
+          <svg class="nav-ico" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 11l3 3 8-8-1.4-1.4L12 11.2 10.4 9.6 9 11zm10 1a7 7 0 1 1-4.3-6.5l1.5-1.5A9 9 0 1 0 21 12h-2z"/></svg>
+          Review &amp; Submit
+        </button>
+      </div>
+    </div>
+
+    <div class="nav-bottom">
+      <button class="bico" aria-label="Help" onclick="toast('Help center (prototype)')"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 16h-2v-2h2v2zm1.6-6.1c-.7.6-1.1 1-1.1 2.1h-2c0-1.8.9-2.5 1.7-3.2.6-.5 1-.9 1-1.6a1.7 1.7 0 0 0-3.4 0h-2a3.7 3.7 0 1 1 7.4 0c0 1.3-.8 2.1-1.6 2.7z"/></svg></button>
+      <button class="bico" aria-label="Account" onclick="toast('Account settings (prototype)')"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-4 0-8 2-8 5v2h16v-2c0-3-4-5-8-5z"/></svg></button>
+      <button class="bico" aria-label="Settings" onclick="toast('Settings (prototype)')"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.4 13a7.6 7.6 0 0 0 .1-1 7.6 7.6 0 0 0-.1-1l2.1-1.6a.5.5 0 0 0 .1-.7l-2-3.4a.5.5 0 0 0-.6-.2l-2.5 1a7.3 7.3 0 0 0-1.7-1l-.4-2.6a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 0-.5.5l-.4 2.6a7.3 7.3 0 0 0-1.7 1l-2.5-1a.5.5 0 0 0-.6.2l-2 3.4a.5.5 0 0 0 .1.7L4.5 11a7.6 7.6 0 0 0 0 2l-2.1 1.6a.5.5 0 0 0-.1.7l2 3.4c.1.2.4.3.6.2l2.5-1c.5.4 1.1.8 1.7 1l.4 2.6c0 .3.2.5.5.5h4c.3 0 .5-.2.5-.5l.4-2.6a7.3 7.3 0 0 0 1.7-1l2.5 1c.2.1.5 0 .6-.2l2-3.4a.5.5 0 0 0-.1-.7L19.4 13zM12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7z"/></svg></button>
+      <button class="collapse-btn" aria-label="Collapse navigation"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 6l-6 6 6 6"/></svg></button>
+    </div>
+  </nav>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+
+    <!-- ================== VIEW: HOME ================== -->
+    <section class="view on" id="view-home" aria-label="Control Panel Home">
+      <div class="page-head">
+        <h1>Home</h1>
+        <div class="page-actions">
+          <button class="btn-text" onclick="toast('Opening Insights → Portfolio Health')">Portfolio Health</button>
+          <button class="btn-primary" id="startNext">Start Next Priority</button>
+        </div>
+      </div>
+      <div class="ctx-row">
+        <button class="ctx-select" aria-label="Change team context">
+          <span class="lbl">Team</span>
+          <span class="val">NW Implementation
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>
+          </span>
+        </button>
+      </div>
+      <div class="section-row">
+        <h2>My Work<span>(<span id="rowCount">14</span>)</span></h2>
+        <div class="view-toggle" role="group" aria-label="Work scope">
+          <button class="on" id="scopeMine">My work</button>
+          <button id="scopeTeam">Team work</button>
+        </div>
+        <div class="section-tools">
+          <div class="tbl-search" style="height:32px;width:260px;border-color:#dadce0;border-radius:16px">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="2.4"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg>
+            <input type="text" id="tblSearch" placeholder="Search by Dealership, Project, Product" aria-label="Search work items" style="font-size:12.5px">
+          </div>
+          <button class="tool-ico" aria-label="Download list" onclick="toast('Exporting work queue…')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 21h16"/></svg></button>
+          <button class="tool-ico" aria-label="Print list" onclick="toast('Preparing print view…')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="14" width="12" height="7"/><path d="M6 17H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><path d="M6 9V3h12v6"/></svg></button>
+        </div>
+      </div>
+      <div class="filters" style="padding-top:0">
+        <button class="chip radio on" id="fltToday"><span class="dot"></span>Due Today (07/01/2026)</button>
+        <button class="chip radio" id="fltWeek"><span class="dot"></span>This Week</button>
+        <span class="chip-sep"></span>
+        <span style="position:relative">
+          <button class="chip" id="chipProduct" aria-haspopup="true" aria-expanded="false">Bricks <svg class="caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M6 9l6 6 6-6"/></svg></button>
+          <div class="menu" id="menuProduct" role="menu"></div>
+        </span>
+        <span style="position:relative">
+          <button class="chip" id="chipStatus" aria-haspopup="true" aria-expanded="false">Status <svg class="caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M6 9l6 6 6-6"/></svg></button>
+          <div class="menu" id="menuStatus" role="menu"></div>
+        </span>
+        <span style="position:relative">
+          <button class="chip" id="chipReason" aria-haspopup="true" aria-expanded="false">Needs Attention <svg class="caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M6 9l6 6 6-6"/></svg></button>
+          <div class="menu" id="menuReason" role="menu"></div>
+        </span>
+        <span class="chip-sep"></span>
+        <span class="switch-wrap">Show Completed Items.
+          <button class="switch" id="showCompleted" role="switch" aria-checked="false" aria-label="Show completed items"></button>
+        </span>
+      </div>
+
+      <div class="tbl-wrap">
+        <table id="workTable" aria-label="My work queue">
+          <thead>
+            <tr>
+              <th class="sortable sorted" data-key="prioRank">Priority<span class="arrows">▲▼</span></th>
+              <th class="sortable" data-key="dealer">Dealership<span class="arrows">▲▼</span></th>
+              <th class="sortable" data-key="brick0">Bricks<span class="arrows">▲▼</span></th>
+              <th>Current Step</th>
+              <th>Needs Attention Because</th>
+              <th class="sortable" data-key="status">Status<span class="arrows">▲▼</span></th>
+              <th>Waiting On</th>
+              <th class="sortable num" data-key="ageDays">Age (d)<span class="arrows">▲▼</span></th>
+              <th class="sortable" data-key="dueSort">Due<span class="arrows">▲▼</span></th>
+            </tr>
+          </thead>
+          <tbody id="tblBody"></tbody>
+        </table>
+        <div class="empty" id="emptyState">
+          <h3 id="emptyTitle">No items match these filters</h3>
+          <p id="emptyMsg">Try clearing a filter, or check whether your team needs coverage.</p>
+          <div class="empty-actions">
+            <button class="btn-outline" id="clearFilters">Clear all filters</button>
+            <button class="btn-primary" onclick="document.getElementById('scopeTeam').click()">View team work</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pag-row">
+        <span>Rows per Page: <select aria-label="Rows per page"><option>50</option><option>25</option></select></span>
+        <span id="pageInfo">1 – 14 of 14</span>
+      </div>
+
+      <div class="totals" role="group" aria-label="Hot item summary. Select a cell to filter the queue.">
+        <span class="t-label">Needs Attention</span>
+        <div class="t-cells" id="totalsCells">
+          <div class="t-cell hero"><span class="v" id="tOpen">14</span><span class="l">Open Items</span></div>
+          <button class="t-cell hot" data-reasoncat="Blocked"><span class="v">3</span><span class="l">Blocked</span></button>
+          <button class="t-cell hot" data-reasoncat="Overdue"><span class="v">2</span><span class="l">Overdue</span></button>
+          <button class="t-cell hot" data-reasoncat="Automation failed"><span class="v">2</span><span class="l">Automation Failed</span></button>
+          <button class="t-cell warn" data-reasoncat="Dealer waiting"><span class="v">3</span><span class="l">Dealer Waiting</span></button>
+          <button class="t-cell warn" data-reasoncat="Vendor waiting"><span class="v">1</span><span class="l">Vendor Waiting</span></button>
+          <button class="t-cell" data-reasoncat="Ready"><span class="v" style="color:var(--green)">3</span><span class="l">Ready to Act</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================== VIEW: QUESTION BANK ================== -->
+    <section class="view" id="view-qbank" aria-label="Question Bank">
+      <div class="page-head">
+        <h1>Question Bank</h1>
+        <div class="page-actions">
+          <button class="btn-primary" id="btnCreateQ">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6"><path d="M12 5v14M5 12h14"/></svg>
+            Create New Question
+          </button>
+        </div>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="Question scope">
+        <button class="tab on" id="tabMy" role="tab" aria-selected="true">My products</button>
+        <button class="tab" id="tabAll" role="tab" aria-selected="false">All questions</button>
+      </div>
+
+      <div class="filters">
+        <span style="position:relative">
+          <button class="chip" id="chipQType" aria-haspopup="true" aria-expanded="false">Field Type <svg class="caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M6 9l6 6 6-6"/></svg></button>
+          <div class="menu" id="menuQType" role="menu"></div>
+        </span>
+        <span style="position:relative">
+          <button class="chip" id="chipQBrick" aria-haspopup="true" aria-expanded="false">Products <svg class="caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M6 9l6 6 6-6"/></svg></button>
+          <div class="menu" id="menuQBrick" role="menu"></div>
+        </span>
+        <span style="position:relative">
+          <button class="chip" id="chipQStatus" aria-haspopup="true" aria-expanded="false">Status <svg class="caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M6 9l6 6 6-6"/></svg></button>
+          <div class="menu" id="menuQStatus" role="menu"></div>
+        </span>
+        <span class="spacer"></span>
+        <div class="tbl-search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="2.4"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg>
+          <input type="text" id="qSearch" placeholder="Search questions" aria-label="Search questions">
+        </div>
+      </div>
+
+      <div class="bulkbar" id="qBulk">
+        <span id="qBulkCount">0 selected</span>
+        <button class="btn-outline" onclick="toast('Bulk status change (prototype)')">Set status</button>
+        <button class="btn-outline" onclick="toast('Bulk assign to products (prototype)')">Assign products</button>
+        <button class="btn-text" id="qBulkClear">Clear selection</button>
+      </div>
+
+      <div class="tbl-wrap">
+        <table id="qTable" aria-label="Question bank">
+          <thead>
+            <tr>
+              <th style="width:44px"><input type="checkbox" class="cbx" id="qSelAll" aria-label="Select all questions on this page"></th>
+              <th class="sortable" data-qkey="label">Question Label<span class="arrows">▲▼</span></th>
+              <th class="sortable" data-qkey="id">Internal ID<span class="arrows">▲▼</span></th>
+              <th class="sortable" data-qkey="type">Field Type<span class="arrows">▲▼</span></th>
+              <th>Bricks</th>
+              <th class="sortable" data-qkey="status">Status<span class="arrows">▲▼</span></th>
+              <th style="width:70px">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="qBody"></tbody>
+        </table>
+        <div class="empty" id="qEmpty">
+          <h3>No questions match</h3>
+          <p>Try clearing a filter or search term — or author a new question for these products.</p>
+          <div class="empty-actions">
+            <button class="btn-outline" id="qClearFilters">Clear filters</button>
+            <button class="btn-primary" onclick="document.getElementById('btnCreateQ').click()">Create New Question</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pag-row">
+        <span>Rows per page: <select id="qRpp" aria-label="Rows per page"><option>10</option><option>25</option><option>50</option></select></span>
+        <span id="qPageInfo">1–10 of 100</span>
+        <div class="pag-btns">
+          <button id="qFirst" aria-label="First page"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 6l-6 6 6 6"/><path d="M19 6l-6 6 6 6"/></svg></button>
+          <button id="qPrev" aria-label="Previous page"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg></button>
+          <span class="pglbl" id="qPageLbl">Page 1 of 10</span>
+          <button id="qNext" aria-label="Next page"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></button>
+          <button id="qLast" aria-label="Last page"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 6l6 6-6 6"/><path d="M5 6l6 6-6 6"/></svg></button>
+        </div>
+      </div>
+    </section>
+    <!-- ================== VIEW: DEALER PORTAL (4.1 Dealer Intake) ================== -->
+    <section class="view" id="view-dealer" aria-label="MyInstall Portal — Dealer Intake">
+      <div class="dealer-wrap">
+        <div class="d-ctxbar">
+          <div>
+            <div class="store">MAIN AUTO BODY (CV)</div>
+            <div class="storeid">Store T24 · Corvallis, OR</div>
+          </div>
+          <span class="d-prodchip">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M22 11.1 12.9 2h-1.8L2 11.1v1.8L11.1 22h1.8L22 12.9v-1.8zM12 15.5 8.5 12 12 8.5l3.5 3.5-3.5 3.5z"/></svg>
+            Service Portal setup
+          </span>
+          <span class="saved-chip" id="dSaved" aria-live="polite">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 12l5 5 9-10"/></svg>
+            All changes saved
+          </span>
+          <div class="d-progresswrap">
+            <span id="dPct">0 of 4 sections complete</span>
+            <div class="pbar" role="progressbar" aria-label="Setup progress"><span id="dPbar" style="width:0%"></span></div>
+          </div>
+        </div>
+        <div class="d-body" id="dealerRoot"><!-- rendered by JS --></div>
+      </div>
+
+      <!-- Submit confirmation modal -->
+      <div class="modal-scrim" id="dSubmitScrim">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="dSubTitle">
+          <div class="modal-head">
+            <h3 id="dSubTitle">Submit your setup data?</h3>
+            <button class="d-close" id="dSubClose" aria-label="Close dialog"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+          </div>
+          <div class="modal-body">
+            <p style="font-size:13.5px;line-height:1.6;margin-bottom:12px">Submitting sends your answers to the CDK team to begin configuring <b>Service Portal</b> for Main Auto Body (CV).</p>
+            <p style="font-size:13.5px;line-height:1.6;margin-bottom:12px"><b>Your answers will be locked</b> while CDK works on your setup. If you need to change something later, you can request an unlock from this portal — your CDK team will review and reopen the sections you need.</p>
+            <p style="font-size:13px;color:var(--text-secondary);line-height:1.6">What happens next: CDK reviews within 1 business day → configuration begins → you'll get progress updates by email and here in the portal.</p>
+          </div>
+          <div class="modal-foot">
+            <button class="btn-text" id="dSubCancel">Keep editing</button>
+            <button class="btn-primary" id="dSubConfirm">Submit setup data</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Dealer help chatbot -->
+<button class="help-fab" id="helpFab" aria-haspopup="true" aria-expanded="false">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 16h-2v-2h2v2zm1.6-6.1c-.7.6-1.1 1-1.1 2.1h-2c0-1.8.9-2.5 1.7-3.2.6-.5 1-.9 1-1.6a1.7 1.7 0 0 0-3.4 0h-2a3.7 3.7 0 1 1 7.4 0c0 1.3-.8 2.1-1.6 2.7z"/></svg>
+  Need help?
+</button>
+<div class="help-panel" id="helpPanel" role="dialog" aria-label="Setup assistant">
+  <h4>Setup Assistant</h4>
+  <div class="hp-ctx" id="hpCtx">You're on the Portal Landing page</div>
+  <p id="hpMsg">I can explain any question, tell you why we're asking, or connect you with your CDK team. I already know which store, product, and section you're on.</p>
+  <div style="display:flex;gap:8px">
+    <button class="btn-outline" id="hpAsk">Ask CDK a question</button>
+    <button class="btn-text" id="hpClose">Close</button>
+  </div>
+</div>
+
+<!-- ============ DETAIL DRAWER (home) ============ -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Work item detail">
+  <div class="drawer-head">
+    <button class="d-close" id="drawerClose" aria-label="Close detail panel"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    <h3 id="dTitle">—</h3>
+    <div class="d-ctx" id="dCtx">—</div>
+  </div>
+  <div class="drawer-body">
+    <div class="d-block"><h4>Why this needs attention</h4><div id="dReason" style="font-size:12.5px;line-height:1.5">—</div></div>
+    <div class="d-block"><h4>Context</h4>
+      <div class="d-kv"><span class="k">Project</span><span id="dProject">—</span></div>
+      <div class="d-kv"><span class="k">Current step</span><span id="dStep">—</span></div>
+      <div class="d-kv"><span class="k">Step type</span><span id="dType">—</span></div>
+      <div class="d-kv"><span class="k">Waiting on</span><span id="dWait">—</span></div>
+      <div class="d-kv"><span class="k">Owner</span><span id="dOwner">—</span></div>
+      <div class="d-kv"><span class="k">Dealer last active</span><span id="dActive">—</span></div>
+    </div>
+    <div class="d-block"><h4>Definition of Done — current step</h4><ul class="d-dod" id="dDod"></ul></div>
+  </div>
+  <div class="drawer-foot" id="dActions"></div>
+</aside>
+
+<!-- ============ CREATE QUESTION MODAL ============ -->
+<div class="modal-scrim" id="qModalScrim">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="qModalTitle">
+    <div class="modal-head">
+      <h3 id="qModalTitle">Create New Question</h3>
+      <button class="d-close" id="qModalClose" aria-label="Close dialog"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="fld">
+        <label for="qfLabel">Question label (dealer-facing)</label>
+        <input type="text" id="qfLabel" placeholder="e.g., How many service bays does this store have?">
+        <div class="hint">Write in plain language a dealer will understand. Avoid internal terminology.</div>
+      </div>
+      <div class="fld">
+        <label for="qfId">Internal ID</label>
+        <input type="text" id="qfId" placeholder="auto-generated-from-label" readonly style="background:#f5f5f5;color:#5f6368">
+      </div>
+      <div class="fld">
+        <label for="qfType">Field type</label>
+        <select id="qfType">
+          <option>Text</option><option>Number</option><option>Currency</option><option>Percentage</option>
+          <option>Email</option><option>Phone</option><option>Date</option><option>Boolean</option>
+          <option>Dropdown</option><option>Address</option>
+        </select>
+        <div class="hint">Validation rules for this type are applied automatically from the field-type catalog.</div>
+      </div>
+      <div class="fld">
+        <label>Bricks (products this question applies to)</label>
+        <div class="brick-picks" id="qfBricks"></div>
+      </div>
+      <div class="fld">
+        <label for="qfHelp">Help text (optional)</label>
+        <textarea id="qfHelp" rows="2" placeholder="Shown to the dealer under the question"></textarea>
+      </div>
+      <div class="fld">
+        <span class="switch-wrap">Required question
+          <button class="switch" id="qfRequired" role="switch" aria-checked="false" aria-label="Required question"></button>
+        </span>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-text" id="qModalCancel">Cancel</button>
+      <button class="btn-primary" id="qModalSave">Save as Draft</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* =================================================================
+   SHARED
+================================================================= */
+const $ = s => document.querySelector(s);
+const esc = t => String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;");
+function toast(msg){
+  const t=$("#toast"); t.textContent=msg; t.classList.add("show");
+  clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),2400);
+}
+document.addEventListener("click",()=>document.querySelectorAll(".menu.open").forEach(m=>m.classList.remove("open")));
+
+/* ---------- view switching ---------- */
+const views = {home:$("#view-home"), qbank:$("#view-qbank"), dealer:$("#view-dealer")};
+function setView(v){
+  Object.entries(views).forEach(([k,el])=>el.classList.toggle("on",k===v));
+  document.querySelectorAll(".nav-item[data-view]").forEach(b=>{
+    if(b.dataset.view===v) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current");
+  });
+  // app selector reflects current tool
+  if(v==="qbank"){ $("#appIcon").textContent="CDK"; $("#appIcon").style.background="#000"; $("#appName").textContent="Admin Config Tool"; }
+  else if(v==="dealer"){ $("#appIcon").textContent="MI"; $("#appIcon").style.background="var(--blue)"; $("#appName").textContent="MyInstall Portal"; }
+  else { $("#appIcon").textContent="CP"; $("#appIcon").style.background="var(--navy)"; $("#appName").textContent="MyInstall Control Panel"; }
+  document.body.classList.toggle("dealerview", v==="dealer");
+  if(v!=="dealer"){ const hp=$("#helpPanel"); if(hp) hp.classList.remove("open"); }
+}
+document.querySelectorAll(".nav-item[data-view]").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.view)));
+document.querySelectorAll(".nav-item[data-nav]").forEach(b=>b.addEventListener("click",()=>toast(`Navigate: ${b.dataset.nav} (prototype)`)));
+document.querySelectorAll(".nav-sect[data-group]").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    const sub=document.getElementById("sub-"+btn.dataset.group);
+    const open=sub.classList.toggle("open");
+    btn.setAttribute("aria-expanded",String(open));
+  });
+});
+
+/* =================================================================
+   HOME VIEW (work queue)
+================================================================= */
+const rows=[
+ {id:1,prio:"High",dealer:"LASSEN TOYOTA",store:"T10217",project:"New Store Install — Q3",product:"Dealership Accounting",step:"Retry GL posting setup automation",type:"Automated",reason:"Automation failed",reasonDetail:"POST /gl-setup returned schema mismatch on 2 of 14 records. Retry available; fallback to manual entry documented.",cat:"Automation failed",rClass:"r-red",status:"Blocked",sClass:"s-blocked",wait:"System error",ownerName:"Nadia Torres",age:3,due:"Today",dueSort:0,active:"2 hrs ago",team:false,
+  dod:[{t:"All 14 GL accounts posted via API",d:false},{t:"Acknowledgment received from Accounting",d:false},{t:"Failure log reviewed and resolved",d:false}],actions:["Retry automation","View failure log","Fallback to manual"]},
+ {id:2,prio:"High",dealer:"ROYAL MOORE SUBARU",store:"T1110",project:"CRM Add-On",product:"CRM",step:"Review dealer submission — Sales Setup",type:"Manual",reason:"Dealer waiting 3d",reasonDetail:"Dealer submitted the Sales Setup section 3 days ago and requested unlock on 1 field. Review is the gating step for checklist item 4 of 9.",cat:"Dealer waiting",rClass:"r-amber",status:"Needs Review",sClass:"s-review",wait:"Internal review",ownerName:"Nadia Torres",age:3,due:"Today",dueSort:0,active:"Yesterday",team:false,
+  dod:[{t:"All required fields validated",d:true},{t:"Provenance conflicts resolved",d:false},{t:"Unlock request approved or denied",d:false}],actions:["Open data review","Approve unlock","Message dealer"]},
+ {id:3,prio:"High",dealer:"UNIVERSITY HONDA",store:"T123",project:"Full DMS Migration",product:"Parts Inventory",step:"Chart of Accounts file translation",type:"Hybrid",reason:"Overdue 2d",reasonDetail:"Translated output has been in Needs Review for 2 days past SLA. 312 rows mapped via reusable mapping 'COA – Accounting'; 9 rows need manual decisions.",cat:"Overdue",rClass:"r-red",status:"In Progress",sClass:"s-progress",wait:"Internal review",ownerName:"Nadia Torres",age:6,due:"06/29",dueSort:-2,active:"4 days ago",team:false,
+  dod:[{t:"All rows accepted or rejected",d:false},{t:"Mapping decisions annotated",d:true},{t:"Output returned to dealer for validation",d:false}],actions:["Open translation review","Use prior mapping","Escalate"]},
+ {id:4,prio:"High",dealer:"MAIN AUTO BODY (CV)",store:"T24",project:"Service Suite Install",product:"Service Scheduler",step:"Publish setup records",type:"Automated",reason:"Ack failed",reasonDetail:"2 of 6 records published but acknowledgment failed from Service Scheduler. Retry acknowledgment or contact product integration team.",cat:"Automation failed",rClass:"r-red",status:"Blocked",sClass:"s-blocked",wait:"Product system",ownerName:"Nadia Torres",age:1,due:"Today",dueSort:0,active:"Today, 8:14 AM",team:false,
+  dod:[{t:"All 6 records acknowledged",d:false},{t:"Publish audit trail complete",d:true}],actions:["Retry acknowledgment","View sent payloads","Flag risk"]},
+ {id:5,prio:"Med",dealer:"D&B BEAR SERVICE",store:"T11",project:"New Store Install — Q3",product:"Dealership Accounting",step:"Vendor: bank feed enablement",type:"Manual",reason:"Vendor waiting 5d",reasonDetail:"First Interstate Bank has not confirmed feed credentials. Last nudge sent 5 days ago. Recommended cadence suggests a follow-up today.",cat:"Vendor waiting",rClass:"r-amber",status:"Waiting",sClass:"s-waiting",wait:"Vendor",ownerName:"Nadia Torres",age:9,due:"07/03",dueSort:2,active:"Yesterday",team:false,
+  dod:[{t:"Credentials received from vendor",d:false},{t:"Feed tested with sample file",d:false}],actions:["Nudge vendor","View vendor contacts","Escalate"]},
+ {id:6,prio:"Med",dealer:"GARY'S AUTOMOTIVE",store:"T10",project:"CRM Add-On",product:"CRM",step:"Copy setup from sister store",type:"Hybrid",reason:"Conflicts to resolve",reasonDetail:"Copy from LASSEN TOYOTA is previewed: 41 fields will apply cleanly, 6 conflict with existing answers and need choose/merge decisions before apply.",cat:"Blocked",rClass:"r-purple",status:"In Progress",sClass:"s-progress",wait:"Internal decision",ownerName:"Nadia Torres",age:2,due:"07/02",dueSort:1,active:"Today, 9:02 AM",team:false,
+  dod:[{t:"All conflicts resolved",d:false},{t:"Diff preview confirmed",d:false},{t:"Inherited values tagged",d:true}],actions:["Open diff preview","Resolve conflicts"]},
+ {id:7,prio:"Med",dealer:"JOHN'S AUTO REPAIR",store:"T23",project:"Payroll Onboarding",product:"Payroll",step:"Bulk edit: employee pay codes",type:"Manual",reason:"Validation errors (12)",reasonDetail:"Bulk update of 240 records staged; 12 rows failed field validation (pay code format). Fix inline and revalidate before commit.",cat:"Blocked",rClass:"r-red",status:"Blocked",sClass:"s-blocked",wait:"Internal fix",ownerName:"Nadia Torres",age:1,due:"07/02",dueSort:1,active:"3 days ago",team:false,
+  dod:[{t:"All rows pass validation",d:false},{t:"Before/after review completed",d:false},{t:"Changes committed with audit entry",d:false}],actions:["Open bulk editor","Show only errors"]},
+ {id:8,prio:"Med",dealer:"OREGON STATE CREDIT UNION",store:"T187",project:"F&I Integration",product:"F&I Suite",step:"Dealer stalled — Lender Setup section",type:"Manual",reason:"Dealer inactive 7d",reasonDetail:"No dealer activity in 7 days. Lender Setup is 40% complete and gates 3 downstream checklist steps. A nudge with section link is recommended.",cat:"Dealer waiting",rClass:"r-amber",status:"Waiting",sClass:"s-waiting",wait:"Dealer",ownerName:"Nadia Torres",age:12,due:"07/06",dueSort:5,active:"7 days ago",team:false,
+  dod:[{t:"Lender Setup section submitted",d:false},{t:"Required lender IDs validated",d:false}],actions:["Send nudge","View dealer activity","Message dealer"]},
+ {id:9,prio:"Med",dealer:"KEN FISHER AUTO & TRUCK REPAIR INC",store:"T13",project:"Service Suite Install",product:"Service Scheduler",step:"Help request: labor rate matrix",type:"Manual",reason:"Help request 1d",reasonDetail:"Dealer flagged 'I don't know' on 2 labor-rate questions and submitted a help request with context attached. SLA response due today.",cat:"Dealer waiting",rClass:"r-blue",status:"Needs Review",sClass:"s-review",wait:"Internal response",ownerName:"Nadia Torres",age:1,due:"Today",dueSort:0,active:"Today, 7:41 AM",team:false,
+  dod:[{t:"Help request answered within SLA",d:false},{t:"Dealer unblocked on flagged questions",d:false}],actions:["Answer help request","View question context"]},
+ {id:10,prio:"Low",dealer:"WHEELS INC",store:"218968",project:"New Store Install — Q3",product:"Dealership Accounting",step:"Mark product Setup Ready",type:"Manual",reason:"Ready — gates passed",reasonDetail:"All checklist steps complete, DoD satisfied, validations passed, and approvals granted. Pre-flight readiness check shows 8 of 8 gates green.",cat:"Ready",rClass:"r-green",status:"Setup Ready",sClass:"s-ready",wait:"—",ownerName:"Nadia Torres",age:0,due:"07/02",dueSort:1,active:"Today, 8:55 AM",team:false,
+  dod:[{t:"All checklist steps complete",d:true},{t:"Readiness gates passed (8/8)",d:true},{t:"Internal approval granted",d:true}],actions:["Mark Setup Ready","View readiness gates"]},
+ {id:11,prio:"Low",dealer:"A-1 AUTO GLASS (CORV)",store:"T1603",project:"CRM Add-On",product:"CRM",step:"Publish setup records — partial",type:"Automated",reason:"Ready to publish",reasonDetail:"3 of 5 records are eligible (required fields complete + approved). Partial publish is available; 2 records remain waiting on dealer input.",cat:"Ready",rClass:"r-green",status:"In Progress",sClass:"s-progress",wait:"—",ownerName:"Nadia Torres",age:2,due:"07/03",dueSort:2,active:"Yesterday",team:false,
+  dod:[{t:"Eligible records selected",d:true},{t:"Publish confirmation with context",d:false},{t:"Acknowledgments received",d:false}],actions:["Publish 3 eligible records","View eligibility gate"]},
+ {id:12,prio:"Low",dealer:"DEVCO ENGINEERING INC",store:"T21717",project:"Payroll Onboarding",product:"Payroll",step:"Handoff: ready for Tax team",type:"Manual",reason:"Awaiting acceptance",reasonDetail:"You marked steps 1–5 ready for the Tax Configuration team yesterday. Acceptance has not yet been captured.",cat:"Ready",rClass:"r-blue",status:"Waiting",sClass:"s-waiting",wait:"Internal team",ownerName:"Nadia Torres",age:1,due:"07/05",dueSort:4,active:"2 days ago",team:false,
+  dod:[{t:"Handoff marked ready",d:true},{t:"Tax team acceptance captured",d:false}],actions:["Remind Tax team","View handoff notes"]},
+ {id:13,prio:"High",dealer:"LONDON'S AUTOMOTIVE INC",store:"T28",project:"Full DMS Migration",product:"Parts Inventory",step:"Escalation: parts vendor mapping",type:"Manual",reason:"Escalated — SLA 4h",reasonDetail:"Escalation #E-2231 created by J. Ramos. Ops leadership notified. Expected response within 4 hours per severity-2 SLA.",cat:"Blocked",rClass:"r-red",status:"Blocked",sClass:"s-blocked",wait:"Ops leadership",ownerName:"Jordan Ramos",age:1,due:"Today",dueSort:0,active:"Today, 6:20 AM",team:true,
+  dod:[{t:"Escalation acknowledged",d:true},{t:"Resolution actions recorded",d:false},{t:"Blocker cleared and dependents unblocked",d:false}],actions:["View escalation","Add resolution note"]},
+ {id:14,prio:"Med",dealer:"WAUCOMAH AUTO REPAIR INC",store:"T1814",project:"Service Suite Install",product:"Service Scheduler",step:"Data review — prefill validation",type:"Manual",reason:"Overdue 1d",reasonDetail:"Prefilled values from the existing Accounting install need confirmation against dealer-entered answers. 4 provenance conflicts flagged.",cat:"Overdue",rClass:"r-red",status:"Needs Review",sClass:"s-review",wait:"Internal review",ownerName:"Ashlee K.",age:4,due:"06/30",dueSort:-1,active:"Yesterday",team:true,
+  dod:[{t:"Prefill vs dealer conflicts resolved",d:false},{t:"Overrides tagged and audited",d:false}],actions:["Open data review","View provenance"]},
+];
+const prioRank={High:0,Med:1,Low:2};
+rows.forEach(r=>r.prioRank=prioRank[r.prio]);
+
+/* Product → Bricks mapping for the work queue (rendered as brick chips) */
+const productBricks={
+ "Dealership Accounting":["Drive Accounting","Digital Payments","Drive Service"],
+ "CRM":["Drive Service","Digital Lane"],
+ "Parts Inventory":["Parts Hub","Drive Service","Telematics","Digital Store"],
+ "Service Scheduler":["Service Portal","Drive Service"],
+ "Payroll":["Drive Accounting"],
+ "F&I Suite":["Digital Lane","Usage Based Insurance","Warranty System"]
+};
+rows.forEach(r=>{r.bricks=productBricks[r.product]||[r.product];r.brick0=r.bricks[0]});
+
+/* status → outlined badge class (screenshot styling) */
+function homeBadge(s){
+  return s==="Blocked"?"b-blocked":s==="Waiting"?"b-waiting":s==="In Progress"?"b-progress":s==="Needs Review"?"b-needsreview":s==="Setup Ready"?"b-ready":"b-inactive";
+}
+
+let state={scope:"mine",timeframe:"today",products:new Set(),statuses:new Set(),reasons:new Set(),hotCat:null,search:"",showCompleted:false,sortKey:"prioRank",sortDir:1,selectedId:null};
+
+const productOpts=[...new Set(rows.flatMap(r=>r.bricks))].sort();
+const statusOpts=[...new Set(rows.map(r=>r.status))].sort();
+const reasonOpts=["Blocked","Overdue","Automation failed","Dealer waiting","Vendor waiting","Ready"];
+
+function buildMenu(menuEl,opts,set,chipEl,chipLabel){
+  menuEl.innerHTML=opts.map(o=>`<button role="menuitemcheckbox" aria-checked="${set.has(o)}" data-v="${esc(o)}"><span class="chk">${set.has(o)?"✓":""}</span>${esc(o)}</button>`).join("");
+  menuEl.querySelectorAll("button").forEach(b=>{
+    b.addEventListener("click",e=>{
+      e.stopPropagation();
+      const v=b.dataset.v;
+      set.has(v)?set.delete(v):set.add(v);
+      buildMenu(menuEl,opts,set,chipEl,chipLabel);
+      updateChip(chipEl,chipLabel,set);
+      (menuEl.id.startsWith("menuQ"))?qRender():render();
+    });
+  });
+}
+function updateChip(chipEl,label,set){
+  chipEl.classList.toggle("active-filter",set.size>0);
+  chipEl.firstChild.textContent=set.size?`${label}: ${set.size} `:`${label} `;
+}
+function wireChipMenu(chipId,menuId,opts,set,label){
+  const chip=$(chipId),menu=$(menuId);
+  buildMenu(menu,opts,set,chip,label);
+  chip.addEventListener("click",e=>{
+    e.stopPropagation();
+    document.querySelectorAll(".menu.open").forEach(m=>{if(m!==menu)m.classList.remove("open")});
+    menu.classList.toggle("open");
+    chip.setAttribute("aria-expanded",menu.classList.contains("open"));
+  });
+}
+wireChipMenu("#chipProduct","#menuProduct",productOpts,state.products,"Bricks");
+wireChipMenu("#chipStatus","#menuStatus",statusOpts,state.statuses,"Status");
+wireChipMenu("#chipReason","#menuReason",reasonOpts,state.reasons,"Needs Attention");
+
+function filteredRows(){
+  return rows.filter(r=>{
+    if(state.scope==="mine"&&r.team)return false;
+    if(state.timeframe==="today"&&r.dueSort>1&&r.cat==="Ready")return false;
+    if(state.timeframe==="today"&&r.dueSort>2)return false;
+    if(state.products.size&&!r.bricks.some(b=>state.products.has(b)))return false;
+    if(state.statuses.size&&!state.statuses.has(r.status))return false;
+    if(state.reasons.size&&!state.reasons.has(r.cat))return false;
+    if(state.hotCat&&r.cat!==state.hotCat)return false;
+    if(state.search){
+      const q=state.search.toLowerCase();
+      if(!(r.dealer+" "+r.project+" "+r.product+" "+r.bricks.join(" ")+" "+r.store).toLowerCase().includes(q))return false;
+    }
+    return true;
+  }).sort((a,b)=>{
+    const k=state.sortKey,va=a[k],vb=b[k];
+    const c=(typeof va==="number")?va-vb:String(va).localeCompare(String(vb));
+    return c*state.sortDir||a.prioRank-b.prioRank;
+  });
+}
+function reasonIcon(cls){
+  if(cls==="r-red")return '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="M12 7v6"/><circle cx="12" cy="16.5" r=".6" fill="currentColor"/></svg>';
+  if(cls==="r-amber")return '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+  if(cls==="r-green")return '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12l5 5 9-10"/></svg>';
+  return '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><circle cx="12" cy="7.5" r=".6" fill="currentColor"/></svg>';
+}
+function anyFilterActive(){return state.products.size||state.statuses.size||state.reasons.size||state.hotCat||state.search||state.timeframe==="today"}
+function render(){
+  const data=filteredRows();
+  const body=$("#tblBody");
+  body.innerHTML=data.map(r=>`
+    <tr data-id="${r.id}" class="${state.selectedId===r.id?"selected":""}" tabindex="0" aria-label="Open detail for ${esc(r.dealer)}">
+      <td><span class="pri p-${r.prio==="High"?"high":r.prio==="Med"?"med":"low"}"><span class="bar"></span>${r.prio}</span></td>
+      <td><a href="#" onclick="event.preventDefault()">${esc(r.dealer)}</a><span class="sub">${esc(r.store)} · ${esc(r.project)}</span></td>
+      <td>${brickHTML(r.bricks)}</td>
+      <td>${esc(r.step)}<span class="sub">${r.type} step</span></td>
+      <td><span class="reason ${r.rClass}">${reasonIcon(r.rClass)}${esc(r.reason)}</span></td>
+      <td><span class="badge ${homeBadge(r.status)}">${esc(r.status)}</span></td>
+      <td>${esc(r.wait)}</td>
+      <td class="num ${r.dueSort<0?"age-over":""}">${r.age}</td>
+      <td class="${r.dueSort<0?"age-over":""}">${esc(r.due)}</td>
+    </tr>`).join("");
+  $("#rowCount").textContent=data.length;
+  $("#pageInfo").textContent=data.length?`1 – ${data.length} of ${data.length}`:"0 of 0";
+  $("#emptyState").classList.toggle("show",data.length===0);
+  $("#workTable").style.display=data.length?"":"none";
+  if(data.length===0){
+    if(state.scope==="mine"&&!anyFilterActive()){
+      $("#emptyTitle").textContent="You're clear — no assigned work right now";
+      $("#emptyMsg").textContent="Nice. You can pick up unassigned team items, or cover a teammate who is out.";
+    }else{
+      $("#emptyTitle").textContent="No items match these filters";
+      $("#emptyMsg").textContent="Try clearing a filter, or switch to Team work to see what your team is carrying.";
+    }
+  }
+  const base=rows.filter(r=>(state.scope!=="mine"||!r.team));
+  const counts=cat=>base.filter(r=>r.cat===cat).length;
+  document.querySelectorAll("#totalsCells [data-reasoncat]").forEach(c=>{
+    c.querySelector(".v").textContent=counts(c.dataset.reasoncat);
+    c.classList.toggle("filtering",state.hotCat===c.dataset.reasoncat);
+  });
+  $("#tOpen").textContent=base.length;
+  body.querySelectorAll("tr").forEach(tr=>{
+    tr.addEventListener("click",()=>openDrawer(+tr.dataset.id));
+    tr.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();openDrawer(+tr.dataset.id)}});
+  });
+}
+document.querySelectorAll("#workTable th.sortable").forEach(th=>{
+  th.addEventListener("click",()=>{
+    const k=th.dataset.key;
+    if(state.sortKey===k){state.sortDir*=-1}else{state.sortKey=k;state.sortDir=1}
+    document.querySelectorAll("#workTable th.sortable").forEach(t=>t.classList.toggle("sorted",t===th));
+    render();
+  });
+});
+$("#tblSearch").addEventListener("input",e=>{state.search=e.target.value.trim();render()});
+$("#fltToday").addEventListener("click",()=>{state.timeframe="today";$("#fltToday").classList.add("on");$("#fltWeek").classList.remove("on");render()});
+$("#fltWeek").addEventListener("click",()=>{state.timeframe="week";$("#fltWeek").classList.add("on");$("#fltToday").classList.remove("on");render()});
+$("#scopeMine").addEventListener("click",()=>{state.scope="mine";$("#scopeMine").classList.add("on");$("#scopeTeam").classList.remove("on");render()});
+$("#scopeTeam").addEventListener("click",()=>{state.scope="team";$("#scopeTeam").classList.add("on");$("#scopeMine").classList.remove("on");render()});
+$("#showCompleted").addEventListener("click",function(){
+  const on=this.getAttribute("aria-checked")==="true";
+  this.setAttribute("aria-checked",String(!on));
+  state.showCompleted=!on;render();
+});
+document.querySelectorAll("#totalsCells [data-reasoncat]").forEach(cell=>{
+  cell.addEventListener("click",()=>{
+    state.hotCat=(state.hotCat===cell.dataset.reasoncat)?null:cell.dataset.reasoncat;
+    render();
+  });
+});
+$("#clearFilters").addEventListener("click",()=>{
+  state.products.clear();state.statuses.clear();state.reasons.clear();
+  state.hotCat=null;state.search="";$("#tblSearch").value="";
+  state.timeframe="week";$("#fltWeek").classList.add("on");$("#fltToday").classList.remove("on");
+  buildMenu($("#menuProduct"),productOpts,state.products,$("#chipProduct"),"Bricks");
+  buildMenu($("#menuStatus"),statusOpts,state.statuses,$("#chipStatus"),"Status");
+  buildMenu($("#menuReason"),reasonOpts,state.reasons,$("#chipReason"),"Needs Attention");
+  updateChip($("#chipProduct"),"Bricks",state.products);
+  updateChip($("#chipStatus"),"Status",state.statuses);
+  updateChip($("#chipReason"),"Needs Attention",state.reasons);
+  render();
+});
+$("#startNext").addEventListener("click",()=>{
+  const first=filteredRows()[0];
+  if(first){openDrawer(first.id)}else{toast("No open items — you're clear.")}
+});
+
+/* drawer */
+function openDrawer(id){
+  const r=rows.find(x=>x.id===id);if(!r)return;
+  state.selectedId=id;
+  $("#dTitle").textContent=r.dealer;
+  $("#dCtx").textContent=`${r.store} · ${r.bricks.join(", ")}`;
+  $("#dReason").innerHTML=`<span class="reason ${r.rClass}">${reasonIcon(r.rClass)}${esc(r.reason)}</span><div style="margin-top:8px">${esc(r.reasonDetail)}</div>`;
+  $("#dProject").textContent=r.project;$("#dStep").textContent=r.step;$("#dType").textContent=r.type;
+  $("#dWait").textContent=r.wait;$("#dOwner").textContent=r.ownerName;$("#dActive").textContent=r.active;
+  $("#dDod").innerHTML=r.dod.map(d=>`<li class="${d.d?"done":""}">${d.d?"✓ ":""}${esc(d.t)}</li>`).join("");
+  $("#dActions").innerHTML=
+    `<button class="btn-primary" onclick="toast('${esc(r.actions[0])} — opening workspace (prototype)')">${esc(r.actions[0])}</button>`+
+    r.actions.slice(1).map(a=>`<button class="btn-outline" onclick="toast('${esc(a)} (prototype)')">${esc(a)}</button>`).join("")+
+    `<button class="btn-text" onclick="toast('Opening ${esc(r.dealer)} workspace')">Open full workspace</button>`;
+  $("#drawer").classList.add("open");$("#scrim").classList.add("show");render();
+}
+function closeDrawer(){$("#drawer").classList.remove("open");$("#scrim").classList.remove("show");state.selectedId=null;render()}
+$("#drawerClose").addEventListener("click",closeDrawer);
+$("#scrim").addEventListener("click",closeDrawer);
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();qCloseModal()}});
+
+/* =================================================================
+   QUESTION BANK VIEW
+================================================================= */
+const ALL_BRICKS=["Drive Service","Digital Lane","Connected Car","Digital Store","Telematics","Service Portal","Warranty System","In-car Retail","Usage Based Insurance","Digital Payments","Drive Accounting","Parts Hub"];
+const MY_BRICKS=new Set(["Drive Service","Digital Lane","Service Portal","Drive Accounting"]);
+const Q_TYPES=["Text","Number","Currency","Percentage","Email","Phone","Date","Boolean","Dropdown","Address"];
+const Q_STATUSES=["Draft","Active","Under Review","Inactive"];
+
+const seed=[
+ {label:"Service bay count",type:"Number",bricks:["Drive Service","Digital Lane","Drive Accounting","Parts Hub"],status:"Draft"},
+ {label:"Website navigation ease",type:"Email",bricks:["Drive Service"],status:"Draft"},
+ {label:"Marketing campaign source",type:"Currency",bricks:["Connected Car"],status:"Active"},
+ {label:"Product feedback rating",type:"Dropdown",bricks:["Digital Store"],status:"Active"},
+ {label:"Inventory turnover ratio",type:"Address",bricks:["Digital Lane","Drive Service","Parts Hub","Telematics","Digital Store","Connected Car"],status:"Active"},
+ {label:"Competitor pricing analysis",type:"Percentage",bricks:["Telematics"],status:"Active"},
+ {label:"Sales conversion rate",type:"Phone",bricks:["Service Portal"],status:"Under Review"},
+ {label:"Preferred contact method",type:"Boolean",bricks:["Warranty System"],status:"Under Review"},
+ {label:"Purchase history details",type:"Date",bricks:["In-car Retail"],status:"Inactive"},
+ {label:"Customer satisfaction score",type:"Number",bricks:["Usage Based Insurance"],status:"Inactive"},
+ {label:"Customer account status",type:"Text",bricks:["Digital Payments"],status:"Active"},
+];
+const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+let qRows=seed.map((q,i)=>({...q,id:slug(q.label),key:i}));
+/* generate additional rows to reach 100 total */
+const nouns=["labor rate matrix","GL account prefix","statement schedule","default tax code","service advisor count","parts bin format","appointment window","credit limit default","warranty claim path","lender routing code","bank feed account","technician skill tier","dispatch zone","invoice footer text","payment terms","aging bucket rule","store timezone","fiscal year start","chart of accounts map","customer merge rule","estimate approval limit","loaner fleet size","shuttle radius","menu pricing tier","reservation buffer","recall notification email","DMV interface ID","OEM dealer code","floorplan lender","titling state"];
+let k=0;
+while(qRows.length<100){
+  const n=nouns[k%nouns.length];
+  const variant=Math.floor(k/nouns.length)+1;
+  const label=(n.charAt(0).toUpperCase()+n.slice(1))+(variant>1?` (${variant})`:"");
+  qRows.push({
+    label, id:slug(label),
+    type:Q_TYPES[k%Q_TYPES.length],
+    bricks:[ALL_BRICKS[k%ALL_BRICKS.length],...(k%3===0?[ALL_BRICKS[(k+4)%ALL_BRICKS.length]]:[]),...(k%5===0?[ALL_BRICKS[(k+7)%ALL_BRICKS.length],ALL_BRICKS[(k+2)%ALL_BRICKS.length]]:[])].filter((v,i,a)=>a.indexOf(v)===i),
+    status:Q_STATUSES[(k*3)%Q_STATUSES.length],
+    key:qRows.length
+  });
+  k++;
+}
+
+let qState={tab:"my",types:new Set(),bricks:new Set(),statuses:new Set(),search:"",page:1,rpp:10,sortKey:null,sortDir:1,selected:new Set()};
+
+wireChipMenu("#chipQType","#menuQType",Q_TYPES,qState.types,"Field Type");
+wireChipMenu("#chipQBrick","#menuQBrick",ALL_BRICKS,qState.bricks,"Products");
+wireChipMenu("#chipQStatus","#menuQStatus",Q_STATUSES,qState.statuses,"Status");
+
+function qFiltered(){
+  let d=qRows.filter(q=>{
+    if(qState.tab==="my"&&!q.bricks.some(b=>MY_BRICKS.has(b)))return false;
+    if(qState.types.size&&!qState.types.has(q.type))return false;
+    if(qState.bricks.size&&!q.bricks.some(b=>qState.bricks.has(b)))return false;
+    if(qState.statuses.size&&!qState.statuses.has(q.status))return false;
+    if(qState.search){
+      const s=qState.search.toLowerCase();
+      if(!(q.label+" "+q.id).toLowerCase().includes(s))return false;
+    }
+    return true;
+  });
+  if(qState.sortKey){
+    const key=qState.sortKey;
+    d=[...d].sort((a,b)=>String(a[key]).localeCompare(String(b[key]))*qState.sortDir);
+  }
+  return d;
+}
+function badgeClass(s){return s==="Draft"?"b-draft":s==="Active"?"b-active":s==="Under Review"?"b-review":"b-inactive"}
+function brickHTML(bricks){
+  const shown=bricks.slice(0,2);
+  const extra=bricks.length-shown.length;
+  return shown.map(b=>`<span class="brick">${esc(b)}</span>`).join("")+(extra>0?`<span class="brick more" title="${esc(bricks.slice(2).join(", "))}">${extra}+</span>`:"");
+}
+function qRender(){
+  const data=qFiltered();
+  const totalPages=Math.max(1,Math.ceil(data.length/qState.rpp));
+  if(qState.page>totalPages)qState.page=totalPages;
+  const start=(qState.page-1)*qState.rpp;
+  const pageRows=data.slice(start,start+qState.rpp);
+
+  $("#qBody").innerHTML=pageRows.map(q=>`
+    <tr data-qkey="${q.key}">
+      <td onclick="event.stopPropagation()"><input type="checkbox" class="cbx qrow-cb" data-qkey="${q.key}" ${qState.selected.has(q.key)?"checked":""} aria-label="Select ${esc(q.label)}"></td>
+      <td>${esc(q.label)}</td>
+      <td style="color:var(--text-secondary)">${esc(q.id)}</td>
+      <td>${esc(q.type)}</td>
+      <td>${brickHTML(q.bricks)}</td>
+      <td><span class="badge ${badgeClass(q.status)}">${esc(q.status)}</span></td>
+      <td onclick="event.stopPropagation()" style="position:relative">
+        <button class="kebab" data-qkey="${q.key}" aria-label="Actions for ${esc(q.label)}" aria-haspopup="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>
+        </button>
+        <div class="menu right" data-menufor="${q.key}">
+          <button data-act="edit"><span class="chk"></span>Edit question</button>
+          <button data-act="preview"><span class="chk"></span>Preview as dealer</button>
+          <button data-act="dup"><span class="chk"></span>Duplicate</button>
+          <button data-act="usage"><span class="chk"></span>View usage</button>
+          <button data-act="toggle"><span class="chk"></span>${q.status==="Inactive"?"Activate":"Deactivate"}</button>
+        </div>
+      </td>
+    </tr>`).join("");
+
+  $("#qEmpty").classList.toggle("show",data.length===0);
+  $("#qTable").style.display=data.length?"":"none";
+  $("#qPageInfo").textContent=data.length?`${start+1}–${Math.min(start+qState.rpp,data.length)} of ${data.length}`:"0 of 0";
+  $("#qPageLbl").textContent=`Page ${qState.page} of ${totalPages}`;
+  [["qFirst",qState.page>1],["qPrev",qState.page>1],["qNext",qState.page<totalPages],["qLast",qState.page<totalPages]]
+    .forEach(([id,en])=>$("#"+id).classList.toggle("en",!!en));
+
+  /* select-all state */
+  const allChecked=pageRows.length>0&&pageRows.every(q=>qState.selected.has(q.key));
+  $("#qSelAll").checked=allChecked;
+  $("#qSelAll").indeterminate=!allChecked&&pageRows.some(q=>qState.selected.has(q.key));
+  $("#qBulk").classList.toggle("show",qState.selected.size>0);
+  $("#qBulkCount").textContent=`${qState.selected.size} selected`;
+
+  /* wire row checkboxes */
+  document.querySelectorAll(".qrow-cb").forEach(cb=>{
+    cb.addEventListener("change",()=>{
+      const key=+cb.dataset.qkey;
+      cb.checked?qState.selected.add(key):qState.selected.delete(key);
+      qRender();
+    });
+  });
+  /* wire kebabs */
+  document.querySelectorAll("#qBody .kebab").forEach(kb=>{
+    kb.addEventListener("click",e=>{
+      e.stopPropagation();
+      const menu=kb.parentElement.querySelector(".menu");
+      document.querySelectorAll(".menu.open").forEach(m=>{if(m!==menu)m.classList.remove("open")});
+      menu.classList.toggle("open");
+    });
+  });
+  document.querySelectorAll("#qBody .menu button").forEach(mb=>{
+    mb.addEventListener("click",e=>{
+      e.stopPropagation();
+      const key=+mb.closest(".menu").dataset.menufor;
+      const q=qRows.find(x=>x.key===key);
+      const act=mb.dataset.act;
+      mb.closest(".menu").classList.remove("open");
+      if(act==="toggle"){
+        q.status=(q.status==="Inactive")?"Active":"Inactive";
+        toast(`"${q.label}" is now ${q.status}`);
+        qRender();
+      } else if(act==="dup"){
+        const copy={...q,label:q.label+" (copy)",id:slug(q.label)+"-copy",status:"Draft",key:qRows.length};
+        qRows.unshift(copy);qRows.forEach((r,i)=>{});
+        toast(`Duplicated as Draft: "${copy.label}"`);
+        qState.page=1;qRender();
+      } else if(act==="edit"){toast(`Edit "${q.label}" (prototype)`)}
+      else if(act==="preview"){toast(`Dealer Portal preview: "${q.label}" (prototype)`)}
+      else{toast(`Usage: ${q.bricks.length} brick(s), 12 checklists reference this question (sample)`)}
+    });
+  });
+  /* row click = open edit */
+  document.querySelectorAll("#qBody tr").forEach(tr=>{
+    tr.addEventListener("click",()=>{
+      const q=qRows.find(x=>x.key===+tr.dataset.qkey);
+      toast(`Open question detail: "${q.label}" (prototype)`);
+    });
+  });
+}
+/* tabs */
+$("#tabMy").addEventListener("click",()=>{qState.tab="my";qState.page=1;$("#tabMy").classList.add("on");$("#tabAll").classList.remove("on");$("#tabMy").setAttribute("aria-selected","true");$("#tabAll").setAttribute("aria-selected","false");qRender()});
+$("#tabAll").addEventListener("click",()=>{qState.tab="all";qState.page=1;$("#tabAll").classList.add("on");$("#tabMy").classList.remove("on");$("#tabAll").setAttribute("aria-selected","true");$("#tabMy").setAttribute("aria-selected","false");qRender()});
+/* search + pagination */
+$("#qSearch").addEventListener("input",e=>{qState.search=e.target.value.trim();qState.page=1;qRender()});
+$("#qRpp").addEventListener("change",e=>{qState.rpp=+e.target.value;qState.page=1;qRender()});
+$("#qFirst").addEventListener("click",()=>{if(qState.page>1){qState.page=1;qRender()}});
+$("#qPrev").addEventListener("click",()=>{if(qState.page>1){qState.page--;qRender()}});
+$("#qNext").addEventListener("click",()=>{qState.page++;qRender()});
+$("#qLast").addEventListener("click",()=>{qState.page=1e9;qRender()});
+/* sorting */
+document.querySelectorAll("#qTable th.sortable").forEach(th=>{
+  th.addEventListener("click",()=>{
+    const key=th.dataset.qkey;
+    if(qState.sortKey===key){qState.sortDir*=-1}else{qState.sortKey=key;qState.sortDir=1}
+    document.querySelectorAll("#qTable th.sortable").forEach(t=>t.classList.toggle("sorted",t===th));
+    qRender();
+  });
+});
+/* select all + bulk */
+$("#qSelAll").addEventListener("change",()=>{
+  const data=qFiltered();
+  const start=(qState.page-1)*qState.rpp;
+  const pageRows=data.slice(start,start+qState.rpp);
+  if($("#qSelAll").checked){pageRows.forEach(q=>qState.selected.add(q.key))}
+  else{pageRows.forEach(q=>qState.selected.delete(q.key))}
+  qRender();
+});
+$("#qBulkClear").addEventListener("click",()=>{qState.selected.clear();qRender()});
+$("#qClearFilters").addEventListener("click",()=>{
+  qState.types.clear();qState.bricks.clear();qState.statuses.clear();qState.search="";$("#qSearch").value="";qState.page=1;
+  buildMenu($("#menuQType"),Q_TYPES,qState.types,$("#chipQType"),"Field Type");
+  buildMenu($("#menuQBrick"),ALL_BRICKS,qState.bricks,$("#chipQBrick"),"Products");
+  buildMenu($("#menuQStatus"),Q_STATUSES,qState.statuses,$("#chipQStatus"),"Status");
+  updateChip($("#chipQType"),"Field Type",qState.types);
+  updateChip($("#chipQBrick"),"Products",qState.bricks);
+  updateChip($("#chipQStatus"),"Status",qState.statuses);
+  qRender();
+});
+
+/* ---- Create Question modal ---- */
+const modalBricks=new Set();
+function qOpenModal(){
+  $("#qfLabel").value="";$("#qfId").value="";$("#qfHelp").value="";
+  $("#qfRequired").setAttribute("aria-checked","false");
+  modalBricks.clear();
+  $("#qfBricks").innerHTML=ALL_BRICKS.map(b=>`<button class="brick-pick" data-b="${esc(b)}">${esc(b)}</button>`).join("");
+  document.querySelectorAll("#qfBricks .brick-pick").forEach(bp=>{
+    bp.addEventListener("click",()=>{
+      const b=bp.dataset.b;
+      modalBricks.has(b)?modalBricks.delete(b):modalBricks.add(b);
+      bp.classList.toggle("on",modalBricks.has(b));
+    });
+  });
+  $("#qModalScrim").classList.add("show");
+  $("#qfLabel").focus();
+}
+function qCloseModal(){$("#qModalScrim").classList.remove("show")}
+$("#btnCreateQ").addEventListener("click",qOpenModal);
+$("#qModalClose").addEventListener("click",qCloseModal);
+$("#qModalCancel").addEventListener("click",qCloseModal);
+$("#qModalScrim").addEventListener("click",e=>{if(e.target===e.currentTarget)qCloseModal()});
+$("#qfLabel").addEventListener("input",e=>{$("#qfId").value=slug(e.target.value)});
+$("#qfRequired").addEventListener("click",function(){
+  const on=this.getAttribute("aria-checked")==="true";
+  this.setAttribute("aria-checked",String(!on));
+});
+$("#qModalSave").addEventListener("click",()=>{
+  const label=$("#qfLabel").value.trim();
+  if(!label){toast("Question label is required — add a dealer-friendly label to save.");$("#qfLabel").focus();return}
+  if(modalBricks.size===0){toast("Select at least one brick so this question appears somewhere.");return}
+  qRows.unshift({label,id:slug(label),type:$("#qfType").value,bricks:[...modalBricks],status:"Draft",key:Date.now()});
+  qCloseModal();
+  qState.page=1;qState.tab="all";
+  $("#tabAll").click();
+  toast(`Created as Draft: "${label}"`);
+});
+
+/* =================================================================
+   DEALER PORTAL — Main Auto Body (CV) · Service Portal setup
+================================================================= */
+const D_SECTIONS=[
+ {id:"profile",title:"Business Profile",desc:"We pre-filled these from your CDK account — just confirm they're right.",time:"~2 min",qs:[
+   {qid:"legalName",label:"Legal business name",type:"text",required:true,prefill:"Main Auto Body Inc.",help:"From your CDK account record."},
+   {qid:"dba",label:"Store name shown to customers",type:"text",required:true,prefill:"Main Auto Body (CV)"},
+   {qid:"address",label:"Store address",type:"text",required:true,prefill:"1487 Commerce Way, Corvallis, OR 97330"},
+   {qid:"phone",label:"Main service phone number",type:"text",required:true,prefill:"(541) 555-0182",help:"Customers will see this on booking confirmations."},
+   {qid:"website",label:"Website",type:"text",required:false,prefill:"mainautobody.com"},
+   {qid:"confirmProfile",label:"I confirm these details are correct",type:"confirm",required:true}
+ ]},
+ {id:"service",title:"Service Department",desc:"Tell us about your shop so we can size your schedule correctly.",time:"~4 min",qs:[
+   {qid:"bays",label:"How many working service bays do you have?",type:"number",required:true,minReq:true,help:"Count bays that can be scheduled — this sets your daily capacity in Service Portal."},
+   {qid:"advisors",label:"How many service advisors take appointments?",type:"number",required:true},
+   {qid:"techs",label:"How many technicians? (optional)",type:"number",required:false,help:"Helps us recommend appointment durations."},
+   {qid:"allMakes",label:"Do you service all vehicle makes?",type:"yesno",required:true},
+   {qid:"makes",label:"Which makes do you service?",type:"text",required:true,showIf:{qid:"allMakes",val:"No"},placeholder:"e.g., Toyota, Honda, Subaru",help:"Customers will only be able to book vehicles you service."},
+   {qid:"satOpen",label:"Are you open on Saturdays?",type:"yesno",required:true},
+   {qid:"satHours",label:"Saturday hours",type:"text",required:true,showIf:{qid:"satOpen",val:"Yes"},placeholder:"e.g., 8:00 AM – 4:00 PM"}
+ ]},
+ {id:"scheduling",title:"Scheduling Preferences",desc:"How customers book with you online.",time:"~4 min",qs:[
+   {qid:"apptDuration",label:"Default appointment length",type:"select",required:true,options:["30 minutes","45 minutes","60 minutes","90 minutes"]},
+   {qid:"onlineBooking",label:"Allow customers to book online?",type:"yesno",required:true,help:"You can change this any time after go-live."},
+   {qid:"bookingWindow",label:"How many days ahead can customers book?",type:"number",required:true,showIf:{qid:"onlineBooking",val:"Yes"},placeholder:"e.g., 14"},
+   {qid:"bufferMin",label:"Buffer between online appointments",type:"select",required:false,showIf:{qid:"onlineBooking",val:"Yes"},options:["None","15 minutes","30 minutes"]},
+   {qid:"shuttle",label:"Do you offer a customer shuttle?",type:"yesno",required:true},
+   {qid:"shuttleRadius",label:"Shuttle radius (miles)",type:"number",required:true,showIf:{qid:"shuttle",val:"Yes"},placeholder:"e.g., 10"},
+   {qid:"loaners",label:"Do you offer loaner vehicles?",type:"yesno",required:true},
+   {qid:"loanerCount",label:"How many loaner vehicles?",type:"number",required:true,showIf:{qid:"loaners",val:"Yes"}}
+ ]},
+ {id:"pricing",title:"Pricing & Payments",desc:"Rates and payment options shown to customers.",time:"~3 min",qs:[
+   {qid:"laborRate",label:"Standard labor rate",type:"currency",required:true,minReq:true,help:"Your posted hourly rate. CDK can't begin setup without it."},
+   {qid:"taxRate",label:"Local sales tax rate",type:"percent",required:true,minReq:true,help:"Applied to taxable repair orders."},
+   {qid:"onlinePayments",label:"Accept online payments through Service Portal?",type:"yesno",required:true},
+   {qid:"payProvider",label:"Payment provider",type:"select",required:true,showIf:{qid:"onlinePayments",val:"Yes"},options:["CDK Pay","Stripe","Square","Other"]},
+   {qid:"merchantId",label:"Merchant ID",type:"text",required:false,showIf:{qid:"onlinePayments",val:"Yes"},help:"If you don't have it handy, flag it and your CDK team will follow up."}
+ ]}
+];
+const D_MINREQ=[{qid:"bays",label:"Number of service bays"},{qid:"laborRate",label:"Standard labor rate"},{qid:"taxRate",label:"Sales tax rate"}];
+
+let dAns={}, dProv={}, dFlags=new Set(), dErrs=new Set();
+let dState={step:"landing",submitted:false,unlockReq:false,ack:false};
+/* initialize prefill values (System pre-filled — dealer verifies, per PRD prefill requirement) */
+D_SECTIONS.forEach(s=>s.qs.forEach(q=>{ if(q.prefill!==undefined){ dAns[q.qid]=q.prefill; dProv[q.qid]="pre"; } }));
+
+function dVisibleQs(sec){ return sec.qs.filter(q=>!q.showIf||dAns[q.showIf.qid]===q.showIf.val); }
+function dAnswered(q){
+  if(dFlags.has(q.qid))return true;
+  const v=dAns[q.qid];
+  if(q.type==="confirm")return v===true;
+  return v!==undefined&&v!==null&&String(v).trim()!=="";
+}
+function dSecStatus(sec){
+  const vis=dVisibleQs(sec);
+  const req=vis.filter(q=>q.required);
+  if(req.length&&req.every(dAnswered))return "Complete";
+  if(vis.some(q=>dAnswered(q)&&dProv[q.qid]!=="pre"))return "In progress";
+  return "Not started";
+}
+function dSecCounts(sec){
+  const vis=dVisibleQs(sec);
+  return {done:vis.filter(dAnswered).length,total:vis.length};
+}
+function dProgress(){
+  const done=D_SECTIONS.filter(s=>dSecStatus(s)==="Complete").length;
+  $("#dPct").textContent=`${done} of ${D_SECTIONS.length} sections complete`;
+  $("#dPbar").style.width=(done/D_SECTIONS.length*100)+"%";
+}
+function dSavedPulse(){
+  const el=$("#dSaved");
+  el.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M12 3a9 9 0 1 0 9 9"/></svg> Saving…';
+  clearTimeout(el._h);
+  el._h=setTimeout(()=>{el.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 12l5 5 9-10"/></svg> All changes saved';},650);
+}
+
+/* value setters (global for inline handlers) */
+function dSet(qid,val,rerender){
+  dAns[qid]=val; dProv[qid]="you"; dFlags.delete(qid); dErrs.delete(qid);
+  dSavedPulse(); dProgress();
+  if(rerender)dRender();
+}
+function dYN(qid,val){ dSet(qid,val,true); }
+function dConfirm(qid,checked){ dSet(qid,checked,true); }
+function dIDK(qid){
+  dFlags.add(qid); dAns[qid]=""; dProv[qid]="flag"; dErrs.delete(qid);
+  dSavedPulse(); dProgress(); dRender();
+  toast("Flagged for CDK — your team will follow up on this one. You can keep going.");
+}
+function dGo(step){ dState.step=step; dRender(); $("#dealerRoot").closest(".dealer-wrap").scrollTop=0; }
+
+function provChip(q){
+  if(dFlags.has(q.qid))return '<span class="prov-chip pv-flag">Flagged for CDK</span>';
+  if(dProv[q.qid]==="pre")return '<span class="prov-chip pv-pre">Pre-filled — please verify</span>';
+  if(dProv[q.qid]==="you")return '<span class="prov-chip pv-you">You entered</span>';
+  return "";
+}
+function qInput(q){
+  const v=dAns[q.qid]!==undefined?dAns[q.qid]:"";
+  const dis=dState.submitted?"disabled":"";
+  if(q.type==="yesno"){
+    return `<div class="yn" role="group" aria-label="${esc(q.label)}">
+      <button ${dis} class="${v==="Yes"?"on":""}" onclick="dYN('${q.qid}','Yes')">Yes</button>
+      <button ${dis} class="${v==="No"?"on":""}" onclick="dYN('${q.qid}','No')">No</button>
+    </div>`;
+  }
+  if(q.type==="select"){
+    return `<select ${dis} aria-label="${esc(q.label)}" onchange="dSet('${q.qid}',this.value,true)">
+      <option value="" ${v===""?"selected":""} disabled>Choose one…</option>
+      ${q.options.map(o=>`<option ${v===o?"selected":""}>${esc(o)}</option>`).join("")}
+    </select>`;
+  }
+  if(q.type==="confirm"){
+    return `<label style="display:flex;gap:10px;align-items:center;font-size:13.5px;cursor:pointer">
+      <input type="checkbox" class="cbx" ${v===true?"checked":""} ${dis} onchange="dConfirm('${q.qid}',this.checked)"> ${esc(q.label)}
+    </label>`;
+  }
+  if(q.type==="currency"){
+    return `<span class="in-affix"><span class="affix">$</span><input ${dis} type="text" inputmode="decimal" value="${esc(v)}" placeholder="${esc(q.placeholder||"e.g., 145.00")}" oninput="dSet('${q.qid}',this.value)"><span class="affix">/ hour</span></span>`;
+  }
+  if(q.type==="percent"){
+    return `<span class="in-affix"><input ${dis} type="text" inputmode="decimal" value="${esc(v)}" placeholder="${esc(q.placeholder||"e.g., 6.5")}" oninput="dSet('${q.qid}',this.value)"><span class="affix">%</span></span>`;
+  }
+  const mode=q.type==="number"?'inputmode="numeric"':"";
+  return `<input ${dis} type="text" ${mode} value="${esc(v)}" placeholder="${esc(q.placeholder||"")}" oninput="dSet('${q.qid}',this.value)" aria-label="${esc(q.label)}">`;
+}
+function qBlock(q,isFollow){
+  const err=dErrs.has(q.qid);
+  const showLabel=q.type!=="confirm";
+  return `<div class="q ${isFollow?"followup":""} ${err?"error":""}">
+    ${showLabel?`<div class="q-label">${esc(q.label)} ${q.required?'<span class="q-req" aria-hidden="true">*</span><span class="sr-only"> required</span>':""} ${provChip(q)}</div>`:""}
+    ${q.help?`<div class="q-helptext">${esc(q.help)}</div>`:""}
+    ${qInput(q)}
+    ${err?`<div class="q-err"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="M12 7v6"/><circle cx="12" cy="16.5" r=".6" fill="currentColor"/></svg> This answer is required before you continue — or flag it and we'll follow up.</div>`:""}
+    ${(!dState.submitted&&q.required&&q.type!=="confirm"&&!dFlags.has(q.qid))?`<a class="idk" href="#" onclick="event.preventDefault();dIDK('${q.qid}')">I don't know — flag for my CDK team</a>`:""}
+  </div>`;
+}
+function lockedBanner(){
+  if(!dState.submitted)return "";
+  return `<div class="locked-banner">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17 9V7a5 5 0 0 0-10 0v2H5v12h14V9h-2zM9 7a3 3 0 0 1 6 0v2H9V7z"/></svg>
+    <span><b>Submitted July 1, 2026.</b> Your answers are locked while CDK configures Service Portal.</span>
+    <button class="btn-outline" onclick="dUnlock()" ${dState.unlockReq?"disabled":""}>${dState.unlockReq?"Unlock requested — CDK will respond within 1 business day":"Request unlock to make changes"}</button>
+  </div>`;
+}
+function dUnlock(){
+  dState.unlockReq=true;
+  toast("Unlock request sent to your CDK team with your store and product context attached.");
+  dRender();
+}
+
+function dRender(){
+  dProgress();
+  const root=$("#dealerRoot");
+  const hpCtx=$("#hpCtx");
+
+  /* ---------- LANDING ---------- */
+  if(dState.step==="landing"){
+    hpCtx.textContent="You're on the Portal Landing page · Service Portal · Main Auto Body (CV)";
+    const minDone=D_MINREQ.filter(m=>{const q=D_SECTIONS.flatMap(s=>s.qs).find(x=>x.qid===m.qid);return dAnswered(q)&&dProv[m.qid]!=="pre";}).length;
+    const anyStarted=D_SECTIONS.some(s=>dSecStatus(s)!=="Not started");
+    root.innerHTML=`
+      ${lockedBanner()}
+      <div class="dcard">
+        <h2>Welcome back, Maria</h2>
+        <p class="lead">Let's get <b>Service Portal</b> ready for Main Auto Body (CV). Your CDK team invited you to answer a short set of setup questions — only what's needed for your store, nothing more. Everything saves automatically, so you can stop and come back any time. <b>Estimated time: 12–15 minutes.</b> Target go-live: <b>August 14, 2026</b>.</p>
+        <div class="presence-chip"><span class="pdot"></span> Ashlee K. from your CDK team is online and can see your progress</div>
+        <div style="margin-top:16px">
+          <button class="btn-primary" onclick="dGo(${dState.submitted?"'review'":firstIncompleteIdx()})">${dState.submitted?"View submitted answers":(anyStarted?"Continue setup":"Start setup")}</button>
+        </div>
+      </div>
+
+      <div class="minreq" role="status">
+        <h3><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 2.5 20h19L12 3zm1 13h-2v2h2v-2zm0-7h-2v5h2V9z"/></svg> Minimum required to begin setup — ${minDone} of ${D_MINREQ.length} answered</h3>
+        <p>CDK can start configuring your Service Portal as soon as these three answers are in — even before you finish everything else.</p>
+        <ul>${D_MINREQ.map(m=>{
+          const q=D_SECTIONS.flatMap(s=>s.qs).find(x=>x.qid===m.qid);
+          const done=dAnswered(q)&&dProv[m.qid]!=="pre";
+          return `<li class="${done?"done":""}">${done?'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 12l5 5 9-10"/></svg>':'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#b05a00" stroke-width="2"><circle cx="12" cy="12" r="8"/></svg>'} ${esc(m.label)}</li>`;
+        }).join("")}</ul>
+      </div>
+
+      <div class="sec-grid">
+        ${D_SECTIONS.map((s,i)=>{
+          const st=dSecStatus(s),c=dSecCounts(s);
+          const badge=st==="Complete"?'<span class="badge b-ready">Complete</span>':st==="In progress"?'<span class="badge b-progress">In Progress</span>':'<span class="badge b-inactive">Not Started</span>';
+          return `<button class="sec-card ${st==="Complete"?"done":""}" onclick="dGo(${i})" aria-label="Open section ${esc(s.title)}">
+            <div class="sc-top"><span class="sc-num">${st==="Complete"?"✓":i+1}</span><h4>${esc(s.title)}</h4><span style="margin-left:auto">${badge}</span></div>
+            <div class="sc-desc">${esc(s.desc)}</div>
+            <div class="sc-foot"><span class="sc-count">${c.done} of ${c.total} answered · ${esc(s.time)}</span><span class="sc-go">${dState.submitted?"View":(st==="Not started"?"Start":"Continue")} →</span></div>
+          </button>`;
+        }).join("")}
+        <button class="sec-card ${dState.submitted?"done":""}" onclick="dGo('review')" aria-label="Open Review and Submit">
+          <div class="sc-top"><span class="sc-num">${dState.submitted?"✓":"5"}</span><h4>Review &amp; Submit</h4><span style="margin-left:auto">${dState.submitted?'<span class="badge b-ready">Submitted</span>':'<span class="badge b-inactive">Not Started</span>'}</span></div>
+          <div class="sc-desc">Check everything in one place, then send it to your CDK team.</div>
+          <div class="sc-foot"><span class="sc-count">Final step</span><span class="sc-go">${dState.submitted?"View":"Review"} →</span></div>
+        </button>
+      </div>`;
+    return;
+  }
+
+  /* ---------- REVIEW ---------- */
+  if(dState.step==="review"){
+    hpCtx.textContent="You're on Review & Submit · Service Portal · Main Auto Body (CV)";
+    const incomplete=D_SECTIONS.filter(s=>dSecStatus(s)!=="Complete");
+    root.innerHTML=`
+      ${lockedBanner()}
+      <div class="dcard">
+        <h2>Review &amp; Submit</h2>
+        <p class="lead">Here's everything you've told us${dState.submitted?"":" — check it once, then submit. You can edit any section before submitting"}. Values are labeled so you can see what came from CDK records versus what you entered.</p>
+      </div>
+      ${incomplete.length&&!dState.submitted?`<div class="err-summary">Heads up: <b>${incomplete.map(s=>s.title).join(", ")}</b> ${incomplete.length===1?"isn't":"aren't"} finished yet. You can still submit what you have — flagged and missing items will be followed up by your CDK team.</div>`:""}
+      <div class="dcard">
+        ${D_SECTIONS.map((s,i)=>`
+          <div class="rev-sec">
+            <h4>${i+1}. ${esc(s.title)} ${dState.submitted?"":`<a class="rev-edit" href="#" onclick="event.preventDefault();dGo(${i})">Edit</a>`}</h4>
+            ${dVisibleQs(s).filter(q=>q.type!=="confirm").map(q=>{
+              const v=dFlags.has(q.qid)?"Flagged for CDK follow-up":(dAns[q.qid]!==undefined&&String(dAns[q.qid]).trim()!==""?(q.type==="currency"?"$"+dAns[q.qid]+"/hr":q.type==="percent"?dAns[q.qid]+"%":dAns[q.qid]):"—");
+              return `<div class="rev-row"><span class="rk">${esc(q.label)}</span><span class="rv">${esc(String(v))} ${provChip(q)}</span></div>`;
+            }).join("")}
+          </div>`).join("")}
+        ${dState.submitted?"":`
+        <div class="ack-row">
+          <input type="checkbox" class="cbx" id="dAckCb" ${dState.ack?"checked":""} onchange="dState.ack=this.checked;dRender()">
+          <label for="dAckCb">I understand my answers will be <b>locked for editing</b> after I submit, and that I can request an unlock from my CDK team if something needs to change.</label>
+        </div>
+        <div class="wiz-foot">
+          <button class="btn-text" onclick="dGo('landing')">Back to overview</button>
+          <span class="spacer"></span>
+          <button class="btn-primary" id="dSubmitBtn" ${dState.ack?"":"disabled"} style="${dState.ack?"":"opacity:.5;cursor:not-allowed"}" onclick="if(dState.ack)$('#dSubmitScrim').classList.add('show')">Submit setup data</button>
+        </div>`}
+      </div>`;
+    return;
+  }
+
+  /* ---------- WIZARD SECTION ---------- */
+  const idx=+dState.step;
+  const sec=D_SECTIONS[idx];
+  hpCtx.textContent=`You're on ${sec.title} · Service Portal · Main Auto Body (CV)`;
+  const vis=dVisibleQs(sec);
+  root.innerHTML=`
+    ${lockedBanner()}
+    <div class="wiz">
+      <nav class="stepper" aria-label="Setup sections">
+        ${D_SECTIONS.map((s,i)=>{
+          const st=dSecStatus(s);
+          return `<button class="step-it ${i===idx?"cur":""} ${st==="Complete"?"done":""}" onclick="dGo(${i})">
+            <span class="step-num">${st==="Complete"?"✓":i+1}</span>
+            <span>${esc(s.title)}<span class="step-sub">${st}</span></span>
+          </button>`;
+        }).join("")}
+        <button class="step-it ${dState.step==="review"?"cur":""} ${dState.submitted?"done":""}" onclick="dGo('review')">
+          <span class="step-num">${dState.submitted?"✓":"5"}</span>
+          <span>Review &amp; Submit<span class="step-sub">${dState.submitted?"Submitted":"Final step"}</span></span>
+        </button>
+        <div style="padding:10px 10px 4px"><a href="#" style="font-size:12px" onclick="event.preventDefault();dGo('landing')">← Back to overview</a></div>
+      </nav>
+      <div class="wiz-main">
+        ${dErrs.size?`<div class="err-summary" role="alert"><b>${dErrs.size} required ${dErrs.size===1?"answer is":"answers are"} missing.</b> Fix the highlighted questions below, or use "I don't know" to flag them for CDK and keep moving.</div>`:""}
+        <div class="dcard">
+          <h2 style="font-size:18px">${idx+1}. ${esc(sec.title)}</h2>
+          <p class="lead" style="margin-bottom:6px">${esc(sec.desc)}</p>
+          ${idx===0?'<div class="presence-chip"><span class="pdot"></span> Ashlee K. (CDK) verified your account record this morning</div>':""}
+          ${vis.map(q=>qBlock(q,!!q.showIf)).join("")}
+          <div class="wiz-foot">
+            ${idx>0?`<button class="btn-outline" onclick="dGo(${idx-1})">Back</button>`:`<button class="btn-outline" onclick="dGo('landing')">Back to overview</button>`}
+            <span class="spacer"></span>
+            ${dState.submitted?"":`<button class="btn-primary" onclick="dContinue(${idx})">${idx<D_SECTIONS.length-1?"Save & continue":"Save & review"}</button>`}
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+function firstIncompleteIdx(){
+  const i=D_SECTIONS.findIndex(s=>dSecStatus(s)!=="Complete");
+  return i===-1?"'review'":i;
+}
+function dContinue(idx){
+  const sec=D_SECTIONS[idx];
+  dErrs.clear();
+  dVisibleQs(sec).forEach(q=>{ if(q.required&&!dAnswered(q)) dErrs.add(q.qid); });
+  if(dErrs.size){ dRender(); return; }
+  dGo(idx<D_SECTIONS.length-1?idx+1:"review");
+  toast(`${sec.title} saved.`);
+}
+
+/* dealer nav wiring: nav items carry a target step */
+document.querySelectorAll('.nav-item[data-view="dealer"]').forEach(b=>{
+  b.addEventListener("click",()=>{
+    const s=b.dataset.dstep;
+    dState.step=(s==="landing"||s==="review")?s:+s;
+    if(s==="0"){ const f=firstIncompleteIdx(); dState.step=(f==="'review'")?"review":f; }
+    dRender();
+  });
+});
+/* submit modal wiring */
+$("#dSubClose").addEventListener("click",()=>$("#dSubmitScrim").classList.remove("show"));
+$("#dSubCancel").addEventListener("click",()=>$("#dSubmitScrim").classList.remove("show"));
+$("#dSubmitScrim").addEventListener("click",e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove("show")});
+$("#dSubConfirm").addEventListener("click",()=>{
+  dState.submitted=true;
+  $("#dSubmitScrim").classList.remove("show");
+  toast("Submitted — your CDK team has been notified and will begin setup.");
+  dGo("landing");
+});
+/* help panel */
+$("#helpFab").addEventListener("click",()=>{
+  const p=$("#helpPanel");
+  p.classList.toggle("open");
+  $("#helpFab").setAttribute("aria-expanded",p.classList.contains("open"));
+});
+$("#hpClose").addEventListener("click",()=>$("#helpPanel").classList.remove("open"));
+$("#hpAsk").addEventListener("click",()=>{
+  $("#helpPanel").classList.remove("open");
+  toast("Help request sent with your current question, section, and product attached — expect a reply within 1 business day.");
+});
+
+/* init */
+render();
+qRender();
+dRender();
+</script>
+</body>
+</html>
