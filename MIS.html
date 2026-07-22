@@ -1,0 +1,1546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIS Reporting — End-to-End Prototype</title>
+<style>
+  :root{
+    /* Radial Design System tokens */
+    --ink:#151B25; --ink-2:rgba(21,27,37,.7); --ink-3:rgba(21,27,37,.7); --line:#E8E8E9; --line-2:#C4C5C8;
+    --bg:#F3F3F3; --card:#FFFFFF; --brand:#006CFA; --brand-dk:#035FDA; --brand-bg:#E6F0FE;
+    --ok:#09AD00; --ok-bg:rgba(9,173,0,.1); --warn:#FA9C19; --warn-bg:rgba(250,156,25,.14); --bad:#EB0000; --bad-bg:rgba(235,0,0,.08);
+    --hi:#09AD00; --lo:#EB0000; --memo:#F3F3F3; --total:#E8E8E9;
+    --review:#8514dd; --review-bg:rgba(133,20,221,.08);
+    --r:4px; --sh:0 1px 3px 0 rgba(21,27,37,.5);          /* Elevation 1 */
+    --sh-lg:0 12px 40px 2px rgba(21,27,37,.3);            /* Elevation 6 */
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font:400 14px/20px Roboto,"Segoe UI","Helvetica Neue",Arial,sans-serif;color:var(--ink);background:var(--bg)}  /* Body 1: 14/20 regular */
+  button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:4px}
+  input,select,textarea{font:inherit;color:var(--ink);border:1px solid rgba(21,27,37,.4);border-radius:4px;padding:7px 12px;background:#fff}
+  input:focus,select:focus,textarea:focus{border-color:var(--brand)}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+  /* ===== App shell — styled per CDK Global screenshot ===== */
+  .topbar{position:fixed;top:0;left:0;right:0;height:60px;background:#000;color:#fff;display:flex;align-items:center;gap:8px;padding:0 22px;z-index:60}
+  .cdklogo{font-weight:800;font-size:17px;letter-spacing:.16em;color:#fff;white-space:nowrap}
+  .topbar .spacer{flex:1}
+  .tico{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;position:relative}
+  .tico:hover{background:rgba(255,255,255,.16)}
+  .tico svg{width:22px;height:22px;fill:#fff}
+  .tico .badge{position:absolute;top:2px;right:2px;background:#EB0000;color:#fff;font-size:10px;font-weight:700;border-radius:9px;padding:1px 5px}
+  .pill-toggle{display:flex;align-items:center;gap:7px;border:1px solid rgba(255,255,255,.55);border-radius:18px;padding:4px 13px;color:#fff;font-size:12.5px;margin-right:6px}
+  .pill-toggle.on{background:#fff;color:#000;font-weight:700;border-color:#fff}
+  .avatar{width:38px;height:38px;border-radius:50%;background:#fff;color:#111;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}
+
+  .rail{position:fixed;top:60px;left:0;bottom:0;width:268px;background:#151B25;padding:16px 14px;overflow:auto;z-index:50}  /* RDS: left navigation background = Black #151B25, Elevation 0 */
+  .ctx{display:flex;align-items:center;gap:11px;width:100%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:4px;padding:9px 13px;margin-bottom:8px;font-size:14px;font-weight:500;color:#FFFFFF;cursor:pointer;text-align:left;min-height:44px}
+  .ctx:hover{background:rgba(255,255,255,.2)}
+  .ctx .caret{margin-left:auto;color:rgba(255,255,255,.7);font-size:10px}
+  .ctx .cico{width:22px;text-align:center;font-size:16px;filter:grayscale(1) brightness(2.3);line-height:1}
+  .drtile{width:26px;height:26px;border-radius:4px;background:#1ead47;color:#151B25;font-size:10.5px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+  .rail hr{border:none;border-top:1px solid rgba(255,255,255,.2);margin:16px 4px}
+  .rail h4{font-size:10px;letter-spacing:1.5px;color:rgba(255,255,255,.7);text-transform:uppercase;margin:16px 12px 6px}  /* Overline, White 70% */
+  .rail a{display:flex;align-items:center;gap:12px;padding:10px 13px;border-radius:4px;color:#FFFFFF;text-decoration:none;font-size:14px;line-height:20px;min-height:40px}  /* Nav items level 1 = White */
+  .rail a:hover{background:rgba(255,255,255,.2)}
+  .rail a.active{background:rgba(255,255,255,.2);color:#FFFFFF;font-weight:500}
+  .rail a .ic{width:20px;text-align:center;filter:grayscale(1) brightness(2.3);font-size:15px}
+  .rail a:focus-visible,.ctx:focus-visible{outline:2px solid #FFFFFF;outline-offset:1px}
+
+  main{margin:60px 0 0 268px;padding:20px 24px 80px;max-width:1280px}
+  .crumbs{font-size:12.5px;color:var(--ink-3);margin-bottom:10px}
+  .crumbs b{color:var(--ink-2);font-weight:600}
+  .pagehead{display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+  .pagehead h1{font-size:24px;line-height:32px;font-weight:400}  /* Heading 1: 24/32 regular */
+  .pagehead .sub{color:var(--ink-3);font-size:13px;margin-top:2px}
+  .pagehead .actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+
+  /* ===== Cards / layout ===== */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh)}
+  .card .hd{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line);font-weight:500;font-size:16px;line-height:24px;letter-spacing:.1px}  /* Heading 4 */
+  .card .hd .rt{margin-left:auto;font-weight:400;font-size:12.5px}
+  .card .bd{padding:14px 16px}
+  .grid{display:grid;gap:16px}
+  .cols-3{grid-template-columns:1.2fr 1.2fr .8fr}
+  .cols-2{grid-template-columns:1fr 1fr}
+  @media(max-width:1050px){.cols-3,.cols-2{grid-template-columns:1fr}}
+  .mt{margin-top:16px}
+
+  /* ===== Buttons / chips ===== */
+  .btn{display:inline-flex;align-items:center;gap:8px;border-radius:4px;padding:8px 16px;font-weight:500;font-size:14px;line-height:20px;letter-spacing:.25px;border:1px solid transparent;min-height:36px}  /* Button 14 medium, Standard 36px */
+  .btn.pri{background:var(--brand);color:#fff}
+  .btn.pri:hover{background:var(--brand-dk)}
+  .btn.sec{background:#E6F0FE;border-color:transparent;color:#035FDA}  /* Secondary: Blue 50 container, Blue 600 label */
+  .btn.sec:hover{background:rgba(0,108,250,.15);color:#035FDA}
+  .btn.sec:active{color:#0557C4}
+  .btn.ghost{color:var(--brand-dk)}
+  .btn.ghost:hover{background:var(--brand-bg)}
+  .btn.danger{background:#fff;border-color:#EB0000;color:#EB0000}
+  .btn.sm{padding:5px 12px;min-height:32px;font-size:14px}  /* Small 32px */
+  .link{color:var(--brand-dk);text-decoration:none;font-weight:600;cursor:pointer}
+  .link:hover{text-decoration:underline}
+  .chip{display:inline-flex;align-items:center;gap:5px;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:3px 10px;font-size:12px;color:var(--ink-2)}
+  .chip.blue{background:var(--brand-bg);border-color:#88C4FF;color:#035FDA}
+  .chip.ok{background:var(--ok-bg);border-color:#09AD00;color:var(--ink)}
+  .chip.warn{background:var(--warn-bg);border-color:#FA9C19;color:var(--ink)}
+  .chip.bad{background:var(--bad-bg);border-color:#EB0000;color:var(--ink)}
+  .tag{display:inline-block;font-size:10.5px;font-weight:700;border-radius:4px;padding:1px 6px;letter-spacing:.03em}
+  .tag.D{background:var(--brand-bg);color:#035FDA} .tag.T{background:rgba(133,20,221,.12);color:#151B25}
+  .tag.C{background:var(--ok-bg);color:#151B25} .tag.M{background:#E8E8E9;color:var(--ink-2)}
+
+  /* ===== Tables ===== */
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{font-size:10px;line-height:14px;text-transform:uppercase;letter-spacing:1.5px;color:var(--ink);font-weight:400;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);background:#F3F3F3;white-space:nowrap}  /* Overline: 10/14 ls1.5 */
+  td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  th.num{text-align:right}
+  .rowlink{cursor:pointer}
+  .rowlink:hover td{background:rgba(21,27,37,.05)}
+  .neg{color:var(--bad)}
+  .band th{background:var(--brand-bg);color:#035FDA;text-align:center;border-right:1px solid #B9D8FD}
+  tr.memo td{background:var(--memo);font-weight:700;letter-spacing:.04em;color:var(--ink-2)}
+  tr.total td{background:var(--total);font-weight:650}
+  tr.exc td:first-child{box-shadow:inset 3px 0 0 var(--bad)}
+  .hilo{font-weight:700;font-size:11px}
+  .hilo.H{color:var(--hi)} .hilo.L{color:var(--lo)}
+
+  /* ===== Toolbar / filterbar ===== */
+  .fbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;box-shadow:var(--sh)}
+  .fbar .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);font-weight:700;margin-right:2px}
+  .seg{display:inline-flex;border:1px solid var(--line-2);border-radius:4px;overflow:hidden}
+  .seg button{padding:6px 12px;font-size:12.5px;color:var(--ink-2);border-right:1px solid var(--line-2);min-height:32px}
+  .seg button:last-child{border-right:none}
+  .seg button.on{background:var(--brand);color:#fff;font-weight:600}
+  .switch{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--ink-2);cursor:pointer}
+  .switch .tr{width:34px;height:19px;border-radius:10px;background:var(--line-2);position:relative;transition:background .15s}
+  .switch .tr::after{content:"";position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:#fff;transition:left .15s}
+  .switch.on .tr{background:var(--brand)}
+  .switch.on .tr::after{left:17px}
+
+  /* ===== Report render ===== */
+  .rpthead{text-align:center;padding:16px 10px 12px;border-bottom:1px solid var(--line)}
+  .rpthead .t1{font-weight:700;font-size:15px;letter-spacing:.05em}
+  .rpthead .t2{font-size:12.5px;color:var(--ink-2);margin-top:2px;letter-spacing:.04em}
+  .excbanner{background:var(--bad-bg);color:var(--bad);font-weight:700;text-align:center;padding:7px;letter-spacing:.12em;font-size:12px;border-bottom:1px solid #efc4c1}
+
+  /* ===== Drawers ===== */
+  .scrim{position:fixed;inset:0;background:rgba(16,24,40,.45);z-index:80;animation:fade .18s}
+  @keyframes fade{from{opacity:0}}
+  .drawer{position:fixed;top:0;right:0;bottom:0;width:560px;max-width:94vw;background:#fff;z-index:90;box-shadow:0 12px 40px 2px rgba(21,27,37,.3);display:flex;flex-direction:column;animation:slidein .22s ease-out}
+  .drawer.wide{width:760px}
+  @keyframes slidein{from{transform:translateX(40px);opacity:.4}}
+  .drawer .dh{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line)}
+  .drawer .dh h3{font-size:15.5px}
+  .drawer .dh .x{margin-left:auto;width:34px;height:34px;border-radius:8px;font-size:16px;color:var(--ink-3)}
+  .drawer .dh .x:hover{background:var(--bg)}
+  .drawer .db{padding:16px 18px;overflow:auto;flex:1}
+  .drawer .df{padding:12px 18px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end}
+  .lvl{font-size:10.5px;font-weight:700;color:var(--brand-dk);background:var(--brand-bg);border-radius:4px;padding:2px 7px;letter-spacing:.05em}
+
+  /* ===== Modal ===== */
+  .modal{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
+  .modal .scrim{position:absolute;z-index:1}
+  .modal .mbox{position:relative;z-index:2}
+  .modal .mbox{background:#fff;border-radius:4px;box-shadow:0 12px 40px 2px rgba(21,27,37,.3);width:560px;max-width:96vw;max-height:92vh;display:flex;flex-direction:column;animation:pop .18s ease-out}
+  @keyframes pop{from{transform:scale(.97);opacity:.5}}
+  .mbox .mh{padding:15px 20px;border-bottom:1px solid var(--line);font-weight:650;font-size:15.5px;display:flex;align-items:center}
+  .mbox .mh .x{margin-left:auto;color:var(--ink-3);width:30px;height:30px;border-radius:6px}
+  .mbox .mb{padding:16px 20px;overflow:auto}
+  .mbox .mf{padding:13px 20px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end}
+  .field{margin-bottom:13px}
+  .field label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-2);margin-bottom:4px}
+  .field .hint{font-size:11.5px;color:var(--ink-3);margin-top:3px}
+  .field input[type=text],.field input[type=email],.field input[type=date],.field select,.field textarea{width:100%}
+  .frow{display:flex;gap:12px}.frow .field{flex:1}
+
+  /* ===== Review annotations ===== */
+  .annobar{display:none;background:var(--review-bg);border:1px dashed var(--review);border-radius:var(--r);padding:10px 14px;margin-bottom:14px;font-size:12.5px;color:#4b2d87}
+  body.review .annobar{display:block}
+  .annobar b{color:var(--review)}
+  .annobar .chip{background:#fff;border-color:#d8c6f7;color:#5b3fa8;margin:2px 3px 0 0}
+  .gfnote{display:none;font-size:11.5px;color:var(--review);background:var(--review-bg);border-radius:5px;padding:2px 7px;font-weight:600}
+  body.review .gfnote{display:inline-block}
+
+  /* ===== Toast ===== */
+  #toasts{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:120;display:flex;flex-direction:column;gap:8px;align-items:center}
+  .toast{background:var(--ink);color:#fff;padding:10px 18px;border-radius:8px;font-size:13.5px;box-shadow:var(--sh-lg);animation:pop .2s ease-out;display:flex;gap:10px;align-items:center;max-width:640px}
+  .toast.ok{background:var(--ok)}
+  .toast.warn{background:#7a5600}
+
+  /* ===== Misc ===== */
+  .kv{display:grid;grid-template-columns:170px 1fr;row-gap:8px;column-gap:12px;font-size:13px}
+  .kv dt{color:var(--ink-3)}
+  .kv dd{font-weight:500}
+  .statline{display:flex;gap:18px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-2)}
+  .statline b{display:block;font-size:15px;color:var(--ink)}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px}
+  .dot.g{background:var(--ok)} .dot.y{background:#d9a400} .dot.r{background:var(--bad)}
+  .empty{padding:34px;text-align:center;color:var(--ink-3)}
+  .empty b{display:block;color:var(--ink-2);font-size:15px;margin-bottom:5px}
+  .tabs{display:flex;gap:2px;border-bottom:2px solid var(--line);margin-bottom:16px;flex-wrap:wrap}
+  .tabs button{padding:9px 16px;font-size:13.5px;font-weight:600;color:var(--ink-3);border-bottom:2px solid transparent;margin-bottom:-2px;min-height:40px}
+  .tabs button.on{color:var(--brand-dk);border-bottom-color:var(--brand)}
+  .tabs button:hover{color:var(--ink)}
+  .stepper{display:flex;gap:0;flex-wrap:wrap;margin-bottom:16px}
+  .stepper .st{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink-3);padding:5px 14px 5px 8px;position:relative}
+  .stepper .st .n{width:22px;height:22px;border-radius:50%;background:var(--line);color:var(--ink-2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px}
+  .stepper .st.done .n{background:var(--ok);color:#fff}
+  .stepper .st.cur{color:var(--brand-dk);font-weight:700}
+  .stepper .st.cur .n{background:var(--brand);color:#fff}
+  .arrow{color:var(--line-2);align-self:center}
+  .printdoc{font-family:"Courier New",monospace;font-size:12px;background:#fff;border:1px solid var(--line);padding:22px 26px;white-space:pre-wrap;line-height:1.5;border-radius:6px;overflow:auto}
+  .searchbox{position:relative}
+  .searchbox input{padding-left:30px;width:230px}
+  .searchbox::before{content:"⌕";position:absolute;left:9px;top:6px;color:var(--ink-3);font-size:16px}
+
+  /* ===== Benchmarking (Module BMK) — styled per 07-21 benchmark screenshots ===== */
+  .bmkwrap{background:#fff;border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:16px}
+  .bmkrow1{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #eceff3;flex-wrap:wrap}
+  .bmkrow2{display:flex;align-items:center;gap:14px;padding:12px 14px;flex-wrap:wrap}
+  .perpill{display:inline-flex;align-items:center;gap:8px;background:#E6F0FE;color:#035FDA;font-weight:500;border-radius:20px;padding:8px 16px;font-size:14px;letter-spacing:.25px;cursor:pointer;border:none}
+  .selpill{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid #d7dbe0;border-radius:20px;padding:8px 16px;font-size:14px;color:#222;cursor:pointer;position:relative}
+  .selpill .caret,.perpill .caret,.bsel .caret{font-size:10px}
+  .bmktoggle{display:inline-flex;align-items:center;gap:10px;font-size:14.5px;color:#222;cursor:pointer;border:none;background:none}
+  .btrack{width:44px;height:24px;border-radius:12px;background:#b9bec6;position:relative;transition:background .15s;flex:none}
+  .btrack::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3);transition:left .15s}
+  .bmktoggle.on .btrack{background:#006CFA}
+  .bmktoggle.on .btrack::after{left:22px}
+  .bmklabel{font-size:15px;color:#222}
+  .bsel{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid rgba(21,27,37,.4);border-radius:4px;padding:10px 14px;font-size:14.5px;cursor:pointer;min-width:320px;position:relative;text-align:left}
+  .bsel.hot{border:2px solid #006CFA;box-shadow:0 0 0 3px rgba(0,108,250,.15);border-radius:4px;padding:9px 13px}
+  .bsel .caret{margin-left:auto;color:#006CFA}
+  .bglyph{font-size:15px;line-height:1}
+  .bmenu{position:absolute;top:calc(100% + 8px);left:0;min-width:100%;background:#fff;border-radius:4px;box-shadow:0 2px 7px 1px rgba(21,27,37,.45);  /* Elevation 3: menus */z-index:70;overflow:hidden;padding:4px 0}
+  .bmenu button{display:flex;align-items:center;gap:12px;width:100%;padding:12px 16px;font-size:14.5px;text-align:left;white-space:nowrap}
+  .bmenu button:hover{background:#eef1f5}
+  .bmenu button.sel{background:#E6F0FE}
+  .bmenu button .ck{margin-left:auto;color:#006CFA;font-weight:700}
+  .sharebtn{display:inline-flex;align-items:center;gap:8px;background:#E6F0FE;color:#035FDA;font-weight:500;border-radius:4px;padding:9px 18px;font-size:14px;letter-spacing:.25px}
+  .sharebtn:hover{background:rgba(0,108,250,.15)}
+  .bt th.mtdhdr{background:#5B5F66;color:#fff;text-transform:none;font-size:12px;text-align:right}  /* Grey 700 */
+  .bt td.gsep,.bt th.gsep{border-left:2px solid #DCDDDE}
+  .bpill{display:inline-flex;align-items:center;gap:6px;border-radius:15px;padding:3px 12px;font-weight:700;font-size:12.5px;white-space:nowrap}
+  .bpill .bico{width:16px;height:16px;border-radius:50%;border:1.6px solid currentColor;display:inline-flex;align-items:center;justify-content:center;font-size:9.5px;line-height:1;flex:none}
+  .bpill.gf{background:rgba(9,173,0,.15);border:2px solid #09AD00;color:#151B25}   /* strong favorable — Success */
+  .bpill.go{border:1.5px solid #09AD00;color:#151B25;background:#fff}
+  .bpill.rf{background:rgba(235,0,0,.1);border:2px solid #EB0000;color:#151B25}     /* strong unfavorable — Error */
+  .bpill.ro{border:1.5px solid #EB0000;color:#151B25;background:#fff}
+  .bpill.n{border:1.5px solid #FA9C19;color:#151B25;background:#fff}                /* neutral — Warning */
+  .goalnote{font-size:11px;color:var(--ink-3);margin-top:2px}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="cdklogo">CDK GLOBAL</div>
+  <div class="spacer"></div>
+  <button class="pill-toggle" id="reviewToggle" aria-pressed="false" title="Show requirement IDs, gap-fills and open questions on every screen">
+    <span>◉</span> Review notes <b id="revState">OFF</b>
+  </button>
+  <button class="tico" aria-label="Apps" onclick="toast('App switcher (chrome only in prototype)')">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h4v4H4zM10 4h4v4h-4zM16 4h4v4h-4zM4 10h4v4H4zM10 10h4v4h-4zM16 10h4v4h-4zM4 16h4v4H4zM10 16h4v4h-4zM16 16h4v4h-4z"/></svg></button>
+  <button class="tico" aria-label="Help" onclick="toast('Help (chrome only in prototype)')">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm-.1-12.9c-1.7 0-3 .9-3.6 2.3l1.8.8c.3-.7.9-1.3 1.8-1.3.9 0 1.5.5 1.5 1.2 0 1.3-1.9 1.4-2.4 3h2c.3-1 2.4-1.4 2.4-3.2 0-1.7-1.4-2.8-3.5-2.8zM11 15.5h2v2h-2z"/></svg></button>
+  <button class="tico" aria-label="Notifications, 2 unread" onclick="toast('2 notifications: schedule delivered · 2 unmapped accounts')">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22a2.3 2.3 0 0 0 2.3-2.3H9.7A2.3 2.3 0 0 0 12 22zm7-5.3v-1l-1.5-1.5V9.9c0-3-1.6-5.5-4.4-6.2v-.6a1.1 1.1 0 1 0-2.2 0v.6C8.1 4.4 6.5 6.9 6.5 9.9v4.3L5 15.7v1z"/></svg><span class="badge">2</span></button>
+  <div class="avatar" title="Gina Jordan — Controller">GJ</div>
+</header>
+
+<nav class="rail" aria-label="Main navigation">
+  <button class="ctx" onclick="toast('Application switcher — Drive (prototype chrome)')"><span class="drtile">Dr</span> Drive <span class="caret">▼</span></button>
+  <button class="ctx" onclick="toast('Dealership selector (prototype chrome)')"><span class="cico">📍</span> Strong Auto <span class="caret">▼</span></button>
+  <button class="ctx" onclick="toast('Gina Jordan — Controller (prototype chrome)')"><span class="cico">👤</span> Gina Jordan <span class="caret">▼</span></button>
+  <button class="ctx" id="groupChip" title="Active MIS group context — held for the session (GRP-06)" onclick="toast('Active MIS group — selected at entry, held for the session (GRP-06). Super users may switch groups.')"><span class="cico">🗂</span> Group: ACCTG <span class="caret">▼</span></button>
+  <hr>
+  <h4>Reports</h4>
+  <a href="#home" data-r="home"><span class="ic">▦</span> Accounting Reports</a>
+  <a href="#run" data-r="run"><span class="ic">▶</span> Run M.I.S. Report</a>
+  <a href="#viewer" data-r="viewer"><span class="ic">☰</span> Report Viewer</a>
+  <a href="#spy" data-r="spy"><span class="ic">🚗</span> Sales Productivity</a>
+  <a href="#asr" data-r="asr"><span class="ic">✎</span> Adjust Sales (ASR)</a>
+  <h4>Manage</h4>
+  <a href="#setup" data-r="setup"><span class="ic">✎</span> Report Setups</a>
+  <a href="#schedules" data-r="schedules"><span class="ic">🗓</span> Schedules</a>
+  <a href="#archive" data-r="archive"><span class="ic">🗄</span> Archive</a>
+  <h4>Accounting</h4>
+  <a href="#glinquiry" data-r="glinquiry"><span class="ic">🔍</span> GL Inquiry</a>
+  <a href="#" onclick="toast('AP Schedule is outside this prototype scope');return false"><span class="ic">↧</span> AP Schedule</a>
+  <a href="#" onclick="toast('AR Schedule is outside this prototype scope');return false"><span class="ic">↥</span> AR Schedule</a>
+  <a href="#" onclick="toast('Month End Close is outside this prototype scope');return false"><span class="ic">◫</span> Month End Close</a>
+  <h4>Settings</h4>
+  <a href="#groups" data-r="groups"><span class="ic">👥</span> MIS Groups</a>
+  <a href="#diagnostics" data-r="diagnostics"><span class="ic">✚</span> Diagnostics</a>
+</nav>
+
+<main id="view" tabindex="-1"></main>
+<div id="overlay"></div>
+<div id="toasts" aria-live="polite"></div>
+<script>
+/* =====================================================================
+   MIS End-to-End Prototype — data fixtures & state
+   Fixture STRUCTURE comes from sources (MIR-4 line set, DOC-1 formats,
+   CIB accounts/companies). Numeric VALUES are illustrative.
+   ===================================================================== */
+const S = {
+  company:'123', route:'home', review:false,
+  fmt:'A', md:'MD0', totalsTop:false, exception:false, period:'cur',
+  cols:{DAY:true,MTD:true,PLAN:true,VAR:true,PCT:true,YTD:true},
+  freshBuild:'07/21/2026 6:02 AM', freshCalc:'07/21/2026 6:04 AM', stale:false,
+  ranOnce:true, setupTab:'defs', spyTab:'err', glTab:'detail', wiz:null,
+  savedViews:[
+    {n:'Monday Report', def:true},{n:'Exception check — month end', def:false},{n:'GM one-pager', def:false}
+  ],
+  schedules:[
+    {id:1, rpt:'M.I.S. — Daily Operating Control', to:'dealer.principal@strongauto.com', period:'Current Month', freq:'Daily (weekdays)', time:'6:00 AM', fmt:'PDF', started:'01/20/2026', datemode:'S — System date', on:true},
+    {id:2, rpt:'M.I.S. — Daily Operating Control', to:'controllers-list@strongauto.com', period:'Current Month', freq:'Weekly · Mon', time:'7:30 AM', fmt:'Excel', started:'02/28/2026', datemode:'M — Month-end w/ post-ahead switch', on:true},
+    {id:3, rpt:'M.I.S. — Monthly Summary Report', to:'gm@strongauto.com; dealer.principal@strongauto.com', period:'Previous Month', freq:'Monthly · 1st', time:'6:30 AM', fmt:'PDF', started:'03/15/2026', datemode:'C — Current month-end only', on:true},
+    {id:4, rpt:'Sales Productivity — New/Used', to:'sales.mgr@strongauto.com', period:'Current Month', freq:'Weekly · Fri', time:'5:00 PM', fmt:'PDF', started:'04/02/2026', datemode:'S — System date', on:false}
+  ],
+  adjustLog:[], selSched:new Set()
+};
+const COMPANIES = [{id:'123',n:'123 - Chevy Northwest'},{id:'456',n:'456 - Honda Center'}];
+const coName = () => COMPANIES.find(c=>c.id===S.company).n.split(' - ')[1];
+
+/* Report line fixtures — line set per MIR-4 "DAILY OPERATING CONTROL". [$ in whole dollars] */
+const LINES = [
+ {id:100,t:'D',d:'NEW VEHICLE SALES',       day:42500, mtd:812400, ytd:5104800, pMtd:900000, pYtd:5400000, uDay:2,uMtd:38,uYtd:241, ws:1},
+ {id:110,t:'D',d:'USED VEHICLE SALES',      day:31900, mtd:701600, ytd:4188300, pMtd:650000, pYtd:3900000, uDay:3,uMtd:52,uYtd:308, ws:1},
+ {id:120,t:'D',d:'F&I INCOME',              day:6200,  mtd:118900, ytd:702400,  pMtd:120000, pYtd:720000,  uDay:0,uMtd:0,uYtd:0,   ws:1},
+ {id:200,t:'T',d:'TOTAL VEHICLE',           refs:[100,110,120], ws:1},
+ {id:250,t:'M',d:'FIXED OPERATIONS'},
+ {id:300,t:'D',d:'PARTS SALES',             day:18400, mtd:396200, ytd:2377100, pMtd:380000, pYtd:2280000, uDay:0,uMtd:0,uYtd:0, ws:1},
+ {id:310,t:'D',d:'SERVICE LABOR',           day:14800, mtd:322500, ytd:1934800, pMtd:340000, pYtd:2040000, uDay:0,uMtd:0,uYtd:0, ws:2},
+ {id:320,t:'D',d:'BODY SHOP',               day:5300,  mtd:104800, ytd:645200,  pMtd:100000, pYtd:600000,  uDay:0,uMtd:0,uYtd:0, ws:2},
+ {id:400,t:'T',d:'TOTAL SERVICE/PARTS',     refs:[300,310,320], ws:1},
+ {id:500,t:'T',d:'TOTAL GROSS PROFIT',      refs:[200,400], ws:1},
+ {id:600,t:'D',d:'TOTAL EXPENSES',          day:38900, mtd:842300, ytd:5122500, pMtd:820000, pYtd:4920000, uDay:0,uMtd:0,uYtd:0, ws:1, sign:-1},
+ {id:700,t:'T',d:'NET PROFIT',              refs:[500,600], ws:1},
+ {id:710,t:'C',d:'AVG GROSS / UNIT — NEW',  calc:'A100 DIV U100 (scale 0)', ws:1},
+ {id:720,t:'C',d:'GROSS PROFIT %',          calc:'A500 DIV A200 ×100 (scale 1)', ws:1}
+];
+/* compute totals/calcs */
+function lineVals(l){
+  if(l.t==='D'){ const s=l.sign||1; return {day:l.day*s,mtd:l.mtd*s,ytd:l.ytd*s,pMtd:l.pMtd*s,pYtd:l.pYtd*s,uMtd:l.uMtd,uDay:l.uDay,uYtd:l.uYtd}; }
+  if(l.t==='T'){ const acc={day:0,mtd:0,ytd:0,pMtd:0,pYtd:0,uMtd:0,uDay:0,uYtd:0};
+    l.refs.forEach(r=>{const v=lineVals(LINES.find(x=>x.id===r)); for(const k in acc)acc[k]+=v[k]||0;}); return acc; }
+  if(l.t==='C'){
+    if(l.id===710){const v=lineVals(LINES.find(x=>x.id===100)); return {day:v.uDay?Math.round(v.day/v.uDay):0, mtd:v.uMtd?Math.round(v.mtd/v.uMtd):0, ytd:v.uYtd?Math.round(v.ytd/v.uYtd):0, pMtd:null,pYtd:null,isCalc:1};}
+    if(l.id===720){const a=lineVals(LINES.find(x=>x.id===500)),b=lineVals(LINES.find(x=>x.id===200));
+      const p=(x,y)=>y?Math.round(x/y*1000)/10:0; return {day:p(a.day,b.day),mtd:p(a.mtd,b.mtd),ytd:p(a.ytd,b.ytd),pMtd:null,pYtd:null,isCalc:1,pct:1};}
+  }
+  return {};
+}
+/* Exception test: MTD actual unfavorable vs plan (placeholder logic — OQ-11/OQ-5: legacy threshold undefined) */
+function excState(l){
+  if(l.t==='M'||l.t==='C') return '';
+  const v=lineVals(l); if(v.pMtd==null||v.pMtd===0) return '';
+  const isExpense = l.sign===-1;
+  const unfav = isExpense ? Math.abs(v.mtd)>Math.abs(v.pMtd) : v.mtd<v.pMtd;
+  return unfav ? 'L' : 'H';
+}
+
+/* Level-2 drilldown: accounts behind detail lines (structure per MIS-20) */
+const LINE_ACCTS = {
+ 100:[{a:'3010',d:'New Car Sales — Chevrolet',day:28400,mtd:512700,ytd:3208400,uD:1,uM:24,uY:152},
+      {a:'3020',d:'New Truck Sales',day:14100,mtd:262400,ytd:1651200,uD:1,uM:12,uY:77},
+      {a:'3030',d:'Fleet Sales — New',day:0,mtd:37300,ytd:245200,uD:0,uM:2,uY:12}],
+ 110:[{a:'3110',d:'Used Retail Sales',day:24600,mtd:551900,ytd:3301400,uD:2,uM:41,uY:243},
+      {a:'3120',d:'Used Wholesale',day:7300,mtd:149700,ytd:886900,uD:1,uM:11,uY:65}],
+ 120:[{a:'3410',d:'Finance Income',day:4100,mtd:76300,ytd:451300,uD:0,uM:0,uY:0},
+      {a:'3420',d:'Insurance Income',day:2100,mtd:42600,ytd:251100,uD:0,uM:0,uY:0}],
+ 300:[{a:'4310',d:'Parts — Counter Retail',day:9900,mtd:212400,ytd:1274300,uD:0,uM:0,uY:0},
+      {a:'4320',d:'Parts — R.O. / Shop',day:8500,mtd:183800,ytd:1102800,uD:0,uM:0,uY:0}],
+ 310:[{a:'4610',d:'Service Labor — Customer',day:9200,mtd:198400,ytd:1190400,uD:0,uM:0,uY:0},
+      {a:'4620',d:'Service Labor — Internal',day:5600,mtd:124100,ytd:744400,uD:0,uM:0,uY:0}],
+ 320:[{a:'4710',d:'Body Shop Labor',day:5300,mtd:104800,ytd:645200,uD:0,uM:0,uY:0}],
+ 600:[{a:'6010',d:'Salaries & Wages',day:21500,mtd:465800,ytd:2833200,uD:0,uM:0,uY:0},
+      {a:'6210',d:'Advertising',day:8400,mtd:181600,ytd:1104900,uD:0,uM:0,uY:0},
+      {a:'6400',d:'Rent & Equivalent',day:9000,mtd:194900,ytd:1184400,uD:0,uM:0,uY:0}]
+};
+/* Level-3/4: GL transactions for account drilldown (fields per CIB-13) */
+const GL_TXNS = {
+ '3010':[
+  {ref:'D10234',jrnl:'10 - Vehicle Sales',dt:'07/03/2026',cntl:'STK4412',desc:'2026 Silverado 1500 LT — Delivered',amt:-48200,cust:'Marquez, Elena',sls:'101 - J. Smith',stock:'STK4412',user:'joe.smith',doc:'5 - Vehicle Deal',split:''},
+  {ref:'D10241',jrnl:'10 - Vehicle Sales',dt:'07/09/2026',cntl:'STK4418',desc:'2026 Equinox RS — Delivered',amt:-34600,cust:'Bell, Marcus',sls:'102 - K. Jones',stock:'STK4418',user:'nancy.chang',doc:'5 - Vehicle Deal',split:'101 - J. Smith'},
+  {ref:'D10255',jrnl:'10 - Vehicle Sales',dt:'07/14/2026',cntl:'STK4423',desc:'2026 Trax ACTIV — Delivered',amt:-24900,cust:'Osei, Kwame',sls:'101 - J. Smith',stock:'STK4423',user:'joe.smith',doc:'5 - Vehicle Deal',split:''},
+  {ref:'JV0788',jrnl:'80 - General Journal',dt:'07/15/2026',cntl:'ADJ-07',desc:'Reclass — demo unit correction',amt:2100,cust:'—',sls:'—',stock:'—',user:'gina.jordan',doc:'2 - Journal Voucher',split:''}
+ ],
+ '6210':[
+  {ref:'22624',jrnl:'60 - Cash Disbursements',dt:'07/06/2026',cntl:'22624',desc:'203 Daily News Advertising',amt:427.84,cust:'—',sls:'—',stock:'—',user:'ap.clerk',doc:'2 - Check',split:''},
+  {ref:'22698',jrnl:'60 - Cash Disbursements',dt:'07/12/2026',cntl:'22698',desc:'200 Pattis Pinstripes delivery expense tags',amt:289.98,cust:'—',sls:'—',stock:'—',user:'ap.clerk',doc:'2 - Check',split:''}
+ ]
+};
+GL_TXNS['3020']=GL_TXNS['3010'].slice(0,2); GL_TXNS['3110']=GL_TXNS['3010'].slice(1,3);
+
+/* Calculated field library (CALC-02 seed; GF-03) */
+const CALC_FIELDS = [
+ {n:'Gross Profit %',f:'Gross ÷ Sales × 100',src:'DOC-4 / SPY-5',pre:true},
+ {n:'Net Profit %',f:'Net ÷ Sales × 100',src:'SPY-5',pre:true},
+ {n:'Avg Gross per Unit (PVR)',f:'Gross $ ÷ Unit count',src:'MIR-3 per-unit',pre:true},
+ {n:'Variance to Plan',f:'Actual − Plan (blank when plan = 0)',src:'DOC-4',pre:true},
+ {n:'% of Plan',f:'Actual ÷ Plan × 100',src:'DOC-4',pre:true},
+ {n:'PBR — Profit Before Rent',f:'Net Profit + Rent & Equivalent',src:'MTG example — seed pending review (GF-03)',pre:true,gf:true},
+ {n:'Expense-to-Gross %',f:'Total Expenses ÷ Total Gross × 100',src:'Candidate from HONDA_2026 stmt workbook (GF-03)',pre:true,gf:true},
+ {n:'My Field — Tech Hours/RO',f:'U310 ÷ RO count',src:'User-created via builder',pre:false,by:'gina.jordan 07/18/2026'}
+];
+
+/* Groups (MGS fixtures) */
+const GROUPS = [
+ {id:'BASE',desc:'Base MIS Setups',cos:['ALL companies'],users:['(all valid users)'],base:true},
+ {id:'ACCTG',desc:'Accounting managers — store 123',cos:['123 - Chevy Northwest'],users:['gina.jordan','joe.smith','nancy.chang']},
+ {id:'STORE-456',desc:'Honda Center reporting',cos:['456 - Honda Center'],users:['sarah.alexander','keagan.jones']}
+];
+
+/* Definitions catalog (CON-1) */
+const DEFS = [
+ {id:1,n:'Daily Operating Control',fmt:'A',range:'100–720',by:'Admin',arch:'07/20/2026 6:05 am',group:'ACCTG'},
+ {id:2,n:'Monthly Summary Report',fmt:'D',by:'Gina Jordan',range:'100–700',arch:'06/30/2026 7:00 am',group:'ACCTG'},
+ {id:3,n:'6 Month Comparative Analysis',fmt:'F',by:'Admin',range:'100–700',arch:'06/30/2026 7:02 am',group:'BASE'}
+];
+
+/* Forecast grid fixture (FCT) */
+const FCAST = [
+ {id:100,d:'NEW VEHICLE SALES',mode:'12-month',mon:900000,yr:10800000,units:45},
+ {id:110,d:'USED VEHICLE SALES',mode:'Month + Year',mon:650000,yr:7800000,units:55},
+ {id:120,d:'F&I INCOME',mode:'Month only',mon:120000,yr:'—',units:'—'},
+ {id:300,d:'PARTS SALES',mode:'Year only',mon:'380,000 (yr÷12)',yr:4560000,units:'—'},
+ {id:600,d:'TOTAL EXPENSES',mode:'12-month',mon:820000,yr:9840000,units:'—'}
+];
+
+/* SPY fixtures */
+const SPY_ROWS = [
+ {seg:'new',sls:'101 - SMITH J',acct:'3010',ref:'D10234',stock:'STK4412',cnt:1,serial:'1GCPYBEK4RZ104412',sale:48200,cost:43900,fin:900,ins:450,com:1200,trade:'STK4399',yr:2023,valu:9500,cust:'MARQUEZ E',sw:''},
+ {seg:'new',sls:'101 - SMITH J',acct:'3010',ref:'D10255',stock:'STK4423',cnt:1,serial:'KL77LJE21RC104423',sale:24900,cost:23100,fin:600,ins:0,com:650,trade:'',yr:'',valu:0,cust:'OSEI K',sw:''},
+ {seg:'new',sls:'102 - JONES K',acct:'3010',ref:'D10241',stock:'STK4418',cnt:1,serial:'3GNAXKEG3RS104418',sale:34600,cost:31800,fin:750,ins:390,com:900,trade:'STK4401',yr:2021,valu:7200,cust:'BELL M',sw:'101 - SMITH J'},
+ {seg:'used',sls:'101 - SMITH J',acct:'3110',ref:'U20112',stock:'U8834',cnt:1,serial:'2T1BURHE8JC098834',sale:18700,cost:16200,fin:500,ins:250,com:450,trade:'',yr:'',valu:0,cust:'NGUYEN T',sw:''},
+ {seg:'used',sls:'102 - JONES K',acct:'3110',ref:'U20118',stock:'U8841',cnt:1,serial:'1FTEW1EP5KF098841',sale:26400,cost:23700,fin:700,ins:310,com:600,trade:'U8790',yr:2019,valu:5400,cust:'DAVIS R',sw:''},
+ {seg:'err',sls:'103 - LEE P',acct:'3110',ref:'U20121',stock:'U8846',cnt:2,serial:'5YFBURHE0LP098846',sale:21300,cost:19400,fin:0,ins:0,com:0,trade:'',yr:'',valu:0,cust:'POSTING ERR',sw:''}
+];
+
+/* Archive fixtures */
+const ARCHIVE = [
+ {n:'M.I.S. — Daily Operating Control',code:'MIS',period:'Jul 2026 (partial)',dt:'07/20/2026 6:05 am',by:'Scheduled run',kind:'mis'},
+ {n:'M.I.S. — Daily Operating Control',code:'MIS',period:'Jun 2026',dt:'06/30/2026 7:00 am',by:'Gina Jordan',kind:'mis'},
+ {n:'M.I.S. — Monthly Summary Report',code:'MIS',period:'Jun 2026',dt:'06/30/2026 7:02 am',by:'Gina Jordan',kind:'mis'},
+ {n:'Sales Productivity — New Vehicle',code:'SPY',period:'Jun 2026',dt:'06/30/2026 5:10 pm',by:'Sales Mgr',kind:'spy'},
+ {n:'Balance Sheet',code:'AGRB',period:'Jun 2026',dt:'06/29/2026 10:01 am',by:'Joe Smith',kind:'other'}
+];
+
+/* Per-screen review annotations: requirement IDs + gaps/OQs (PRD §18 vetting rule) */
+const ANNO = {
+ home:{req:'CAT-01…04 · CIB-1…6 · CON-1/2',oq:['OQ-4 catalog naming "M S/DOCs"'],gf:[]},
+ groups:{req:'GRP-01…08 · MGS-1…8',oq:['OQ-7 Group ID length','OQ-9/OQ-10 groups→modern model'],gf:['GF-01 audit trail added']},
+ setup:{req:'DEF-01…13 · CALC-01…06 · FCT-01…06 · DIA-01/03',oq:['OQ-5 Mgmt Advisor','OQ-26 builder scope','OQ-11 exception def'],gf:['GF-02 copy-only sharing','GF-03 calc seed list','GF-04 fields=columns+lines','GF-06 forecast history-only']},
+ run:{req:'RUN-01…07 · ENG-01…10 · MIS-2/3/8/10/11',oq:['OQ-19 pipeline surfacing','OQ-13/21 roll on schedules','OQ-23/28 closed-month engine'],gf:['GF-07 auto-refresh default','GF-08 snapshot mechanism']},
+ viewer:{req:'VIEW-01…07 · BMK-01…16 · DOC-1 formats A/C · MIS-23/25 · MSS-4',oq:['OQ-11/OQ-5 exception logic & threshold','OQ-27 Intelligence Suite boundary — escalated by BMK','OQ-30 goals vs forecasts','OQ-31 color bands','OQ-32 segment/store mapping','OQ-33 projection math'],gf:['GF-09 no column reorder in v1','GF-15 projection = business-day proration','GF-16 goals read forecast store','GF-17 normalized color bands','GF-18 direction-aware coloring']},
+ drill:{req:'DRL-01…08 · MIS-20 · CIB-13/14 · [FIT] 4 levels',oq:['OQ-22/OQ-29 adjust write-back & whitelist'],gf:['GF-10 audit+staleness','GF-11 whitelist = SPY ASR fields']},
+ schedules:{req:'DST-01…08 · CIB-17/18 · MIS-13 · EF-1/2/3',oq:['OQ-20 S/M/C/D vs Time Period','OQ-24 multi-schedule store','OQ-25 email rules','OQ-3 archive-off behavior'],gf:['GF-12 MIS groups as recipients']},
+ archive:{req:'ARC-01…04 · CIB-3/19/20',oq:['OQ-2 retention undefined'],gf:[]},
+ spy:{req:'SPY-01…09 · SPY-PRD 1.1',oq:['OQ-17 formulas inferred','OQ-18 split credit math'],gf:[]},
+ glinquiry:{req:'DRL-02 · CIB-14',oq:[],gf:[]},
+ diagnostics:{req:'DIA-01…05 · MIS-21 · DOC-12 · MIS-26',oq:[],gf:['GF-13 full parameter audit']},
+ create:{req:'DEF-01…13 · CALC · FCT · GRP-03/05/08 · ENG-01/02 · [FIT] report creation & population',oq:['OQ-1 create-vs-view roles','OQ-19 populate surfacing','OQ-10 groups→permissions'],gf:['GF-08 closed-month populate']},
+ asr:{req:'ASR PRD 1.1 R1–R15 · Features F1–F6 · SPY-06 legacy parity',oq:['ASR-OQ: journal single vs multi-select in v1','ASR-OQ: date basis (transaction vs posting vs record date)','ASR-OQ: deleted records excluded by default?','ASR-OQ: audit/logging strategy TBD'],gf:['Prototype writes in-session only — real UNIT-SALES write-back & SPY refresh are dependencies']}
+};
+
+/* ===== helpers ===== */
+const $ = s=>document.querySelector(s);
+const esc = s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function money(v,pct){ if(v==null||v==='')return '';
+  if(pct) return v.toFixed? v.toFixed(1)+'%' : v+'%';
+  const cents = S.md==='MD2';
+  const n = Math.abs(v); const str = cents? n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : Math.round(n).toLocaleString('en-US');
+  return v<0? `<span class="neg">(${str})</span>` : str; }
+function toast(msg,kind){ const t=document.createElement('div'); t.className='toast '+(kind||''); t.textContent=msg;
+  $('#toasts').appendChild(t); setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),320)},3400); }
+function anno(key){ const a=ANNO[key]; if(!a) return '';
+  return `<div class="annobar"><b>REVIEW MODE</b> — Implements: <b>${esc(a.req)}</b><br>
+  ${a.oq.map(o=>`<span class="chip">⚠ ${esc(o)}</span>`).join('')}
+  ${a.gf.map(g=>`<span class="chip">◈ ${esc(g)}</span>`).join('')}
+  ${(!a.oq.length&&!a.gf.length)?'<span class="chip">No open items on this screen</span>':''}</div>`; }
+function crumbs(...parts){ return `<div class="crumbs">${parts.map((p,i)=>i===parts.length-1?`<b>${esc(p)}</b>`:esc(p)).join(' › ')}</div>`; }
+function drawer(html,wide){ $('#overlay').innerHTML = `<div class="scrim" onclick="closeOv(event)"></div><aside class="drawer ${wide?'wide':''}" role="dialog" aria-modal="true">${html}</aside>`; }
+function modal(html){ $('#overlay').innerHTML = `<div class="modal"><div class="scrim" style="position:absolute" onclick="closeOv(event)"></div><div class="mbox" role="dialog" aria-modal="true" style="position:relative;z-index:2">${html}</div></div>`; }
+function closeOv(e){ if(!e || e.target.classList.contains('scrim')) $('#overlay').innerHTML=''; }
+function closeOvNow(){ $('#overlay').innerHTML=''; }
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeOvNow(); });
+</script>
+<script>
+/* =====================================================================
+   Screen renderers — part 1: Home, Groups, Setup (defs/lines/calc/forecast)
+   ===================================================================== */
+const R = {};
+
+/* ---------- HOME: Accounting Reports landing (CAT / CIB pattern) ---------- */
+R.home = () => `
+ ${anno('home')}
+ <div class="pagehead">
+   <div><h1>Accounting Reports</h1><div class="sub">All report families for the selected GL company</div></div>
+   <div class="actions">
+     <label class="lbl" style="align-self:center;font-size:12px;color:var(--ink-3);font-weight:700">GL COMPANY</label>
+     <select onchange="S.company=this.value;render()" aria-label="GL Company">
+       ${COMPANIES.map(c=>`<option value="${c.id}" ${c.id===S.company?'selected':''}>${c.n}</option>`).join('')}
+       <option disabled>XXX - Another Company</option>
+     </select>
+   </div>
+ </div>
+ <div class="grid cols-3">
+  <div class="card"><div class="hd">★ Favorites</div><div class="bd" style="padding:0">
+    <table><thead><tr><th>Report Name</th><th>Code</th></tr></thead><tbody>
+      <tr class="rowlink" onclick="go('viewer')"><td>M.I.S. — Daily Operating Control</td><td>MIS</td></tr>
+      <tr class="rowlink" onclick="go('spy')"><td>Sales Productivity — New</td><td>SPY</td></tr>
+      <tr class="rowlink" onclick="toast('Balance Sheet is outside this prototype scope')"><td>Balance Sheet</td><td>AGRB</td></tr>
+      <tr class="rowlink" onclick="toast('Cash in Bank is the pattern source — see the CIB mock')"><td>Cash in Bank - Friday</td><td>AGRC</td></tr>
+    </tbody></table>
+  </div></div>
+  <div class="card"><div class="hd">🗄 Recently Archived <span class="rt"><a class="link" href="#archive">See All</a></span></div><div class="bd" style="padding:0">
+    <table><thead><tr><th>Report Name</th><th>Date</th><th>By</th></tr></thead><tbody>
+     ${ARCHIVE.slice(0,4).map(a=>`<tr class="rowlink" onclick="go('archive')"><td>${esc(a.n)}</td><td>${a.dt.split(' ')[0]}</td><td>${esc(a.by)}</td></tr>`).join('')}
+    </tbody></table>
+  </div></div>
+  <div class="card"><div class="hd">🔗 Links</div><div class="bd">
+    <p><a class="link" href="#setup">Report Setups</a> <span class="chip blue">${DEFS.length}</span></p>
+    <p class="mt"><a class="link" href="#schedules">Scheduled Reports</a> <span class="chip blue">${S.schedules.length}</span></p>
+    <p class="mt"><a class="link" href="#groups">MIS Groups</a> <span class="chip blue">${GROUPS.length}</span></p>
+    <p class="mt"><a class="link" href="#diagnostics">Diagnostics</a> <span class="chip warn">2 unmapped accounts</span></p>
+  </div></div>
+ </div>
+ <div class="card mt"><div class="hd">All Accounting Reports
+   <span class="rt"><span class="searchbox"><input placeholder="Search" aria-label="Search reports" oninput="toast('Search is illustrative in the prototype')"></span></span></div>
+  <table><thead><tr><th style="width:34%">Report Name</th><th>Legacy Code</th><th>Created By</th><th>Last Archive</th></tr></thead><tbody>
+   <tr class="rowlink" onclick="toast('Outside prototype scope')"><td>Balance Sheet</td><td>AGRB</td><td>Admin</td><td>03/13/2026 10:01 am</td></tr>
+   <tr class="rowlink" onclick="toast('Cash in Bank — see the CIB design mock (pattern source)')"><td>Cash in Bank (6) ▸</td><td>AGRC</td><td>Admin</td><td>03/13/2026 10:01 am</td></tr>
+   <tr class="rowlink" id="misfam" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'':'none';event.stopPropagation()">
+     <td><b>M.I.S. Reports (${DEFS.length}) ▾</b> <span class="gfnote">OQ-4: legacy code shown as "M S/DOCs" in mock — naming to confirm</span></td>
+     <td>MIS</td><td>Admin</td><td>07/20/2026 6:05 am</td></tr>
+   <tr><td colspan="4" style="padding:0;background:#fafbfd">
+     <table style="margin-left:26px">${DEFS.map(d=>`
+       <tr class="rowlink" onclick="go('viewer')"><td style="width:34%">↳ ${esc(d.n)}</td><td>Format ${d.fmt} · lines ${d.range}</td><td>${esc(d.by)}</td><td>${d.arch}</td></tr>`).join('')}
+     </table></td></tr>
+   <tr class="rowlink" onclick="go('spy')"><td><b>Sales Productivity (3)</b> — Error Check · New · Used</td><td>SPY</td><td>Admin</td><td>06/30/2026 5:10 pm</td></tr>
+   <tr class="rowlink" onclick="toast('Outside prototype scope')"><td>Detail GL</td><td>AGRD</td><td>Admin</td><td>—</td></tr>
+   <tr class="rowlink" onclick="toast('Outside prototype scope')"><td>Journals</td><td>AGRJ</td><td>Admin</td><td>—</td></tr>
+   <tr class="rowlink" onclick="toast('Outside prototype scope')"><td>Schedules</td><td>AGRS</td><td>Admin</td><td>—</td></tr>
+  </tbody></table>
+  <div style="padding:9px 16px;color:var(--ink-3);font-size:12px;border-top:1px solid var(--line)">Rows per page: 10 · 1–8 of 8 · Page 1 of 1</div>
+ </div>`;
+
+/* ---------- GROUPS (GRP module) ---------- */
+R.groups = () => `
+ ${anno('groups')}
+ ${crumbs('Report Settings','MIS Groups')}
+ <div class="pagehead"><div><h1>MIS Groups</h1><div class="sub">Segment reporting by group — members see only their group's reports (GRP-08)</div></div>
+  <div class="actions"><button class="btn sec" onclick="copyGroupsDlg()">⧉ Copy setup between groups</button>
+  <button class="btn sec" onclick="groupsReport()">Groups report</button>
+  <button class="btn pri" onclick="toast('New-group flow provisions the group namespace automatically (GRP-03)','ok')">+ New group</button></div></div>
+ <div class="grid cols-2">
+  <div class="card"><div class="hd">Groups</div>
+   <table><thead><tr><th>Group ID</th><th>Companies</th><th>Users</th><th></th></tr></thead><tbody>
+    ${GROUPS.map(g=>`<tr class="rowlink" onclick="groupDetail('${g.id}')">
+      <td><b>${g.id}</b>${g.base?' <span class="chip warn">BASE — protected</span>':''}<br><span style="color:var(--ink-3);font-size:12px">${esc(g.desc)}</span></td>
+      <td>${g.cos.join('<br>')}</td><td>${g.users.length}</td>
+      <td>${g.base?'':`<button class="btn sm danger" onclick="event.stopPropagation();delGroupDlg('${g.id}')">Delete</button>`}</td></tr>`).join('')}
+   </tbody></table>
+  </div>
+  <div class="card"><div class="hd">Why groups exist</div><div class="bd" style="font-size:13px;color:var(--ink-2)">
+    <p>“Groups are created … users are added. For those specific users, we define some reports. <b>Only those reports can be viewed by that particular group</b> — so it's not unnecessary reports they have in their bucket.” <span style="color:var(--ink-3)">— flow walkthrough [FIT]</span></p>
+    <ul style="margin:10px 0 0 18px;line-height:1.9">
+      <li>Each group gets an <b>isolated configuration namespace</b> — its own report definitions, lines, forecasts and data snapshots (GRP-03).</li>
+      <li><b>BASE</b> is auto-created on first-time setup; deleting the last group reverts to non-group mode (GRP-02).</li>
+      <li>Super users access all groups; standard users only theirs. Active group is held per session — see the chip in the top bar (GRP-06).</li>
+    </ul>
+  </div></div>
+ </div>`;
+
+function groupDetail(id){ const g=GROUPS.find(x=>x.id===id);
+ drawer(`<div class="dh"><span class="lvl">GROUP</span><h3>${g.id}</h3><button class="x" onclick="closeOvNow()" aria-label="Close">✕</button></div>
+ <div class="db">
+  <dl class="kv">
+   <dt>Description</dt><dd>${esc(g.desc)} ${g.base?'<span class="chip warn">read-only on BASE</span>':''}</dd>
+   <dt>Companies</dt><dd>${g.cos.join(', ')} ${g.base?'<span class="chip warn">read-only on BASE</span>':''}</dd>
+   <dt>Associated accounts</dt><dd>Auto-derived from companies <span class="chip">read-only</span></dd>
+   <dt>Related groups</dt><dd>— (single-org fixture)</dd>
+   <dt>Users</dt><dd>${g.users.map(u=>`<span class="chip">${esc(u)}</span>`).join(' ')} <button class="btn sm ghost" onclick="toast('User picker validates company access: \\'This user cannot be added to group ${g.id}\\' when access is missing (GRP-04)')">+ Add user</button></dd>
+  </dl>
+  <div class="card mt"><div class="hd" style="font-size:13px">Change history <span class="gfnote">GF-01 — audit added by PRD (legacy had none, OQ-9)</span></div>
+   <div class="bd" style="font-size:12.5px;color:var(--ink-2)">07/18/2026 — gina.jordan added nancy.chang · 06/02/2026 — group created by admin (namespace provisioned)</div></div>
+ </div>
+ <div class="df"><button class="btn sec" onclick="closeOvNow()">Close</button><button class="btn pri" onclick="toast('Saved (prototype)','ok');closeOvNow()">Save changes</button></div>`);
+}
+function delGroupDlg(id){ modal(`<div class="mh">Delete group ${id}?<button class="x" onclick="closeOvNow()">✕</button></div>
+ <div class="mb"><p>This permanently removes the group's report definitions, lines, forecasts, data snapshots and user cross-references (cascade delete — GRP-03).</p>
+ <div class="card mt"><div class="bd" style="font-size:12.5px"><b>Impact summary</b><br>2 report definitions · 14 lines · 5 forecast sets · 3 users lose access</div></div></div>
+ <div class="mf"><button class="btn sec" onclick="closeOvNow()">Keep group</button><button class="btn pri" style="background:var(--bad)" onclick="toast('Group deleted (prototype only)','ok');closeOvNow()">Delete group</button></div>`); }
+function copyGroupsDlg(){ modal(`<div class="mh">Copy setup between groups<button class="x" onclick="closeOvNow()">✕</button></div>
+ <div class="mb">
+  <div class="frow"><div class="field"><label>From group</label><select><option>ACCTG</option><option>BASE</option></select></div>
+  <div class="field"><label>To group</label><select><option>STORE-456</option><option>BASE</option></select></div></div>
+  <div class="field"><label>What to copy</label>
+    <label class="switch on" onclick="this.classList.toggle('on')"><span class="tr"></span> Report definitions (formats)</label><br><br>
+    <label class="switch on" onclick="this.classList.toggle('on')"><span class="tr"></span> Report lines</label></div>
+  <div class="frow"><div class="field"><label>Source line range</label><input type="text" value="100–720"></div>
+  <div class="field"><label>Destination beginning line</label><input type="text" value="100" aria-describedby="cg1"><div class="hint" id="cg1">References in Total/Calc/Estimate lines are renumbered automatically (GRP-05)</div></div></div>
+ </div>
+ <div class="mf"><button class="btn sec" onclick="closeOvNow()">Cancel</button><button class="btn pri" onclick="toast('Copied 14 lines + 1 definition to STORE-456 · references renumbered','ok');closeOvNow()">Copy setup</button></div>`); }
+function groupsReport(){ modal(`<div class="mh">Groups report<button class="x" onclick="closeOvNow()">✕</button></div>
+ <div class="mb"><div class="printdoc">07/21/2026 09:12 am            MIS GROUPS REPORT                 Page 1
+${GROUPS.map(g=>`
+GROUP: ${g.id.padEnd(12)} ${g.desc}
+  COMPANIES: ${g.cos.join(', ')}
+  USERS:     ${g.users.join(', ')}`).join('\n')}
+</div><p class="hint mt">“Include MS Reports” from the legacy screen is deferred — it was never implemented in legacy code (OQ-8).</p></div>
+ <div class="mf"><button class="btn sec" onclick="closeOvNow()">Close</button><button class="btn pri" onclick="toast('Exported (prototype)','ok')">Export PDF</button></div>`); }
+
+/* ---------- SETUP (DEF + CALC + FCT + validation) ---------- */
+R.setup = () => `
+ ${anno('setup')}
+ ${crumbs('Accounting Reports','Report Setups','M.I.S.')}
+ <div class="pagehead"><div><h1>M.I.S. Report Setups</h1><div class="sub">Lines define the format; setup + forecasts drive the report [FIT] · Group: ACCTG · ${DEFS.length} of 300 definitions used (DEF-01)</div></div>
+  <div class="actions"><button class="btn sec" onclick="startCreate('copy')">⧉ Copy existing setup</button><button class="btn pri" onclick="startCreate('new')">+ New report definition</button></div></div>
+ <div class="tabs" role="tablist">
+   ${[['defs','Definitions'],['lines','Line Editor'],['calc','Calculated Fields'],['fcast','Forecasts'],['valid','Validation']].map(t=>
+     `<button role="tab" aria-selected="${S.setupTab===t[0]}" class="${S.setupTab===t[0]?'on':''}" onclick="S.setupTab='${t[0]}';render()">${t[1]}</button>`).join('')}
+ </div>
+ ${({defs:setupDefs,lines:setupLines,calc:setupCalc,fcast:setupFcast,valid:setupValid})[S.setupTab]()}`;
+
+function setupDefs(){ return `
+ <div class="grid cols-2">
+  <div class="card"><div class="hd">Report definitions</div>
+   <table><thead><tr><th>#</th><th>Title</th><th>Format</th><th>Line range</th><th></th></tr></thead><tbody>
+   ${DEFS.map(d=>`<tr class="rowlink" onclick="defDetail(${d.id})"><td>${d.id}</td><td><b>${esc(d.n)}</b>${d.group?` <span class="chip blue" style="font-size:10px">${esc(d.group)}</span>`:''}</td><td>${d.fmt}</td><td>${d.range}</td><td style="white-space:nowrap"><button class="btn sm ghost" onclick="event.stopPropagation();startEdit(${d.id})">Edit</button> <button class="btn sm ghost" onclick="event.stopPropagation();go('run')">Run ▸</button></td></tr>`).join('')}
+   </tbody></table>
+   <div style="padding:10px 16px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-3)">Each definition lives in a group namespace and is visible only to that group (GRP-08). New reports are assigned to a group during creation.</div></div>
+  <div class="card"><div class="hd">Heading — live preview (DEF-05)</div><div class="bd">
+    <div class="field"><label>Heading (tokens: @N dealer · @D date · @% pct of month · @# work schedule)</label>
+      <input type="text" id="hdgIn" value="@N — DAILY OPERATING CONTROL" oninput="$('#hdgOut').textContent=this.value.replace('@N',coName().toUpperCase()).replace('@D','21JUL26').replace('@%','68%').replace('@#','WS1')"></div>
+    <div class="rpthead" style="border:1px dashed var(--line-2);border-radius:8px">
+      <div class="t1" id="hdgOut">${coName().toUpperCase()} — DAILY OPERATING CONTROL</div>
+      <div class="t2">68% THROUGH 21JUL26 · WORK SCHEDULE 1</div></div>
+    <p class="hint mt">Format templates A–I ship with documented column sets (DEF-02); CUSTOM uses the checkbox column picker with the dictionary columns (DEF-03/04). Custom formats can't use the standard heading (legacy rule).</p>
+  </div></div>
+ </div>`; }
+function defDetail(id){ const d=DEFS.find(x=>x.id===id);
+ drawer(`<div class="dh"><span class="lvl">DEFINITION</span><h3>${esc(d.n)}</h3><button class="x" onclick="closeOvNow()">✕</button></div>
+ <div class="db"><dl class="kv">
+   <dt>Format template</dt><dd>Format ${d.fmt} ${d.fmt==='A'?'— Standard daily (DESC · DAY · MTD · PLAN · VAR · % · YTD)':''}</dd>
+   <dt>Line range</dt><dd>${d.range}</dd><dt>History columns</dt><dd>${d.fmt==='F'?'Yes — 6-month comparative':'No (auto-set when history columns chosen — DEF-01)'}</dd>
+   <dt>Created by</dt><dd>${esc(d.by)}</dd></dl>
+  <div class="field mt"><label>Format template (DEF-02)</label>
+   <div style="display:flex;gap:6px;flex-wrap:wrap">${'ABCDEFGHI'.split('').map(f=>`<button class="btn sm ${f===d.fmt?'pri':'sec'}" onclick="toast('Format ${f} preview — column set per ACCT.DOC (DEF-02)')">${f}</button>`).join('')}<button class="btn sm sec" onclick="toast('Custom: checkbox picker over dictionary columns + calculated fields (DEF-03/04)')">CUSTOM…</button></div></div>
+ </div>
+ <div class="df"><button class="btn sec" onclick="closeOvNow()">Close</button><button class="btn pri" onclick="closeOvNow();startEdit(${d.id})">✎ Edit report</button></div>`); }
+
+function setupLines(){ return `
+ <div class="card"><div class="hd">Line editor — Daily Operating Control (lines 100–720)
+   <span class="rt"><span class="chip">M memo</span> <span class="chip blue">D detail</span> <span class="chip" style="background:#e8e2f7;color:#5b3fa8">T total</span> <span class="chip ok">C calculated</span></span></div>
+  <table><thead><tr><th style="width:36px"></th><th>Line</th><th>Type</th><th style="width:30%">Description</th><th>Source</th><th>Est.</th><th>Spacing</th><th>WS</th></tr></thead><tbody>
+  ${LINES.map((l,i)=>`<tr class="rowlink" onclick="lineEdit(${l.id})">
+    <td><button class="btn sm ghost" title="Move up — drag-and-drop reorder renumbers all references (DEF-10)" onclick="event.stopPropagation();reorderWarn()">↕</button></td>
+    <td><b>${l.id}</b></td><td><span class="tag ${l.t}">${l.t}</span></td><td>${esc(l.d)}</td>
+    <td style="font-size:12px;color:var(--ink-2)">${l.t==='D'?(LINE_ACCTS[l.id]?LINE_ACCTS[l.id].map(a=>a.a).join(', '):'accounts…'):l.t==='T'?('Σ lines '+l.refs.join('+')):l.t==='C'?esc(l.calc):'—'}</td>
+    <td>${l.t==='D'&&l.id===120?'<span class="chip warn" title="Estimate method 2: % of another line (DEF-09)">est: %L100</span>':'—'}</td>
+    <td>${l.t==='M'?'1 before':'1'}</td><td>${l.ws||''}</td></tr>`).join('')}
+  </tbody></table>
+ </div>
+ <p class="hint mt" style="font-size:12px;color:var(--ink-3)">Detail lines sum up to 100 GL accounts (auto-split offered on overflow) · Total lines sum up to 100 line refs · Calculated lines MULT/DIV amounts, units or constants incl. DAYS · Memo lines print only (DEF-07). Spacing S = suppress from print but still calculate (DEF-08).</p>`; }
+function reorderWarn(){ modal(`<div class="mh">Reorder lines?<button class="x" onclick="closeOvNow()">✕</button></div>
+ <div class="mb"><p>Reordering renumbers this line and updates every reference in Total, Calculated and Estimate lines and in definition line ranges automatically (DEF-10).</p>
+ <p class="mt" style="color:var(--warn)"><b>⚠ Legacy warning preserved:</b> RESEQUENCING REPORT LINES WILL INVALIDATE MANAGEMENT ADVISOR SETUPS (OQ-5 — integration undefined).</p></div>
+ <div class="mf"><button class="btn sec" onclick="closeOvNow()">Cancel</button><button class="btn pri" onclick="toast('Lines reordered · 6 references updated (prototype)','ok');closeOvNow()">Reorder & renumber</button></div>`); }
+function lineEdit(id){ const l=LINES.find(x=>x.id===id);
+ drawer(`<div class="dh"><span class="lvl">LINE ${l.id}</span><h3>${esc(l.d)}</h3><button class="x" onclick="closeOvNow()">✕</button></div>
+ <div class="db">
+  <div class="frow"><div class="field"><label>Type (DEF-07)</label><select ${'MDTC'.includes(l.t)?'':''}>
+    ${[['D','Detail — sums GL accounts'],['T','Total — sums lines'],['C','Calculated — formula'],['M','Memo — text only']].map(o=>`<option ${o[0]===l.t?'selected':''}>${o[1]}</option>`).join('')}</select></div>
+   <div class="field"><label>Work schedule (1–9)</label><select><option>${l.ws||1}</option></select></div></div>
+  <div class="field"><label>Description</label><input type="text" value="${esc(l.d)}"></div>
+  ${l.t==='D'?`<div class="field"><label>GL accounts (≤100; ranges may filter by type & department)</label>
+    <div>${(LINE_ACCTS[l.id]||[]).map(a=>`<span class="chip blue">${a.a} — ${esc(a.d)} ✕</span>`).join(' ')} <button class="btn sm ghost" onclick="toast('Type-ahead multi-select over the chart of accounts (F12 pick-list → modern picker)')">+ Add accounts</button></div></div>`:''}
+  ${l.t==='T'?`<div class="field"><label>Summed lines (≤100)</label><div>${l.refs.map(r=>`<span class="chip">${r} ✕</span>`).join(' ')}</div>
+    <label class="switch" onclick="this.classList.toggle('on')" style="margin-top:8px"><span class="tr"></span> Print accumulated forecast</label></div>`:''}
+  ${l.t==='C'?`<div class="field"><label>Formula (MULT/DIV · operands: line Amount, line Units, Constant incl. DAYS)</label><input type="text" value="${esc(l.calc)}"><div class="hint">Division by zero yields zero (MIR rule). Or pick a library field instead — Calculated Fields tab (CALC-04 <span class="gfnote">GF-04</span>)</div></div>`:''}
+  <div class="frow">
+   <div class="field"><label>Reverse sign on print</label><select><option ${l.sign===-1?'selected':''}>${l.sign===-1?'Yes':'No'}</option><option>${l.sign===-1?'No':'Yes'}</option></select></div>
+   <div class="field"><label>Show as % of line</label><input type="text" placeholder="—"></div>
+   <div class="field"><label>Spacing</label><select><option>1 blank line</option><option>2</option><option>3</option><option>P — page break</option><option>S — suppress (still calculates)</option></select></div></div>
+  ${l.t==='D'?`<div class="field"><label>Estimated line (when not using actuals) — DEF-09</label><select><option>Off — use actuals</option><option>1 — Last month's actual, prorated by business days</option><option ${l.id===120?'selected':''}>2 — % of another line</option><option>3 — $ per unit × units of another line</option><option>4 — Forecast amount (sign-aware)</option></select></div>`:''}
+ </div>
+ <div class="df"><button class="btn sec" onclick="closeOvNow()">Cancel</button><button class="btn pri" onclick="toast('Line ${l.id} saved · dependent calculations marked stale','ok');S.stale=true;closeOvNow();render()">Save line</button></div>`); }
+
+function setupCalc(){ return `
+ <div class="grid cols-2">
+ <div class="card"><div class="hd">Calculated field library (CALC-01) <span class="rt gfnote">GF-03 — seed list for review</span></div>
+  <table><thead><tr><th></th><th>Field</th><th>Formula</th><th>Provenance</th></tr></thead><tbody>
+  ${CALC_FIELDS.map((c,i)=>`<tr><td><input type="checkbox" ${i<5?'checked':''} aria-label="Include ${esc(c.n)}" onchange="toast('${esc(c.n)} ${event&&''} toggled for the current definition (checkbox picker — DEF-04)')"></td>
+    <td><b>${esc(c.n)}</b>${c.gf?' <span class="gfnote">GF-03</span>':''}</td><td style="font-size:12.5px">${esc(c.f)}</td>
+    <td style="font-size:12px;color:var(--ink-3)">${c.pre?'Prebuilt · '+esc(c.src):'⚒ '+esc(c.by)}</td></tr>`).join('')}
+  </tbody></table></div>
+ <div class="card"><div class="hd">Why this exists</div><div class="bd" style="font-size:13px;color:var(--ink-2)">
+   <p>“A primary pain point is the inability to select pre-calculated business metrics, such as <b>PBR</b>, as ready-made fields — users must manually build formulas … or download raw data to Excel/Access.” <span style="color:var(--ink-3)">— 07-20 meeting [MTG]</span></p>
+   <p class="mt">Fields are selectable as <b>columns</b> and as <b>Calculated-line formulas</b> from one library (CALC-04 <span class="gfnote">GF-04 — consolidation proposal</span>).</p>
+   <button class="btn sec mt" onclick="fieldBuilder()">⚒ New calculated field…</button>
+   <p class="hint mt">v1 scope question: prebuilt-only vs open builder (OQ-26). Boundary with paid Intelligence Suite unresolved (OQ-27).</p>
+ </div></div></div>`; }
+function fieldBuilder(){ modal(`<div class="mh">New calculated field<button class="x" onclick="closeOvNow()">✕</button></div>
+ <div class="mb"><div class="field"><label>Name</label><input type="text" placeholder="e.g. Gross per RO"></div>
+  <div class="frow"><div class="field"><label>Operand 1</label><select><option>Line 500 — Total Gross Profit (Amount)</option><option>Line 100 — Units</option><option>Constant…</option></select></div>
+  <div class="field"><label>Operation</label><select><option>÷ DIV</option><option>× MULT</option></select></div>
+  <div class="field"><label>Operand 2</label><select><option>Line 200 — Total Vehicle (Amount)</option><option>Constant: DAYS</option></select></div></div>
+  <div class="field"><label>Decimal scale</label><select><option>0</option><option selected>1</option><option>2</option><option>3</option></select></div>
+  <div class="card"><div class="bd" style="font-size:12.5px">Preview: <b>Gross per RO = A500 ÷ A200 (scale 1)</b> · validated against configured lines (CALC-03)</div></div></div>
+ <div class="mf"><button class="btn sec" onclick="closeOvNow()">Cancel</button><button class="btn pri" onclick="toast('Field saved to library with provenance (CALC-05)','ok');closeOvNow()">Save field</button></div>`); }
+
+function setupFcast(){ return `
+ <div class="card"><div class="hd">Forecast entry — plan values per line (FCT-01)
+   <span class="rt">${S.stale?'<span class="chip warn">⚠ calculations stale — forecasts changed (FCT-04)</span>':'<span class="chip ok">calculations current</span>'}</span></div>
+  <table><thead><tr><th>Line</th><th>Description</th><th>Mode</th><th class="num">Month forecast</th><th class="num">Year forecast</th><th class="num">Units</th><th></th></tr></thead><tbody>
+  ${FCAST.map(f=>`<tr><td><b>${f.id}</b></td><td>${esc(f.d)}</td><td><span class="chip">${f.mode}</span></td>
+    <td class="num"><input type="text" value="${typeof f.mon==='number'?f.mon.toLocaleString():f.mon}" style="width:110px;text-align:right" onchange="S.stale=true;toast('Forecast saved — dependent calculations marked stale (FCT-04). Change logged to history (GF-06).','warn');render()" aria-label="Month forecast line ${f.id}"></td>
+    <td class="num">${typeof f.yr==='number'?f.yr.toLocaleString():f.yr}</td><td class="num">${f.units}</td>
+    <td><button class="btn sm ghost" onclick="toast('12-month grid opens — 12-month lines must be edited there (FCT-02)')">12-mo grid</button></td></tr>`).join('')}
+  </tbody></table>
+  <div style="padding:10px 16px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-3)">
+   Whole dollars only · negatives allowed · Memo lines and accumulating Total lines can't take forecasts (FCT-02) · MTD/YTD derivation per legacy math (FCT-03) · v1 governance = edit history only <span class="gfnote">GF-06</span> · These values are also the <b>Goals &amp; Budgets</b> benchmark source (BMK-07 <span class="gfnote">GF-16 · OQ-30</span>) — ten-key friendly editable cells (BMK-05)</div>
+ </div>`; }
+
+function setupValid(){ return `
+ <div class="grid cols-2">
+  <div class="card"><div class="hd">Accounts missing — unmapped GL accounts (DIA-01) <span class="rt"><span class="chip warn">2 found</span></span></div>
+   <table><thead><tr><th>Account</th><th>Description</th><th>Type</th><th>Dept</th><th class="num">Curr-Month</th><th class="num">Total-Balance</th></tr></thead><tbody>
+    <tr><td>3440</td><td>Service Contract Income</td><td>Sale</td><td>F&I</td><td class="num">4,120</td><td class="num">28,340</td></tr>
+    <tr><td>6720</td><td>Policy Adjustments</td><td>Expense</td><td>SVC</td><td class="num">(860)</td><td class="num">(5,210)</td></tr>
+   </tbody></table>
+   <div style="padding:10px 16px;border-top:1px solid var(--line)"><button class="btn sm sec" onclick="toast('Filter: company + account type (BS / Sale-Cost / Inc-Exp / Inc-Stmt / All excl. memo-profit) + optional ranges (MIS-21)')">Change filters</button>
+   <button class="btn sm pri" onclick="toast('Assign-to-line picker opens (proposed correction path)','ok')">Map to a line…</button></div></div>
+  <div class="card"><div class="hd">Setup events (DIA-03)</div><div class="bd" style="font-size:12.5px;color:var(--ink-2);line-height:2">
+   <span class="dot y"></span>07/19 — Invalid account ref 3999 removed from line 110 during calculation — logged &amp; surfaced (DOC-12)<br>
+   <span class="dot g"></span>07/18 — Work schedule ref 12 on line 310 auto-reset to 1 (DOC-6)<br>
+   <span class="dot g"></span>07/15 — Line 720 formula validated</div></div>
+ </div>`; }
+</script>
+<script>
+/* ---------- RUN (RUN + ENG readiness) ---------- */
+R.run = () => `
+ ${anno('run')}
+ ${crumbs('Accounting Reports','M.I.S.','Run report')}
+ <div class="pagehead"><div><h1>Run M.I.S. Report</h1><div class="sub">Setup + forecasts + prepared data ⇒ report instance</div></div></div>
+ <div class="stepper">
+  ${[['Setup','done'],['Forecasts','done'],['Data prepared','done'],['Run','cur'],['View & drill',''],['Distribute','']].map((s,i)=>`<div class="st ${s[1]}"><span class="n">${i+1}</span>${s[0]}</div>${i<5?'<span class="arrow">›</span>':''}`).join('')}
+ </div>
+ <div class="grid cols-2">
+  <div class="card"><div class="hd">Readiness (RUN-05)</div><div class="bd">
+    <div class="statline">
+      <div><b><span class="dot g"></span>Data as of</b>${S.freshCalc} ${S.stale?'<span class="chip warn">stale — forecasts changed</span>':'<span class="chip ok">current</span>'}</div>
+      <div><b>Last build</b>started ${S.freshBuild} · completed ${S.freshCalc}</div>
+      <div><b><span class="dot g"></span>Locks</b>No conflicts — posting idle, EOD idle (ENG-04)</div>
+    </div>
+    <p class="hint mt">Build + Calculate run automatically as “data refresh” <span class="gfnote">GF-07 · OQ-19 — proposal, not legacy behavior</span>.
+    <button class="btn sm sec" onclick="S.stale=false;S.freshCalc='07/21/2026 '+new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});toast('Build + Calculate complete — data refreshed','ok');render()">↻ Refresh data now</button>
+    <button class="btn sm ghost" onclick="toast('Expert mode exposes the 7 legacy phase combinations incl. Roll-only — kept for parity (ENG-02)')">Expert phases…</button></p>
+    <p class="hint">Consolidated logons: none configured for ACCTG (ENG-05). Standalone Roll is not schedulable; combined-sequence roll pending OQ-13/OQ-21.</p>
+  </div></div>
+  <div class="card"><div class="hd">Report inputs (RUN-01)</div><div class="bd">
+   <div class="frow"><div class="field"><label>Company</label><select>${COMPANIES.map(c=>`<option ${c.id===S.company?'selected':''}>${c.n}</option>`).join('')}</select></div>
+   <div class="field"><label>Report definition(s)</label><select><option>Daily Operating Control</option><option>ALL configured reports</option><option>Monthly Summary Report</option><option>6 Month Comparative Analysis</option></select></div></div>
+   <div class="field"><label>Period (RUN-02)</label>
+    <div class="seg" role="group" aria-label="Period">
+     ${[['cur','Current month'],['pa','Post-ahead'],['closed','Closed month…'],['yr','This Year'],['custom','Custom…']].map(p=>`<button class="${S.period===p[0]?'on':''}" onclick="pickPeriod('${p[0]}')">${p[1]}</button>`).join('')}
+    </div>
+    <div class="hint">Closed months & year spans are NEW vs legacy (meeting ask + EF-6) — engine mechanism is a filled gap <span class="gfnote">GF-08 · OQ-23/OQ-28</span></div></div>
+   <div class="frow">
+    <div class="field"><label>Business days in month</label><input type="text" value="26" style="width:80px"></div>
+    <div class="field"><label>Days since first</label><input type="text" value="18" style="width:80px"></div>
+    <div class="field"><label>Since last report</label><input type="text" value="1" style="width:80px"></div>
+    <div class="field"><label>% complete</label><input type="text" value="69%" disabled style="width:80px;background:var(--bg)"></div></div>
+   <div class="frow">
+    <div class="field"><label>Amounts</label><div class="seg"><button class="on" onclick="toast('Actual amounts — auto-forced when days-in-month = days-since-first (RUN-01)')">Actual</button><button onclick="toast('Estimated: per-line estimate methods 1–4 apply (DEF-09)')">Estimated</button></div></div>
+    <div class="field"><label>Exception only</label><label class="switch ${S.exception?'on':''}" onclick="excConfirm(this)"><span class="tr"></span> ${S.exception?'On':'Off'}</label></div></div>
+  </div>
+  <div style="padding:12px 16px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end">
+    <button class="btn sec" onclick="go('home')">Cancel</button>
+    <button class="btn pri" onclick="runReport()">▶ Run report</button></div>
+  </div>
+ </div>`;
+function pickPeriod(p){ S.period=p;
+ if(p==='closed') toast('Closed-month picker: Jun 2026, May 2026, … — runs against retained month-end snapshots (GF-08, simulated)','warn');
+ if(p==='yr') toast('Full-year span — reconciliation with single-month YTD engine is OQ-23/OQ-28','warn');
+ if(p==='custom') toast('Custom range picker (EF-6)');
+ render(); }
+function excConfirm(el){ if(!S.exception){ modal(`<div class="mh">Exception report only?<button class="x" onclick="closeOvNow()">✕</button></div>
+  <div class="mb"><p><b>Legacy confirmation preserved (RUN-01):</b> this only prints exceptions — it does <b>not</b> print the full M.I.S. report.</p>
+  <p class="hint mt">Exception filter = lines unfavorable vs plan. The legacy threshold (EXC-TEST) is undefined across sources — placeholder logic in this prototype (OQ-11 / OQ-5).</p></div>
+  <div class="mf"><button class="btn sec" onclick="closeOvNow()">Cancel</button><button class="btn pri" onclick="S.exception=true;closeOvNow();render()">Yes — exceptions only</button></div>`);}
+ else { S.exception=false; render(); } }
+function runReport(){ S.ranOnce=true; S.stale=false;
+ toast('Report generated — Daily Operating Control · '+(S.period==='cur'?'July 2026':'selected period'),'ok'); go('viewer'); }
+
+/* ---------- VIEWER (VIEW) + drilldown (DRL) ---------- */
+const FMT_A_COLS = [['DAY','num'],['MTD','num'],['PLAN-MTD','num'],['VAR-MTD','num'],['%','num'],['YTD','num']];
+R.viewer = () => {
+ if(S.bmk && S.bmk.on) return bmkViewer();
+ const rows = LINES.filter(l=>!S.exception || excState(l)==='L');
+ const totalRow = (()=>{ const v=lineVals(LINES.find(l=>l.id===700)); return v; })();
+ const period = S.period==='cur'?'JULY 2026 · 69% THROUGH 21JUL26':S.period==='pa'?'POST-AHEAD — AUGUST 2026':S.period==='yr'?'FULL YEAR 2026 (NEW — GF-08)':'JUNE 2026 (CLOSED)';
+ const grand = `<tr class="total" style="border-top:2px solid var(--line-2)"><td><b>${S.fmt==='A'?'— REPORT TOTALS (NET) —':'NET'}</b></td>${fmtCells(LINES.find(l=>l.id===700),true)}</tr>`;
+ return `
+ ${anno('viewer')}
+ ${crumbs('Accounting Reports','M.I.S.','Daily Operating Control')}
+ <div class="pagehead"><div><h1>Daily Operating Control</h1>
+   <div class="sub">M.I.S. · ${COMPANIES.find(c=>c.id===S.company).n} · Data as of ${S.freshCalc} ${S.stale?'· <span style="color:var(--warn)">⚠ stale</span>':''}</div></div>
+  <div class="actions">
+   <button class="btn sec" onclick="emailDlg()">✉ Email</button>
+   <button class="btn sec" onclick="scheduleDlg('M.I.S. — Daily Operating Control')">🗓 Schedule</button>
+   <button class="btn sec" onclick="savedViewsDlg()">☆ Views</button>
+   <button class="btn pri" onclick="exportDlg()">⤓ Export</button>
+  </div></div>
+ <div class="fbar" role="toolbar" aria-label="Report filters">
+   <span class="lbl">Format</span>
+   <div class="seg"><button class="${S.fmt==='A'?'on':''}" onclick="S.fmt='A';render()">A — Standard</button><button class="${S.fmt==='C'?'on':''}" onclick="S.fmt='C';render()">C — Plan/Var 13-col</button></div>
+   <span class="lbl">Decimals</span>
+   <div class="seg"><button class="${S.md==='MD0'?'on':''}" onclick="S.md='MD0';render()">MD0 $</button><button class="${S.md==='MD2'?'on':''}" onclick="S.md='MD2';render()">MD2 ¢</button></div>
+   <label class="switch ${S.exception?'on':''}" onclick="S.exception=!S.exception;render()"><span class="tr"></span> Exception only</label>
+   <label class="switch ${S.totalsTop?'on':''}" onclick="S.totalsTop=!S.totalsTop;render();toast('Totals moved — no new report needed (VIEW-03, meeting ask)')" title="Meeting pain point: moving totals used to require building a whole new report"><span class="tr"></span> Totals on top</label>
+   <button class="btn sm sec" onclick="colsDlg()">▥ Columns</button>
+   <button class="btn sm sec" onclick="S.bmk.on=true;render();toast('Benchmark view — compare vs periods and goals (Module BMK)')" title="Comparative view vs benchmark periods and goals (BMK-01)">◐ Benchmarks</button>
+   <span style="margin-left:auto" class="chip">Period: ${S.period==='cur'?'Jul 2026':S.period==='pa'?'Post-ahead Aug':S.period==='yr'?'Year 2026':'Closed Jun 2026'}</span>
+   <button class="btn sm pri" onclick="render();toast('Filters applied')">Apply</button>
+ </div>
+ <div class="card mt">
+  ${S.exception?'<div class="excbanner">** EXCEPTION REPORT ** — placeholder logic: MTD unfavorable to plan (OQ-11 / OQ-5: legacy threshold undefined)</div>':''}
+  <div class="rpthead"><div class="t1">${coName().toUpperCase()} — DAILY OPERATING CONTROL</div>
+   <div class="t2">${period} · WORK SCHEDULE 1 · ${S.md} ${S.period!=='cur'&&S.period!=='pa'?'<span class="gfnote">closed/range periods are gap-fill GF-08</span>':''}</div></div>
+  ${S.fmt==='A'?viewFmtA(rows,grand):viewFmtC(rows,grand)}
+  <div style="padding:9px 16px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-3)">
+    Click any line to drill — Level 2 of 4: line → accounts [FIT] · Suppressed lines hidden · L/H = under/over plan · Fixture values are illustrative</div>
+ </div>`; };
+function fmtCells(l,noHilo){ const v=lineVals(l); if(l.t==='M') return `<td colspan="7"></td>`;
+ const varMtd = v.pMtd!=null? v.mtd-v.pMtd : null; const pct = v.pMtd? Math.round(v.mtd/v.pMtd*100):null;
+ const e=excState(l);
+ if(S.fmt==='A') return `
+  <td class="num">${money(v.day,v.pct)}</td><td class="num">${money(v.mtd,v.pct)}</td>
+  <td class="num">${v.pMtd==null?'':money(v.pMtd)}</td><td class="num">${varMtd==null?'':money(varMtd)}</td>
+  <td class="num">${pct==null?'':pct+'%'}</td><td class="num">${money(v.ytd,v.pct)}</td>
+  <td>${noHilo||!e?'':`<span class="hilo ${e}">${e}</span>`}</td>`;
+ const varYtd = v.pYtd!=null? v.ytd-v.pYtd:null; const pctY=v.pYtd?Math.round(v.ytd/v.pYtd*100):null;
+ return `
+  <td class="num">${money(v.day,v.pct)}</td><td class="num">${v.pMtd==null?'':money(Math.round(v.pMtd/22))}</td>
+  <td class="num">${money(v.mtd,v.pct)}</td><td class="num">${v.pMtd==null?'':money(v.pMtd)}</td><td class="num">${varMtd==null?'':money(varMtd)}</td><td class="num">${pct==null?'':pct+'%'}</td>
+  <td class="num">${money(v.ytd,v.pct)}</td><td class="num">${v.pYtd==null?'':money(v.pYtd)}</td><td class="num">${varYtd==null?'':money(varYtd)}</td><td class="num">${pctY==null?'':pctY+'%'}</td>
+  <td>${noHilo||!e?'':`<span class="hilo ${e}">${e}</span>`}</td>`; }
+function rowHtml(l){ const cls=[l.t==='M'?'memo':'',l.t==='T'?'total':'', (excState(l)==='L'?'exc':''), l.t!=='M'?'rowlink':''].join(' ');
+ return `<tr class="${cls}" ${l.t!=='M'?`onclick="lineDrill(${l.id})" title="Drill: Level 2 — accounts behind this line"`:''}>
+   <td><span style="color:var(--ink-3);font-size:11px;margin-right:7px">${l.id}</span>${esc(l.d)}${l.t==='C'?' <span class="tag C">C</span>':''}</td>${fmtCells(l)}</tr>`; }
+function viewFmtA(rows,grand){ return `<table><thead><tr>
+  <th style="width:26%">Description</th><th class="num">Day</th><th class="num">MTD</th><th class="num">Plan-MTD</th><th class="num">Var-MTD</th><th class="num">%</th><th class="num">YTD</th><th style="width:26px"></th></tr></thead>
+  <tbody>${S.totalsTop?grand:''}${rows.map(rowHtml).join('')}${S.totalsTop?'':grand}</tbody></table>`; }
+function viewFmtC(rows,grand){ return `<table><thead>
+  <tr class="band"><th></th><th colspan="2">CURRENT</th><th colspan="4">MONTH TO DATE</th><th colspan="4">YEAR TO DATE</th><th></th></tr>
+  <tr><th style="width:20%">Description</th><th class="num">Day</th><th class="num">Plan</th><th class="num">MTD</th><th class="num">Plan</th><th class="num">Var</th><th class="num">%</th><th class="num">YTD</th><th class="num">Plan</th><th class="num">Var</th><th class="num">%</th><th style="width:24px"></th></tr></thead>
+  <tbody>${S.totalsTop?grand:''}${rows.map(rowHtml).join('')}${S.totalsTop?'':grand}</tbody></table>`; }
+function colsDlg(){ modal(`<div class="mh">Visible columns<button class="x" onclick="closeOvNow()">✕</button></div>
+ <div class="mb"><p class="hint">Customize which columns show, and save it as a view — no new report definition needed (VIEW-03/04, meeting ask). Column reorder is deliberately out of v1 <span class="gfnote">GF-09</span>.</p>
+ ${['DAY','MTD','PLAN','VAR','%','YTD'].map(c=>`<label class="switch on" style="display:flex;margin-top:10px" onclick="this.classList.toggle('on')"><span class="tr"></span> ${c}</label>`).join('')}</div>
+ <div class="mf"><button class="btn sec" onclick="closeOvNow()">Cancel</button><button class="btn pri" onclick="toast('Columns applied (prototype keeps full set visible)','ok');closeOvNow()">Apply</button></div>`); }
+function savedViewsDlg(){ modal(`<div class="mh">Saved report views<button class="x" onclick="closeOvNow()">✕</button></div>
+ <div class="mb">
+  <div class="field"><label>Save new view</label><div style="display:flex;gap:8px"><input type="text" placeholder="e.g. My Search 1" style="flex:1"><button class="btn pri" onclick="toast('View saved with current filters, columns, totals position & decimals (VIEW-04)','ok')">Save view</button></div>
+  <div class="hint">Enter a view name that isn't in use (CIB-8)</div></div>
+  <table><thead><tr><th>View name</th><th></th><th></th></tr></thead><tbody>
+  ${S.savedViews.map((v,i)=>`<tr><td><b>${esc(v.n)}</b>${v.def?' <span class="chip ok">Default view</span>':''}</td>
+   <td><button class="btn sm ghost" onclick="toast('View applied','ok');closeOvNow()">View report</button></td>
+   <td><button class="btn sm danger" onclick="delViewDlg('${esc(v.n)}')">Delete</button></td></tr>`).join('')}
+  </tbody></table></div>
+ <div class="mf"><button class="btn sec" onclick="closeOvNow()">Close</button></div>`); }
+function delViewDlg(n){ modal(`<div class="mh">Delete this report view?<button class="x" onclick="closeOvNow()">✕</button></div>
+ <div class="mb"><p>“${esc(n)}” will be removed. This does not affect the report or its data. (CIB-16)</p></div>
+ <div class="mf"><button class="btn sec" onclick="savedViewsDlg()">Keep view</button><button class="btn pri" style="background:var(--bad)" onclick="toast('View deleted','ok');closeOvNow()">Delete</button></div>`); }
+function exportDlg(){ modal(`<div class="mh">Export report<button class="x" onclick="closeOvNow()">✕</button></div>
+ <div class="mb"><p>Export is a plain UI function in the modern suite (project directive; DST-01).</p>
+  <div style="display:flex;gap:10px" class="mt">
+   <button class="btn sec" style="flex:1;justify-content:center" onclick="toast('PDF generated — matches archived print layout (CIB-20)','ok');closeOvNow()">📄 PDF</button>
+   <button class="btn sec" style="flex:1;justify-content:center" onclick="toast('Excel export with live number formats','ok');closeOvNow()">📊 Excel</button></div>
+  <p class="hint mt">CSV under consideration (MIS-PRD OQ-10: PDF + Excel first).</p></div>
+ <div class="mf"><button class="btn sec" onclick="closeOvNow()">Cancel</button></div>`); }
+
+/* ----- Drilldown levels 2–4 (DRL-01..03) ----- */
+function lineDrill(id){ const l=LINES.find(x=>x.id===id); const accts=LINE_ACCTS[id];
+ const v=lineVals(l);
+ drawer(`<div class="dh"><span class="lvl">LEVEL 2 · LINE DETAIL</span><h3>Line ${l.id} — ${esc(l.d)}</h3><button class="x" onclick="closeOvNow()">✕</button></div>
+ <div class="db">
+  ${anno('drill')}
+  <p style="font-size:12.5px;color:var(--ink-2);margin-bottom:10px">
+   ${l.t==='D'?'Detail line — sums these GL accounts (MIS-20). Click an account for Level 3: GL Inquiry.':''}
+   ${l.t==='T'?'Total line — sums lines '+l.refs.join(' + ')+'. Click a source line to inspect it.':''}
+   ${l.t==='C'?'Calculated line — '+esc(l.calc)+'. Values derive from referenced lines; not directly adjustable (DRL-05).':''}
+  </p>
+  ${l.t==='D'&&accts?`<table><thead><tr><th>Account</th><th>Description</th><th class="num">Day</th><th class="num">MTD</th><th class="num">YTD</th><th class="num">Units MTD</th></tr></thead><tbody>
+   ${accts.map(a=>`<tr class="rowlink" onclick="acctDrill('${a.a}','${esc(a.d)}')"><td><b>${a.a}</b></td><td>${esc(a.d)}</td><td class="num">${money(a.day)}</td><td class="num">${money(a.mtd)}</td><td class="num">${money(a.ytd)}</td><td class="num">${a.uM||''}</td></tr>`).join('')}
+   <tr class="total"><td colspan="2">Line total</td><td class="num">${money(v.day)}</td><td class="num">${money(v.mtd)}</td><td class="num">${money(v.ytd)}</td><td class="num">${v.uMtd||''}</td></tr>
+  </tbody></table>`:''}
+  ${l.t==='T'?`<table><thead><tr><th>Line</th><th>Description</th><th class="num">MTD</th><th class="num">YTD</th></tr></thead><tbody>
+   ${l.refs.map(r=>{const rl=LINES.find(x=>x.id===r);const rv=lineVals(rl);return `<tr class="rowlink" onclick="lineDrill(${r})"><td><b>${r}</b></td><td>${esc(rl.d)}</td><td class="num">${money(rv.mtd)}</td><td class="num">${money(rv.ytd)}</td></tr>`;}).join('')}
+  </tbody></table>`:''}
+  <p class="hint mt">Value provenance: current-month actuals · work schedule ${l.ws||1} · ${l.t==='D'&&l.id===120?'estimate method 2 when estimating':'no estimate active'} (DRL-04)</p>
+ </div>
+ <div class="df"><span style="margin-right:auto;font-size:12px;color:var(--ink-3)">Level 1 → <b>2</b> → 3 → 4 [FIT]</span><button class="btn sec" onclick="closeOvNow()">Close</button></div>`,true); }
+function acctDrill(a,d){ const txns=GL_TXNS[a]||GL_TXNS['3010'];
+ drawer(`<div class="dh"><span class="lvl">LEVEL 3 · ACCOUNT DETAIL — GL INQUIRY</span><h3>${a} — ${esc(d)}</h3><button class="x" onclick="closeOvNow()">✕</button></div>
+ <div class="db">
+  <div class="tabs">${['Account Balance','Account Detail','Control Detail','Reference Detail','Amount Search'].map((t,i)=>`<button class="${i===1?'on':''}" onclick="toast('GL Inquiry tab: ${t} (CIB-14)')">${t}</button>`).join('')}</div>
+  <p style="font-size:12.5px;color:var(--ink-2);margin-bottom:10px">Single click from the report — no separate drill-down function code (meeting ask, DRL-02). Click a transaction for Level 4.</p>
+  <table><thead><tr><th>Journal</th><th>Acctg Dt</th><th>Refer</th><th>Cntl</th><th>Posting Desc</th><th class="num">Amount</th></tr></thead><tbody>
+  ${txns.map((t,i)=>`<tr class="rowlink" onclick="txnDrill('${a}',${i})"><td>${esc(t.jrnl)}</td><td>${t.dt}</td><td>${t.ref}</td><td>${t.cntl}</td><td style="max-width:220px">${esc(t.desc)}</td><td class="num">${money(t.amt)}</td></tr>`).join('')}
+  </tbody></table>
+ </div>
+ <div class="df"><span style="margin-right:auto;font-size:12px;color:var(--ink-3)">Level 1 → 2 → <b>3</b> → 4</span>
+  <button class="btn sec" onclick="closeOvNow()">Close</button><button class="btn ghost" onclick="go('glinquiry')">Open full GL Inquiry ▸</button></div>`,true); }
+function txnDrill(a,i){ const t=(GL_TXNS[a]||GL_TXNS['3010'])[i];
+ drawer(`<div class="dh"><span class="lvl">LEVEL 4 · TRANSACTION DETAILS</span><h3>${t.ref}</h3><button class="x" onclick="closeOvNow()">✕</button></div>
+ <div class="db">
+  <dl class="kv">
+   <dt>Account</dt><dd>${a}</dd><dt>Journal</dt><dd>${esc(t.jrnl)}</dd>
+   <dt>Reference</dt><dd>${t.ref}</dd><dt>Control</dt><dd>${t.cntl}</dd><dt>Control 2</dt><dd>${esc(t.cust)}</dd>
+   <dt>Document type</dt><dd>${esc(t.doc)}</dd>
+   <dt>Posting description</dt><dd>${esc(t.desc)}</dd>
+   <dt>Productivity 1 (salesperson)</dt><dd>${esc(t.sls)}</dd><dt>Productivity 2 (split with)</dt><dd>${esc(t.split||'—')}</dd>
+   <dt>Amount</dt><dd>${money(t.amt)} <span class="chip">calculated/posted — not adjustable (DRL-05)</span></dd>
+   <dt>User</dt><dd>${esc(t.user)}</dd><dt>Entry date</dt><dd>${t.dt}</dd><dt>Posted</dt><dd>${t.dt} 6:14 pm</dd>
+  </dl>
+  ${S.adjustLog.length?`<div class="card mt"><div class="bd" style="font-size:12px;color:var(--ink-2)"><b>Adjustment audit (GF-10):</b><br>${S.adjustLog.map(x=>esc(x)).join('<br>')}</div></div>`:''}
+ </div>
+ <div class="df"><span style="margin-right:auto;font-size:12px;color:var(--ink-3)">Level 1 → 2 → 3 → <b>4</b> — “detail of a detail of the accounts” [FIT]</span>
+  <button class="btn sec" onclick="closeOvNow()">Close</button>
+  <button class="btn pri" onclick="adjustDlg('${a}',${i})">✎ Adjust (AGJA)…</button></div>`,true); }
+function adjustDlg(a,i){ const t=(GL_TXNS[a]||GL_TXNS['3010'])[i];
+ modal(`<div class="mh">Adjust entry — ${t.ref}<button class="x" onclick="closeOvNow()">✕</button></div>
+ <div class="mb">
+  <p class="hint">Only non-calculated, entry-specific fields are editable (meeting ask; DRL-05). Prototype whitelist = the legacy SPY adjust fields <span class="gfnote">GF-11 · real whitelist is OQ-29</span>. Write-back, locking & permissions pending OQ-22 — <b>UI stub only</b>.</p>
+  <div class="frow"><div class="field"><label>Salesperson</label><input type="text" value="${esc(t.sls)}"></div>
+   <div class="field"><label>Split with</label><input type="text" value="${esc(t.split)}" placeholder="—"></div></div>
+  <div class="frow"><div class="field"><label>Stock #</label><input type="text" value="${esc(t.stock)}"></div>
+   <div class="field"><label>Customer</label><input type="text" value="${esc(t.cust)}"></div></div>
+  <div class="frow"><div class="field"><label>Amount</label><input type="text" value="${Math.abs(t.amt).toLocaleString()}" disabled style="background:var(--bg)"><div class="hint">posted value — not adjustable here</div></div></div>
+ </div>
+ <div class="mf"><button class="btn sec" onclick="closeOvNow()">Cancel</button>
+  <button class="btn pri" onclick="S.adjustLog.push('07/21/2026 — gina.jordan adjusted ${t.ref}: split-with set · dependent lines marked stale');S.stale=true;toast('Adjustment saved to audit · dependent calculations marked stale (GF-10)','ok');closeOvNow();render()">Save adjustment</button></div>`); }
+
+/* ---------- GL INQUIRY standalone ---------- */
+R.glinquiry = () => `
+ ${anno('glinquiry')}
+ ${crumbs('Accounting','GL Inquiry')}
+ <div class="pagehead"><div><h1>General Ledger Inquiry</h1><div class="sub">The shared inquiry backbone — MIS drilldown Level 3 lands here (CIB-14)</div></div></div>
+ <div class="card"><div class="bd">
+  <div class="tabs">${['Account Balance','Account Detail','Control Detail','Reference Detail','Amount Search'].map((t,i)=>`<button class="${i===1?'on':''}" onclick="toast('Tab: ${t}')">${t}</button>`).join('')}</div>
+  <div class="frow">
+   <div class="field"><label>GL Company</label><select>${COMPANIES.map(c=>`<option>${c.n}</option>`).join('')}</select></div>
+   <div class="field"><label>Account(s)</label><input type="text" value="3010 — New Car Sales (+1)"></div>
+   <div class="field"><label>Journal(s)</label><input type="text" value="10 - Vehicle Sales"></div>
+   <div class="field"><label>Start date</label><input type="date" value="2026-07-01"></div>
+   <div class="field"><label>End date</label><input type="date" value="2026-07-21"></div>
+  </div>
+  <div style="display:flex;gap:8px"><button class="btn pri" onclick="toast('Search runs (fixtures below)','ok')">Search</button><button class="btn sec" onclick="toast('Fields reset')">Reset fields</button></div>
+ </div>
+ <table class="mt"><thead><tr><th>Status</th><th>Journal</th><th>Reference</th><th>Account</th><th class="num">Amount</th><th>Control</th><th>Acctg date</th></tr></thead><tbody>
+  ${GL_TXNS['3010'].map((t,i)=>`<tr class="rowlink" onclick="txnDrill('3010',${i})"><td><span class="dot g"></span>Posted</td><td>${esc(t.jrnl)}</td><td>${t.ref}</td><td>3010 — New Car Sales</td><td class="num">${money(t.amt)}</td><td>${t.cntl}</td><td>${t.dt}</td></tr>`).join('')}
+ </tbody></table></div>`;
+</script>
+<script>
+/* ---------- SCHEDULES dashboard (DST) ---------- */
+R.schedules = () => `
+ ${anno('schedules')}
+ ${crumbs('Manage','Schedules')}
+ <div class="pagehead"><div><h1>Scheduled Reports</h1><div class="sub">Every schedule across every report — one dashboard (DST-06, meeting ask)</div></div>
+  <div class="actions">
+   ${S.selSched.size?`<button class="btn sec" onclick="bulk('pause')">⏸ Pause (${S.selSched.size})</button><button class="btn danger" onclick="bulk('delete')">Delete (${S.selSched.size})</button>`:''}
+   <button class="btn pri" onclick="scheduleDlg()">+ New schedule</button></div></div>
+ <div class="card">
+  <table><thead><tr><th style="width:34px"><input type="checkbox" aria-label="Select all" onchange="document.querySelectorAll('.schk').forEach(c=>{c.checked=this.checked;c.onchange({target:c})})"></th>
+   <th>Report</th><th>Recipients</th><th>Frequency</th><th>Data date mode</th><th>Format</th><th>Status</th><th></th></tr></thead><tbody>
+  ${S.schedules.map(s=>`<tr>
+    <td><input type="checkbox" class="schk" ${S.selSched.has(s.id)?'checked':''} aria-label="Select schedule ${s.id}" onchange="(event.target.checked?S.selSched.add(${s.id}):S.selSched.delete(${s.id}));render()"></td>
+    <td><b>${esc(s.rpt)}</b><br><span style="font-size:11.5px;color:var(--ink-3)">Started ${s.started} · ${s.period}</span></td>
+    <td style="font-size:12.5px">${esc(s.to)}</td><td>${s.freq} · ${s.time}</td>
+    <td style="font-size:12px">${esc(s.datemode)} <span class="gfnote">OQ-20</span></td>
+    <td>${s.fmt}</td>
+    <td>${s.on?'<span class="chip ok">Active</span>':'<span class="chip">Paused</span>'}</td>
+    <td style="white-space:nowrap"><button class="btn sm ghost" onclick="scheduleDlg('${esc(s.rpt)}')">Edit</button>
+     <button class="btn sm ghost" onclick="toast('Duplicated — adjust recipients/cadence for a second distinct schedule (DST-05)','ok')">⧉</button>
+     <button class="btn sm ghost" onclick="S.schedules.find(x=>x.id===${s.id}).on=!${s.on};render()">${s.on?'Pause':'Resume'}</button></td></tr>`).join('')}
+  </tbody></table>
+  <div style="padding:9px 16px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-3)">
+   Rows 1 and 2 are the SAME report on two distinct schedules — multi-scheduling per report (DST-05). Scheduled runs use saved parameters and skip confirmations (DST-08). Roll-in-sequence pending OQ-13/OQ-21.</div>
+ </div>`;
+function bulk(op){ if(op==='pause'){ S.schedules.forEach(s=>{if(S.selSched.has(s.id))s.on=false}); toast(S.selSched.size+' schedules paused (bulk action — DST-06)','ok'); }
+ else { S.schedules = S.schedules.filter(s=>!S.selSched.has(s.id)); toast('Schedules deleted','ok'); }
+ S.selSched.clear(); render(); }
+function scheduleDlg(rpt){ modal(`<div class="mh">Schedule report<button class="x" onclick="closeOvNow()">✕</button></div>
+ <div class="mb">
+  <div class="field"><label>Report</label><select><option>${esc(rpt||'M.I.S. — Daily Operating Control')}</option><option>M.I.S. — Monthly Summary Report</option><option>Sales Productivity — New/Used</option></select></div>
+  <div class="field"><label>Recipient(s) — individuals or groups <span class="gfnote">GF-12: MIS groups as recipient sets, for review</span></label>
+   <div style="display:flex;gap:8px"><input type="email" placeholder="Enter an email" style="flex:1"><button class="btn sec">Add</button></div>
+   <div class="mt" style="margin-top:8px"><span class="chip blue">dealer.principal@strongauto.com ✕</span> <span class="chip blue">Group: ACCTG (3 users) ✕</span></div></div>
+  <div class="frow">
+   <div class="field"><label>Time period</label><select><option>Current Month</option><option>Previous Month</option><option>Current Quarter</option><option>Previous Quarter</option><option>Current Year</option><option>Previous Year</option></select></div>
+   <div class="field"><label>Frequency</label><select><option>Daily</option><option selected>Weekly</option><option>Monthly</option></select></div>
+   <div class="field"><label>Every</label><select><option>1 week</option><option>2 weeks</option></select></div></div>
+  <div class="field"><label>Days</label>
+   <div style="display:flex;gap:6px;flex-wrap:wrap">${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((d,i)=>`<button class="btn sm ${i===0||i===2||i===4?'pri':'sec'}" onclick="this.classList.toggle('pri');this.classList.toggle('sec')">${d}</button>`).join('')}</div>
+   <div class="hint">Occurs every Monday, Wednesday, Friday</div></div>
+  <div class="frow">
+   <div class="field"><label>Delivery time</label><select><option>6:00 AM</option><option>7:30 AM</option><option>5:00 PM</option></select></div>
+   <div class="field"><label>Format</label><div class="seg"><button class="on">PDF</button><button>Excel</button></div></div>
+   <div class="field"><label>Archive report</label><label class="switch on" onclick="this.classList.toggle('on');toast('Behavior when Archive is OFF is undefined (OQ-3)','warn')"><span class="tr"></span></label></div></div>
+  <div class="frow"><div class="field"><label>Start date</label><input type="date" value="2026-08-01"></div>
+   <div class="field"><label>End date (optional)</label><input type="date"></div></div>
+  <div class="card"><div class="hd" style="font-size:13px">M.I.S. data date (legacy S/M/C/D — kept verbatim for vetting, DST-07 · OQ-20)</div><div class="bd">
+   <select style="width:100%"><option>S — System date at run time</option><option>M — Current month-end, switching to post-ahead month-end</option><option>C — Current month-end only (changes at close)</option><option>D — Fixed date until setup rerun</option></select>
+   <label class="switch on mt" style="margin-top:10px" onclick="this.classList.toggle('on')"><span class="tr"></span> Auto-calculate business days from calendar</label></div></div>
+ </div>
+ <div class="mf"><button class="btn sec" onclick="go('schedules');closeOvNow()">View scheduled reports</button><button class="btn pri" onclick="toast('Schedule created — appears on the dashboard (DST-03)','ok');closeOvNow()">Schedule</button></div>`); }
+function emailDlg(){ modal(`<div class="mh">Email this report<button class="x" onclick="closeOvNow()">✕</button></div>
+ <div class="mb">
+  <p class="hint">Immediate send — distinct from scheduling (DST-02, meeting ask). Sender identity / archive-on-send rules pending OQ-25.</p>
+  <div class="field"><label>To</label><input type="email" value="dealer.principal@strongauto.com"></div>
+  <div class="field"><label>Subject</label><input type="text" value="Daily Operating Control — ${coName()} — Jul 21"></div>
+  <div class="field"><label>Message</label><textarea rows="3">Morning — today's DOC attached. Net is running under plan; see the exception view for the two lines driving it.</textarea></div>
+  <div class="field"><label>Attach as</label><div class="seg"><button class="on">PDF</button><button>Excel</button></div></div></div>
+ <div class="mf"><button class="btn sec" onclick="closeOvNow()">Cancel</button><button class="btn pri" onclick="toast('Email sent (prototype) — delivery rules pending OQ-25','ok');closeOvNow()">Send email</button></div>`); }
+
+/* ---------- ARCHIVE ---------- */
+R.archive = () => `
+ ${anno('archive')}
+ ${crumbs('Manage','Archive')}
+ <div class="pagehead"><div><h1>Archive — Documents</h1><div class="sub">Immutable outputs of past runs (ARC-01) · retention policy undefined (OQ-2)</div></div></div>
+ <div class="card"><table><thead><tr><th>Document</th><th>Code</th><th>Period</th><th>Archived</th><th>Run by</th><th></th></tr></thead><tbody>
+  ${ARCHIVE.map((a,i)=>`<tr class="rowlink" onclick="${a.kind==='mis'?'archDoc()':'toast(\'Preview outside prototype scope\')'}"><td><b>${esc(a.n)}</b></td><td>${a.code}</td><td>${a.period}</td><td>${a.dt}</td><td>${esc(a.by)}</td>
+   <td><button class="btn sm ghost" onclick="event.stopPropagation();emailDlg()">✉</button> <button class="btn sm ghost" onclick="event.stopPropagation();toast('Exported','ok')">⤓</button></td></tr>`).join('')}
+ </tbody></table></div>`;
+function archDoc(){ modal(`<div class="mh">M.I.S. — Daily Operating Control · Jun 2026<button class="x" onclick="closeOvNow()">✕</button></div>
+ <div class="mb"><div class="printdoc">06/30/2026 7:00 am   MIS   Daily Operating Control — ${coName()} (123)
+Complete Final Report for Period Ending 06/30/26
+${coName()}                                        Page 1 of 1
+
+                         DAY      MTD    PLAN-MTD   VAR-MTD    %     YTD
+NEW VEHICLE SALES     41,200  868,400    900,000   (31,600)   96  4,292,400
+USED VEHICLE SALES    30,100  671,300    650,000    21,300   103  3,486,700
+F&I INCOME             5,900  121,700    120,000     1,700   101    583,500
+TOTAL VEHICLE         77,200 1,661,400  1,670,000    (8,600)   99  8,362,600
+...
+NET PROFIT             8,400   84,200    130,000   (45,800)   65    421,300
+</div><p class="hint mt">Archived print layout per the suite pattern (ARC-02/CIB-20). Header/footer, period-ending banner and pagination preserved.</p></div>
+ <div class="mf"><button class="btn sec" onclick="closeOvNow()">Close</button><button class="btn sec" onclick="emailDlg()">✉ Email</button><button class="btn pri" onclick="toast('Exported','ok')">⤓ Export PDF</button></div>`); }
+
+/* ---------- DIAGNOSTICS ---------- */
+R.diagnostics = () => `
+ ${anno('diagnostics')}
+ ${crumbs('Settings','Diagnostics')}
+ <div class="pagehead"><div><h1>Diagnostics & Audit</h1><div class="sub">System health made visible — nothing buried in logs (Module DIA)</div></div></div>
+ <div class="grid cols-2">
+  <div class="card"><div class="hd">Data freshness (DIA-02)</div><div class="bd">
+   <dl class="kv"><dt>Last build started</dt><dd>${S.freshBuild}</dd><dt>Last build completed</dt><dd>${S.freshCalc}</dd>
+   <dt>Last calculation</dt><dd>${S.freshCalc} ${S.stale?'<span class="chip warn">stale</span>':'<span class="chip ok">current</span>'}</dd>
+   <dt>Roll status</dt><dd>Rolled through 07/20 · zero-balance check <span class="chip ok">passed</span></dd></dl></div></div>
+  <div class="card"><div class="hd">Locks & conflicts (DIA-04)</div><div class="bd" style="line-height:2.1;font-size:13px">
+   <span class="dot g"></span>Daily posting — idle<br><span class="dot g"></span>Financial statements — idle<br>
+   <span class="dot g"></span>Trial balance — idle<br><span class="dot g"></span>Accounting end-of-day — idle<br>
+   <span class="dot g"></span>SPY session lock — free</div></div>
+  <div class="card"><div class="hd">Run audit (DIA-05) <span class="rt gfnote">GF-13 — full parameter audit adopted</span></div><div class="bd" style="font-size:12.5px;line-height:1.9;color:var(--ink-2)">
+   07/21 6:04a — Scheduled · DOC · ALL reports · WS auto-days 26/18/1 · actuals · PDF → 2 recipients · archived<br>
+   07/20 6:05a — Scheduled · DOC · same parameters · archived<br>
+   06/30 7:00a — gina.jordan · DOC + Monthly Summary · month-end · actuals · archived</div></div>
+  <div class="card"><div class="hd">Adjustment audit (GF-10)</div><div class="bd" style="font-size:12.5px;color:var(--ink-2)">
+   ${S.adjustLog.length?S.adjustLog.map(x=>esc(x)).join('<br>'):'<span style="color:var(--ink-3)">No adjustments this session — make one from drilldown Level 4 (✎ Adjust).</span>'}</div></div>
+ </div>`;
+
+/* ---------- SPY family ---------- */
+R.spy = () => { const segRows = SPY_ROWS.filter(r=>!r.del && (S.spyTab==='err'? r.seg==='err' : r.seg===S.spyTab));
+ const tot = rows=>rows.reduce((a,r)=>{a.sale+=r.sale;a.cost+=r.cost;a.fin+=r.fin;a.ins+=r.ins;a.com+=r.com;a.cnt+=r.cnt;return a},{sale:0,cost:0,fin:0,ins:0,com:0,cnt:0});
+ const t=tot(segRows); const gross=t.sale-t.cost; const net=gross+t.fin+t.ins-t.com;
+ return `
+ ${anno('spy')}
+ ${crumbs('Reports','Sales Productivity')}
+ ${S.bmk && S.bmk.on ? bmkBar(true) : ''}
+ <div class="pagehead"><div><h1>Sales Productivity</h1><div class="sub">Second report family on the same lifecycle — proves the pattern generalizes (Module SPY)</div></div>
+  <div class="actions"><button class="btn sec" onclick="scheduleDlg('Sales Productivity — New/Used')">🗓 Schedule</button><button class="btn pri" onclick="toast('Build complete — incremental (skipped 214 processed headers, SPY-01)','ok')">↻ Rebuild data</button></div></div>
+ <div class="fbar">
+  <span class="lbl">Company</span><select>${COMPANIES.map(c=>`<option>${c.n}</option>`).join('')}</select>
+  <span class="lbl">Journals</span><select><option>All configured journals</option><option>10 - New Vehicle Sales</option><option>20 - Used Vehicle Sales</option></select>
+  <span class="chip">Build period: Jul 2026 (current open GL month) — SPY-09</span>
+  <span class="chip ok" style="margin-left:auto">Last build 07/21 6:10 AM · incremental</span>
+ </div>
+ <div class="card mt">
+  <div class="tabs" style="padding:0 14px;margin-bottom:0">
+   ${[['err','⚠ Error Check ('+SPY_ROWS.filter(r=>r.seg==='err'&&!r.del).length+')'],['new','New Vehicle'],['used','Used Vehicle']].map(t2=>`<button class="${S.spyTab===t2[0]?'on':''}" onclick="S.spyTab='${t2[0]}';render()">${t2[1]}</button>`).join('')}
+  </div>
+  ${S.spyTab==='err'?'<div class="excbanner" style="background:var(--warn-bg);color:var(--warn);border-color:#ecd9a0">Records with unit count &gt; 1 or &lt; −1 — correct via Adjust before month-end (SPY-02). Legacy order preserved: Error Check runs first.</div>':''}
+  <table><thead><tr><th>Slsmn</th><th>Refer</th><th>Stock</th><th class="num">Cnt</th><th>S-Acct</th><th class="num">Sale $</th><th class="num">Cost</th><th class="num">Gross</th><th class="num">Gross %</th><th class="num">Fin</th><th class="num">Ins</th><th class="num">Com</th><th class="num">Net</th><th class="num">Net %</th><th>SW</th><th></th></tr></thead><tbody>
+  ${segRows.map((r,i)=>{const g=r.sale-r.cost,n=g+r.fin+r.ins-r.com;return `<tr class="${r.seg==='err'?'exc':''}">
+    <td><b>${esc(r.sls)}</b></td><td>${r.ref}</td><td>${r.stock}</td><td class="num ${r.cnt>1||r.cnt<-1?'neg':''}">${r.cnt}</td><td>${r.acct}</td>
+    <td class="num">${money(r.sale)}</td><td class="num">${money(r.cost)}</td><td class="num">${money(g)}</td><td class="num">${(g/r.sale*100).toFixed(1)}%</td>
+    <td class="num">${money(r.fin)}</td><td class="num">${money(r.ins)}</td><td class="num">${money(r.com)}</td><td class="num">${money(n)}</td><td class="num">${(n/r.sale*100).toFixed(1)}%</td>
+    <td>${r.sw?`<span class="chip" title="Split sale — allocation math undocumented, display only (OQ-18)">${esc(r.sw)}</span>`:''}</td>
+    <td><button class="btn sm ghost" onclick="spyAdjust(${SPY_ROWS.indexOf(r)})">✎ Adjust</button></td></tr>`}).join('')}
+   <tr class="total"><td colspan="5">${S.spyTab==='err'?'ERROR CHECK':S.spyTab==='new'?'GRAND TOTALS — TOTAL NEW UNITS: '+t.cnt:'GRAND TOTALS — TOTAL USED UNITS: '+t.cnt}</td>
+    <td class="num">${money(t.sale)}</td><td class="num">${money(t.cost)}</td><td class="num">${money(gross)}</td><td class="num">${t.sale?(gross/t.sale*100).toFixed(1)+'%':''}</td>
+    <td class="num">${money(t.fin)}</td><td class="num">${money(t.ins)}</td><td class="num">${money(t.com)}</td><td class="num">${money(net)}</td><td class="num">${t.sale?(net/t.sale*100).toFixed(1)+'%':''}</td><td></td><td></td></tr>
+  </tbody></table>
+  <div style="padding:9px 16px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-3)">Gross = Sale − Cost · Net = Gross + Fin + Ins − Com · % formulas reverse-inferred, must be validated (OQ-17) · Sort: salesperson → account → reference (SPY-04)</div>
+ </div>`; };
+function spyAdjust(i){ const r=SPY_ROWS[i];
+ modal(`<div class="mh">Adjust sales record — ${r.ref}<button class="x" onclick="closeOvNow()">✕</button></div>
+ <div class="mb"><p class="hint">Legacy ASR modernized (SPY-06): Option 1 scope = F/I/Commission only. Amounts entered WITH cents even though reports show whole dollars. Soft-delete keeps the record restorable.</p>
+  <div class="frow"><div class="field"><label>Finance (credit)</label><input type="text" value="${r.fin.toFixed(2)}"></div>
+   <div class="field"><label>Insurance (credit)</label><input type="text" value="${r.ins.toFixed(2)}"></div>
+   <div class="field"><label>Commission (debit)</label><input type="text" value="${r.com.toFixed(2)}"></div></div>
+  <label class="switch" onclick="this.classList.toggle('on')"><span class="tr"></span> Soft-delete this record (excluded from reports; restorable)</label></div>
+ <div class="mf"><button class="btn sec" onclick="closeOvNow()">Cancel</button><button class="btn pri" onclick="toast('Record adjusted — audit logged · rerun report to refresh totals','ok');closeOvNow()">Save adjustment</button></div>`); }
+
+/* ---------- Router & boot ---------- */
+function go(r){ location.hash = r; }
+function render(){
+ const r = (location.hash||'#home').slice(1) || 'home';
+ S.route = R[r]? r : 'home';
+ document.querySelectorAll('.rail a[data-r]').forEach(a=>a.classList.toggle('active',a.dataset.r===S.route || (S.route==='create'&&a.dataset.r==='setup')));
+ $('#view').innerHTML = R[S.route]();
+}
+window.addEventListener('hashchange',()=>{ closeOvNow(); render(); window.scrollTo(0,0); $('#view').focus({preventScroll:true}); });
+$('#reviewToggle').addEventListener('click',()=>{ S.review=!S.review; document.body.classList.toggle('review',S.review);
+ $('#revState').textContent = S.review?'ON':'OFF'; $('#reviewToggle').classList.toggle('on',S.review);
+ $('#reviewToggle').setAttribute('aria-pressed',S.review);
+ toast(S.review?'Review mode ON — requirement IDs, gap-fills (◈) and open questions (⚠) now shown per screen':'Review mode off'); });
+render();
+</script>
+
+<script>
+/* =====================================================================
+   Module BMK — Benchmarking & Goals (PRD 9A). UI per 07-21 screenshots.
+   ===================================================================== */
+S.bmk = {on:false, seg:'all', proj:true, b1:'pm', b2:'smpy', menu:0, compareAll:false};
+/* Benchmark-period fixtures for detail lines (illustrative; jun = full June 2026, jul25 = July 2025 full month) */
+[[100,1320500,1510000],[110,880400,840700],[120,168300,175900],[300,545100,468200],[310,512400,522000],[320,128900,119400],[600,1205300,1102600]]
+ .forEach(([id,jun,jul25])=>Object.assign(LINES.find(l=>l.id===id),{jun,jul25}));
+
+const BOPT = {
+ none:{label:'None', g:'○'},
+ goals:{label:'Goals & Budgets', g:'◎', col:'Goal (MTD)', vs:'Proj vs. Goal', key:'goal'},
+ pm:{label:'Previous Month (June 2026)', g:'◐', col:'June 2026', vs:'Proj vs. Jun', key:'jun'},
+ smpy:{label:'Same Month Previous Year (July 2025)', g:'●', col:'July 2025', vs:'Proj vs. SMPY', key:'jul25'}
+};
+const BDAYS_DONE=18, BDAYS_MON=26;
+function benchVals(l,key){
+ if(l.t==='D'){ const s=l.sign||1;
+   if(key==='goal') return l.pMtd!=null? l.pMtd*s : null;
+   return l[key]!=null? l[key]*s : null; }
+ if(l.t==='T'){ let sum=0,ok=false; l.refs.forEach(r=>{const v=benchVals(LINES.find(x=>x.id===r),key); if(v!=null){sum+=v;ok=true}}); return ok?sum:null; }
+ if(l.id===720){ const a=benchVals(LINES.find(x=>x.id===500),key), b=benchVals(LINES.find(x=>x.id===200),key);
+   return (a!=null&&b)? Math.round(a/b*1000)/10 : null; }
+ return null;
+}
+function projOf(l){ const v=lineVals(l); if(l.id===720) return v.mtd; /* ratio projects to itself under linear proration */
+ return Math.round(v.mtd/BDAYS_DONE*BDAYS_MON); } /* GF-15: straight-line business-day proration */
+function bmkPill(l,proj,bench){
+ if(bench==null||bench===0) return '';
+ const isPct = l.id===720;
+ const pct = isPct ? (proj-bench) : (proj-bench)/Math.abs(bench)*100;  /* sign already applied ⇒ higher = favorable (GF-18) */
+ const a=Math.abs(pct), fav=pct>0;
+ const neutral = isPct ? a<2 : a<10, strong = isPct ? a>=5 : a>=20;
+ const cls = neutral ? 'n' : fav ? (strong?'gf':'go') : (strong?'rf':'ro');
+ const ico = fav ? (strong&&!neutral?'★':'↑') : '↓';
+ const plain=v=>(v<0?'(':'')+Math.abs(Math.round(v)).toLocaleString()+(v<0?')':'');
+ return `<span class="bpill ${cls}" title="Projection ${isPct?proj.toFixed(1)+'pp':plain(proj)} vs benchmark ${isPct?bench.toFixed(1)+'pp':plain(bench)} — bands per GF-17, direction-aware per GF-18"><span class="bico">${ico}</span>${a.toFixed(1)}${isPct?' pp':'%'}</span>`;
+}
+function bmkBar(compact){
+ const slot = (n)=>{ const cur=BOPT[S.bmk['b'+n]];
+  return `<div class="bsel ${n===1?'hot':''}" role="button" tabindex="0" onclick="event.stopPropagation();S.bmk.menu=S.bmk.menu===${n}?0:${n};render()" onkeydown="if(event.key==='Enter'){this.click()}" aria-haspopup="listbox" aria-expanded="${S.bmk.menu===n}">
+    <span class="bglyph">${cur.g}</span> ${esc(cur.label)} <span class="caret">▼</span>
+    ${S.bmk.menu===n?`<div class="bmenu" role="listbox">${Object.keys(BOPT).map(k=>`
+      <button role="option" class="${S.bmk['b'+n]===k?'sel':''}" onclick="event.stopPropagation();S.bmk['b'+${n}]='${k}';S.bmk.menu=0;render();${k==='goals'?`toast('Goals & Budgets reads the forecast/plan store (GF-16 — decision OQ-30)')`:''}">
+        <span class="bglyph">${BOPT[k].g}</span> ${esc(BOPT[k].label)} ${S.bmk['b'+n]===k?'<span class="ck">✓</span>':''}</button>`).join('')}</div>`:''}
+  </div>`; };
+ return `<div class="bmkwrap" onclick="if(S.bmk.menu){S.bmk.menu=0;render()}">
+  <div class="bmkrow1">
+   <button class="perpill" onclick="toast('Period list per BMK-02: MTD · full YTD · 13-month trend · previous quarter · five-quarter trend · any prior-month YTD · previous year — trends need the closed-month engine (OQ-23/OQ-28)')">📅 July 2026 (Month-to-Date) <span class="caret">▼</span></button>
+   <div class="selpill" role="button" tabindex="0" onclick="event.stopPropagation();S.bmk.menu=S.bmk.menu===3?0:3;render()" onkeydown="if(event.key==='Enter'){this.click()}">Business Segment <span class="caret">▼</span>
+    ${S.bmk.menu===3?`<div class="bmenu">${[['all','All segments'],['var','Variable Ops (vehicle)'],['fix','Fixed Ops (service/parts)']].map(s=>`
+      <button class="${S.bmk.seg===s[0]?'sel':''}" onclick="event.stopPropagation();S.bmk.seg='${s[0]}';S.bmk.menu=0;render();toast('Segment mapping to MIS departments is OQ-32')">${s[1]} ${S.bmk.seg===s[0]?'<span class="ck">✓</span>':''}</button>`).join('')}</div>`:''}
+   </div>
+   <button class="selpill" onclick="toast('Store → GL company (BMK-15). Fixture: 123 - Chevy Northwest')">Store <span class="caret">▼</span></button>
+   <button class="bmktoggle ${S.bmk.compareAll?'on':''}" onclick="S.bmk.compareAll=!S.bmk.compareAll;render();toast('Compare All Stores → cross-company comparison (relates to consolidation ENG-05 · OQ-32)')"><span class="btrack"></span> Compare All Stores</button>
+   <span style="margin-left:auto;display:flex;gap:6px;align-items:center">
+     ${compact?'<span class="chip blue" title="Selections persist as you move between reports (BMK-14)">persists across reports · BMK-14</span>':''}
+     <button class="btn sm ghost" title="Search" onclick="toast('Search (prototype)')">⌕</button>
+     ${compact?'':'<button class="btn sm ghost" onclick="S.bmk.on=false;render()" title="Return to the standard format view">✕ Exit benchmarks</button>'}
+   </span>
+  </div>
+  <div class="bmkrow2">
+   <button class="bmktoggle ${S.bmk.proj?'on':''}" onclick="S.bmk.proj=!S.bmk.proj;render()"><span class="btrack"></span> Projections</button>
+   <span class="bmklabel">Benchmarks</span>
+   ${slot(1)} ${slot(2)}
+   <span class="gfnote">GF-15 projection math · GF-17 bands · OQ-30…33</span>
+  </div>
+ </div>`;
+}
+function bmkViewer(){
+ const segIds = S.bmk.seg==='var' ? [100,110,120,200] : S.bmk.seg==='fix' ? [250,300,310,320,400] : null;
+ const rows = LINES.filter(l=>l.id!==710 && (!segIds || segIds.includes(l.id)));
+ const benches = [S.bmk.b1,S.bmk.b2].filter(k=>k!=='none').map(k=>BOPT[k]);
+ const th = `<tr>
+   <th style="width:26%">Metric</th><th style="width:26px"></th>
+   <th class="num mtdhdr">Month-to-Date</th>
+   ${S.bmk.proj?'<th class="num">Month-End Projection</th>':''}
+   ${benches.map(b=>`<th class="gsep" style="width:26px;text-align:center;font-size:14px">${b.g}</th><th class="num">${b.col}</th><th style="color:#9aa3ad">${b.vs}</th>`).join('')}</tr>`;
+ const tr = rows.map(l=>{
+   if(l.t==='M') return `<tr class="memo"><td colspan="${3+(S.bmk.proj?1:0)+benches.length*3}">${esc(l.d)}</td></tr>`;
+   const v=lineVals(l), proj=projOf(l), isPct=l.id===720;
+   const cells = benches.map(b=>{ const bv=benchVals(l,b.key);
+     let cell = bv==null?'—':(isPct? bv.toFixed(1)+'%' : '$&nbsp;'+money(bv));
+     if(b.key==='goal'&&bv!=null&&!isPct&&bv!==0) cell += `<div class="goalnote">MTD = ${Math.round(v.mtd/bv*100)}% of goal</div>`; /* BMK-12 */
+     return `<td class="num gsep">${cell}</td><td>${bv==null?'':bmkPill(l,proj,bv)}</td>`; }).join('');
+   return `<tr class="${l.t==='T'?'total':''} rowlink" onclick="lineDrill(${l.id})">
+     <td><span style="color:var(--ink-3);font-size:11px;margin-right:7px">${l.id}</span>${esc(l.d)}</td>
+     <td style="color:#4285f4;font-weight:700">›</td>
+     <td class="num">${isPct? v.mtd.toFixed(1)+'%' : '$&nbsp;'+money(v.mtd)}</td>
+     ${S.bmk.proj?`<td class="num" title="GF-15: MTD ÷ ${BDAYS_DONE} × ${BDAYS_MON} business days (work-schedule aware)">↗&nbsp;${isPct? proj.toFixed(1)+'%' : '$&nbsp;'+money(proj)}</td>`:''}
+     ${cells}</tr>`; }).join('');
+ return `
+ ${anno('viewer')}
+ ${crumbs('Accounting Reports','M.I.S.','Daily Operating Control','Benchmarks')}
+ <div class="pagehead"><div><h1>Daily Operating Control</h1>
+   <div class="sub">M.I.S. · ${COMPANIES.find(c=>c.id===S.company).n} · Benchmark view (Module BMK) · Data as of ${S.freshCalc}</div></div>
+  <div class="actions">
+   <button class="btn sec" onclick="savedViewsDlg()">☆ Views</button>
+   <button class="sharebtn" onclick="shareMenu()"><svg width="17" height="17" viewBox="0 0 24 24" fill="#035FDA" aria-hidden="true"><path d="M14 5v3.5C7.6 9.4 4.9 14 4 19c2.4-3.5 5.6-5.4 10-5.4V17l7-6z"/></svg> Share</button>
+  </div></div>
+ ${bmkBar(false)}
+ <div class="card">
+  <div class="hd">${S.bmk.seg==='fix'?'Fixed Operations':S.bmk.seg==='var'?'Variable Operations':'Gross Profit — all segments'}
+    <span class="rt" style="color:var(--ink-3)">benchmark values are illustrative fixtures</span></div>
+  <table class="bt"><thead>${th}</thead><tbody>${tr}</tbody></table>
+  <div style="padding:9px 16px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-3)">
+   ★ / ↑ favorable vs benchmark · ↓ unfavorable · filled pill = beyond ±20% (GF-17 defaults, dealer-configurable — OQ-31) · direction-aware for expense lines (GF-18) ·
+   Projection = business-day proration (GF-15 — OQ-33) · Rows stay drillable (BMK-13) · Goals &amp; Budgets reads the forecast store (GF-16 — OQ-30)</div>
+ </div>`;
+}
+function shareMenu(){ modal(`<div class="mh">Share this report<button class="x" onclick="closeOvNow()">✕</button></div>
+ <div class="mb"><p class="hint">Share maps to the existing distribution module (BMK-16 → DST). The benchmarked view exports and delivers like any saved view state.</p>
+  <div style="display:flex;flex-direction:column;gap:8px" class="mt">
+   <button class="btn sec" onclick="emailDlg()">✉ Email this report…</button>
+   <button class="btn sec" onclick="scheduleDlg('M.I.S. — Daily Operating Control')">🗓 Schedule delivery…</button>
+   <button class="btn sec" onclick="exportDlg()">⤓ Export PDF / Excel…</button></div></div>
+ <div class="mf"><button class="btn sec" onclick="closeOvNow()">Close</button></div>`); }
+</script>
+
+
+<script>
+/* =====================================================================
+   Report Creation & Edit wizard — implements the Report Creation &
+   Population workflow map (New/Copy entry points → define → assign to
+   group → populate). Reuses the existing setup tab bodies for lines,
+   calc fields, forecasts and validation.
+   ===================================================================== */
+const WIZ_STEPS = ['Start','Details & Format','Lines','Calculated Fields','Forecasts','Validate','Assign & Populate','Done'];
+function stamp(){ return '07/21/2026 '+new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}); }
+
+function startCreate(mode){
+  S.wiz = {step:1, mode, title: mode==='copy'?'Copy of Daily Operating Control':'', fmt:'A', custom:false,
+           group:'ACCTG', range:'100–720', srcGroup:'BASE', srcRpt:'Daily Operating Control',
+           tpl: mode==='copy'?'copy':'blank', populated:false, building:false, calculating:false, build:'', calc:''};
+  go('create');
+}
+function startEdit(id){ const d=DEFS.find(x=>x.id===id); if(!d) return;
+  S.wiz = {step:2, mode:'edit', editId:id, title:d.n, fmt:d.fmt, custom:false, group:d.group||'ACCTG',
+           range:d.range||'100–720', populated:true, build:S.freshBuild, calc:S.freshCalc};
+  go('create');
+}
+function wizSet(k,v){ S.wiz[k]=v; }
+function wizNext2(){ if(!(S.wiz.title||'').trim()){ toast('Enter a report title to continue'); return; } wizGo(3); }
+function wizGo(step){ S.wiz.step=step; render(); window.scrollTo(0,0); }
+function wizCancel(){ S.wiz=null; go('setup'); }
+function wizPopulate(){ const w=S.wiz; w.building=true; render();
+  setTimeout(()=>{ w.build=stamp(); w.building=false; w.calculating=true; render();
+    setTimeout(()=>{ w.calc=stamp(); w.calculating=false; w.populated=true;
+      S.freshBuild=w.build; S.freshCalc=w.calc; S.stale=false; render(); }, 850);
+  }, 750); }
+function wizFinish(){ const w=S.wiz;
+  if(w.mode==='edit'){ const d=DEFS.find(x=>x.id===w.editId); if(d){ d.n=w.title||d.n; d.fmt=w.fmt; d.group=w.group; d.range=w.range; } }
+  else { const id=Math.max(...DEFS.map(d=>d.id))+1;
+    DEFS.push({id, n:w.title||'Untitled report', fmt:w.fmt, range:w.range, by:'Gina Jordan', arch:'— (new)', group:w.group}); }
+  w.step=8; render(); window.scrollTo(0,0);
+}
+
+function wizFooter(back, next){ // back/next = {label, act, dis, pri}
+  return `<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+    ${back?`<button class="btn sec" onclick="${back.act}">${back.label}</button>`:''}
+    ${next?`<button class="btn ${next.pri===false?'sec':'pri'}" ${next.dis?'disabled style="opacity:.5;cursor:not-allowed"':''} onclick="${next.dis?'':next.act}">${next.label}</button>`:''}
+  </div>`;
+}
+const GRP_OPTS = () => GROUPS.map(g=>`<option value="${g.id}" ${S.wiz.group===g.id?'selected':''}>${g.id} — ${esc(g.desc)}</option>`).join('');
+
+function wizBody(w){
+  switch(w.step){
+  case 1: return `
+   <div class="grid cols-2">
+    <div class="card"><div class="hd">${w.mode==='copy'?'Copy from an existing setup (Entry Point 2)':'Start a new report (Entry Point 1)'}</div><div class="bd">
+     ${w.mode==='copy'?`
+       <p class="hint">Copy print formats and/or report lines from another group as a starting point. References in Total / Calculate / Estimate lines are renumbered automatically (GRP-05).</p>
+       <div class="frow"><div class="field"><label>Source group</label><select onchange="wizSet('srcGroup',this.value)">${GROUPS.map(g=>`<option ${w.srcGroup===g.id?'selected':''}>${g.id}</option>`).join('')}</select></div>
+        <div class="field"><label>Source report</label><select onchange="wizSet('srcRpt',this.value)"><option>Daily Operating Control</option><option>Monthly Summary Report</option><option>6 Month Comparative Analysis</option></select></div></div>
+       <label class="switch on" onclick="this.classList.toggle('on')"><span class="tr"></span> Copy report definition (format)</label><br><br>
+       <label class="switch on" onclick="this.classList.toggle('on')"><span class="tr"></span> Copy report lines</label>`
+     :`
+       <p class="hint">Choose how to start. The lines you define become the format (DEF-01/07).</p>
+       <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn ${w.tpl==='blank'?'pri':'sec'}" onclick="wizSet('tpl','blank');render()">Blank report</button>
+        <button class="btn ${w.tpl==='template'?'pri':'sec'}" onclick="wizSet('tpl','template');render()">From a standard template (A–I)</button>
+       </div>
+       ${w.tpl==='template'?`<div class="field mt"><label>Standard format template</label>
+         <div style="display:flex;gap:6px;flex-wrap:wrap">${'ABCDEFGHI'.split('').map(f=>`<button class="btn sm ${w.fmt===f?'pri':'sec'}" onclick="wizSet('fmt','${f}');render()">${f}</button>`).join('')}</div>
+         <div class="hint">Column sets are documented per ACCT.DOC (DEF-02).</div></div>`:''}`}
+    </div></div>
+    <div class="card"><div class="hd">The flow</div><div class="bd" style="font-size:13px;color:var(--ink-2)">
+     <p>“MIS Setups is the major place where we define the complete report format, report lines and the forecast … combining these two data, the actual report will work.” <span style="color:var(--ink-3)">— flow walkthrough [FIT]</span></p>
+     <ol style="margin:10px 0 0 18px;line-height:1.9">
+       <li>Name the report, pick a format, and <b>assign it to a group</b>.</li>
+       <li>Define the four line types; add calculated fields and forecasts.</li>
+       <li>Validate, then <b>populate</b> with Build → Calculate.</li>
+       <li>It appears in the catalog for that group only (GRP-08).</li></ol>
+    </div></div>
+   </div>
+   ${wizFooter({label:'Cancel',act:'wizCancel()'},{label:'Continue →',act:'wizGo(2)'})}`;
+
+  case 2: return `
+   <div class="grid cols-2">
+    <div class="card"><div class="hd">Report details</div><div class="bd">
+     <div class="field"><label>Report title</label><input type="text" id="wizTitle" value="${esc(w.title)}" placeholder="e.g. Daily Operating Control" oninput="S.wiz.title=this.value"></div>
+     <div class="field"><label>Format template (DEF-02)</label>
+       <div style="display:flex;gap:6px;flex-wrap:wrap">${'ABCDEFGHI'.split('').map(f=>`<button class="btn sm ${w.fmt===f&&!w.custom?'pri':'sec'}" onclick="S.wiz.fmt='${f}';S.wiz.custom=false;render()">${f}</button>`).join('')}
+        <button class="btn sm ${w.custom?'pri':'sec'}" onclick="S.wiz.custom=true;render()">CUSTOM…</button></div>
+       ${w.custom?`<div class="hint">Custom uses the checkbox column picker over dictionary columns + calculated fields (DEF-03/04). Custom formats can't use the standard heading.</div>`:''}</div>
+     <div class="field"><label>Line range</label><input type="text" value="${esc(w.range)}" onchange="S.wiz.range=this.value" style="width:140px"></div>
+    </div></div>
+    <div class="card"><div class="hd">Heading — live preview (DEF-05)</div><div class="bd">
+     <div class="field"><label>Heading (tokens @N @D @% @#)</label>
+       <input type="text" value="@N — ${esc((w.title||'REPORT').toUpperCase())}" oninput="document.getElementById('wizHdg').textContent=this.value.replace('@N',coName().toUpperCase()).replace('@D','21JUL26').replace('@%','68%').replace('@#','WS1')"></div>
+     <div class="rpthead" style="border:1px dashed var(--line-2);border-radius:8px"><div class="t1" id="wizHdg">${coName().toUpperCase()} — ${esc((w.title||'REPORT').toUpperCase())}</div><div class="t2">68% THROUGH 21JUL26 · WORK SCHEDULE 1</div></div>
+    </div></div>
+   </div>
+   <div class="card mt" style="border-color:var(--brand);"><div class="hd" style="background:var(--brand-bg)">👥 Assign to a group <span class="rt" style="color:var(--brand-dk)">only this group's members can view the report (GRP-08)</span></div><div class="bd">
+     <div class="frow"><div class="field"><label>Group</label><select onchange="S.wiz.group=this.value;render()" style="max-width:340px">${GRP_OPTS()}</select></div>
+       <div class="field"><label>Visibility</label><input type="text" value="Members of ${esc(w.group)} only" disabled style="background:var(--bg)"></div></div>
+     <p class="hint">The report is saved into the group's configuration namespace. Super users see all groups; standard users only theirs (GRP-06). You can copy it to other groups later.</p>
+   </div></div>
+   ${w.mode==='edit'? wizFooter({label:'Back to setups',act:'wizCancel()'},{label:'Continue →',act:'wizNext2()'})
+                    : wizFooter({label:'← Back',act:'wizGo(1)'},{label:'Continue →',act:'wizNext2()'})}`;
+
+  case 3: return `
+   <p class="hint" style="margin-bottom:10px">Define the four line types — the lines are the format (DEF-07). Working lines shown from the template; add, edit, or reorder.</p>
+   ${setupLines()}
+   ${wizFooter({label:'← Back',act:'wizGo(2)'},{label:'Continue →',act:'wizGo(4)'})}`;
+
+  case 4: return `
+   <p class="hint" style="margin-bottom:10px">Add prebuilt calculated fields by checkbox so formulas aren't hand-built (CALC-01) — the top user pain point.</p>
+   ${setupCalc()}
+   ${wizFooter({label:'← Back',act:'wizGo(3)'},{label:'Continue →',act:'wizGo(5)'})}`;
+
+  case 5: return `
+   <p class="hint" style="margin-bottom:10px">Enter plan values per line; the report compares actuals to these (FCT-01). These also feed the Goals benchmark.</p>
+   ${setupFcast()}
+   ${wizFooter({label:'← Back',act:'wizGo(4)'},{label:'Continue →',act:'wizGo(6)'})}`;
+
+  case 6: return `
+   <p class="hint" style="margin-bottom:10px">Resolve unmapped accounts and invalid references before populating (DIA-01, DEF-11).</p>
+   ${setupValid()}
+   ${wizFooter({label:'← Back',act:'wizGo(5)'},{label:'Continue →',act:'wizGo(7)'})}`;
+
+  case 7: {
+   const busy = w.building||w.calculating;
+   return `
+   <div class="grid cols-2">
+    <div class="card"><div class="hd">Review & assign</div><div class="bd">
+     <dl class="kv">
+       <dt>Title</dt><dd><b>${esc(w.title||'Untitled report')}</b></dd>
+       <dt>Format</dt><dd>${w.custom?'Custom':'Format '+w.fmt}</dd>
+       <dt>Line range</dt><dd>${esc(w.range)}</dd>
+       <dt>Assigned group</dt><dd><span class="chip blue">${esc(w.group)}</span> — members only (GRP-08)</dd>
+       <dt>Source</dt><dd>${w.mode==='copy'?'Copied from '+esc(w.srcGroup)+' / '+esc(w.srcRpt):w.mode==='edit'?'Editing existing definition':w.tpl==='template'?'Standard template '+w.fmt:'New (blank)'}</dd>
+     </dl></div></div>
+    <div class="card"><div class="hd">Populate — Build → Calculate (ENG-01)</div><div class="bd">
+     ${!w.populated && !busy ? `
+       <p class="hint">Populating builds the balance snapshot from GL and calculates day / MTD / YTD, forecast and history values into the lines.</p>
+       <button class="btn pri" onclick="wizPopulate()">▶ Populate report</button>` : ''}
+     ${busy ? `
+       <p style="font-size:13px"><span class="dot ${w.building?'y':'g'}"></span> Build ${w.building?'running…':'complete '+w.build}</p>
+       <p style="font-size:13px"><span class="dot ${w.calculating?'y':(w.calc?'g':'')}"></span> Calculate ${w.calculating?'running…':w.calc?('complete '+w.calc):'queued'}</p>` : ''}
+     ${w.populated && !busy ? `
+       <p><span class="chip ok">✓ Populated</span></p>
+       <dl class="kv" style="margin-top:8px"><dt>Build completed</dt><dd>${w.build||S.freshBuild}</dd><dt>Data as of</dt><dd>${w.calc||S.freshCalc}</dd>
+         <dt>Locks</dt><dd><span class="dot g"></span>No conflicts (ENG-04)</dd></dl>` : ''}
+     <p class="hint mt">Whether populate is an automatic background refresh or an explicit step is a product decision (OQ-19 / GF-07).</p>
+    </div></div>
+   </div>
+   ${wizFooter({label:'← Back',act:'wizGo(6)'},{label:w.mode==='edit'?'Save changes →':'Finish — create report →',act:'wizFinish()',dis:!w.populated})}`;
+  }
+
+  case 8: return `
+   <div class="card" style="max-width:640px;margin:0 auto"><div class="bd" style="text-align:center;padding:34px">
+     <div style="font-size:44px;color:var(--ok)">✓</div>
+     <h2 style="margin:8px 0 4px">${w.mode==='edit'?'Changes saved':'Report created'}</h2>
+     <p style="color:var(--ink-2)"><b>${esc(w.title)}</b> ${w.mode==='edit'?'was updated':'was created'} and assigned to group <span class="chip blue">${esc(w.group)}</span>.</p>
+     <p style="color:var(--ink-3);font-size:13px;margin-top:6px">Populated as of ${w.calc||S.freshCalc}. It now appears in the Accounting Reports catalog for ${esc(w.group)} members only (GRP-08).</p>
+     <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:18px">
+       <button class="btn pri" onclick="S.wiz=null;go('viewer')">View report</button>
+       <button class="btn sec" onclick="S.wiz=null;go('run')">Run report</button>
+       <button class="btn sec" onclick="S.wiz=null;go('home')">See in catalog</button>
+       <button class="btn ghost" onclick="S.wiz=null;go('setup')">Back to setups</button>
+     </div>
+   </div></div>`;
+  }
+}
+
+R.create = () => {
+  const w=S.wiz; if(!w) return R.setup();
+  const stepper = `<div class="stepper">${WIZ_STEPS.map((s,i)=>{const n=i+1; const cls=n<w.step?'done':n===w.step?'cur':''; return `<div class="st ${cls}"><span class="n">${n<w.step?'✓':n}</span>${s}</div>${i<WIZ_STEPS.length-1?'<span class="arrow">›</span>':''}`;}).join('')}</div>`;
+  return `${anno('create')}
+   ${crumbs('Accounting Reports','Report Setups', w.mode==='edit'?'Edit report':'New report')}
+   <div class="pagehead"><div><h1>${w.mode==='edit'?'Edit report':w.mode==='copy'?'Copy a report':'Create a report'}</h1>
+     <div class="sub">Report creation &amp; population — assign to a group, then Build + Calculate to populate [FIT]</div></div></div>
+   ${stepper}
+   ${wizBody(w)}`;
+};
+</script>
+
+
+<script>
+/* =====================================================================
+   Module ASR — Adjust Sales Report (per ASR PRD).
+   Report-first correction utility for UNIT-SALES productivity records:
+   filter → results grid → detail correction → save/delete/restore.
+   ===================================================================== */
+S.asr = {co:'123', jrnl:'all', from:'2026-07-01', to:'2026-07-21', showDel:false};
+/* extend SPY fixtures with record dates + a soft-deleted record */
+(function(){ const dts=['07/03/2026','07/14/2026','07/09/2026','07/08/2026','07/15/2026','07/18/2026'];
+  SPY_ROWS.forEach((r,i)=>{ if(!r.dt) r.dt=dts[i%dts.length]; if(r.del===undefined) r.del=null; });
+  if(!SPY_ROWS.some(r=>r.ref==='U20097')) SPY_ROWS.push(
+    {seg:'used',sls:'102 - JONES K',acct:'3110',ref:'U20097',stock:'U8802',cnt:1,serial:'3VWFE21C04M098802',
+     sale:15400,cost:14100,fin:0,ins:0,com:350,trade:'',yr:'',valu:0,cust:'DUPLICATE ENTRY',sw:'',dt:'07/05/2026',
+     del:'07/10/2026'});
+})();
+const SLS_VALID=['101','102','103'];
+const CARLINE={'3010':'New Car Sales — Chevrolet','3020':'New Truck Sales','3110':'Used Retail Sales'};
+function asrGross(r){ return r.sale-r.cost; }
+function asrNet(r){ return asrGross(r)+r.fin+r.ins-r.com; }
+function asrRows(){
+  const [jN,jU]=[S.asr.jrnl!=='2', S.asr.jrnl!=='1'];
+  return SPY_ROWS.filter(r=>{
+    if(r.del && !S.asr.showDel) return false;
+    const isNew=r.seg==='new'||(r.seg==='err'&&r.acct[0]==='3'&&r.acct[1]==='0');
+    if(S.asr.jrnl==='1'&&!(r.seg==='new')) return false;
+    if(S.asr.jrnl==='2'&&!(r.seg==='used'||r.seg==='err')) return false;
+    return true;
+  });
+}
+R.asr = () => { const rows=asrRows();
+ return `
+ ${anno('asr')}
+ ${crumbs('Reports','Sales Productivity','Adjust Sales Report')}
+ <div class="pagehead"><div><h1>Adjust Sales Report (ASR)</h1>
+   <div class="sub">Correction utility for sales productivity records — ASR updates the data SPY reports on; it does not produce a report itself (ASR PRD)</div></div>
+  <div class="actions"><button class="btn sec" onclick="go('spy')">Open Sales Productivity ▸</button></div></div>
+ <div class="fbar" role="search" aria-label="ASR filters">
+  <span class="lbl">Company</span><select onchange="S.asr.co=this.value;render()" aria-label="Company (authorized only)">${COMPANIES.map(c=>`<option value="${c.id}" ${S.asr.co===c.id?'selected':''}>${c.n}</option>`).join('')}</select>
+  <span class="lbl">Journals</span><select onchange="S.asr.jrnl=this.value;render()">
+    <option value="all" ${S.asr.jrnl==='all'?'selected':''}>All configured productivity journals</option>
+    <option value="1" ${S.asr.jrnl==='1'?'selected':''}>1x — New Vehicle</option>
+    <option value="2" ${S.asr.jrnl==='2'?'selected':''}>2x — Used Vehicle</option></select>
+  <span class="lbl">Date range</span>
+  <input type="date" value="${S.asr.from}" onchange="S.asr.from=this.value;render()" aria-label="From date">
+  <input type="date" value="${S.asr.to}" onchange="S.asr.to=this.value;render()" aria-label="To date">
+  <label class="switch ${S.asr.showDel?'on':''}" onclick="S.asr.showDel=!S.asr.showDel;render()" title="Deleted records are excluded from SPY reporting; include them here for correction (default-exclude matches SPY — open question in the PRD)"><span class="tr"></span> Include deleted</label>
+  <span style="margin-left:auto" class="chip">${rows.length} record${rows.length===1?'':'s'}</span>
+ </div>
+ <div class="card mt">
+  ${rows.length? `<table><thead><tr><th>Status</th><th>Refer</th><th>Jrnl</th><th>Slsmn</th><th>Acct</th><th>Stock</th>
+    <th class="num">Sale $</th><th class="num">Cost</th><th class="num">Fin</th><th class="num">Ins</th><th class="num">Com</th>
+    <th class="num">Gross</th><th class="num">Net</th><th></th></tr></thead><tbody>
+   ${rows.map(r=>{const i=SPY_ROWS.indexOf(r); return `<tr class="rowlink ${r.del?'':''}" onclick="asrDetail(${i})" style="${r.del?'opacity:.75':''}">
+     <td>${r.del?`<span class="chip bad">Deleted ${r.del}</span>`:'<span class="chip ok">Active</span>'}</td>
+     <td><b>${r.ref}</b><br><span style="font-size:11px;color:var(--ink-2)">${r.dt}</span></td>
+     <td>${r.seg==='new'?'10 (New)':'20 (Used)'}</td><td>${esc(r.sls)}</td><td>${r.acct}</td><td>${r.stock}</td>
+     <td class="num">${money(r.sale)}</td><td class="num">${money(r.cost)}</td>
+     <td class="num">${money(r.fin)}</td><td class="num">${money(r.ins)}</td><td class="num">${money(r.com)}</td>
+     <td class="num"><b>${money(asrGross(r))}</b></td><td class="num"><b>${money(asrNet(r))}</b></td>
+     <td>${r.del?`<button class="btn sm sec" onclick="event.stopPropagation();asrRestore(${i})">↩ Restore</button>`
+               :`<button class="btn sm ghost" onclick="event.stopPropagation();asrDetail(${i})">✎ Correct</button>`}</td></tr>`}).join('')}
+  </tbody></table>
+  <div style="padding:9px 16px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-2)">
+    Gross and Net are derived, read-only (Gross = Sale − Cost · Net = Gross + Fin + Ins − Com). Company / Journal / Reference form the immutable record key. Corrections flow into SPY on its next run.</div>`
+  : `<div class="empty"><b>No matching productivity records</b>Adjust Company, Journals, or the date range — or include deleted records if you're restoring one.</div>`}
+ </div>`; };
+
+function asrDetail(i){ const r=SPY_ROWS[i];
+ window._asrEdit = {sale:r.sale, cost:r.cost, fin:r.fin, ins:r.ins, com:r.com, sls:r.sls, acct:r.acct,
+   stock:r.stock, trade:r.trade, valu:r.valu, cust:r.cust, sw:r.sw};
+ const E=window._asrEdit;
+ const fld=(label,key,opts={})=>`<div class="field"><label>${label}${opts.cr?' <span style="color:var(--ink-2);font-weight:400">('+opts.cr+')</span>':''}</label>
+   <input type="text" value="${esc(String(E[key]??''))}" ${opts.num?'inputmode="decimal"':''} data-k="${key}"
+    oninput="_asrEdit['${key}']=${opts.num?'parseFloat(this.value.replace(/,/g,\x27\x27))||0':'this.value'};asrRecalc()"
+    ${opts.err?`aria-describedby="asrerr-${key}"`:''}>${opts.hint?`<div class="hint">${opts.hint}</div>`:''}</div>`;
+ drawer(`<div class="dh"><span class="lvl">ASR · CORRECTION</span><h3>${r.ref} — ${esc(r.cust)}</h3>
+   ${r.del?'<span class="chip bad">Deleted '+r.del+'</span>':'<span class="chip ok">Active</span>'}
+   <button class="x" onclick="closeOvNow()" aria-label="Close">✕</button></div>
+ <div class="db">
+  <dl class="kv"><dt>Record key (immutable)</dt><dd>Company ${S.asr.co} · Journal ${r.seg==='new'?'10':'20'} · Reference <b>${r.ref}</b></dd>
+   <dt>Translated (read-only)</dt><dd>Car line: ${esc(CARLINE[r.acct]||'—')} · Serial: ${esc(r.serial)} ${r.trade?'· Trade: '+esc(r.trade)+(r.yr?' ('+r.yr+')':''):''}</dd></dl>
+  <h4 style="margin:14px 0 6px">Finance &amp; commission <span class="chip" style="font-size:10px">legacy Option 1</span></h4>
+  <div class="frow">${fld('Finance','fin',{num:1,cr:'credit'})}${fld('Insurance','ins',{num:1,cr:'credit'})}${fld('Commission','com',{num:1,cr:'debit'})}</div>
+  <h4 style="margin:14px 0 6px">Full correction <span class="chip" style="font-size:10px">legacy Option 2</span></h4>
+  <div class="frow">${fld('Salesman #','sls')}${fld('Split-with salesman #','sw',{hint:'Must validate as a salesperson (101, 102, 103 in fixtures)'})}</div>
+  <div class="frow">${fld('Sales account','acct')}${fld('Stock #','stock')}${fld('Customer #','cust')}</div>
+  <div class="frow">${fld('Sale amount','sale',{num:1,cr:'credit'})}${fld('Cost amount','cost',{num:1,cr:'debit'})}</div>
+  <div class="frow">${fld('Trade-in stock #','trade')}${fld('Trade-in value','valu',{num:1,cr:'debit'})}</div>
+  <div class="card" style="margin-top:10px"><div class="bd" style="font-size:13px">
+   <b>Derived (read-only — refresh as you type):</b><br>
+   Gross <b id="asrG"></b> · Gross % <b id="asrGP"></b> · Net <b id="asrN"></b> · Net % <b id="asrNP"></b>
+   <div class="hint">Amounts are entered with cents even though reports display whole dollars (legacy rule). New/Used report variants may derive F/I/C from configured percentages (PRIVLIB PRODUCTIVITY) — dependency, not simulated.</div></div></div>
+ </div>
+ <div class="df">
+  ${r.del? `<button class="btn sec" onclick="asrRestore(${i});closeOvNow()">↩ Restore record</button>`
+         : `<button class="btn danger" onclick="asrDelete(${i})">Delete (soft)</button>`}
+  <span style="flex:1"></span>
+  <button class="btn sec" onclick="closeOvNow()">Cancel</button>
+  <button class="btn pri" onclick="asrSave(${i})">Save correction</button>
+ </div>`, true);
+ asrRecalc();
+}
+function asrRecalc(){ const E=window._asrEdit; if(!E) return;
+ const g=E.sale-E.cost, n=g+E.fin+E.ins-E.com;
+ const pct=v=>E.sale? (v/E.sale*100).toFixed(1)+'%':'—';
+ const set=(id,v)=>{const el=document.getElementById(id); if(el) el.innerHTML=v;};
+ set('asrG',money(g)); set('asrGP',pct(g)); set('asrN',money(n)); set('asrNP',pct(n)); }
+function asrSave(i){ const r=SPY_ROWS[i], E=window._asrEdit;
+ const swNum=(E.sw||'').split(' ')[0].trim();
+ if(swNum && !SLS_VALID.includes(swNum)){ toast('Split-with salesman "'+swNum+'" is not a valid salesperson — correction not saved (inline validation per ASR PRD)','warn'); return; }
+ if([E.sale,E.cost,E.fin,E.ins,E.com,E.valu].some(v=>isNaN(v))){ toast('Amounts must be numeric (cents allowed)','warn'); return; }
+ Object.assign(r,{sale:E.sale,cost:E.cost,fin:E.fin,ins:E.ins,com:E.com,sls:E.sls,acct:E.acct,stock:E.stock,trade:E.trade,valu:E.valu,cust:E.cust,sw:E.sw});
+ S.adjustLog.push('07/21/2026 — gina.jordan corrected '+r.ref+' via ASR · SPY reflects it on next run');
+ toast('Correction saved — derived values refreshed; SPY picks it up on its next run (audit logged)','ok');
+ closeOvNow(); render(); }
+function asrDelete(i){ const r=SPY_ROWS[i];
+ modal(`<div class="mh">Delete record ${r.ref}?<button class="x" onclick="closeOvNow()">✕</button></div>
+ <div class="mb"><p>This is a <b>soft delete</b>: the record is excluded from productivity reports but kept and restorable from the ASR results (with "Include deleted" on).</p></div>
+ <div class="mf"><button class="btn sec" onclick="closeOvNow()">Keep record</button>
+  <button class="btn pri" style="background:var(--bad)" onclick="SPY_ROWS[${i}].del='07/21/2026';S.adjustLog.push('07/21/2026 — gina.jordan soft-deleted ${r.ref} via ASR');toast('Record soft-deleted — excluded from SPY until restored','ok');closeOvNow();render()">Delete record</button></div>`); }
+function asrRestore(i){ const r=SPY_ROWS[i]; r.del=null;
+ S.adjustLog.push('07/21/2026 — gina.jordan restored '+r.ref+' via ASR');
+ toast('Record restored — included in productivity reporting again','ok'); render(); }
+/* SPY row Adjust now opens the full ASR correction drawer */
+function spyAdjust(i){ asrDetail(i); }
+render(); /* re-render now that all route modules (create, bmk, asr) are registered — covers direct deep-links */
+</script>
+
+</body>
+</html>
