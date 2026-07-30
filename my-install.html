@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MyInstall · Admin Config Tool — Author → Review (Stitched Prototype)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   HOST SHELL
+
+   This file owns no UI of its own beyond one demo switcher. The two
+   prototypes stay authoritative and unmodified in substance:
+
+     question-creation-wizard_updated.html   Question Bank + Create wizard
+     manager-review.html                     Review Queue + Review Canvas
+
+   Both render the same Unify header and left nav from the same tokens, so
+   swapping frames reads as ordinary navigation rather than a demo jump.
+   Each frame keeps its own 1728×997 canvas and its own fit() scaling — the
+   host deliberately does not scale anything, which is why the frames are
+   left at full viewport size and switched with `visibility` (display:none
+   would collapse their layout and make fit() compute a zero scale).
+
+   Serve it (python3 -m http.server 8777) rather than double-clicking. The
+   protocol below is postMessage-only — no contentDocument access — so file://
+   has a chance of working, but localhost is the tested path.
+
+   KNOWN LIMIT — a question authored in the wizard carries into the Review tab,
+   the diff, the impact figures, the approver roster, the queue row and every
+   outcome. It does NOT carry into the Deliberation tab on the AI-flagged
+   branch: that thread (D. Wang's reject reason, D. Chen's QB-1042 comment, the
+   87%-similar compare card) is hand-authored prose matched to the go-live
+   scenario, and it is left stock rather than half-rewritten. Read it as
+   "what a bank deliberation looks like", not as this question's discussion.
+   ===================================================================== */
+:root{
+  --primary-500:#196FE1;
+  --font:'Roboto',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#525659;font-family:var(--font);}
+
+.frame{position:fixed;inset:0;width:100%;height:100%;border:0;
+  visibility:hidden;pointer-events:none;}
+.frame.on{visibility:visible;pointer-events:auto;}
+
+/* Demo scaffold — same dark pill grammar as the in-prototype state switchers,
+   and stacked above them bottom-centre for the same reason they live there:
+   every other edge of a 1728×997 canvas carries real controls. 96px clears
+   both switcher rows of the author-notification gallery, the review canvas's
+   decision bar and its Approve button, and the bank's pagination. */
+.surface-switch{position:fixed;left:50%;transform:translateX(-50%);bottom:96px;z-index:300;
+  display:flex;align-items:center;gap:2px;background:rgba(20,20,20,.92);
+  border:1px solid rgba(255,255,255,.14);border-radius:9px;padding:4px 5px;
+  box-shadow:0 6px 20px rgba(0,0,0,.35);}
+.surface-switch .lbl{color:#8f8f8f;font-size:10px;font-weight:500;padding:0 8px 0 6px;
+  text-transform:uppercase;letter-spacing:.6px;}
+.surface-switch button{background:none;border:none;color:#d0d0d0;font-family:var(--font);
+  font-size:11px;font-weight:500;padding:5px 11px;border-radius:6px;cursor:pointer;}
+.surface-switch button:hover{color:#fff;}
+.surface-switch button.on{background:var(--primary-500);color:#fff;}
+.surface-switch .seat{color:#8f8f8f;font-size:10px;font-weight:500;padding:0 6px 0 10px;
+  border-left:1px solid rgba(255,255,255,.14);margin-left:4px;letter-spacing:.4px;}
+.surface-switch .seat b{color:#fff;font-weight:500;}
+</style>
+</head>
+<body>
+
+<iframe id="fWizard" class="frame on" src="question-creation-wizard_updated.html" title="Question Bank and Create Question wizard"></iframe>
+<iframe id="fReview" class="frame"    src="manager-review.html"                  title="Review Queue and Manager Review canvas"></iframe>
+
+<div class="surface-switch">
+  <span class="lbl">Surface</span>
+  <button data-surface="wizard" class="on">Question Bank</button>
+  <button data-surface="review">Review Queue</button>
+  <span class="seat" id="seat">Seat: <b>S. Gandhi</b> · author</span>
+</div>
+
+<script>
+/* =====================================================================
+   MESSAGE ROUTER
+
+   Protocol (both directions, always `{mi:1,type,payload}`):
+
+     frame → host   ready       {surface}      bridge is live
+                    goto        {surface, open?}  cross to the other surface
+                    submitted   {question payload} wizard submitted a question
+                    role        {role}         which seat this surface is showing
+
+     host → frame   submitted   forwarded to the review frame
+                    open-wizard open the Create Question modal
+                    open-authored  open the injected queue row
+                    show        this surface is now visible
+
+   postMessage is used rather than reaching into contentDocument so the whole
+   thing also works over file:// where frames are cross-origin.
+   ===================================================================== */
+const FRAMES={
+  wizard:{el:document.getElementById('fWizard'), ready:false, queue:[]},
+  review:{el:document.getElementById('fReview'), ready:false, queue:[]},
+};
+const SEATS={
+  author:  'Seat: <b>S. Gandhi</b> · author',
+  reviewer:'Seat: <b>J. Park</b> · product owner (reviewer)',
+};
+let current='wizard';
+
+function send(surface,type,payload){
+  const f=FRAMES[surface]; if(!f) return;
+  if(!f.ready){ f.queue.push([type,payload]); return; }   // bridge not up yet
+  f.el.contentWindow.postMessage({mi:1,type,payload},'*');
+}
+function show(surface){
+  if(!FRAMES[surface]) return;
+  current=surface;
+  Object.keys(FRAMES).forEach(k=>FRAMES[k].el.classList.toggle('on',k===surface));
+  document.querySelectorAll('[data-surface]').forEach(b=>
+    b.classList.toggle('on', b.dataset.surface===surface));
+  seat(surface==='wizard' ? 'author' : 'reviewer');
+  send(surface,'show',{});
+}
+function seat(role){
+  document.getElementById('seat').innerHTML = SEATS[role] || SEATS.author;
+}
+
+document.querySelectorAll('[data-surface]').forEach(b=>
+  b.onclick=()=>show(b.dataset.surface));
+
+window.addEventListener('message',e=>{
+  const m=e.data; if(!m||m.mi!==1) return;
+  const from=m.from;
+
+  if(m.type==='ready'){
+    const f=FRAMES[from]; if(!f) return;
+    f.ready=true;
+    f.queue.splice(0).forEach(([t,p])=>send(from,t,p));
+    return;
+  }
+
+  if(m.type==='goto'){
+    const to=m.payload&&m.payload.surface;
+    if(!FRAMES[to]) return;
+    show(to);
+    /* Deep links: cross AND land on the right screen in one click. */
+    if(m.payload.open==='authored') send(to,'open-authored',{});
+    if(m.payload.open==='wizard')   send(to,'open-wizard',{});
+    return;
+  }
+
+  if(m.type==='submitted'){
+    /* The queue row exists the moment the wizard's submit succeeds, whether or
+       not the viewer crosses over — the reviewer's world moved on its own. */
+    send('review','submitted',m.payload);
+    return;
+  }
+
+  if(m.type==='role'){
+    /* The review prototype's outcome screen is the AUTHOR's Question Bank, so
+       the seat readout follows the frame's own reported role, not the surface. */
+    if(from===current) seat(m.payload && m.payload.role);
+    return;
+  }
+});
+</script>
+</body>
+</html>
