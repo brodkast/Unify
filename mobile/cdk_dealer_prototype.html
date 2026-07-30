@@ -1,0 +1,2283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Narrated Write-Up — Interactive Concept</title>
+<style>
+  :root{
+    --black:#0b0b0c;
+    --blue:#1857c9;
+    --blue-dark:#123f96;
+    --blue-bg:#eaf1ff;
+    --green:#1f9d55;
+    --green-bg:#e7f7ee;
+    --amber:#c9791a;
+    --amber-bg:#fdf1de;
+    --red:#d93a3a;
+    --gray:#6b7280;
+    --gray-light:#9aa0aa;
+    --border:#e7e8ec;
+    --card:#ffffff;
+    --page:#eef0f4;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--page);
+    color:var(--black);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:28px 12px 60px;
+  }
+  .stage-header{
+    width:100%;
+    max-width:520px;
+    text-align:center;
+    margin-bottom:18px;
+  }
+  .stage-header h1{
+    font-size:17px;
+    font-weight:700;
+    margin:0 0 4px;
+  }
+  .stage-header p{
+    font-size:12.5px;
+    color:var(--gray);
+    margin:0 0 12px;
+  }
+  .step-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    margin-bottom:6px;
+  }
+  #step-label{
+    font-size:11.5px;
+    font-weight:600;
+    color:var(--blue);
+    background:var(--blue-bg);
+    padding:4px 10px;
+    border-radius:20px;
+  }
+  .restart-btn{
+    font-size:11.5px;
+    font-weight:600;
+    color:var(--gray);
+    background:#fff;
+    border:1px solid var(--border);
+    padding:4px 10px;
+    border-radius:20px;
+    cursor:pointer;
+  }
+  .restart-btn:hover{ background:#f5f5f7; }
+
+  .phone{
+    width:390px;
+    height:844px;
+    background:var(--black);
+    border-radius:52px;
+    padding:14px;
+    box-shadow:0 30px 60px rgba(0,0,0,0.25);
+    position:relative;
+  }
+  .phone-screen{
+    width:100%;
+    height:100%;
+    background:#fff;
+    border-radius:38px;
+    overflow:hidden;
+    position:relative;
+  }
+  .notch{
+    position:absolute;
+    top:14px;
+    left:50%;
+    transform:translateX(-50%);
+    width:120px;
+    height:22px;
+    background:var(--black);
+    border-radius:14px;
+    z-index:50;
+  }
+  .home-indicator{
+    position:absolute;
+    bottom:8px;
+    left:50%;
+    transform:translateX(-50%);
+    width:120px;
+    height:4px;
+    background:rgba(0,0,0,0.7);
+    border-radius:3px;
+    z-index:50;
+  }
+  .home-indicator.light{ background:rgba(255,255,255,0.85); }
+
+  .screen{
+    position:absolute;
+    inset:0;
+    display:none;
+    flex-direction:column;
+    background:#fff;
+  }
+  .screen.active{ display:flex; }
+
+  .statusbar{
+    height:44px;
+    flex-shrink:0;
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    padding:0 24px 6px;
+    font-size:14px;
+    font-weight:600;
+  }
+  .statusbar.dark{ background:var(--black); color:#fff; }
+  .statusbar.light{ background:#fff; color:var(--black); }
+  .statusbar .icons{ display:flex; gap:4px; align-items:center; }
+
+  .app-header{
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 16px 14px;
+  }
+  .app-header.dark{ background:var(--black); color:#fff; }
+  .app-header.light{ background:#fff; color:var(--black); border-bottom:1px solid var(--border); }
+  .app-header h2{ font-size:19px; font-weight:700; margin:0; flex:1; }
+  .avatar{
+    width:30px;height:30px;border-radius:50%;
+    background:#fff;color:var(--black);
+    display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:700; cursor:pointer;
+  }
+  .top-actions{ display:flex; align-items:center; gap:16px; }
+  .bell-wrap{ position:relative; cursor:pointer; color:#fff; font-size:18px; display:flex; }
+  .bell-badge{
+    position:absolute; top:-6px; right:-7px; background:var(--red); color:#fff; font-size:9px; font-weight:800;
+    width:15px;height:15px;border-radius:50%; display:flex;align-items:center;justify-content:center;
+  }
+  .app-header.topbar{ justify-content:space-between; padding:8px 16px 4px; }
+  .top-brand{ display:flex; align-items:center; gap:8px; }
+  .brand-logo{ width:26px;height:26px;border-radius:7px; display:block; }
+  .brand-name{ font-size:17px; font-weight:800; color:#fff; letter-spacing:.01em; }
+  .brand-name-sm{ font-size:10.5px; font-weight:700; color:rgba(255,255,255,0.5); letter-spacing:.06em; text-transform:uppercase; }
+  .top-brand-sm{ display:flex; align-items:center; gap:5px; }
+  .brand-logo-sm{ width:16px;height:16px;border-radius:4px; display:block; }
+  .screen-title-row{ background:var(--black); padding:2px 16px 14px; flex-shrink:0; }
+  .screen-title{ color:#fff; font-size:25px; font-weight:800; margin:0; letter-spacing:-.01em; }
+  .user-menu{
+    position:absolute; top:34px; right:0; background:#fff; color:var(--black); border:1px solid var(--border);
+    border-radius:12px; box-shadow:0 10px 28px rgba(0,0,0,0.16); min-width:180px; z-index:60;
+    overflow:hidden; display:none;
+  }
+  .user-menu.open{ display:block; }
+  .back-btn{
+    background:none;border:none;color:inherit;
+    display:flex;align-items:center;cursor:pointer;padding:2px;
+  }
+
+  .scroll-area{ flex:1; overflow-y:auto; padding:14px 16px 20px; }
+  .scroll-area::-webkit-scrollbar{ display:none; }
+
+  /* Appointments screen */
+  .filter-row{ display:flex; gap:8px; padding:12px 16px 8px; align-items:center; }
+  .pill-filter{
+    border:1px solid var(--border); border-radius:20px; padding:7px 12px;
+    font-size:12.5px; font-weight:600; display:flex; align-items:center; gap:4px;
+    background:#fff;
+  }
+  .filter-spacer{ flex:1; }
+  .icon-btn{ color:var(--black); display:flex; padding:4px; }
+  .tabs-row{
+    display:flex; gap:20px; padding:6px 16px 10px; border-bottom:1px solid var(--border);
+    font-size:13px; color:var(--gray-light); font-weight:600;
+  }
+  .tabs-row .tab.active{ color:var(--black); position:relative; }
+  .tabs-row .tab.active::after{
+    content:''; position:absolute; bottom:-11px; left:0; right:0; height:2px; background:var(--black);
+  }
+  .appt-card{
+    border:1px solid var(--border); border-radius:14px; padding:12px 14px;
+    display:flex; align-items:center; margin-bottom:10px; background:#fff;
+    position:relative;
+  }
+  .appt-card.accent::before{
+    content:''; position:absolute; left:0; top:10px; bottom:10px; width:3px; background:var(--blue); border-radius:2px;
+  }
+  .appt-info{ flex:1; }
+  .appt-time{ font-size:12px; color:var(--gray); font-weight:600; margin-bottom:2px; }
+  .appt-name{ font-size:14.5px; font-weight:700; margin-bottom:2px; }
+  .appt-veh{ font-size:12px; color:var(--gray); }
+  .badge{
+    display:inline-block; font-size:10px; font-weight:700; padding:2px 7px; border-radius:10px;
+    background:var(--blue); color:#fff; margin-left:6px;
+  }
+  .btn-writeup{
+    background:var(--blue); color:#fff; border:none; border-radius:10px;
+    padding:9px 14px; font-size:12.5px; font-weight:700; cursor:pointer; white-space:nowrap;
+  }
+  .bottom-bar{
+    display:flex; gap:10px; padding:10px 16px; border-top:1px solid var(--border); flex-shrink:0;
+  }
+  .btn-flat{
+    flex:1; background:var(--blue-bg); color:var(--blue); border:none; border-radius:10px;
+    padding:10px; font-size:13px; font-weight:700; cursor:pointer;
+  }
+  .bottom-nav{
+    display:flex; background:var(--black); padding:10px 0 26px; flex-shrink:0;
+  }
+  .nav-item{ flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; color:var(--gray-light); font-size:10.5px; font-weight:600; }
+  .nav-item.active{ color:#fff; }
+
+  /* generic cards / accordion */
+  .veh-card{
+    display:flex; align-items:center; gap:10px; border:1px solid var(--border); border-radius:12px;
+    padding:10px 12px; margin-bottom:12px;
+  }
+  .veh-card .car-ic{
+    width:44px;height:32px;background:var(--page);border-radius:8px;
+    display:flex;align-items:center;justify-content:center;color:var(--gray);
+  }
+  .veh-card .veh-t{ font-size:13.5px; font-weight:700; }
+  .veh-card .veh-s{ font-size:11.5px; color:var(--gray); }
+  .veh-card .chev{ margin-left:auto; color:var(--gray-light); }
+
+  .progress-wrap{ padding:2px 16px 12px; }
+  .progress-track{
+    height:6px; background:var(--border); border-radius:4px; overflow:hidden; margin-bottom:5px;
+  }
+  .progress-fill{ height:100%; background:var(--blue); border-radius:4px; }
+  .progress-label{ font-size:11px; color:var(--gray); text-align:right; }
+
+  .banner{
+    border-radius:12px; padding:11px 13px; font-size:12.5px; font-weight:600; margin-bottom:12px;
+    display:flex; gap:8px; align-items:flex-start; line-height:1.4;
+  }
+  .banner.green{ background:var(--green-bg); color:#166a3c; }
+  .banner.gray{ background:var(--page); color:var(--gray); }
+  .banner.amber{ background:var(--amber-bg); color:#8a570f; }
+  .banner b{ font-weight:700; }
+
+  .acc-item{ border-bottom:1px solid var(--border); }
+  .acc-head{
+    display:flex; align-items:center; padding:13px 2px; cursor:pointer; gap:8px;
+  }
+  .acc-head .title{ font-size:14.5px; font-weight:700; flex:1; }
+  .status-tag{ font-size:11.5px; font-weight:700; display:flex; align-items:center; gap:4px; }
+  .status-tag.ready{ color:var(--green); }
+  .status-tag.partial{ color:var(--gray); }
+  .status-tag.empty{ color:var(--gray-light); }
+  .acc-head .chev{ color:var(--gray-light); transition:transform .15s; margin-left:4px; }
+  .acc-item.open .acc-head .chev{ transform:rotate(180deg); }
+  .acc-body{ display:none; padding:0 2px 16px; }
+  .acc-item.open .acc-body{ display:block; }
+
+  .field{
+    border:1px solid var(--border); border-radius:10px; padding:10px 12px; margin-bottom:10px; position:relative;
+  }
+  .field label{ font-size:10.5px; color:var(--gray); display:block; margin-bottom:2px; }
+  .field .val{ font-size:14px; font-weight:600; }
+  .field-row{ display:flex; align-items:center; gap:8px; }
+  .field-row .field{ flex:1; margin-bottom:0; }
+  .radio-dot{
+    width:18px;height:18px;border-radius:50%;border:2px solid var(--border); flex-shrink:0;
+  }
+  .radio-dot.on{ border-color:var(--blue); position:relative; }
+  .radio-dot.on::after{
+    content:''; position:absolute; inset:3px; background:var(--blue); border-radius:50%;
+  }
+  .mini-link{ color:var(--blue); font-size:12px; font-weight:700; }
+
+  .mic-tag{
+    display:inline-flex; align-items:center; gap:3px; font-size:9.5px; font-weight:700;
+    color:var(--blue); background:var(--blue-bg); padding:2px 6px; border-radius:8px; margin-left:6px;
+    cursor:pointer; vertical-align:middle;
+  }
+  .flag-tag{
+    display:inline-flex; align-items:center; gap:3px; font-size:9.5px; font-weight:700;
+    color:var(--amber); background:var(--amber-bg); padding:2px 6px; border-radius:8px; margin-left:6px;
+    cursor:pointer; vertical-align:middle;
+  }
+
+  .insp-row{
+    display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--page);
+    font-size:12.5px;
+  }
+  .insp-row:last-child{ border-bottom:none; }
+  .insp-label{ font-weight:600; flex:1; padding-right:8px; }
+  .insp-val{ display:flex; align-items:center; gap:4px; font-weight:700; }
+  .dot-r{ width:8px;height:8px;border-radius:50%; }
+  .dot-r.green{ background:var(--green); }
+  .dot-r.yellow{ background:#e0a418; }
+  .dot-r.red{ background:var(--red); }
+  .insp-group-title{ font-size:12px; font-weight:700; color:var(--gray); margin:10px 0 2px; }
+
+  .media-row{ display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
+  .media-tile{
+    width:64px;height:64px;border-radius:9px;background:linear-gradient(135deg,#c9d6e8,#9fb3d1);
+    display:flex;align-items:center;justify-content:center;position:relative;
+  }
+  .media-tile.video::after{
+    content:''; position:absolute; inset:0; border-radius:9px; background:rgba(0,0,0,0.15);
+  }
+  textarea.notes{
+    width:100%; border:1px solid var(--border); border-radius:10px; padding:10px 12px;
+    font-size:13px; font-family:inherit; resize:none; height:56px; color:var(--black);
+  }
+
+  .concern-card{
+    border:1px solid var(--border); border-radius:10px; padding:10px 12px; margin-bottom:10px;
+  }
+  .concern-tags{ display:flex; gap:4px; margin-bottom:4px; }
+  .tag-chip{ font-size:9.5px; font-weight:700; background:var(--page); color:var(--gray); padding:1px 6px; border-radius:6px; }
+  .concern-text{ font-size:13px; font-weight:500; }
+  .concern-price{ font-size:12px; color:var(--gray); margin-top:2px; }
+
+  .btn-outline-block{
+    width:100%; border:1px solid var(--blue); color:var(--blue); background:#fff;
+    border-radius:10px; padding:11px; font-size:13px; font-weight:700; margin-bottom:8px; cursor:pointer;
+  }
+
+  .charges-bar{
+    display:flex; align-items:center; gap:12px; padding:12px 16px; border-top:1px solid var(--border); flex-shrink:0;
+  }
+  .charges-txt{ }
+  .charges-amt{ font-size:16px; font-weight:800; }
+  .charges-lbl{ font-size:10.5px; color:var(--gray); }
+  .btn-primary-block{
+    flex:1; background:var(--blue); color:#fff; border:none; border-radius:11px;
+    padding:13px; font-size:14px; font-weight:700; cursor:pointer;
+  }
+  .btn-primary-block:disabled{ background:var(--border); color:var(--gray-light); }
+
+  /* Intro screen */
+  .intro-wrap{ padding:6px 4px 4px; }
+  .new-pill{
+    display:inline-block; background:var(--blue); color:#fff; font-size:10.5px; font-weight:800;
+    letter-spacing:.03em; padding:3px 9px; border-radius:6px; margin-bottom:10px;
+  }
+  .intro-h{ font-size:21px; font-weight:800; line-height:1.25; margin:0 0 8px; }
+  .intro-p{ font-size:13px; color:var(--gray); line-height:1.5; margin:0 0 18px; }
+  .check-preview-row{
+    display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--page);
+  }
+  .check-preview-row .ic{
+    width:30px;height:30px;border-radius:8px;background:var(--blue-bg);color:var(--blue);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .check-preview-row .lbl{ font-size:13px; font-weight:600; flex:1; }
+  .outline-circle{ width:18px;height:18px;border-radius:50%;border:2px solid var(--border); }
+
+  .cta-fixed{ padding:14px 16px 18px; flex-shrink:0; }
+  .btn-cta{
+    width:100%; background:var(--blue); color:#fff; border:none; border-radius:13px;
+    padding:15px; font-size:15px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:8px;
+    cursor:pointer;
+  }
+  .link-center{ text-align:center; font-size:12.5px; color:var(--gray); margin-top:12px; text-decoration:underline; cursor:pointer; }
+
+  /* Recording screen */
+  .rec-screen{ background:#111; position:relative; height:100%; }
+  .rec-bg{
+    position:absolute; inset:0; z-index:0;
+    background:radial-gradient(ellipse at 50% 40%, #2a2f3a 0%, #14171d 70%);
+  }
+  .rec-video{
+    position:absolute; inset:0; z-index:1;
+    width:100%; height:100%; object-fit:cover; background:#000;
+  }
+  .rec-top{
+    position:relative; z-index:2; display:flex; align-items:center; justify-content:space-between;
+    padding:56px 16px 0;
+  }
+  .rec-pill{
+    display:flex; align-items:center; gap:6px; background:rgba(217,58,58,0.9); color:#fff;
+    font-size:12px; font-weight:800; padding:5px 11px; border-radius:20px;
+  }
+  .rec-dot{ width:8px;height:8px;border-radius:50%; background:#fff; animation:blink 1s infinite; }
+  @keyframes blink{ 0%,100%{opacity:1;} 50%{opacity:.25;} }
+  .rec-x, .rec-skip{ color:#fff; background:rgba(255,255,255,0.12); border:none; border-radius:16px; padding:6px 12px; font-size:12px; font-weight:700; cursor:pointer; }
+
+  .rec-checklist{
+    position:absolute; z-index:2; top:110px; right:14px; display:flex; flex-direction:column; gap:8px; align-items:flex-end;
+  }
+  .rec-chip{
+    display:flex; align-items:center; gap:6px; background:rgba(255,255,255,0.12); color:#fff;
+    font-size:11.5px; font-weight:600; padding:6px 10px; border-radius:14px; transition:all .25s;
+  }
+  .rec-chip .chk{
+    width:16px;height:16px;border-radius:50%; border:2px solid rgba(255,255,255,0.5); flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .rec-chip.done{ background:rgba(31,157,85,0.85); }
+  .rec-chip.done .chk{ border-color:#fff; background:#fff; color:var(--green); }
+
+  .rec-wave{
+    position:absolute; z-index:2; left:0; right:0; bottom:190px; display:flex; align-items:flex-end; justify-content:center; gap:3px; height:30px;
+  }
+  .rec-wave span{
+    width:3px; background:#4c9fff; border-radius:2px; animation:wave 1s ease-in-out infinite;
+  }
+  @keyframes wave{ 0%,100%{ height:6px; } 50%{ height:26px; } }
+
+  .rec-caption{
+    position:absolute; z-index:2; left:16px; right:16px; bottom:126px;
+    background:rgba(0,0,0,0.55); border-radius:12px; padding:12px 14px; color:#fff;
+    font-size:13px; line-height:1.45; min-height:44px;
+  }
+  .rec-timer{ position:absolute; z-index:2; left:16px; bottom:170px; color:#fff; font-size:11.5px; font-weight:700; opacity:.8; }
+
+  .rec-stopwrap{ position:absolute; z-index:2; bottom:34px; left:0; right:0; display:flex; justify-content:center; }
+  .rec-stop{
+    width:66px;height:66px;border-radius:50%; background:#fff; border:4px solid rgba(255,255,255,0.35);
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+  }
+  .rec-stop-inner{ width:26px;height:26px;border-radius:6px; background:var(--red); }
+
+  /* Processing */
+  .proc-wrap{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0 30px; }
+  .spinner{
+    width:52px;height:52px;border-radius:50%; border:4px solid var(--blue-bg); border-top-color:var(--blue);
+    animation:spin 0.9s linear infinite; margin-bottom:22px;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .proc-title{ font-size:16px; font-weight:800; margin-bottom:22px; text-align:center; }
+  .proc-steps{ width:100%; max-width:280px; }
+  .proc-step{
+    display:flex; align-items:center; gap:10px; font-size:13px; color:var(--gray-light); font-weight:600;
+    padding:6px 0; transition:color .2s;
+  }
+  .proc-step .dot{
+    width:18px;height:18px;border-radius:50%; border:2px solid var(--border); flex-shrink:0;
+    display:flex;align-items:center;justify-content:center; color:transparent;
+  }
+  .proc-step.done{ color:var(--black); }
+  .proc-step.done .dot{ background:var(--green); border-color:var(--green); color:#fff; }
+
+  /* Chat */
+  .chat-log{ flex:1; overflow-y:auto; padding:14px 14px 6px; }
+  .msg-row{ display:flex; margin-bottom:12px; }
+  .msg-row.user{ justify-content:flex-end; }
+  .bubble{
+    max-width:78%; padding:10px 13px; border-radius:15px; font-size:13.5px; line-height:1.45;
+  }
+  .bubble.ai{ background:var(--page); color:var(--black); border-bottom-left-radius:4px; }
+  .bubble.user{ background:var(--blue); color:#fff; border-bottom-right-radius:4px; }
+  .chip-row{ display:flex; gap:8px; flex-wrap:wrap; margin:0 0 14px 2px; }
+  .reply-chip{
+    background:#fff; border:1.5px solid var(--blue); color:var(--blue); font-weight:700; font-size:12.5px;
+    padding:8px 13px; border-radius:16px; cursor:pointer;
+  }
+  .reply-chip:hover{ background:var(--blue-bg); }
+  .cta-chip{
+    background:var(--blue); border:1.5px solid var(--blue); color:#fff; font-weight:700; font-size:12.5px;
+    padding:9px 15px; border-radius:16px; cursor:pointer;
+  }
+  .chat-inputbar{
+    display:flex; align-items:center; gap:8px; padding:10px 14px; border-top:1px solid var(--border); flex-shrink:0;
+  }
+  .chat-inputbar .mic-circ{
+    width:32px;height:32px; border-radius:50%; background:var(--blue-bg); color:var(--blue);
+    display:flex;align-items:center;justify-content:center; flex-shrink:0;
+  }
+  .chat-inputbar input{
+    flex:1; border:1px solid var(--border); border-radius:20px; padding:9px 14px; font-size:13px; background:var(--page);
+  }
+  .chat-inputbar .send-circ{
+    width:32px;height:32px; border-radius:50%; background:var(--border); color:var(--gray-light);
+    display:flex;align-items:center;justify-content:center; flex-shrink:0;
+  }
+
+  .toast{
+    position:absolute; left:50%; bottom:100px; transform:translateX(-50%);
+    background:var(--black); color:#fff; font-size:12.5px; font-weight:600;
+    padding:10px 18px; border-radius:20px; opacity:0; pointer-events:none; transition:opacity .25s; z-index:100;
+    display:flex; align-items:center; gap:6px;
+  }
+  .toast.show{ opacity:1; }
+
+  .tooltip{
+    position:fixed; background:var(--black); color:#fff; font-size:11px; font-weight:600;
+    padding:6px 10px; border-radius:8px; opacity:0; pointer-events:none; transition:opacity .15s; z-index:200; max-width:180px;
+  }
+  .tooltip.show{ opacity:1; }
+
+  /* ---------- Global tab bar ---------- */
+  .tab-bar{
+    position:absolute; left:0; right:0; bottom:0; z-index:40;
+    display:flex; background:var(--black); padding:9px 2px 24px;
+  }
+  .tab-bar.hidden{ display:none; }
+  .tab-item{
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
+    color:var(--gray-light); font-size:10px; font-weight:600; cursor:pointer; padding:2px 0;
+  }
+  .tab-item .tab-ic{ font-size:18px; line-height:1; opacity:.65; filter:grayscale(1); }
+  .tab-item.active{ color:#fff; }
+  .tab-item.active .tab-ic{ opacity:1; filter:none; }
+  .pad-tabbar{ padding-bottom:92px !important; }
+
+  /* ---------- Overflow menu (My Day) ---------- */
+  .menu-wrap{ position:relative; }
+  .overflow-menu{
+    position:absolute; top:34px; right:0; background:#fff; border:1px solid var(--border);
+    border-radius:12px; box-shadow:0 10px 28px rgba(0,0,0,0.16); min-width:180px; z-index:60;
+    overflow:hidden; display:none;
+  }
+  .overflow-menu.open{ display:block; }
+  .overflow-item{ padding:12px 15px; font-size:13px; font-weight:600; cursor:pointer; border-bottom:1px solid var(--page); }
+  .overflow-item:last-child{ border-bottom:none; }
+  .overflow-item:hover{ background:var(--page); }
+
+  /* ---------- Recents / Workflows list rows ---------- */
+  .section-label{
+    font-size:11px; font-weight:700; color:var(--gray-light); letter-spacing:.05em;
+    text-transform:uppercase; margin:4px 0 10px; text-align:center;
+  }
+  .section-label.left{ text-align:left; margin-top:20px; }
+  .section-label.icon{ display:flex; align-items:center; gap:7px; }
+  .sec-badge{
+    display:inline-flex; align-items:center; justify-content:center; width:18px;height:18px;
+    border-radius:5px; color:#fff; font-size:9px; font-weight:800; flex-shrink:0;
+  }
+  .list-row{
+    display:flex; align-items:center; gap:12px; padding:12px 4px; border-bottom:1px solid var(--page); cursor:pointer;
+  }
+  .list-row:last-child{ border-bottom:none; }
+  .row-badge{
+    width:34px;height:34px;border-radius:9px; display:flex;align-items:center;justify-content:center;
+    color:#fff; font-size:12px; font-weight:800; flex-shrink:0;
+  }
+  .row-badge.blue{ background:#2f7bf0; }
+  .row-badge.orange{ background:#f5a623; }
+  .row-badge.purple{ background:#8b5cf6; }
+  .row-badge.gray{ background:#8a93a3; font-size:14px; }
+  .row-text{ flex:1; min-width:0; }
+  .row-title{ font-size:14px; font-weight:700; }
+  .row-sub{ font-size:12px; color:var(--gray); margin-top:1px; }
+  .row-dot{ width:8px;height:8px;border-radius:50%; background:#f5871f; flex-shrink:0; }
+  .row-chev{ color:var(--gray-light); flex-shrink:0; font-size:18px; }
+
+  /* ---------- AIVA ---------- */
+  .aiva-wrap{
+    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:0 32px;
+  }
+  .aiva-avatar{
+    width:64px;height:64px;border-radius:50%; background:linear-gradient(135deg,#6a8dff,#8b5cf6);
+    color:#fff; font-size:26px; display:flex;align-items:center;justify-content:center; margin-bottom:16px;
+  }
+  .aiva-title{ font-size:18px; font-weight:800; margin-bottom:8px; }
+  .aiva-sub{ font-size:13px; color:var(--gray); line-height:1.5; margin-bottom:16px; }
+  .aiva-note{
+    font-size:11.5px; color:var(--gray-light); background:var(--page); padding:6px 12px;
+    border-radius:20px; font-weight:600;
+  }
+
+  /* ---------- Messages ---------- */
+  .conv-row{ display:flex; align-items:center; gap:12px; padding:12px 4px; border-bottom:1px solid var(--page); cursor:pointer; }
+  .conv-row:last-child{ border-bottom:none; }
+  .conv-avatar{
+    width:40px;height:40px;border-radius:50%; color:#fff; font-size:13px; font-weight:800;
+    display:flex;align-items:center;justify-content:center; flex-shrink:0;
+  }
+  .conv-text{ flex:1; min-width:0; }
+  .conv-top{ display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
+  .conv-name{ font-size:14px; font-weight:700; }
+  .conv-time{ font-size:11px; color:var(--gray-light); flex-shrink:0; }
+  .conv-sub{ font-size:12px; color:var(--gray); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .conv-unread{ width:8px;height:8px;border-radius:50%; background:var(--blue); flex-shrink:0; margin-left:4px; }
+
+  /* ---------- Notifications ---------- */
+  .notif-row{ display:flex; align-items:flex-start; gap:12px; padding:12px 4px; border-bottom:1px solid var(--page); cursor:pointer; }
+  .notif-row:last-child{ border-bottom:none; }
+  .notif-ic{
+    width:36px;height:36px;border-radius:10px; display:flex;align-items:center;justify-content:center;
+    font-size:16px; flex-shrink:0;
+  }
+  .notif-text{ flex:1; min-width:0; }
+  .notif-title{ font-size:13.5px; font-weight:700; }
+  .notif-sub{ font-size:12px; color:var(--gray); margin-top:2px; }
+  .notif-time{ font-size:10.5px; color:var(--gray-light); margin-top:4px; }
+  .notif-dot{ width:8px;height:8px;border-radius:50%; background:var(--blue); flex-shrink:0; margin-top:5px; }
+
+  /* ---------- My Day: KPI carousel ---------- */
+  .kpi-scroll{
+    display:flex; gap:10px; overflow-x:auto; -webkit-overflow-scrolling:touch;
+    margin:-14px -16px 14px; padding:14px 16px 6px;
+  }
+  .kpi-scroll::-webkit-scrollbar{ display:none; }
+  .kpi-card{
+    flex:0 0 auto; width:200px; background:#fff; border:1px solid var(--border);
+    border-radius:14px; padding:13px;
+  }
+  .kpi-head{
+    display:flex; justify-content:space-between; align-items:center; font-size:9.5px; font-weight:800;
+    letter-spacing:.04em; color:var(--gray); text-transform:uppercase; margin-bottom:12px;
+  }
+  .kpi-head .arrow{ color:var(--gray-light); font-size:13px; }
+
+  .donut-wrap{ display:flex; align-items:center; gap:10px; }
+  .donut{
+    position:relative; width:64px;height:64px;border-radius:50%; flex-shrink:0;
+    background:conic-gradient(#2f6fea 0% 51.1%, #1f9d55 51.1% 83%, #f5a623 83% 100%);
+  }
+  .donut::before{ content:''; position:absolute; inset:8px; background:#fff; border-radius:50%; }
+  .donut-center{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .donut-num{ font-size:16px; font-weight:800; }
+  .donut-lbl{ font-size:7px; color:var(--gray-light); font-weight:700; letter-spacing:.03em; }
+
+  .kpi-legend{ flex:1; display:flex; flex-direction:column; gap:6px; min-width:0; }
+  .legend-row{ display:flex; align-items:center; gap:5px; font-size:10px; }
+  .legend-dot{ width:6px;height:6px;border-radius:50%; flex-shrink:0; }
+  .legend-lbl{ flex:1; color:var(--gray); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .legend-val{ font-weight:700; flex-shrink:0; }
+
+  .kpi-big{ font-size:24px; font-weight:800; line-height:1; margin-bottom:6px; }
+  .kpi-pill{ display:inline-flex; align-items:center; gap:3px; font-size:10px; font-weight:700; padding:2px 7px; border-radius:8px; margin-bottom:6px; }
+  .kpi-pill.up{ background:var(--green-bg); color:#166a3c; }
+  .kpi-pill.down{ background:#fde7e7; color:#a3282c; }
+  .kpi-sub{ font-size:10.5px; color:var(--gray); }
+  .sparkline{ width:100%; height:32px; margin-top:6px; display:block; }
+
+  .tech-row{ margin-bottom:8px; }
+  .tech-row:last-child{ margin-bottom:0; }
+  .tech-top{ display:flex; justify-content:space-between; gap:6px; font-size:10.5px; margin-bottom:3px; }
+  .tech-name{ font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .tech-val{ color:var(--gray); flex-shrink:0; }
+  .tech-bar-track{ height:5px; background:var(--page); border-radius:3px; overflow:hidden; }
+  .tech-bar-fill{ height:100%; border-radius:3px; }
+
+  /* ---------- My Day: segmented control + condensed agenda ---------- */
+  .segmented{ display:flex; background:var(--page); border-radius:10px; padding:3px; margin:0 0 12px; gap:2px; }
+  .segment{ flex:1; text-align:center; padding:7px 2px; font-size:12px; font-weight:600; color:var(--gray); border-radius:8px; cursor:pointer; }
+  .segment.active{ background:#fff; color:var(--black); font-weight:700; box-shadow:0 1px 3px rgba(0,0,0,0.15); }
+
+  .appt-card.condensed{ padding:9px 12px; margin-bottom:8px; }
+  .appt-card.condensed .appt-name{ font-size:13px; margin-bottom:1px; }
+  .appt-card.condensed .appt-veh{ font-size:11px; }
+  .appt-card.condensed .appt-time{ font-size:10.5px; margin-bottom:1px; }
+  .appt-card.condensed .btn-writeup{ padding:7px 11px; font-size:11.5px; }
+  .agenda-label{ font-size:11px; font-weight:700; color:var(--gray-light); letter-spacing:.04em; text-transform:uppercase; margin:2px 2px 8px; }
+
+  /* ---------- Repair Orders list ---------- */
+  .ro-card{
+    position:relative; border:1px solid var(--border); border-radius:12px;
+    padding:11px 13px 11px 17px; margin-bottom:10px; background:#fff; cursor:pointer;
+  }
+  .ro-card::before{
+    content:''; position:absolute; left:5px; top:9px; bottom:9px; width:4px; border-radius:2px;
+    background:var(--ro-accent, transparent);
+  }
+  .ro-row{ display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
+  .ro-num{ color:var(--blue); font-size:12.5px; font-weight:700; }
+  .ro-tag{ color:var(--gray); font-size:11px; flex-shrink:0; }
+  .ro-name{ font-size:14.5px; font-weight:700; }
+  .ro-status{ font-size:11px; color:var(--gray); font-weight:600; text-align:right; flex-shrink:0; }
+  .ro-veh{ font-size:11.5px; color:var(--gray); margin-top:1px; }
+  .ro-pills{ display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; }
+  .ro-pill{ font-size:10px; font-weight:600; color:var(--gray); border:1px solid var(--border); border-radius:7px; padding:3px 7px; }
+  .ro-msg-row{ display:flex; justify-content:flex-end; margin-top:6px; }
+  .ro-msg-badge{ position:relative; font-size:15px; color:var(--gray-light); }
+  .ro-msg-count{
+    position:absolute; top:-7px; right:-9px; background:var(--red); color:#fff; font-size:9px; font-weight:800;
+    width:15px;height:15px;border-radius:50%; display:flex;align-items:center;justify-content:center;
+  }
+  .search-row{ display:none; align-items:center; gap:8px; padding:0 16px 10px; }
+  .search-row.open{ display:flex; }
+  .search-row input{
+    flex:1; border:1px solid var(--border); border-radius:20px; padding:8px 14px; font-size:13px; background:var(--page);
+  }
+  .ro-legend{ display:flex; gap:12px; flex-wrap:wrap; padding:0 2px 12px; font-size:10.5px; color:var(--gray); }
+  .ro-legend-item{ display:flex; align-items:center; gap:4px; }
+  .ro-legend-dot{ width:8px;height:8px;border-radius:50%; }
+
+  /* ---------- AIVA chat UI (also used by the Write-Up completion chat) ---------- */
+  .aiva-header{
+    display:flex; align-items:center; gap:2px; padding:14px 16px 12px; background:#fff;
+    border-bottom:1px solid var(--border); flex-shrink:0;
+  }
+  .aiva-header .back-btn{ color:var(--black); margin-right:6px; }
+  .aiva-wordmark{ font-size:15px; font-weight:800; letter-spacing:.18em; color:var(--black); }
+  .aiva-beta{
+    background:#e6296f; color:#fff; font-size:8.5px; font-weight:800; padding:2px 6px;
+    border-radius:5px; letter-spacing:.02em; margin-left:8px;
+  }
+  .aiva-header .filter-spacer{ flex:1; }
+  .aiva-icon{ color:var(--gray); font-size:16px; margin-left:14px; cursor:pointer; }
+
+  .aiva-chat-log{ flex:1; overflow-y:auto; padding:16px 16px 4px; }
+  .aiva-msg{ display:flex; gap:10px; margin-bottom:4px; }
+  .aiva-avatar-sm{
+    width:28px;height:28px;border-radius:50%; background:#0d3b34; color:#fff;
+    display:flex;align-items:center;justify-content:center; font-size:13px; flex-shrink:0;
+  }
+  .aiva-msg-meta{ font-size:11px; color:var(--gray-light); font-weight:600; margin-bottom:6px; }
+  .aiva-msg-text{ font-size:14px; line-height:1.6; color:var(--black); margin-bottom:14px; }
+  .aiva-user-row{ display:flex; justify-content:flex-end; margin:0 0 14px; }
+  .aiva-user-bubble{
+    background:var(--blue); color:#fff; padding:10px 14px; border-radius:15px; border-bottom-right-radius:4px;
+    font-size:13.5px; max-width:80%; line-height:1.4;
+  }
+  .aiva-suggest{
+    display:block; width:100%; text-align:left; background:#fff; border:1px solid var(--border);
+    border-radius:12px; padding:12px 14px; font-size:13px; font-weight:700; color:var(--blue);
+    margin-bottom:9px; cursor:pointer;
+  }
+  .aiva-suggest:hover{ background:var(--blue-bg); }
+
+  .aiva-inputbar{ display:flex; align-items:center; gap:10px; padding:8px 16px; border-top:1px solid var(--border); flex-shrink:0; }
+  .aiva-input-pill{ flex:1; position:relative; }
+  .aiva-input-pill input{
+    width:100%; border:1px solid var(--border); border-radius:22px; padding:10px 38px 10px 16px;
+    font-size:13px; background:#fff;
+  }
+  .aiva-input-pill .mic-in{ position:absolute; right:12px; top:50%; transform:translateY(-50%); color:var(--gray-light); font-size:14px; }
+  .aiva-send{ color:var(--blue); font-size:19px; flex-shrink:0; cursor:pointer; }
+
+  .aiva-footer{ padding:2px 16px 90px; flex-shrink:0; }
+  .aiva-disclaimer{ font-size:9.5px; color:var(--gray-light); font-style:italic; text-align:center; margin-bottom:6px; }
+  .aiva-footer-links{ display:flex; justify-content:space-between; font-size:10px; font-weight:600; }
+  .aiva-footer-links span{ color:var(--blue); cursor:pointer; }
+  .aiva-footer-links .cap-link{ display:inline-flex; align-items:center; gap:3px; }
+
+  /* ---------- Persona switcher (user menu) ---------- */
+  .menu-label{
+    padding:10px 15px 2px; font-size:10px; font-weight:800; color:var(--gray-light);
+    text-transform:uppercase; letter-spacing:.05em;
+  }
+  .persona-item{ position:relative; }
+  .persona-check{ float:right; color:var(--blue); font-weight:800; }
+  .overflow-item.persona-item:not(.active) .persona-check{ display:none; }
+  .persona-item.active{ background:var(--page); }
+
+  /* ---------- KPI card: generic line-list rows (Technician / Parts Clerk cards) ---------- */
+  .kpi-line-list{ margin-top:6px; }
+  .kpi-line{
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    padding:5px 0; font-size:12px; border-top:1px solid var(--page);
+  }
+  .kpi-line:first-child{ border-top:none; }
+  .kpi-line-lbl{ color:var(--gray); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .kpi-line-val{ font-weight:700; color:var(--black); flex-shrink:0; }
+  .kpi-status{
+    font-size:9.5px; font-weight:800; color:#fff; padding:2px 8px; border-radius:20px; flex-shrink:0;
+  }
+</style>
+</head>
+<body>
+
+<div class="stage-header">
+  <h1>CDK Dealer — Interactive Concept</h1>
+  <p>Tap through the screen below just like a real device. Recents, Workflows, My Day, AIVA, and Messages form the app shell, shared across our Dealership Admin roles — Dealer Principal/GM, Controller/CFO, Fixed Operations Director, and Modern Retail Director. Switch roles from the user menu in the top bar.</p>
+  <div class="step-row">
+    <span id="step-label">My Day</span>
+    <button class="restart-btn" onclick="location.reload()">Restart demo</button>
+  </div>
+</div>
+
+<div class="phone">
+  <div class="notch"></div>
+  <div class="phone-screen">
+
+    <!-- 1: My Day -->
+    <div class="screen active" id="screen-myday">
+      <div class="statusbar dark"><span>9:41</span><span class="icons">📶 🛜 🔋</span></div>
+      <div class="app-header dark topbar">
+        <span class="top-brand-sm"><img src="data:image/png;base64,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" class="brand-logo-sm" alt="CDK"><span class="brand-name-sm">Dealer</span></span>
+        <div class="top-actions">
+          <div class="bell-wrap" onclick="showScreen('screen-notifications')">🔔<span class="bell-badge">4</span></div>
+          <div class="menu-wrap">
+            <div class="avatar" onclick="toggleUserMenu(event)">GM</div>
+            <div class="user-menu">
+              <div class="overflow-item" onclick="closeAllUserMenus(); showToast('Profile — not built in this pass')">👤 Profile</div>
+              <div class="overflow-item" onclick="closeAllUserMenus(); showToast('App Settings — not built in this pass')">⚙️ App Settings</div>
+              <div class="overflow-item" onclick="closeAllUserMenus(); showToast('Logged out (demo)')">🚪 Log Out</div>
+              <div class="menu-label">Switch Role</div>
+              <div class="overflow-item persona-item active" data-persona="gm" onclick="closeAllUserMenus(); applyPersona('gm')">Dealer Principal/GM<span class="persona-check">✓</span></div>
+              <div class="overflow-item persona-item" data-persona="controller" onclick="closeAllUserMenus(); applyPersona('controller')">Controller/CFO<span class="persona-check">✓</span></div>
+              <div class="overflow-item persona-item" data-persona="fixedops" onclick="closeAllUserMenus(); applyPersona('fixedops')">Fixed Operations Director<span class="persona-check">✓</span></div>
+              <div class="overflow-item persona-item" data-persona="variableops" onclick="closeAllUserMenus(); applyPersona('variableops')">Modern Retail Director<span class="persona-check">✓</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-title-row"><h1 class="screen-title">My Day</h1></div>
+      <div class="filter-row">
+        <div class="pill-filter">📅 Thu Feb 26</div>
+        <div class="filter-spacer"></div>
+        <div class="icon-btn">🔍</div>
+        <div class="menu-wrap">
+          <div class="icon-btn" onclick="toggleOverflowMenu(event)">⋮</div>
+          <div class="overflow-menu" id="overflow-menu">
+            <div class="overflow-item" onclick="closeOverflowMenu(); showToast('Walk In flow — not built in this pass')">🚶 Log Walk-In</div>
+            <div class="overflow-item" onclick="closeOverflowMenu(); showToast('New Lead flow — not built in this pass')">➕ New Lead</div>
+          </div>
+        </div>
+      </div>
+      <div class="scroll-area pad-tabbar">
+        <div class="kpi-scroll" id="myday-kpi-scroll">
+        <div class="kpi-card">
+          <div class="kpi-head">Cash Position<span class="arrow">→</span></div>
+          <div class="kpi-big">$4.34M</div>
+          <div class="kpi-pill up">↑ +4.2%</div>
+          <div class="kpi-sub">14-day trend</div>
+          <svg class="sparkline" viewBox="0 0 172 32" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#1f9d55" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="#1f9d55" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <polyline points="0,32 0,26 20,24 40,20 60,18 80,14 100,16 120,10 140,8 160,6 172,4 172,32" fill="url(#sparkFill)" stroke="none"/>
+            <polyline points="0,26 20,24 40,20 60,18 80,14 100,16 120,10 140,8 160,6 172,4" fill="none" stroke="#1f9d55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-head">Front Gross MTD<span class="arrow">→</span></div>
+          <div class="donut-wrap">
+            <div class="donut" style="background:conic-gradient(#2f6fea 0% 68%, var(--page) 68% 100%);">
+              <div class="donut-center"><div class="donut-num">68%</div><div class="donut-lbl">TO GOAL</div></div>
+            </div>
+            <div class="kpi-legend">
+              <div class="legend-row"><span class="legend-lbl">MTD</span><span class="legend-val">$152.4k of $225k</span></div>
+              <div class="legend-row"><span class="legend-lbl">vs. Plan (YoY)</span><span class="legend-val">+12.4%</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-head">F&amp;I PVR<span class="arrow">→</span></div>
+          <div class="kpi-big">$1,847</div>
+          <div class="kpi-pill up">↑ +3.1%</div>
+          <div class="kpi-sub">6-month trend</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-head">Store Performance<span class="arrow">→</span></div>
+          <div class="kpi-line-list">
+            <div class="kpi-line"><span class="kpi-line-lbl">Statler Toyota</span><span class="kpi-line-val">102%</span></div>
+            <div class="kpi-line"><span class="kpi-line-lbl">Statler Honda</span><span class="kpi-line-val">94%</span></div>
+            <div class="kpi-line"><span class="kpi-line-lbl">Statler Ford</span><span class="kpi-line-val">78%</span></div>
+            <div class="kpi-line"><span class="kpi-line-lbl">Statler Mazda</span><span class="kpi-line-val">61%</span></div>
+          </div>
+        </div>
+        </div>
+
+        <div class="segmented">
+          <div class="segment active" onclick="setMyDayView(this,'agenda')">Today's Agenda</div>
+          <div class="segment" onclick="setMyDayView(this,'insights')">AI Insights</div>
+        </div>
+
+        <div id="myday-agenda-view">
+          <div class="agenda-label" id="myday-agenda-label">Today's Agenda</div>
+          <div id="myday-agenda-items">
+          <div class="appt-card condensed accent">
+            <div class="appt-info">
+              <div class="appt-time">3 Exceptions <span class="badge" style="background:var(--red);">Review</span></div>
+              <div class="appt-name">Daily Operational Control</div>
+              <div class="appt-veh">Needs your review today</div>
+            </div>
+            <button class="btn-writeup" onclick="showToast('Reviewing exceptions…')">Review Exceptions</button>
+          </div>
+          <div class="appt-card condensed accent">
+            <div class="appt-info">
+              <div class="appt-time">2 Alerts <span class="badge" style="background:var(--red);">Alert</span></div>
+              <div class="appt-name">Compliance Dashboard</div>
+              <div class="appt-veh">Flagged items to clear</div>
+            </div>
+            <button class="btn-writeup" onclick="showToast('Reviewing compliance alerts…')">Review Compliance Alerts</button>
+          </div>
+          <div class="appt-card condensed">
+            <div class="appt-info">
+              <div class="appt-time">61% of Goal <span class="badge" style="background:#f3b98c;">Underperforming</span></div>
+              <div class="appt-name">Statler Mazda</div>
+              <div class="appt-veh">Lowest of the four stores</div>
+            </div>
+            <button class="btn-writeup" onclick="showToast('Checking Statler Mazda performance…')">Check Store Performance</button>
+          </div>
+          <div class="appt-card condensed">
+            <div class="appt-info">
+              <div class="appt-time">Ready</div>
+              <div class="appt-name">Sales Leaderboard</div>
+              <div class="appt-veh">MTD standings across 12 reps</div>
+            </div>
+            <button class="btn-writeup" onclick="showToast('Opening Sales Leaderboard…')">View Leaderboard</button>
+          </div>
+          </div>
+        </div>
+
+        <div id="myday-insights-view" style="display:none;">
+          <div class="agenda-label">AI Insights</div>
+          <div id="myday-insights-items">
+          <div class="notif-row" onclick="showToast('Reviewing exceptions…')">
+            <div class="notif-ic" style="background:#f3b98c;">⚠️</div>
+            <div class="notif-text">
+              <div class="notif-title">3 exceptions flagged in Daily Operational Control</div>
+              <div class="notif-sub">Worth clearing before they roll into tomorrow</div>
+            </div>
+          </div>
+          <div class="notif-row" onclick="showToast('Reviewing compliance alerts…')">
+            <div class="notif-ic" style="background:#f0c94e;">🚨</div>
+            <div class="notif-text">
+              <div class="notif-title">2 compliance alerts need attention</div>
+              <div class="notif-sub">Compliance Dashboard &middot; review before month-end</div>
+            </div>
+          </div>
+          <div class="notif-row" onclick="showToast('Checking Statler Mazda performance…')">
+            <div class="notif-ic" style="background:#a9c2f0;">📉</div>
+            <div class="notif-text">
+              <div class="notif-title">Statler Mazda is trailing the group at 61%</div>
+              <div class="notif-sub">Toyota 102% &middot; Honda 94% &middot; Ford 78% &middot; Mazda 61%</div>
+            </div>
+          </div>
+          <div class="notif-row" onclick="showToast('Opening Front Gross MTD…')">
+            <div class="notif-ic" style="background:var(--page);">🎯</div>
+            <div class="notif-text">
+              <div class="notif-title">Front Gross is pacing at 68% of goal</div>
+              <div class="notif-sub">$152.4k of $225k MTD &middot; +12.4% YoY</div>
+            </div>
+          </div>
+          <div class="notif-row" onclick="showToast('Opening F&amp;I Overview…')">
+            <div class="notif-ic" style="background:#a8e0b8;">📈</div>
+            <div class="notif-text">
+              <div class="notif-title">F&amp;I PVR trending up</div>
+              <div class="notif-sub">$1,847 &middot; up 3.1% over the last 6 months</div>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recents -->
+    <div class="screen" id="screen-recents">
+      <div class="statusbar dark"><span>9:41</span><span class="icons">📶 🛜 🔋</span></div>
+      <div class="app-header dark topbar">
+        <span class="top-brand-sm"><img src="data:image/png;base64,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" class="brand-logo-sm" alt="CDK"><span class="brand-name-sm">Dealer</span></span>
+        <div class="top-actions">
+          <div class="bell-wrap" onclick="showScreen('screen-notifications')">🔔<span class="bell-badge">4</span></div>
+          <div class="menu-wrap">
+            <div class="avatar" onclick="toggleUserMenu(event)">GM</div>
+            <div class="user-menu">
+              <div class="overflow-item" onclick="closeAllUserMenus(); showToast('Profile — not built in this pass')">👤 Profile</div>
+              <div class="overflow-item" onclick="closeAllUserMenus(); showToast('App Settings — not built in this pass')">⚙️ App Settings</div>
+              <div class="overflow-item" onclick="closeAllUserMenus(); showToast('Logged out (demo)')">🚪 Log Out</div>
+              <div class="menu-label">Switch Role</div>
+              <div class="overflow-item persona-item active" data-persona="gm" onclick="closeAllUserMenus(); applyPersona('gm')">Dealer Principal/GM<span class="persona-check">✓</span></div>
+              <div class="overflow-item persona-item" data-persona="controller" onclick="closeAllUserMenus(); applyPersona('controller')">Controller/CFO<span class="persona-check">✓</span></div>
+              <div class="overflow-item persona-item" data-persona="fixedops" onclick="closeAllUserMenus(); applyPersona('fixedops')">Fixed Operations Director<span class="persona-check">✓</span></div>
+              <div class="overflow-item persona-item" data-persona="variableops" onclick="closeAllUserMenus(); applyPersona('variableops')">Modern Retail Director<span class="persona-check">✓</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-title-row"><h1 class="screen-title">Recents</h1></div>
+      <div class="scroll-area pad-tabbar">
+        <div class="section-label">Recently Opened</div>
+        <div id="recents-list">
+        <div class="list-row" onclick="showToast('Opening Modern Retail Overview…')">
+          <div class="row-badge blue">GM</div>
+          <div class="row-text"><div class="row-title">Modern Retail Overview</div><div class="row-sub">MTD &middot; Front Gross 68% of goal</div></div>
+          <div class="row-dot"></div>
+        </div>
+        <div class="list-row" onclick="showToast('Opening Sales Leaderboard…')">
+          <div class="row-badge blue">GM</div>
+          <div class="row-text"><div class="row-title">Sales Leaderboard</div><div class="row-sub">MTD &middot; 12 reps tracked</div></div>
+          <div class="row-dot"></div>
+        </div>
+        <div class="list-row" onclick="showToast('Opening F&amp;I Overview…')">
+          <div class="row-badge blue">GM</div>
+          <div class="row-text"><div class="row-title">F&amp;I Overview</div><div class="row-sub">PVR $1,847 &middot; +3.1% vs. 6-mo trend</div></div>
+          <div class="row-dot"></div>
+        </div>
+        <div class="list-row" onclick="showToast('Opening Daily Operational Control…')">
+          <div class="row-badge blue">GM</div>
+          <div class="row-text"><div class="row-title">Daily Operational Control</div><div class="row-sub">3 exceptions need review</div></div>
+          <div class="row-dot"></div>
+        </div>
+        <div class="list-row" onclick="showToast('Opening Compliance Dashboard…')">
+          <div class="row-badge blue">GM</div>
+          <div class="row-text"><div class="row-title">Compliance Dashboard</div><div class="row-sub">2 alerts</div></div>
+          <div class="row-dot"></div>
+        </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Workflows -->
+    <div class="screen" id="screen-workflows">
+      <div class="statusbar dark"><span>9:41</span><span class="icons">📶 🛜 🔋</span></div>
+      <div class="app-header dark topbar">
+        <span class="top-brand-sm"><img src="data:image/png;base64,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" class="brand-logo-sm" alt="CDK"><span class="brand-name-sm">Dealer</span></span>
+        <div class="top-actions">
+          <div class="bell-wrap" onclick="showScreen('screen-notifications')">🔔<span class="bell-badge">4</span></div>
+          <div class="menu-wrap">
+            <div class="avatar" onclick="toggleUserMenu(event)">GM</div>
+            <div class="user-menu">
+              <div class="overflow-item" onclick="closeAllUserMenus(); showToast('Profile — not built in this pass')">👤 Profile</div>
+              <div class="overflow-item" onclick="closeAllUserMenus(); showToast('App Settings — not built in this pass')">⚙️ App Settings</div>
+              <div class="overflow-item" onclick="closeAllUserMenus(); showToast('Logged out (demo)')">🚪 Log Out</div>
+              <div class="menu-label">Switch Role</div>
+              <div class="overflow-item persona-item active" data-persona="gm" onclick="closeAllUserMenus(); applyPersona('gm')">Dealer Principal/GM<span class="persona-check">✓</span></div>
+              <div class="overflow-item persona-item" data-persona="controller" onclick="closeAllUserMenus(); applyPersona('controller')">Controller/CFO<span class="persona-check">✓</span></div>
+              <div class="overflow-item persona-item" data-persona="fixedops" onclick="closeAllUserMenus(); applyPersona('fixedops')">Fixed Operations Director<span class="persona-check">✓</span></div>
+              <div class="overflow-item persona-item" data-persona="variableops" onclick="closeAllUserMenus(); applyPersona('variableops')">Modern Retail Director<span class="persona-check">✓</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-title-row"><h1 class="screen-title">Workflows</h1></div>
+      <div class="scroll-area pad-tabbar" id="workflows-list">
+        <div class="section-label left icon" style="margin-top:0;"><span class="sec-badge" style="background:#2f7bf0;">IS</span>Intelligence Suite</div>
+        <div class="list-row" onclick="showToast('Opening Modern Retail Overview…')"><div class="row-text"><div class="row-title">Modern Retail Overview</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Sales Leaderboard…')"><div class="row-text"><div class="row-title">Sales Leaderboard</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening F&amp;I Overview…')"><div class="row-text"><div class="row-title">F&amp;I Overview</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Goals &amp; Forecasting…')"><div class="row-text"><div class="row-title">Goals &amp; Forecasting</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Daily Controls…')"><div class="row-text"><div class="row-title">Daily Controls</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Compliance…')"><div class="row-text"><div class="row-title">Compliance</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Customer Analysis…')"><div class="row-text"><div class="row-title">Customer Analysis</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Vendor Expenses…')"><div class="row-text"><div class="row-title">Vendor Expenses</div></div><div class="row-chev">›</div></div>
+
+        <div class="section-label left icon"><span class="sec-badge" style="background:#1f9d55;">AC</span>Accounting</div>
+        <div class="list-row" onclick="showToast('Opening Financial Statements…')"><div class="row-text"><div class="row-title">Financial Statements</div></div><div class="row-chev">›</div></div>
+
+        <div class="section-label left">Resources</div>
+        <div class="list-row" onclick="showToast('Opening CDK University…')"><div class="row-text"><div class="row-title">CDK University</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening a support ticket…')"><div class="row-text"><div class="row-title">Open a Support Ticket</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Starting a chat with support…')"><div class="row-text"><div class="row-title">Chat with Support</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Online Help…')"><div class="row-text"><div class="row-title">Online Help</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Documents…')"><div class="row-text"><div class="row-title">Documents</div></div><div class="row-chev">›</div></div>
+      </div>
+    </div>
+
+    <!-- AIVA -->
+    <div class="screen" id="screen-aiva">
+      <div class="statusbar dark"><span>9:41</span><span class="icons">📶 🛜 🔋</span></div>
+      <div class="app-header dark topbar">
+        <span class="top-brand-sm"><img src="data:image/png;base64,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" class="brand-logo-sm" alt="CDK"><span class="brand-name-sm">Dealer</span></span>
+        <div class="top-actions">
+          <div class="bell-wrap" onclick="showScreen('screen-notifications')">🔔<span class="bell-badge">4</span></div>
+          <div class="menu-wrap">
+            <div class="avatar" onclick="toggleUserMenu(event)">GM</div>
+            <div class="user-menu">
+              <div class="overflow-item" onclick="closeAllUserMenus(); showToast('Profile — not built in this pass')">👤 Profile</div>
+              <div class="overflow-item" onclick="closeAllUserMenus(); showToast('App Settings — not built in this pass')">⚙️ App Settings</div>
+              <div class="overflow-item" onclick="closeAllUserMenus(); showToast('Logged out (demo)')">🚪 Log Out</div>
+              <div class="menu-label">Switch Role</div>
+              <div class="overflow-item persona-item active" data-persona="gm" onclick="closeAllUserMenus(); applyPersona('gm')">Dealer Principal/GM<span class="persona-check">✓</span></div>
+              <div class="overflow-item persona-item" data-persona="controller" onclick="closeAllUserMenus(); applyPersona('controller')">Controller/CFO<span class="persona-check">✓</span></div>
+              <div class="overflow-item persona-item" data-persona="fixedops" onclick="closeAllUserMenus(); applyPersona('fixedops')">Fixed Operations Director<span class="persona-check">✓</span></div>
+              <div class="overflow-item persona-item" data-persona="variableops" onclick="closeAllUserMenus(); applyPersona('variableops')">Modern Retail Director<span class="persona-check">✓</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="aiva-header">
+        <span class="aiva-wordmark">A I V A</span>
+        <span class="aiva-beta">BETA</span>
+        <div class="filter-spacer"></div>
+        <span class="aiva-icon" onclick="showToast('Tips — not built in this pass')">💡</span>
+        <span class="aiva-icon" onclick="showToast('Saved — not built in this pass')">🔖</span>
+      </div>
+      <div class="aiva-chat-log" id="aiva-chat-log">
+        <div class="aiva-msg">
+          <div class="aiva-avatar-sm">✦</div>
+          <div style="flex:1; min-width:0;">
+            <div class="aiva-msg-meta">9:01 AM</div>
+            <div class="aiva-msg-text" id="aiva-welcome-text">
+              Hello [Name]!<br><br>
+              I'm AIVA, your AI assistant.<br><br>
+              I can help you understand what's driving your dealership's performance and what to do about it.<br><br>
+              How can I help you today?
+            </div>
+            <div id="aiva-suggestions">
+              <div class="aiva-suggest" onclick="askAiva('Why did Front Gross change this month?')">Why did Front Gross change this month?</div>
+              <div class="aiva-suggest" onclick="askAiva('Which store needs my attention?')">Which store needs my attention?</div>
+              <div class="aiva-suggest" onclick="askAiva('What should I do about today&#39;s exceptions?')">What should I do about today's exceptions?</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="aiva-inputbar">
+        <div class="aiva-input-pill"><input type="text" placeholder="Ask me anything" disabled><span class="mic-in">🎙</span></div>
+        <span class="aiva-send">➤</span>
+      </div>
+      <div class="aiva-footer">
+        <div class="aiva-disclaimer">AIVA uses AI and may occasionally make mistakes, please check responses</div>
+        <div class="aiva-footer-links">
+          <span onclick="showToast('CDK AI Tool Use Terms — not built in this pass')">CDK AI Tool Use Terms</span>
+          <span class="cap-link" onclick="showToast('Current Capabilities — not built in this pass')">ⓘ Current Capabilities</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="screen" id="screen-messages">
+      <div class="statusbar dark"><span>9:41</span><span class="icons">📶 🛜 🔋</span></div>
+      <div class="app-header dark topbar">
+        <span class="top-brand-sm"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAMTmlDQ1BJQ0MgUHJvZmlsZQAASImVVwdYU1cbPndkQggQCENG2EsQkRFARggrgOwhiEpIAoQRY0JQcaNFBesWERwVrYJY3IAURVGrVorito7iQEWpxVpcqPwnBNDSfzz/9zzn3ve+5zvv+b7vnjsOAPROvlSai2oCkCfJl8WGBLAmJ6ewSM8BAvQACYwDNnyBXMqJjo4A0IbPf7c3N6A3tKuOSq1/9v9X0xKK5AIAkGiI04VyQR7ERwDAmwVSWT4ARCnkLWblS5V4A8Q6MhggxNVKnKnCzUqcrsKXB33iY7kQPwaArM7nyzIB0OiFPKtAkAl16DBb4CwRiiUQ+0Psm5c3QwjxIohtoQ+ck67UZ6d/pZP5N830EU0+P3MEq3IZNHKgWC7N5c/5P8vxvy0vVzE8hw1s6lmy0FhlzrBuj3NmhCuxOsTvJOmRURBrA4DiYuGgvxIzsxShCSp/1FYg58KaASbEE+W5cbwhPlbIDwyH2AjiDEluZMSQT1GGOFjpA+uHlovzefEQ60NcLZIHxQ35nJTNiB2e90aGjMsZ4p/xZYMxKPU/K3ISOCp9TDtLxBvSx5wKs+KTIKZCHFggToyEWAPiSHlOXPiQT2phFjdy2EemiFXmYgmxTCQJCVDpY2UZsuDYIf+9efLh3LGTWWJe5BC+kp8VH6qqFfZYwB+MH+aC9YoknIRhHZF8csRwLkJRYJAqd5wskiTEqXhcX5ofEKsai9tLc6OH/PEAUW6IkjeHOF5eEDc8tiAfLk6VPl4szY+OV8WJV2Tzw6JV8eAHQATggkDAAgrY0sEMkA3E7T0NPfBK1RMM+EAGMoEIOA4xwyOSBnsk8BgHCsHvEImAfGRcwGCvCBRA/tMoVsmJRzjV0RFkDPUpVXLAE4jzQDjIhdeKQSXJSASJ4DFkxP+IiA+bAOaQC5uy/9/zw+wXhgOZiCFGMTwjiz7sSQwiBhJDicFEO9wQ98W98Qh49IfNBWfjnsN5fPEnPCF0EB4SrhM6Cbeni4tko6KcBDqhfvBQfdK/rg9uDTXd8ADcB6pDZZyJGwJH3BXOw8H94MxukOUOxa2sCmuU9t8y+OoODflRnCkoRY/iT7EdPVLDXsNtREVZ66/ro4o1faTe3JGe0fNzv6q+EJ7DR3tiy7HD2DnsFHYBa8YaAAtrwRqxNuy4Eo+suMeDK254ttjBeHKgzug18+XOKispd6517nb+qOrLF83OVz6M3BnSOTJxZlY+iwO/GCIWTyJwGstycXZxB0D5/VG93l7HDH5XEGbbF27JbwD4tAwMDPz4hQtrAeCgB3wlHPvC2bLhp0UNgPPHBApZgYrDlQcCfHPQ4dNnAEyABbCF+bgAd+AN/EEQCANRIB4kg2kw+iy4zmVgFpgHFoNiUArWgI2gAmwHO0E1+AEcAg2gGZwCP4GL4DK4Du7A1dMFXoBe8Ab0IwhCQmgIAzFATBErxAFxQdiILxKERCCxSDKShmQiEkSBzEOWIKXIOqQC2YHUIAeRY8gp5ALSgdxGHiDdyJ/IBxRD1VEd1Bi1RsehbJSDhqPx6FQ0E52JFqJL0VVoOVqF7kPr0VPoRfQ62om+QPswgKlhTMwMc8TYGBeLwlKwDEyGLcBKsDKsCqvDmuB9vop1Yj3Ye5yIM3AW7ghXcCiegAvwmfgCfCVegVfj9fgZ/Cr+AO/FPxNoBCOCA8GLwCNMJmQSZhGKCWWE3YSjhLPwWeoivCESiUyiDdEDPovJxGziXOJK4lbifuJJYgfxEbGPRCIZkBxIPqQoEp+UTyombSbtI7WQrpC6SO/IamRTsgs5mJxClpCLyGXkveQT5Cvkp+R+iibFiuJFiaIIKXMoqym7KE2US5QuSj9Vi2pD9aHGU7Opi6nl1DrqWepd6ms1NTVzNU+1GDWx2iK1crUDaufVHqi9V9dWt1fnqqeqK9RXqe9RP6l+W/01jUazpvnTUmj5tFW0Gtpp2n3aOw2GhpMGT0OosVCjUqNe44rGSzqFbkXn0KfRC+ll9MP0S/QeTYqmtSZXk6+5QLNS85jmTc0+LYbWeK0orTytlVp7tS5oPdMmaVtrB2kLtZdq79Q+rf2IgTEsGFyGgLGEsYtxltGlQ9Sx0eHpZOuU6vyg067Tq6ut66qbqDtbt1L3uG4nE2NaM3nMXOZq5iHmDeYHPWM9jp5Ib4Vend4Vvbf6Y/T99UX6Jfr79a/rfzBgGQQZ5BisNWgwuGeIG9obxhjOMtxmeNawZ4zOGO8xgjElYw6N+dUINbI3ijWaa7TTqM2oz9jEOMRYarzZ+LRxjwnTxN8k22SDyQmTblOGqa+p2HSDaYvpc5Yui8PKZZWzzrB6zYzMQs0UZjvM2s36zW3ME8yLzPeb37OgWrAtMiw2WLRa9FqaWk6ynGdZa/mrFcWKbZVltcnqnNVbaxvrJOtl1g3Wz2z0bXg2hTa1NndtabZ+tjNtq2yv2RHt2HY5dlvtLtuj9m72WfaV9pccUAd3B7HDVoeOsYSxnmMlY6vG3nRUd+Q4FjjWOj5wYjpFOBU5NTi9HGc5LmXc2nHnxn12dnPOdd7lfGe89viw8UXjm8b/6WLvInCpdLk2gTYheMLCCY0TXrk6uIpct7necmO4TXJb5tbq9sndw13mXufe7WHpkeaxxeMmW4cdzV7JPu9J8AzwXOjZ7Pney90r3+uQ1x/ejt453nu9n020mSiauGviIx9zH77PDp9OX5Zvmu93vp1+Zn58vyq/h/4W/kL/3f5POXacbM4+zssA5wBZwNGAt1wv7nzuyUAsMCSwJLA9SDsoIagi6H6weXBmcG1wb4hbyNyQk6GE0PDQtaE3ecY8Aa+G1xvmETY/7Ey4enhceEX4wwj7CFlE0yR0Utik9ZPuRlpFSiIbokAUL2p91L1om+iZ0T/GEGOiYypjnsSOj50Xey6OETc9bm/cm/iA+NXxdxJsExQJrYn0xNTEmsS3SYFJ65I6J4+bPH/yxWTDZHFyYwopJTFld0rflKApG6d0pbqlFqfemGozdfbUC9MMp+VOOz6dPp0//XAaIS0pbW/aR34Uv4rfl85L35LeK+AKNgleCP2FG4TdIh/ROtHTDJ+MdRnPMn0y12d2Z/lllWX1iLniCvGr7NDs7dlvc6Jy9uQM5Cbl7s8j56XlHZNoS3IkZ2aYzJg9o0PqIC2Wds70mrlxZq8sXLZbjsinyhvzdeCPfpvCVvGN4kGBb0FlwbtZibMOz9aaLZndNsd+zoo5TwuDC7+fi88VzG2dZzZv8bwH8znzdyxAFqQvaF1osXDpwq5FIYuqF1MX5yz+pci5aF3RX0uSljQtNV66aOmjb0K+qS3WKJYV31zmvWz7cny5eHn7igkrNq/4XCIs+bnUubSs9ONKwcqfvx3/bfm3A6syVrWvdl+9bQ1xjWTNjbV+a6vXaa0rXPdo/aT19RtYG0o2/LVx+sYLZa5l2zdRNyk2dZZHlDdutty8ZvPHiqyK65UBlfu3GG1ZseXtVuHWK9v8t9VtN95euv3Dd+Lvbu0I2VFfZV1VtpO4s2Dnk12Ju859z/6+Zrfh7tLdn/ZI9nRWx1afqfGoqdlrtHd1LVqrqO3el7rv8g+BPzTWOdbt2M/cX3oAHFAceH4w7eCNQ+GHWg+zD9cdsTqy5SjjaEk9Uj+nvrchq6GzMbmx41jYsdYm76ajPzr9uKfZrLnyuO7x1SeoJ5aeGGgpbOk7KT3Zcyrz1KPW6a13Tk8+fe1MzJn2s+Fnz/8U/NPpc5xzLed9zjdf8Lpw7Gf2zw0X3S/Wt7m1Hf3F7Zej7e7t9Zc8LjVe9rzc1DGx48QVvyunrgZe/eka79rF65HXO24k3Lh1M/Vm5y3hrWe3c2+/+rXg1/47i+4S7pbc07xXdt/oftVvdr/t73TvPP4g8EHbw7iHdx4JHr14LH/8sWvpE9qTsqemT2ueuTxr7g7uvvx8yvOuF9IX/T3Fv2v9vuWl7csjf/j/0dY7ubfrlezVwJ8rXxu83vOX61+tfdF999/kvel/W/LO4F31e/b7cx+SPjztn/WR9LH8k92nps/hn+8O5A0MSPky/uCvAAaUW5sMAP7cAwAtGQAG3DdSp6j2h4OGqPa0gwj8J6zaQw4a/HOpg//0MT3w7+YmAAd2AWAN9empAETTAIj3BOiECSNteC83uO9UGhHuDb6L+5Selw7+jan2pF/FPfoMlKquYPT5X/fYgy6GwTADAAAAimVYSWZNTQAqAAAACAAEARoABQAAAAEAAAA+ARsABQAAAAEAAABGASgAAwAAAAEAAgAAh2kABAAAAAEAAABOAAAAAAAAAJAAAAABAAAAkAAAAAEAA5KGAAcAAAASAAAAeKACAAQAAAABAAAAYKADAAQAAAABAAAAYAAAAABBU0NJSQAAAFNjcmVlbnNob3ShLVLhAAAACXBIWXMAABYlAAAWJQFJUiTwAAAB1GlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNi4wLjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczpleGlmPSJodHRwOi8vbnMuYWRvYmUuY29tL2V4aWYvMS4wLyI+CiAgICAgICAgIDxleGlmOlBpeGVsWURpbWVuc2lvbj45NjwvZXhpZjpQaXhlbFlEaW1lbnNpb24+CiAgICAgICAgIDxleGlmOlBpeGVsWERpbWVuc2lvbj45NjwvZXhpZjpQaXhlbFhEaW1lbnNpb24+CiAgICAgICAgIDxleGlmOlVzZXJDb21tZW50PlNjcmVlbnNob3Q8L2V4aWY6VXNlckNvbW1lbnQ+CiAgICAgIDwvcmRmOkRlc2NyaXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgoZeiASAAAAHGlET1QAAAACAAAAAAAAADAAAAAoAAAAMAAAADAAAAc5nat6CQAABwVJREFUeAHsG1tMFFf07J9ZKItWLdAqWgRKFaKisaaCH1aqhtCPWj98xFejJYEKViVCVdJWHgEjvmo/FGpqg5H+SIgam9jEiDRWE8rDRBtEMEbkQ6GSqKC5vWd2z92Z0Vl3Z2dmFzs32Zz7Oveexz3n3Mesw+mMYAAOAODAhpbLweF0RjIHlz9DNdjQcjlICuBqt1OIJOCIiIhE32OnEElAZgEUA4gSu+yOiebKw44BIY59MgsgTdvQSgloxADalmqRYre7t+3By8e2AC0ZWlSvYQEWzW5PA4ogTPKgA5lddkvATHl4LIB8ug2tvpKxYwCZeYigbQEhvoRUxADydTa07nKSW8Bbnrug8L56mDx5EsyZMxfS0lIhKSkJ4uMnQ0xMDLhcLhgzZozkQJ4+fQqDg4PQ1/cAenp64NatW9DW1g7Xrv0Fvb29vA/GOErhwa/SAjhtElmcTryepiQswuL2BQs+huzsbMjKWgzJyclEji548+ZNuHDhd2hqaoLm5uaw4A8ZeUUMIP5ohaihue24ojdsWA+rV68KWuhEqRqiMk7+chJq637mFjPAm+W7P+qt5pvKxrYrLcCz8sWKt7AcFeWCrVsLIC8vT7gUYtUsiC7r0KHDUFNTAwMDgyF5kJLFALPYfP24ublfQUlJCURHu17f2YQeAwMDsHdvGRw9+pMJo/seMqQWkJY2AyoqKmHhwkzfVFrUeunSJdixowg6Ojose5oMmQWsX7+Om/9Bi0Qb2DT5+V9DHY8PViRVEKYpHXwFMMknumsoSBnTXl5eDvn5eTRYWEKMDTt37vTQZiz/GPRJvpZbQG3tcVix4ouwFLqaqNOnG/iObKO62tCyxwK8Jz/36F4N0Wz02Uow7fX1v0JOTg4NOSpgY2MjrFy5SsSEYPjH3aUa3zILGE0rn8RE0ExLUMUA8nXGwtHg80nYWtAdE4p5Mx3IjIGmW0A473a0hK1Vb8buyFQLSE1NhZaWK1r8jMr6+fPnQ3t7J6d9FFjA2bNNkJkZHocso7SNh7Vly7KNGg4v48y5js7N3QxVVVWGERpOA23fvoNfWxzlJIltDc+TRRCl/pUlBdDlG6EGW8Y7nY6Odn63E01DvlEQL+6mT58hvT0gY8HIyxQLKC3dA9u2ffNGCV3NTHV1NZSWfier9m/FexHc/d0WwGuxSOkljfIGf9vxPr+r6x/LrpSJZqshXmUnJCRKVkCbdqIhEPnJLIDQg4OFBQXw/Q/ylRHceOGMvWvXbti/vyYoEhUxgDTn4Bm6LKIrCCXUbsf312CfD4PiyEJkfFlLT58rYoAe+RlqAfiGe/78OQtFEPqplixZCpcvN+smRMMCuM/nTt+rUf/KFRVl0pOibmpGISJeURQXF+uSF8rXUAu4fv3/435orZAbonKg0BEZiQcx8ukUzwMvT5r0Hty4gUd0fWloaAguXvxD+p5nZGQYpkyZymNJEt9vT1cM+OzZMz7PDUUdFiZOnAhxcXHcauWHI283/E7o4cOHUgV+R5SSkuJt5Lm+vj64f/++qIuNjZW+OxIVPjJ4Jujp6fXMjfvFAOSHJ2EjfmvWrOVxW18qKytnEya8w/A/y+pfTs5nrLOzUwzc1XX7pT6EM378BDZv3kespuYAGxkZETiY4Q8rAm/mzNmKtv7+fpaYmCTap059n927d0/Rx1cBedcrQ0DEyMgoaYBgYFVVtS8aNdsqKysF4yRINYyNfZd1d3dLY/hSgBwvPX0Oa2trE/NqKWB4eJgtXpwlaIiOHstaWv4UeP5kkHe9cpQUoFd7crwzZxr9oVXRp7a2VjCOwktJ+ZCVlHzL9u3bx1CAcoFmZGRKuGoFLFr0CVu7dh1bunQZi4+fosCZNSudcZcl4WkpoLBwqwKnrq5OQaM/BeRdLotA8oCr3v1zW4Lecmvr3/7QKvo8fvyYjRv3tmB+2rRE9ujRI9GOGXQ/ciXgilYroKHhN4GDwi4qKlLgoHvD9CoFnDhxQtG3oKBQjBVIBnnHWOqVHcrUv7JhFsCDWCA0s/r6egXzckHSQM3NV6Q+6BZiYuLYgQMHfSoA8V68eMFmz04XY6MVYFIr4OrVq2zs2HGiX1bWpwzdkZ6EvAey6uV9PQpwx4CICP3wyZMnAdFeXFwimMdVfvfu3VfiP3/+XFHvywKo4+7de8TYLle0FJDlCsAgm5AwTfRJTv6AYSDWm5B3t1ADl59h54ChoX99bNRebtq48Us4deqU1OB0OqG//4HmFlKOfft2N+BLGyXuRmD58s+pKMFjx47Dli1bRF1rayv/Aq9CzCcaPJmMBRlw7vxZv+ZX41KZux/KBgbdqx41F9wv0NWzadNmsQLRxahXutZ4/ljAkSM/irHRuu7cuaNwQfK4QvnDh49oTelXvV75/QcAAP//bsHx9AAABoZJREFU7VpvTBRHFH+X1AQ87g4atcQ/V6tVU7wjWlBLodQmkhgCfpEaKSp/ig1YUZJqxCoGNEIu0IRGav1QRUUTkH7xUEKwfKGhxAYTCGKiDU2xRtFIArUmEAjTmb17w+5djtzt7e0edje5vHm7s/PevPd+82bensFoNBFQ4Hr58gVERET4PVJFRSXU1NTw/n19fbBmzfucZ42pqSm4erURIiMj6NiRwnOjMQrsdjvvd+XKFcjK2sl51igrK4Nz5+qFe5GRkfDixXPYv/8raGpq4v1MJjPExX0Ad+/e5f16en6jMtbwPv42JiYmYNGiJf52l/YzGs1Eid/IyAgJ5GptvUUWLjTy3/nzP3q93tx8gz9nfRsbG8nQ0J+Sey0tP0vee/36NVm58j3eZ8uWj4TnBQVf8nvU+KSjo4M8efKExMYu5fdTUz8l09PTkvH8Ydjc5doQGAJcLzOKP+YUbPv3vK+v3x9deZ/JyUmybNkKPvnFi5eQR48e8eejo6MkJeUTyfNXr/6d0wHMORkZmfwd5rSGhgZhTLEDNm5M4HKYU8WB4HA4+DN/G2zugdoL+1MHmElUlAsFwdCbN53+6sv7dXZ2kpiYt7kBLJZokpm5g2Rnf0Gio2P4fWag4uIDwnueCFi1ajWJj98giWQ06LZtaWRmZkZ4T+yADRs+5Dqwxs6dWVwW06G/P7BgcjqdQhDLsZ8bAeJol9euqamVTMpfxulsJWazhRsAjSemubl5hK6zwpCeDhD3E7d3784mT58+5WrM5YBnz55J0Lhp02bCEOrvxeaOER0olSAA1zH0ZCD83r25/urr1e/27dskKeljiROiokwkISGRsCUBo5i96MsBS5cuJ1u3fkYKC/eT9vZ2LxlzOYB1bm5ulsg/ebLcawxfN/btyxUQEIi9sK+BeQzAQDMz2wzJp1brcnjwYFCa4QPkHj9+DMN/DcNbCxZAfLydBocxwBG06R4XZwOmuxz7UQeYiYHanTA3BEnv3fsd1q1bp40VNJL68OFDSEzcLNt+iiGAIai6uhpKSr7WyBTaiGXnjePHT1Dh8lYQRRGQkpIM7e1t2lhCI6nbt6dDd3d3MAgwM9fRCz3o4uTy/6dliC0/CQmb3QaTZz8D2/GgyZWgpaWH4cyZ00oMFfZjlJefgrq674PSU9EcwHYBFosZhob+CKguFNQMNHqZ1X9Wr14L4+NjVAP5u0dFcwDuoioqTsGRI99oZBp1xNbWfgeVladlr/246xQcoLTKFosFBgcHIDraovTQYTHe2Ng4rF9vp9E/HrQ+iucA1KioqIiWmx3IvlH06NFjcOHCBUXmFBIEoGZtba2QmpqK7BtBu7q6ID09U7G5hAwBTEObzQY9Pd2KKRsOAyUlJcP9+/cVU0WShHFUTKZK8Pn5efTrVHBbNdRDa1pSchgaGi7zkg3qE4y93AiQv42aPbDhQcSbVldXwcGD87tEUV//Q1AlB192CmkOwAhh9NKln2DXrs/Ft+ZN+8aNFigoKAyJvh4IQBmICGX569evwY4dyiUw1C6UlH4wgpycvVSEuGCgnH0kOQDXslDSixfnDxJaWlogP7+Qr/mhsIsHAtCzoaXzISeEas33zAVzIgCh7cvzwTzPywvf3dGhQ4dpzrqM0/OJAOwQjH00QQAWr2w2OzgcVWFzWOvq+hWOHSuj+3z2adV7N4d6K0nnRIAvzyp9v7i4CE6c+Faz2hGr7Zw9WyWUF7BIphalCLCI0zuiSnXKytilpaX0vHBAtVI2KynX15+nNf06Wlj7R/U5M4FhgQAxouh/hOieOw/27MkJ2Qd+9iXr2rXrwqmWRb9YvlqRj3JECMA1DwNBez45OQUyMtIhLS2NOmMtKiaLMqPfufML3LrVJnzDnV3jcTht5utOwqjELEUPzd6RttR+brWuoH//SBT+Gc2cYbW+C7Gx79AvcBa+ZLElhdXoR0aew/DwMND/msLAwAD09vbS/+38LZmA2vpLhFMG5YsQ4NlF59WwAEcAegSF6jxNkOw86r5CZQ8dAWhhjagbAaEtPSh5cJlNnpg05zfVEaBR5KNYDwTw27TBIgsvRIjOuyygnD10BGBMaUQ9EICe1alauUZAAB7FMQh03nVQUsMeOgJUKjv7QpSOABrmWiJecABCTafqW0CCAIwEnbpygBp20BGgftBLJOoIoOdNNSIdi3meVEeAJB7VZwwmE/smbKAfCIio/KrzatnjPziRugjzzk1AAAAAAElFTkSuQmCC" class="brand-logo-sm" alt="CDK"><span class="brand-name-sm">Dealer</span></span>
+        <div class="top-actions">
+          <div class="bell-wrap" onclick="showScreen('screen-notifications')">🔔<span class="bell-badge">4</span></div>
+          <div class="menu-wrap">
+            <div class="avatar" onclick="toggleUserMenu(event)">GM</div>
+            <div class="user-menu">
+              <div class="overflow-item" onclick="closeAllUserMenus(); showToast('Profile — not built in this pass')">👤 Profile</div>
+              <div class="overflow-item" onclick="closeAllUserMenus(); showToast('App Settings — not built in this pass')">⚙️ App Settings</div>
+              <div class="overflow-item" onclick="closeAllUserMenus(); showToast('Logged out (demo)')">🚪 Log Out</div>
+              <div class="menu-label">Switch Role</div>
+              <div class="overflow-item persona-item active" data-persona="gm" onclick="closeAllUserMenus(); applyPersona('gm')">Dealer Principal/GM<span class="persona-check">✓</span></div>
+              <div class="overflow-item persona-item" data-persona="controller" onclick="closeAllUserMenus(); applyPersona('controller')">Controller/CFO<span class="persona-check">✓</span></div>
+              <div class="overflow-item persona-item" data-persona="fixedops" onclick="closeAllUserMenus(); applyPersona('fixedops')">Fixed Operations Director<span class="persona-check">✓</span></div>
+              <div class="overflow-item persona-item" data-persona="variableops" onclick="closeAllUserMenus(); applyPersona('variableops')">Modern Retail Director<span class="persona-check">✓</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-title-row"><h1 class="screen-title">Messages</h1></div>
+      <div class="scroll-area pad-tabbar">
+        <div id="messages-list">
+        <div class="conv-row" onclick="openThread('Controller/CFO')">
+          <div class="conv-avatar" style="background:#2f7bf0;">CF</div>
+          <div class="conv-text">
+            <div class="conv-top"><span class="conv-name">Controller/CFO</span><span class="conv-time">9:12 AM</span></div>
+            <div class="conv-sub">Month-end close is on track, 4 items left.</div>
+          </div>
+          <div class="conv-unread"></div>
+        </div>
+        <div class="conv-row" onclick="showToast('Opening conversation with Fixed Operations Director…')">
+          <div class="conv-avatar" style="background:#8b5cf6;">FO</div>
+          <div class="conv-text">
+            <div class="conv-top"><span class="conv-name">Fixed Operations Director</span><span class="conv-time">8:50 AM</span></div>
+            <div class="conv-sub">RO aging report is ready for your review.</div>
+          </div>
+          <div class="conv-unread"></div>
+        </div>
+        <div class="conv-row" onclick="showToast('Opening conversation with Modern Retail Director…')">
+          <div class="conv-avatar" style="background:#f5a623;">VO</div>
+          <div class="conv-text">
+            <div class="conv-top"><span class="conv-name">Modern Retail Director</span><span class="conv-time">Yesterday</span></div>
+            <div class="conv-sub">Inventory aging flagged on two units over 60 days.</div>
+          </div>
+        </div>
+        <div class="conv-row" onclick="showToast('Opening conversation with Statler Mazda GM…')">
+          <div class="conv-avatar" style="background:#8a93a3;">SM</div>
+          <div class="conv-text">
+            <div class="conv-top"><span class="conv-name">Statler Mazda GM</span><span class="conv-time">Yesterday</span></div>
+            <div class="conv-sub">Following up on this month's pacing to goal.</div>
+          </div>
+          <div class="conv-unread"></div>
+        </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message thread detail -->
+    <div class="screen" id="screen-message-thread">
+      <div class="statusbar light"><span>9:41</span><span class="icons">📶 🛜 🔋</span></div>
+      <div class="app-header light">
+        <button class="back-btn" onclick="showScreen('screen-messages')">‹</button>
+        <h2 id="thread-title">Sales Manager</h2>
+      </div>
+      <div class="chat-log">
+        <div class="msg-row"><div class="bubble ai">Can you get me the numbers on the Gonzalez deal before you send it to the desk?</div></div>
+        <div class="msg-row user"><div class="bubble user">Yep, sending them over now.</div></div>
+        <div class="msg-row"><div class="bubble ai">Got it, approved. Go ahead and print the paperwork.</div></div>
+        <div class="msg-row user"><div class="bubble user">On it, thanks!</div></div>
+      </div>
+      <div class="chat-inputbar">
+        <div class="mic-circ">🎙</div>
+        <input type="text" placeholder="Message…" disabled>
+        <div class="send-circ">➤</div>
+      </div>
+    </div>
+
+    <!-- Notifications -->
+    <div class="screen" id="screen-notifications">
+      <div class="statusbar light"><span>9:41</span><span class="icons">📶 🛜 🔋</span></div>
+      <div class="app-header light">
+        <button class="back-btn" onclick="showScreen('screen-myday')">‹</button>
+        <h2>Notifications</h2>
+      </div>
+      <div class="scroll-area">
+        <div class="notif-row" onclick="showToast('Reviewing exceptions…')">
+          <div class="notif-ic" style="background:#f3b98c;">⚠️</div>
+          <div class="notif-text">
+            <div class="notif-title">Daily Operational Control has 3 new exceptions</div>
+            <div class="notif-sub">Review before they carry into tomorrow</div>
+            <div class="notif-time">18 min ago</div>
+          </div>
+          <div class="notif-dot"></div>
+        </div>
+        <div class="notif-row" onclick="showToast('Reviewing compliance alerts…')">
+          <div class="notif-ic" style="background:#f0c94e;">🚨</div>
+          <div class="notif-text">
+            <div class="notif-title">Compliance Dashboard flagged 2 alerts</div>
+            <div class="notif-sub">Review before month-end close</div>
+            <div class="notif-time">35 min ago</div>
+          </div>
+          <div class="notif-dot"></div>
+        </div>
+        <div class="notif-row" onclick="showToast('Checking Statler Mazda performance…')">
+          <div class="notif-ic" style="background:#a9c2f0;">📉</div>
+          <div class="notif-text">
+            <div class="notif-title">Statler Mazda is trailing at 61% of goal</div>
+            <div class="notif-sub">Lowest of the four stores this month</div>
+            <div class="notif-time">1 hr ago</div>
+          </div>
+          <div class="notif-dot"></div>
+        </div>
+        <div class="notif-row" onclick="showToast('Opening Sales Leaderboard…')">
+          <div class="notif-ic" style="background:var(--page);">🏆</div>
+          <div class="notif-text">
+            <div class="notif-title">Sales Leaderboard updated</div>
+            <div class="notif-sub">Jamie Reyes leads MTD across 12 reps</div>
+            <div class="notif-time">2 hr ago</div>
+          </div>
+        </div>
+        <div class="notif-row" onclick="showToast('Opening AP Aging Report…')">
+          <div class="notif-ic" style="background:#f5a623;">🏦</div>
+          <div class="notif-text">
+            <div class="notif-title">AP past due climbed to $38.4k</div>
+            <div class="notif-sub">Controller flagged this in today's cash review</div>
+            <div class="notif-time">3 hr ago</div>
+          </div>
+        </div>
+        <div class="notif-row" onclick="showToast('Opening Financial Statements…')">
+          <div class="notif-ic" style="background:#a8e0b8;">📋</div>
+          <div class="notif-text">
+            <div class="notif-title">Cross-store P&amp;L is ready</div>
+            <div class="notif-sub">Financial Statements &middot; month-to-date</div>
+            <div class="notif-time">Yesterday</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-bar" id="tab-bar">
+      <div class="tab-item" data-screen="screen-recents" onclick="showScreen('screen-recents')"><span class="tab-ic">🕘</span><span>Recents</span></div>
+      <div class="tab-item" data-screen="screen-workflows" onclick="showScreen('screen-workflows')"><span class="tab-ic">🗂️</span><span>Workflows</span></div>
+      <div class="tab-item" data-screen="screen-myday" onclick="showScreen('screen-myday')"><span class="tab-ic">🗓️</span><span>My Day</span></div>
+      <div class="tab-item" data-screen="screen-aiva" onclick="showScreen('screen-aiva')"><span class="tab-ic">✨</span><span>AIVA</span></div>
+      <div class="tab-item" data-screen="screen-messages" onclick="showScreen('screen-messages')"><span class="tab-ic">💬</span><span>Messages</span></div>
+    </div>
+
+    <div class="home-indicator" id="home-ind"></div>
+    <div class="toast" id="global-toast"></div>
+  </div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+  const stepLabels = {
+    'screen-recents': 'Recents tab',
+    'screen-workflows': 'Workflows tab',
+    'screen-myday': 'My Day tab',
+    'screen-aiva': 'AIVA tab',
+    'screen-messages': 'Messages tab',
+    'screen-message-thread': 'Messages — thread',
+    'screen-notifications': 'Notifications'
+  };
+
+  const rootTabs = ['screen-recents','screen-workflows','screen-myday','screen-aiva','screen-messages'];
+
+  function showScreen(id){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.getElementById('step-label').textContent = stepLabels[id] || '';
+    closeOverflowMenu();
+
+    const tabBar = document.getElementById('tab-bar');
+    const isRootTab = rootTabs.includes(id);
+    tabBar.classList.toggle('hidden', !isRootTab);
+    tabBar.querySelectorAll('.tab-item').forEach(item=>{
+      item.classList.toggle('active', item.dataset.screen === id);
+    });
+
+    const homeInd = document.getElementById('home-ind');
+    if(isRootTab){
+      homeInd.classList.add('light');
+    } else {
+      homeInd.classList.remove('light');
+    }
+  }
+
+  function toggleAcc(headEl){
+    headEl.parentElement.classList.toggle('open');
+  }
+
+  function setSegment(el){
+    el.parentElement.querySelectorAll('.segment').forEach(s=>s.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function setMyDayView(el, view){
+    setSegment(el);
+    document.getElementById('myday-agenda-view').style.display = (view === 'agenda') ? '' : 'none';
+    document.getElementById('myday-insights-view').style.display = (view === 'insights') ? '' : 'none';
+  }
+
+  function showTip(evt, text){
+    evt.stopPropagation();
+    const tip = document.getElementById('tooltip');
+    tip.textContent = text;
+    const r = evt.target.getBoundingClientRect();
+    tip.style.left = Math.max(8, r.left - 20) + 'px';
+    tip.style.top = (r.top - 34) + 'px';
+    tip.classList.add('show');
+    clearTimeout(window._tipTO);
+    window._tipTO = setTimeout(()=>tip.classList.remove('show'), 2200);
+  }
+
+  function showToast(msg){
+    const toast = document.getElementById('global-toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(window._toastTO);
+    window._toastTO = setTimeout(()=>toast.classList.remove('show'), 2200);
+  }
+
+  function toggleOverflowMenu(evt){
+    evt.stopPropagation();
+    document.getElementById('overflow-menu').classList.toggle('open');
+  }
+  function closeOverflowMenu(){
+    const menu = document.getElementById('overflow-menu');
+    if(menu) menu.classList.remove('open');
+  }
+  document.addEventListener('click', closeOverflowMenu);
+
+  function toggleUserMenu(evt){
+    evt.stopPropagation();
+    const menu = evt.currentTarget.parentElement.querySelector('.user-menu');
+    const wasOpen = menu.classList.contains('open');
+    closeAllUserMenus();
+    if(!wasOpen) menu.classList.add('open');
+  }
+  function closeAllUserMenus(){
+    document.querySelectorAll('.user-menu.open').forEach(m=>m.classList.remove('open'));
+  }
+  document.addEventListener('click', ()=>closeAllUserMenus());
+
+  function openThread(name){
+    document.getElementById('thread-title').textContent = name;
+    showScreen('screen-message-thread');
+  }
+
+  // ---------- Persona switcher (Dealer Principal/GM / Controller-CFO / Fixed Ops Director / Modern Retail Director) ----------
+  let currentPersona = 'gm';
+
+  const personas = {
+    gm: {
+      label: 'Dealer Principal/GM',
+      initials: 'GM',
+      recentsHtml: `
+        <div class="list-row" onclick="showToast('Opening Modern Retail Overview…')">
+          <div class="row-badge blue">GM</div>
+          <div class="row-text"><div class="row-title">Modern Retail Overview</div><div class="row-sub">MTD &middot; Front Gross 68% of goal</div></div>
+          <div class="row-dot"></div>
+        </div>
+        <div class="list-row" onclick="showToast('Opening Sales Leaderboard…')">
+          <div class="row-badge blue">GM</div>
+          <div class="row-text"><div class="row-title">Sales Leaderboard</div><div class="row-sub">MTD &middot; 12 reps tracked</div></div>
+          <div class="row-dot"></div>
+        </div>
+        <div class="list-row" onclick="showToast('Opening F&amp;I Overview…')">
+          <div class="row-badge blue">GM</div>
+          <div class="row-text"><div class="row-title">F&amp;I Overview</div><div class="row-sub">PVR $1,847 &middot; +3.1% vs. 6-mo trend</div></div>
+          <div class="row-dot"></div>
+        </div>
+        <div class="list-row" onclick="showToast('Opening Daily Operational Control…')">
+          <div class="row-badge blue">GM</div>
+          <div class="row-text"><div class="row-title">Daily Operational Control</div><div class="row-sub">3 exceptions need review</div></div>
+          <div class="row-dot"></div>
+        </div>
+        <div class="list-row" onclick="showToast('Opening Compliance Dashboard…')">
+          <div class="row-badge blue">GM</div>
+          <div class="row-text"><div class="row-title">Compliance Dashboard</div><div class="row-sub">2 alerts</div></div>
+          <div class="row-dot"></div>
+        </div>`,
+      workflowsHtml: `
+        <div class="section-label left icon" style="margin-top:0;"><span class="sec-badge" style="background:#2f7bf0;">IS</span>Intelligence Suite</div>
+        <div class="list-row" onclick="showToast('Opening Modern Retail Overview…')"><div class="row-text"><div class="row-title">Modern Retail Overview</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Sales Leaderboard…')"><div class="row-text"><div class="row-title">Sales Leaderboard</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening F&amp;I Overview…')"><div class="row-text"><div class="row-title">F&amp;I Overview</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Goals &amp; Forecasting…')"><div class="row-text"><div class="row-title">Goals &amp; Forecasting</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Daily Controls…')"><div class="row-text"><div class="row-title">Daily Controls</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Compliance…')"><div class="row-text"><div class="row-title">Compliance</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Customer Analysis…')"><div class="row-text"><div class="row-title">Customer Analysis</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Vendor Expenses…')"><div class="row-text"><div class="row-title">Vendor Expenses</div></div><div class="row-chev">›</div></div>
+
+        <div class="section-label left icon"><span class="sec-badge" style="background:#1f9d55;">AC</span>Accounting</div>
+        <div class="list-row" onclick="showToast('Opening Financial Statements…')"><div class="row-text"><div class="row-title">Financial Statements</div></div><div class="row-chev">›</div></div>
+
+        <div class="section-label left">Resources</div>
+        <div class="list-row" onclick="showToast('Opening CDK University…')"><div class="row-text"><div class="row-title">CDK University</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening a support ticket…')"><div class="row-text"><div class="row-title">Open a Support Ticket</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Starting a chat with support…')"><div class="row-text"><div class="row-title">Chat with Support</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Online Help…')"><div class="row-text"><div class="row-title">Online Help</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Documents…')"><div class="row-text"><div class="row-title">Documents</div></div><div class="row-chev">›</div></div>`,
+      kpiHtml: `
+        <div class="kpi-card">
+          <div class="kpi-head">Cash Position<span class="arrow">→</span></div>
+          <div class="kpi-big">$4.34M</div>
+          <div class="kpi-pill up">↑ +4.2%</div>
+          <div class="kpi-sub">14-day trend</div>
+          <svg class="sparkline" viewBox="0 0 172 32" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="sparkFillGM1" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#1f9d55" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="#1f9d55" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <polyline points="0,32 0,26 20,24 40,20 60,18 80,14 100,16 120,10 140,8 160,6 172,4 172,32" fill="url(#sparkFillGM1)" stroke="none"/>
+            <polyline points="0,26 20,24 40,20 60,18 80,14 100,16 120,10 140,8 160,6 172,4" fill="none" stroke="#1f9d55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-head">Front Gross MTD<span class="arrow">→</span></div>
+          <div class="donut-wrap">
+            <div class="donut" style="background:conic-gradient(#2f6fea 0% 68%, var(--page) 68% 100%);">
+              <div class="donut-center"><div class="donut-num">68%</div><div class="donut-lbl">TO GOAL</div></div>
+            </div>
+            <div class="kpi-legend">
+              <div class="legend-row"><span class="legend-lbl">MTD</span><span class="legend-val">$152.4k of $225k</span></div>
+              <div class="legend-row"><span class="legend-lbl">vs. Plan (YoY)</span><span class="legend-val">+12.4%</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-head">F&amp;I PVR<span class="arrow">→</span></div>
+          <div class="kpi-big">$1,847</div>
+          <div class="kpi-pill up">↑ +3.1%</div>
+          <div class="kpi-sub">6-month trend</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-head">Store Performance<span class="arrow">→</span></div>
+          <div class="kpi-line-list">
+            <div class="kpi-line"><span class="kpi-line-lbl">Statler Toyota</span><span class="kpi-line-val">102%</span></div>
+            <div class="kpi-line"><span class="kpi-line-lbl">Statler Honda</span><span class="kpi-line-val">94%</span></div>
+            <div class="kpi-line"><span class="kpi-line-lbl">Statler Ford</span><span class="kpi-line-val">78%</span></div>
+            <div class="kpi-line"><span class="kpi-line-lbl">Statler Mazda</span><span class="kpi-line-val">61%</span></div>
+          </div>
+        </div>`,
+      agendaLabel: "Today's Agenda",
+      agendaHtml: `
+        <div class="appt-card condensed accent">
+          <div class="appt-info">
+            <div class="appt-time">3 Exceptions <span class="badge" style="background:var(--red);">Review</span></div>
+            <div class="appt-name">Daily Operational Control</div>
+            <div class="appt-veh">Needs your review today</div>
+          </div>
+          <button class="btn-writeup" onclick="showToast('Reviewing exceptions…')">Review Exceptions</button>
+        </div>
+        <div class="appt-card condensed accent">
+          <div class="appt-info">
+            <div class="appt-time">2 Alerts <span class="badge" style="background:var(--red);">Alert</span></div>
+            <div class="appt-name">Compliance Dashboard</div>
+            <div class="appt-veh">Flagged items to clear</div>
+          </div>
+          <button class="btn-writeup" onclick="showToast('Reviewing compliance alerts…')">Review Compliance Alerts</button>
+        </div>
+        <div class="appt-card condensed">
+          <div class="appt-info">
+            <div class="appt-time">61% of Goal <span class="badge" style="background:#f3b98c;">Underperforming</span></div>
+            <div class="appt-name">Statler Mazda</div>
+            <div class="appt-veh">Lowest of the four stores</div>
+          </div>
+          <button class="btn-writeup" onclick="showToast('Checking Statler Mazda performance…')">Check Store Performance</button>
+        </div>
+        <div class="appt-card condensed">
+          <div class="appt-info">
+            <div class="appt-time">Ready</div>
+            <div class="appt-name">Sales Leaderboard</div>
+            <div class="appt-veh">MTD standings across 12 reps</div>
+          </div>
+          <button class="btn-writeup" onclick="showToast('Opening Sales Leaderboard…')">View Leaderboard</button>
+        </div>`,
+      insightsHtml: `
+        <div class="notif-row" onclick="showToast('Reviewing exceptions…')">
+          <div class="notif-ic" style="background:#f3b98c;">⚠️</div>
+          <div class="notif-text">
+            <div class="notif-title">3 exceptions flagged in Daily Operational Control</div>
+            <div class="notif-sub">Worth clearing before they roll into tomorrow</div>
+          </div>
+        </div>
+        <div class="notif-row" onclick="showToast('Reviewing compliance alerts…')">
+          <div class="notif-ic" style="background:#f0c94e;">🚨</div>
+          <div class="notif-text">
+            <div class="notif-title">2 compliance alerts need attention</div>
+            <div class="notif-sub">Compliance Dashboard &middot; review before month-end</div>
+          </div>
+        </div>
+        <div class="notif-row" onclick="showToast('Checking Statler Mazda performance…')">
+          <div class="notif-ic" style="background:#a9c2f0;">📉</div>
+          <div class="notif-text">
+            <div class="notif-title">Statler Mazda is trailing the group at 61%</div>
+            <div class="notif-sub">Toyota 102% &middot; Honda 94% &middot; Ford 78% &middot; Mazda 61%</div>
+          </div>
+        </div>
+        <div class="notif-row" onclick="showToast('Opening Front Gross MTD…')">
+          <div class="notif-ic" style="background:var(--page);">🎯</div>
+          <div class="notif-text">
+            <div class="notif-title">Front Gross is pacing at 68% of goal</div>
+            <div class="notif-sub">$152.4k of $225k MTD &middot; +12.4% YoY</div>
+          </div>
+        </div>
+        <div class="notif-row" onclick="showToast('Opening F&amp;I Overview…')">
+          <div class="notif-ic" style="background:#a8e0b8;">📈</div>
+          <div class="notif-text">
+            <div class="notif-title">F&amp;I PVR trending up</div>
+            <div class="notif-sub">$1,847 &middot; up 3.1% over the last 6 months</div>
+          </div>
+        </div>`,
+      aivaWelcomeHtml: `
+              Hello [Name]!<br><br>
+              I'm AIVA, your AI assistant.<br><br>
+              I can help you understand what's driving your dealership's performance and what to do about it.<br><br>
+              How can I help you today?`,
+      aivaSuggestionsHtml: `
+              <div class="aiva-suggest" onclick="askAiva('Why did Front Gross change this month?')">Why did Front Gross change this month?</div>
+              <div class="aiva-suggest" onclick="askAiva('Which store needs my attention?')">Which store needs my attention?</div>
+              <div class="aiva-suggest" onclick="askAiva('What should I do about today&#39;s exceptions?')">What should I do about today's exceptions?</div>`,
+      messagesHtml: `
+        <div class="conv-row" onclick="openThread('Controller/CFO')">
+          <div class="conv-avatar" style="background:#2f7bf0;">CF</div>
+          <div class="conv-text">
+            <div class="conv-top"><span class="conv-name">Controller/CFO</span><span class="conv-time">9:12 AM</span></div>
+            <div class="conv-sub">Month-end close is on track, 4 items left.</div>
+          </div>
+          <div class="conv-unread"></div>
+        </div>
+        <div class="conv-row" onclick="showToast('Opening conversation with Fixed Operations Director…')">
+          <div class="conv-avatar" style="background:#8b5cf6;">FO</div>
+          <div class="conv-text">
+            <div class="conv-top"><span class="conv-name">Fixed Operations Director</span><span class="conv-time">8:50 AM</span></div>
+            <div class="conv-sub">RO aging report is ready for your review.</div>
+          </div>
+          <div class="conv-unread"></div>
+        </div>
+        <div class="conv-row" onclick="showToast('Opening conversation with Modern Retail Director…')">
+          <div class="conv-avatar" style="background:#f5a623;">VO</div>
+          <div class="conv-text">
+            <div class="conv-top"><span class="conv-name">Modern Retail Director</span><span class="conv-time">Yesterday</span></div>
+            <div class="conv-sub">Inventory aging flagged on two units over 60 days.</div>
+          </div>
+        </div>
+        <div class="conv-row" onclick="showToast('Opening conversation with Statler Mazda GM…')">
+          <div class="conv-avatar" style="background:#8a93a3;">SM</div>
+          <div class="conv-text">
+            <div class="conv-top"><span class="conv-name">Statler Mazda GM</span><span class="conv-time">Yesterday</span></div>
+            <div class="conv-sub">Following up on this month's pacing to goal.</div>
+          </div>
+          <div class="conv-unread"></div>
+        </div>`
+    },
+
+    controller: {
+      label: 'Controller/CFO',
+      initials: 'CF',
+      recentsHtml: `
+        <div class="list-row" onclick="showToast('Opening Cash Position…')">
+          <div class="row-badge blue">CF</div>
+          <div class="row-text"><div class="row-title">Cash Position</div><div class="row-sub">GL Inquiry &middot; Unposted $14.2k &middot; Voids 2</div></div>
+          <div class="row-dot"></div>
+        </div>
+        <div class="list-row" onclick="showToast('Opening Exception Report…')">
+          <div class="row-badge blue">CF</div>
+          <div class="row-text"><div class="row-title">Exception Report</div><div class="row-sub">5 flagged</div></div>
+          <div class="row-dot"></div>
+        </div>
+        <div class="list-row" onclick="showToast('Opening AP Aging Report…')">
+          <div class="row-badge blue">CF</div>
+          <div class="row-text"><div class="row-title">AP Aging Report</div><div class="row-sub">Past Due $38.4k &middot; Cash Required $91.2k</div></div>
+          <div class="row-dot"></div>
+        </div>
+        <div class="list-row" onclick="showToast('Opening Month-End Close Checklist…')">
+          <div class="row-badge blue">CF</div>
+          <div class="row-text"><div class="row-title">Month-End Close Checklist</div><div class="row-sub">4 items remaining</div></div>
+          <div class="row-dot"></div>
+        </div>
+        <div class="list-row" onclick="showToast('Opening Financial Statements…')">
+          <div class="row-badge blue">CF</div>
+          <div class="row-text"><div class="row-title">Financial Statements</div><div class="row-sub">Cross-store P&amp;L</div></div>
+          <div class="row-dot"></div>
+        </div>`,
+      workflowsHtml: `
+        <div class="section-label left icon" style="margin-top:0;"><span class="sec-badge" style="background:#1f9d55;">AC</span>Accounting</div>
+        <div class="list-row" onclick="showToast('Opening GL Inquiry…')"><div class="row-text"><div class="row-title">GL Inquiry</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Financial Statements…')"><div class="row-text"><div class="row-title">Financial Statements</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Month-End Close…')"><div class="row-text"><div class="row-title">Month-End Close</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening AP Aging…')"><div class="row-text"><div class="row-title">AP Aging</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening AR Aging…')"><div class="row-text"><div class="row-title">AR Aging</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Exception Report…')"><div class="row-text"><div class="row-title">Exception Report</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Journal Entry…')"><div class="row-text"><div class="row-title">Journal Entry</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Schedules…')"><div class="row-text"><div class="row-title">Schedules</div></div><div class="row-chev">›</div></div>
+
+        <div class="section-label left icon"><span class="sec-badge" style="background:#2f7bf0;">IS</span>Intelligence Suite</div>
+        <div class="list-row" onclick="showToast('Opening Compliance Audit…')"><div class="row-text"><div class="row-title">Compliance Audit</div></div><div class="row-chev">›</div></div>
+
+        <div class="section-label left">Resources</div>
+        <div class="list-row" onclick="showToast('Opening CDK University…')"><div class="row-text"><div class="row-title">CDK University</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening a support ticket…')"><div class="row-text"><div class="row-title">Open a Support Ticket</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Starting a chat with support…')"><div class="row-text"><div class="row-title">Chat with Support</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Online Help…')"><div class="row-text"><div class="row-title">Online Help</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Documents…')"><div class="row-text"><div class="row-title">Documents</div></div><div class="row-chev">›</div></div>`,
+      kpiHtml: `
+        <div class="kpi-card">
+          <div class="kpi-head">Cash Balance<span class="arrow">→</span></div>
+          <div class="kpi-big">$4.34M</div>
+          <div class="kpi-pill up">↑ +2.1%</div>
+          <div class="kpi-sub">14-day trend</div>
+          <svg class="sparkline" viewBox="0 0 172 32" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="sparkFillCFO1" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#1f9d55" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="#1f9d55" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <polyline points="0,32 0,26 20,24 40,20 60,18 80,14 100,16 120,10 140,8 160,6 172,4 172,32" fill="url(#sparkFillCFO1)" stroke="none"/>
+            <polyline points="0,26 20,24 40,20 60,18 80,14 100,16 120,10 140,8 160,6 172,4" fill="none" stroke="#1f9d55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-head">AR Aging Buckets<span class="arrow">→</span></div>
+          <div class="kpi-line-list">
+            <div class="kpi-line"><span class="kpi-line-lbl">Current</span><span class="kpi-line-val">$28.4k (70%)</span></div>
+            <div class="kpi-line"><span class="kpi-line-lbl">30-day</span><span class="kpi-line-val">$7.2k (18%)</span></div>
+            <div class="kpi-line"><span class="kpi-line-lbl">60-day</span><span class="kpi-line-val">$3.1k (8%)</span></div>
+            <div class="kpi-line"><span class="kpi-line-lbl">90+ day</span><span class="kpi-line-val">$1.6k (4%)</span></div>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-head">DSO<span class="arrow">→</span></div>
+          <div class="kpi-big">18.4</div>
+          <div class="kpi-pill down">↓ -1.2</div>
+          <div class="kpi-sub">rolling 30-day trend</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-head">AP Summary<span class="arrow">→</span></div>
+          <div class="kpi-line-list">
+            <div class="kpi-line"><span class="kpi-line-lbl">Cash Required</span><span class="kpi-line-val">$91.2k</span></div>
+            <div class="kpi-line"><span class="kpi-line-lbl">Past Due</span><span class="kpi-line-val">$38.4k</span></div>
+            <div class="kpi-line"><span class="kpi-line-lbl">Unposted</span><span class="kpi-line-val">$14.2k</span></div>
+            <div class="kpi-line"><span class="kpi-line-lbl">Reconciliation</span><span class="kpi-line-val">2 open</span></div>
+          </div>
+        </div>`,
+      agendaLabel: "Today's Agenda",
+      agendaHtml: `
+        <div class="appt-card condensed accent">
+          <div class="appt-info">
+            <div class="appt-time">5 Flagged <span class="badge" style="background:var(--red);">Review</span></div>
+            <div class="appt-name">Exception Report</div>
+            <div class="appt-veh">Transactions awaiting approval</div>
+          </div>
+          <button class="btn-writeup" onclick="showToast('Reviewing and approving exceptions…')">Review &amp; Approve</button>
+        </div>
+        <div class="appt-card condensed accent">
+          <div class="appt-info">
+            <div class="appt-time">4 Remaining</div>
+            <div class="appt-name">Month-End Close</div>
+            <div class="appt-veh">Checklist items left to complete</div>
+          </div>
+          <button class="btn-writeup" onclick="showToast('Opening Month-End Close Checklist…')">Complete Checklist</button>
+        </div>
+        <div class="appt-card condensed">
+          <div class="appt-info">
+            <div class="appt-time">$38.4k Past Due</div>
+            <div class="appt-name">AP Aging</div>
+            <div class="appt-veh">Cash required: $91.2k</div>
+          </div>
+          <button class="btn-writeup" onclick="showToast('Reviewing past due AP…')">Review Past Due</button>
+        </div>
+        <div class="appt-card condensed">
+          <div class="appt-info">
+            <div class="appt-time">Ready</div>
+            <div class="appt-name">Financial Statements</div>
+            <div class="appt-veh">Cross-store P&amp;L</div>
+          </div>
+          <button class="btn-writeup" onclick="showToast('Reviewing cross-store P&amp;L…')">Review Cross-Store P&amp;L</button>
+        </div>`,
+      insightsHtml: `
+        <div class="notif-row" onclick="showToast('Reviewing and approving exceptions…')">
+          <div class="notif-ic" style="background:#f3b98c;">⚠️</div>
+          <div class="notif-text">
+            <div class="notif-title">5 transactions are flagged for approval</div>
+            <div class="notif-sub">Exception Report &middot; awaiting your review</div>
+          </div>
+        </div>
+        <div class="notif-row" onclick="showToast('Opening Month-End Close Checklist…')">
+          <div class="notif-ic" style="background:var(--page);">📋</div>
+          <div class="notif-text">
+            <div class="notif-title">Month-end close is almost done</div>
+            <div class="notif-sub">4 checklist items remaining</div>
+          </div>
+        </div>
+        <div class="notif-row" onclick="showToast('Reviewing past due AP…')">
+          <div class="notif-ic" style="background:#f0c94e;">🏦</div>
+          <div class="notif-text">
+            <div class="notif-title">AP past due climbed to $38.4k</div>
+            <div class="notif-sub">$91.2k total cash required this cycle</div>
+          </div>
+        </div>
+        <div class="notif-row" onclick="showToast('Opening DSO trend…')">
+          <div class="notif-ic" style="background:#a8e0b8;">📈</div>
+          <div class="notif-text">
+            <div class="notif-title">DSO is improving</div>
+            <div class="notif-sub">18.4 days &middot; down 1.2 days on a rolling 30-day basis</div>
+          </div>
+        </div>
+        <div class="notif-row" onclick="showToast('Reviewing cross-store P&amp;L…')">
+          <div class="notif-ic" style="background:#a9c2f0;">📊</div>
+          <div class="notif-text">
+            <div class="notif-title">Cross-store P&amp;L is ready to review</div>
+            <div class="notif-sub">Financial Statements &middot; month-to-date</div>
+          </div>
+        </div>`,
+      aivaWelcomeHtml: `
+              Hello [Name]!<br><br>
+              I'm AIVA.<br><br>
+              I can help with exceptions, month-end close, and financial reporting.<br><br>
+              How can I help you today?`,
+      aivaSuggestionsHtml: `
+              <div class="aiva-suggest" onclick="askAiva('Which transactions need my approval?')">Which transactions need my approval?</div>
+              <div class="aiva-suggest" onclick="askAiva('What&#39;s left on my month-end close checklist?')">What's left on my month-end close checklist?</div>
+              <div class="aiva-suggest" onclick="askAiva('How is AP aging trending?')">How is AP aging trending?</div>`,
+      messagesHtml: `
+        <div class="conv-row" onclick="showToast('Opening conversation with AP Clerk…')">
+          <div class="conv-avatar" style="background:#2f7bf0;">AP</div>
+          <div class="conv-text">
+            <div class="conv-top"><span class="conv-name">AP Clerk</span><span class="conv-time">9:12 AM</span></div>
+            <div class="conv-sub">Two invoices need your sign-off before the batch runs.</div>
+          </div>
+          <div class="conv-unread"></div>
+        </div>
+        <div class="conv-row" onclick="showToast('Opening conversation with AR Clerk…')">
+          <div class="conv-avatar" style="background:#8b5cf6;">AR</div>
+          <div class="conv-text">
+            <div class="conv-top"><span class="conv-name">AR Clerk</span><span class="conv-time">8:50 AM</span></div>
+            <div class="conv-sub">90+ day bucket ticked up, flagging for your review.</div>
+          </div>
+          <div class="conv-unread"></div>
+        </div>
+        <div class="conv-row" onclick="openThread('Dealer Principal/GM')">
+          <div class="conv-avatar" style="background:#f5a623;">GM</div>
+          <div class="conv-text">
+            <div class="conv-top"><span class="conv-name">Dealer Principal/GM</span><span class="conv-time">Yesterday</span></div>
+            <div class="conv-sub">Asked for a cash position update ahead of the meeting.</div>
+          </div>
+        </div>
+        <div class="conv-row" onclick="showToast('Opening conversation with Payroll Clerk…')">
+          <div class="conv-avatar" style="background:#8a93a3;">PC</div>
+          <div class="conv-text">
+            <div class="conv-top"><span class="conv-name">Payroll Clerk</span><span class="conv-time">Yesterday</span></div>
+            <div class="conv-sub">Confirming this week's payroll run before close.</div>
+          </div>
+          <div class="conv-unread"></div>
+        </div>`
+    },
+
+    fixedops: {
+      label: 'Fixed Operations Director',
+      initials: 'FO',
+      recentsHtml: `
+        <div class="list-row" onclick="showToast('Opening Daily Operational Control…')">
+          <div class="row-badge blue">FO</div>
+          <div class="row-text"><div class="row-title">Daily Operational Control</div><div class="row-sub">3 variances</div></div>
+          <div class="row-dot"></div>
+        </div>
+        <div class="list-row" onclick="showToast('Opening RO Aging Report…')">
+          <div class="row-badge blue">FO</div>
+          <div class="row-text"><div class="row-title">RO Aging Report</div><div class="row-sub">8 over 30 days</div></div>
+          <div class="row-dot"></div>
+        </div>
+        <div class="list-row" onclick="showToast('Opening Service Gross Profit…')">
+          <div class="row-badge blue">FO</div>
+          <div class="row-text"><div class="row-title">Service Gross Profit MTD</div><div class="row-sub">$284.6k</div></div>
+          <div class="row-dot"></div>
+        </div>
+        <div class="list-row" onclick="showToast('Opening Tech Performance report…')">
+          <div class="row-badge blue">FO</div>
+          <div class="row-text"><div class="row-title">Tech Performance</div><div class="row-sub">July 2026</div></div>
+          <div class="row-dot"></div>
+        </div>
+        <div class="list-row" onclick="showToast('Opening Support Case #PT-4419…')">
+          <div class="row-badge blue">FO</div>
+          <div class="row-text"><div class="row-title">Support Case #PT-4419</div><div class="row-sub">Open</div></div>
+          <div class="row-dot"></div>
+        </div>`,
+      workflowsHtml: `
+        <div class="section-label left icon" style="margin-top:0;"><span class="sec-badge" style="background:#2f7bf0;">IS</span>Intelligence Suite</div>
+        <div class="list-row" onclick="showToast('Opening Daily Controls…')"><div class="row-text"><div class="row-title">Daily Controls</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Service Reports…')"><div class="row-text"><div class="row-title">Service Reports</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Parts Reports…')"><div class="row-text"><div class="row-title">Parts Reports</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening RO Aging…')"><div class="row-text"><div class="row-title">RO Aging</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Tech Performance…')"><div class="row-text"><div class="row-title">Tech Performance</div></div><div class="row-chev">›</div></div>
+
+        <div class="section-label left icon"><span class="sec-badge" style="background:#8b5cf6;">DM</span>Document Mgmt</div>
+        <div class="list-row" onclick="showToast('Opening Support Cases…')"><div class="row-text"><div class="row-title">Support Cases</div></div><div class="row-chev">›</div></div>
+
+        <div class="section-label left">Resources</div>
+        <div class="list-row" onclick="showToast('Opening CDK University…')"><div class="row-text"><div class="row-title">CDK University</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening a support ticket…')"><div class="row-text"><div class="row-title">Open a Support Ticket</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Starting a chat with support…')"><div class="row-text"><div class="row-title">Chat with Support</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Online Help…')"><div class="row-text"><div class="row-title">Online Help</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Documents…')"><div class="row-text"><div class="row-title">Documents</div></div><div class="row-chev">›</div></div>`,
+      kpiHtml: `
+        <div class="kpi-card">
+          <div class="kpi-head">Service Throughput<span class="arrow">→</span></div>
+          <div class="kpi-big">47</div>
+          <div class="kpi-pill up">↑ +8</div>
+          <div class="kpi-sub">open ROs, 7-day trend</div>
+          <svg class="sparkline" viewBox="0 0 172 32" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="sparkFillFO1" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#1f9d55" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="#1f9d55" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <polyline points="0,32 0,26 20,24 40,20 60,18 80,14 100,16 120,10 140,8 160,6 172,4 172,32" fill="url(#sparkFillFO1)" stroke="none"/>
+            <polyline points="0,26 20,24 40,20 60,18 80,14 100,16 120,10 140,8 160,6 172,4" fill="none" stroke="#1f9d55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-head">Parts Activity<span class="arrow">→</span></div>
+          <div class="kpi-big">12</div>
+          <div class="kpi-pill down">↓ -2</div>
+          <div class="kpi-sub">tickets, 14-day trend</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-head">Daily Variances<span class="arrow">→</span></div>
+          <div class="donut-wrap">
+            <div class="donut" style="background:conic-gradient(#f0a020 0% 25%, var(--page) 25% 100%);">
+              <div class="donut-center"><div class="donut-num">25%</div><div class="donut-lbl">NEED REVIEW</div></div>
+            </div>
+            <div class="kpi-legend">
+              <div class="legend-row"><span class="legend-lbl">Service</span><span class="legend-val">1</span></div>
+              <div class="legend-row"><span class="legend-lbl">Parts</span><span class="legend-val">2</span></div>
+              <div class="legend-row"><span class="legend-lbl">Resolved</span><span class="legend-val">8</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-head">Goals Snapshot<span class="arrow">→</span></div>
+          <div class="kpi-line-list">
+            <div class="kpi-line"><span class="kpi-line-lbl">Front Sales</span><span class="kpi-line-val">68%</span></div>
+            <div class="kpi-line"><span class="kpi-line-lbl">F&amp;I PVR</span><span class="kpi-line-val">97%</span></div>
+            <div class="kpi-line"><span class="kpi-line-lbl">Service Hrs</span><span class="kpi-line-val">82%</span></div>
+            <div class="kpi-line"><span class="kpi-line-lbl">Parts Margin</span><span class="kpi-line-val">54%</span></div>
+          </div>
+        </div>`,
+      agendaLabel: "Today's Agenda",
+      agendaHtml: `
+        <div class="appt-card condensed accent">
+          <div class="appt-info">
+            <div class="appt-time">3 Flagged <span class="badge" style="background:var(--red);">Review</span></div>
+            <div class="appt-name">Daily Variances</div>
+            <div class="appt-veh">Service 1 &middot; Parts 2</div>
+          </div>
+          <button class="btn-writeup" onclick="showToast('Reviewing daily variances…')">Review Variances</button>
+        </div>
+        <div class="appt-card condensed accent">
+          <div class="appt-info">
+            <div class="appt-time">8 Over 30 Days</div>
+            <div class="appt-name">RO Aging</div>
+            <div class="appt-veh">Repair orders aging past 30 days</div>
+          </div>
+          <button class="btn-writeup" onclick="showToast('Reviewing aging repair orders…')">Review Aging ROs</button>
+        </div>
+        <div class="appt-card condensed">
+          <div class="appt-info">
+            <div class="appt-time">Open</div>
+            <div class="appt-name">Support Case #PT-4419</div>
+            <div class="appt-veh">Parts &amp; Technician — check status</div>
+          </div>
+          <button class="btn-writeup" onclick="showToast('Checking Support Case #PT-4419…')">Check Case Status</button>
+        </div>
+        <div class="appt-card condensed">
+          <div class="appt-info">
+            <div class="appt-time">Ready</div>
+            <div class="appt-name">Tech Performance</div>
+            <div class="appt-veh">July 2026 report</div>
+          </div>
+          <button class="btn-writeup" onclick="showToast('Reviewing Tech Performance report…')">Review Report</button>
+        </div>`,
+      insightsHtml: `
+        <div class="notif-row" onclick="showToast('Reviewing daily variances…')">
+          <div class="notif-ic" style="background:#f3b98c;">⚠️</div>
+          <div class="notif-text">
+            <div class="notif-title">3 variances flagged today</div>
+            <div class="notif-sub">Service 1 &middot; Parts 2 &middot; 8 already resolved</div>
+          </div>
+        </div>
+        <div class="notif-row" onclick="showToast('Reviewing aging repair orders…')">
+          <div class="notif-ic" style="background:#f0c94e;">⏳</div>
+          <div class="notif-text">
+            <div class="notif-title">8 repair orders are aging past 30 days</div>
+            <div class="notif-sub">RO Aging Report &middot; worth a closer look</div>
+          </div>
+        </div>
+        <div class="notif-row" onclick="showToast('Checking Support Case #PT-4419…')">
+          <div class="notif-ic" style="background:#a9c2f0;">🎫</div>
+          <div class="notif-text">
+            <div class="notif-title">Support Case #PT-4419 is still open</div>
+            <div class="notif-sub">Worth a status check</div>
+          </div>
+        </div>
+        <div class="notif-row" onclick="showToast('Opening Service Throughput…')">
+          <div class="notif-ic" style="background:var(--page);">🔧</div>
+          <div class="notif-text">
+            <div class="notif-title">Service throughput is climbing</div>
+            <div class="notif-sub">47 open ROs &middot; up 8 over the last 7 days</div>
+          </div>
+        </div>
+        <div class="notif-row" onclick="showToast('Reviewing Tech Performance report…')">
+          <div class="notif-ic" style="background:#a8e0b8;">📈</div>
+          <div class="notif-text">
+            <div class="notif-title">Tech Performance report is ready</div>
+            <div class="notif-sub">July 2026 &middot; ready for your review</div>
+          </div>
+        </div>`,
+      aivaWelcomeHtml: `
+              Hello [Name]!<br><br>
+              I'm AIVA.<br><br>
+              I can help you track service and parts performance across the department.<br><br>
+              How can I help you today?`,
+      aivaSuggestionsHtml: `
+              <div class="aiva-suggest" onclick="askAiva('Why are ROs aging past 30 days?')">Why are ROs aging past 30 days?</div>
+              <div class="aiva-suggest" onclick="askAiva('How is my tech utilization trending?')">How is my tech utilization trending?</div>
+              <div class="aiva-suggest" onclick="askAiva('What&#39;s driving today&#39;s variances?')">What's driving today's variances?</div>`,
+      messagesHtml: `
+        <div class="conv-row" onclick="openThread('Dealer Principal/GM')">
+          <div class="conv-avatar" style="background:#2f7bf0;">GM</div>
+          <div class="conv-text">
+            <div class="conv-top"><span class="conv-name">Dealer Principal/GM</span><span class="conv-time">9:12 AM</span></div>
+            <div class="conv-sub">Asked for an update on the RO aging report.</div>
+          </div>
+          <div class="conv-unread"></div>
+        </div>
+        <div class="conv-row" onclick="showToast('Opening conversation with Service Manager…')">
+          <div class="conv-avatar" style="background:#8b5cf6;">SM</div>
+          <div class="conv-text">
+            <div class="conv-top"><span class="conv-name">Service Manager</span><span class="conv-time">8:50 AM</span></div>
+            <div class="conv-sub">Flagging two techs running behind today.</div>
+          </div>
+          <div class="conv-unread"></div>
+        </div>
+        <div class="conv-row" onclick="showToast('Opening conversation with Parts Manager…')">
+          <div class="conv-avatar" style="background:#f5a623;">PM</div>
+          <div class="conv-text">
+            <div class="conv-top"><span class="conv-name">Parts Manager</span><span class="conv-time">Yesterday</span></div>
+            <div class="conv-sub">Support Case #PT-4419 still waiting on a part.</div>
+          </div>
+        </div>
+        <div class="conv-row" onclick="showToast('Opening conversation with Controller/CFO…')">
+          <div class="conv-avatar" style="background:#8a93a3;">CF</div>
+          <div class="conv-text">
+            <div class="conv-top"><span class="conv-name">Controller/CFO</span><span class="conv-time">Yesterday</span></div>
+            <div class="conv-sub">Requesting Service Gross Profit numbers for close.</div>
+          </div>
+          <div class="conv-unread"></div>
+        </div>`
+    },
+
+    variableops: {
+      label: 'Modern Retail Director',
+      initials: 'VO',
+      recentsHtml: `
+        <div class="list-row" onclick="showToast('Opening Modern Retail Overview…')">
+          <div class="row-badge blue">VO</div>
+          <div class="row-text"><div class="row-title">Modern Retail Overview</div><div class="row-sub">MTD</div></div>
+          <div class="row-dot"></div>
+        </div>
+        <div class="list-row" onclick="showToast('Opening Front Gross Trend…')">
+          <div class="row-badge blue">VO</div>
+          <div class="row-text"><div class="row-title">Front Gross Trend</div><div class="row-sub">68% of goal</div></div>
+          <div class="row-dot"></div>
+        </div>
+        <div class="list-row" onclick="showToast('Opening Inventory Aging Report…')">
+          <div class="row-badge blue">VO</div>
+          <div class="row-text"><div class="row-title">Inventory Aging Report</div><div class="row-sub">Units over 60 days</div></div>
+          <div class="row-dot"></div>
+        </div>
+        <div class="list-row" onclick="showToast('Opening F&amp;I Penetration Summary…')">
+          <div class="row-badge blue">VO</div>
+          <div class="row-text"><div class="row-title">F&amp;I Penetration Summary</div><div class="row-sub">VSC &middot; GAP &middot; Maintenance</div></div>
+          <div class="row-dot"></div>
+        </div>
+        <div class="list-row" onclick="showToast('Opening Sales Mix Report…')">
+          <div class="row-badge blue">VO</div>
+          <div class="row-text"><div class="row-title">Sales Mix Report</div><div class="row-sub">New &middot; Used &middot; Lease</div></div>
+          <div class="row-dot"></div>
+        </div>`,
+      workflowsHtml: `
+        <div class="section-label left icon" style="margin-top:0;"><span class="sec-badge" style="background:#2f7bf0;">IS</span>Intelligence Suite</div>
+        <div class="list-row" onclick="showToast('Opening Modern Retail Overview…')"><div class="row-text"><div class="row-title">Modern Retail Overview</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Front/Back Gross Trends…')"><div class="row-text"><div class="row-title">Front/Back Gross Trends</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Inventory Aging…')"><div class="row-text"><div class="row-title">Inventory Aging</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening F&amp;I Penetration…')"><div class="row-text"><div class="row-title">F&amp;I Penetration</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Sales Mix Report…')"><div class="row-text"><div class="row-title">Sales Mix Report</div></div><div class="row-chev">›</div></div>
+
+        <div class="section-label left">Resources</div>
+        <div class="list-row" onclick="showToast('Opening CDK University…')"><div class="row-text"><div class="row-title">CDK University</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening a support ticket…')"><div class="row-text"><div class="row-title">Open a Support Ticket</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Starting a chat with support…')"><div class="row-text"><div class="row-title">Chat with Support</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Online Help…')"><div class="row-text"><div class="row-title">Online Help</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Documents…')"><div class="row-text"><div class="row-title">Documents</div></div><div class="row-chev">›</div></div>`,
+      kpiHtml: `
+        <div class="kpi-card">
+          <div class="kpi-head">Front Gross Per Unit<span class="arrow">→</span></div>
+          <div class="kpi-big">$2,847</div>
+          <div class="kpi-pill up">↑ +9.4%</div>
+          <div class="kpi-sub">vs. goal, MTD</div>
+          <svg class="sparkline" viewBox="0 0 172 32" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="sparkFillVO1" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#1f9d55" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="#1f9d55" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <polyline points="0,32 0,26 20,24 40,20 60,18 80,14 100,16 120,10 140,8 160,6 172,4 172,32" fill="url(#sparkFillVO1)" stroke="none"/>
+            <polyline points="0,26 20,24 40,20 60,18 80,14 100,16 120,10 140,8 160,6 172,4" fill="none" stroke="#1f9d55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-head">Back Gross Per Unit (F&amp;I)<span class="arrow">→</span></div>
+          <div class="kpi-big">$1,847</div>
+          <div class="kpi-pill up">↑ +3.1%</div>
+          <div class="kpi-sub">vs. goal, MTD</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-head">Inventory Turn Ratio<span class="arrow">→</span></div>
+          <div class="kpi-line-list">
+            <div class="kpi-line"><span class="kpi-line-lbl">New</span><span class="kpi-line-val">6.2x</span></div>
+            <div class="kpi-line"><span class="kpi-line-lbl">Used</span><span class="kpi-line-val">4.8x</span></div>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-head">Modern Retail Expenses<span class="arrow">→</span></div>
+          <div class="donut-wrap">
+            <div class="donut" style="background:conic-gradient(#2f6fea 0% 11.4%, var(--page) 11.4% 100%);">
+              <div class="donut-center"><div class="donut-num">11.4%</div><div class="donut-lbl">OF GROSS</div></div>
+            </div>
+            <div class="kpi-legend">
+              <div class="legend-row"><span class="legend-lbl">Target</span><span class="legend-val">≤ 12%</span></div>
+              <div class="legend-row"><span class="legend-lbl">vs. Last Month</span><span class="legend-val">-0.6 pts</span></div>
+            </div>
+          </div>
+        </div>`,
+      agendaLabel: "Today's Agenda",
+      agendaHtml: `
+        <div class="appt-card condensed accent">
+          <div class="appt-info">
+            <div class="appt-time">Alert <span class="badge" style="background:var(--red);">Aging</span></div>
+            <div class="appt-name">Inventory Aging</div>
+            <div class="appt-veh">Units over 60 days flagged</div>
+          </div>
+          <button class="btn-writeup" onclick="showToast('Reviewing aging inventory…')">Review Aging Inventory</button>
+        </div>
+        <div class="appt-card condensed accent">
+          <div class="appt-info">
+            <div class="appt-time">Below Target</div>
+            <div class="appt-name">F&amp;I Penetration</div>
+            <div class="appt-veh">One or more products trailing</div>
+          </div>
+          <button class="btn-writeup" onclick="showToast('Reviewing penetration by product…')">Review Penetration by Product</button>
+        </div>
+        <div class="appt-card condensed">
+          <div class="appt-info">
+            <div class="appt-time">Shift Detected</div>
+            <div class="appt-name">Sales Mix</div>
+            <div class="appt-veh">New / Used / Lease balance moving</div>
+          </div>
+          <button class="btn-writeup" onclick="showToast('Reviewing sales mix…')">Review Sales Mix</button>
+        </div>
+        <div class="appt-card condensed">
+          <div class="appt-info">
+            <div class="appt-time">Flagged by AIVA <span class="badge" style="background:#8b5cf6;">Insight</span></div>
+            <div class="appt-name">Front Gross Trend</div>
+            <div class="appt-veh">Driver analysis ready</div>
+          </div>
+          <button class="btn-writeup" onclick="showToast('Reviewing driver analysis…')">Review Driver Analysis</button>
+        </div>`,
+      insightsHtml: `
+        <div class="notif-row" onclick="showToast('Reviewing aging inventory…')">
+          <div class="notif-ic" style="background:#f3b98c;">⚠️</div>
+          <div class="notif-text">
+            <div class="notif-title">Units are aging past 60 days</div>
+            <div class="notif-sub">Inventory Aging Report &middot; worth a review</div>
+          </div>
+        </div>
+        <div class="notif-row" onclick="showToast('Reviewing penetration by product…')">
+          <div class="notif-ic" style="background:#f0c94e;">📉</div>
+          <div class="notif-text">
+            <div class="notif-title">F&amp;I penetration is below target on one product</div>
+            <div class="notif-sub">Worth a closer look by product line</div>
+          </div>
+        </div>
+        <div class="notif-row" onclick="showToast('Reviewing sales mix…')">
+          <div class="notif-ic" style="background:#a9c2f0;">🔀</div>
+          <div class="notif-text">
+            <div class="notif-title">Sales mix is shifting</div>
+            <div class="notif-sub">New / Used / Lease balance moved this month</div>
+          </div>
+        </div>
+        <div class="notif-row" onclick="showToast('Reviewing driver analysis…')">
+          <div class="notif-ic" style="background:#eaf1ff;">✦</div>
+          <div class="notif-text">
+            <div class="notif-title">AIVA flagged a shift in Front Gross</div>
+            <div class="notif-sub">Driver analysis ready for your review</div>
+          </div>
+        </div>
+        <div class="notif-row" onclick="showToast('Opening Back Gross Per Unit…')">
+          <div class="notif-ic" style="background:#a8e0b8;">📈</div>
+          <div class="notif-text">
+            <div class="notif-title">Back Gross Per Unit is trending up</div>
+            <div class="notif-sub">$1,847 &middot; up 3.1% vs. goal MTD</div>
+          </div>
+        </div>`,
+      aivaWelcomeHtml: `
+              Hello [Name]!<br><br>
+              I'm AIVA.<br><br>
+              I can help you track sales, F&amp;I, and inventory performance across Modern Retail.<br><br>
+              How can I help you today?`,
+      aivaSuggestionsHtml: `
+              <div class="aiva-suggest" onclick="askAiva('What&#39;s driving our Front Gross this month?')">What's driving our Front Gross this month?</div>
+              <div class="aiva-suggest" onclick="askAiva('Which inventory is at risk of aging out?')">Which inventory is at risk of aging out?</div>
+              <div class="aiva-suggest" onclick="askAiva('How is F&amp;I penetration trending by product?')">How is F&amp;I penetration trending by product?</div>`,
+      messagesHtml: `
+        <div class="conv-row" onclick="openThread('Dealer Principal/GM')">
+          <div class="conv-avatar" style="background:#2f7bf0;">GM</div>
+          <div class="conv-text">
+            <div class="conv-top"><span class="conv-name">Dealer Principal/GM</span><span class="conv-time">9:12 AM</span></div>
+            <div class="conv-sub">Asked about the Front Gross trend before the meeting.</div>
+          </div>
+          <div class="conv-unread"></div>
+        </div>
+        <div class="conv-row" onclick="showToast('Opening conversation with Sales Manager…')">
+          <div class="conv-avatar" style="background:#8b5cf6;">SM</div>
+          <div class="conv-text">
+            <div class="conv-top"><span class="conv-name">Sales Manager</span><span class="conv-time">8:50 AM</span></div>
+            <div class="conv-sub">Sales mix is shifting toward used this week.</div>
+          </div>
+          <div class="conv-unread"></div>
+        </div>
+        <div class="conv-row" onclick="showToast('Opening conversation with F&amp;I Manager…')">
+          <div class="conv-avatar" style="background:#f5a623;">FI</div>
+          <div class="conv-text">
+            <div class="conv-top"><span class="conv-name">F&amp;I Manager</span><span class="conv-time">Yesterday</span></div>
+            <div class="conv-sub">Penetration on Tire &amp; Wheel is trailing again.</div>
+          </div>
+        </div>
+        <div class="conv-row" onclick="showToast('Opening conversation with Controller/CFO…')">
+          <div class="conv-avatar" style="background:#8a93a3;">CF</div>
+          <div class="conv-text">
+            <div class="conv-top"><span class="conv-name">Controller/CFO</span><span class="conv-time">Yesterday</span></div>
+            <div class="conv-sub">Requesting inventory aging numbers for the close.</div>
+          </div>
+          <div class="conv-unread"></div>
+        </div>`
+    }
+  };
+
+  function applyPersona(key){
+    const p = personas[key];
+    if(!p) return;
+    currentPersona = key;
+
+    document.querySelectorAll('.avatar').forEach(a=>{ a.textContent = p.initials; });
+    document.getElementById('recents-list').innerHTML = p.recentsHtml;
+    document.getElementById('workflows-list').innerHTML = p.workflowsHtml;
+    document.getElementById('myday-kpi-scroll').innerHTML = p.kpiHtml;
+    document.getElementById('myday-agenda-label').textContent = p.agendaLabel;
+    document.getElementById('myday-agenda-items').innerHTML = p.agendaHtml;
+    document.getElementById('myday-insights-items').innerHTML = p.insightsHtml;
+    document.getElementById('messages-list').innerHTML = p.messagesHtml;
+
+    // Full reset of the AIVA chat log — clears any in-progress conversation and
+    // restores the welcome message + suggestions for the newly selected persona.
+    document.getElementById('aiva-chat-log').innerHTML = `
+      <div class="aiva-msg">
+        <div class="aiva-avatar-sm">✦</div>
+        <div style="flex:1; min-width:0;">
+          <div class="aiva-msg-meta">9:01 AM</div>
+          <div class="aiva-msg-text" id="aiva-welcome-text">${p.aivaWelcomeHtml}</div>
+          <div id="aiva-suggestions">${p.aivaSuggestionsHtml}</div>
+        </div>
+      </div>`;
+
+    document.querySelectorAll('.persona-item').forEach(el=>{
+      el.classList.toggle('active', el.dataset.persona === key);
+    });
+
+    showToast('Switched to ' + p.label);
+  }
+
+
+  // ---------- AIVA tab ----------
+  const aivaReplies = {
+    'Why did Front Gross change this month?': "Front Gross is at 68% of goal — $152.4k of $225k MTD, up 12.4% year-over-year. Statler Mazda is the biggest drag at 61% of goal, well behind Toyota's 102%.",
+    'Which store needs my attention?': "Statler Mazda is trailing the group at 61% of goal, compared to Toyota at 102%, Honda at 94%, and Ford at 78%.",
+    "What should I do about today's exceptions?": "Daily Operational Control has 3 exceptions flagged and the Compliance Dashboard has 2 alerts — both are worth clearing before they roll into tomorrow.",
+    'Which transactions need my approval?': "5 transactions are flagged in the Exception Report and are awaiting your approval.",
+    "What's left on my month-end close checklist?": "4 items remain on the Month-End Close Checklist.",
+    'How is AP aging trending?': "AP has $91.2k in cash required this cycle, with $38.4k past due and $14.2k unposted.",
+    'Why are ROs aging past 30 days?': "8 repair orders are currently aging past 30 days — worth reviewing the RO Aging Report to see which ones are stuck and why.",
+    'How is my tech utilization trending?': "Service throughput is up 8 over the last 7 days to 47 open ROs, and the Tech Performance report for July 2026 is ready to review.",
+    "What's driving today's variances?": "Today's variances break down to 1 in Service and 2 in Parts, out of 11 total reviewed — 8 have already been resolved.",
+    "What's driving our Front Gross this month?": "Front Gross Per Unit is at $2,847, up 9.4% vs. goal MTD — AIVA flagged this trend for a closer driver analysis.",
+    'Which inventory is at risk of aging out?': "The Inventory Aging Report shows units over 60 days that are worth reviewing before they age further.",
+    'How is F&I penetration trending by product?': "Back Gross Per Unit (F&I) is at $1,847, up 3.1% vs. goal MTD, though at least one product is currently below target."
+  };
+
+  function askAiva(question){
+    const log = document.getElementById('aiva-chat-log');
+    const sugg = document.getElementById('aiva-suggestions');
+    if(sugg) sugg.remove();
+
+    const userRow = document.createElement('div');
+    userRow.className = 'aiva-user-row';
+    userRow.innerHTML = '<div class="aiva-user-bubble">'+question+'</div>';
+    log.appendChild(userRow);
+    log.scrollTop = log.scrollHeight;
+
+    setTimeout(()=>{
+      const now = new Date();
+      let h = now.getHours(), m = now.getMinutes();
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+      const time = h + ':' + (m < 10 ? '0' : '') + m + ' ' + ampm;
+
+      const aiRow = document.createElement('div');
+      aiRow.className = 'aiva-msg';
+      aiRow.innerHTML = '<div class="aiva-avatar-sm">✦</div><div style="flex:1; min-width:0;"><div class="aiva-msg-meta">'+time+'</div><div class="aiva-msg-text">'+aivaReplies[question]+'</div></div>';
+      log.appendChild(aiRow);
+      log.scrollTop = log.scrollHeight;
+    }, 500);
+  }
+
+
+  // Initialize tab bar / labels for the default landing screen.
+  showScreen('screen-myday');
+</script>
+</body>
+</html>
