@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AIVA PRD — Roadmap Coverage in the Unify 2.0 Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#f6f7f9; --bg-elev:#fff; --surface-tint:#fafafa;
+    --header-bg:#0a0a0c; --border:#e7e9ee; --border-soft:#eef0f4; --border-strong:#d6dae1;
+    --text:#0a0a0c; --text-2:#46494f; --text-3:#6b7077; --text-4:#a0a4ab;
+    --brand:#2563eb; --accent:#f97316; --success:#10b981; --warning:#f59e0b;
+    --danger:#ef4444; --ai:#6366f1; --ai-2:#8b5cf6;
+    --mono:'Geist Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:'Geist',-apple-system,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+
+  .masthead{background:var(--header-bg);color:#f5f5f7;padding:40px 40px 32px}
+  .mi{max-width:1180px;margin:0 auto}
+  .eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#8b8f96;display:flex;align-items:center;gap:10px;margin-bottom:16px}
+  .eyebrow .sp{color:var(--ai-2)}
+  .masthead h1{margin:0 0 12px;font-size:33px;font-weight:700;letter-spacing:-.02em;line-height:1.15}
+  .masthead h1 em{font-style:normal;background:linear-gradient(96deg,#a5b4fc,#c4b5fd);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .sub{margin:0;max-width:740px;font-size:14.5px;line-height:1.6;color:#a0a4ab}
+
+  .scoreboard{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:26px}
+  .score{border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:13px 15px}
+  .score .n{font-size:26px;font-weight:700;line-height:1;margin-bottom:6px}
+  .score .l{font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:#8b8f96}
+  .score.rep .n{color:#6ee7b7}
+  .score.par .n{color:#fcd34d}
+  .score.non .n{color:#fca5a5}
+  .score.tot .n{color:#fff}
+
+  .shell{max-width:1180px;margin:0 auto;padding:0 40px 90px;display:grid;grid-template-columns:216px 1fr;gap:44px;align-items:start}
+  .rail{position:sticky;top:24px;padding-top:34px}
+  .rail-label{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--text-4);padding:0 0 10px 2px;border-bottom:1px solid var(--border);margin-bottom:10px}
+  .rail a{display:flex;gap:8px;align-items:baseline;padding:6px 8px 6px 2px;font-size:12.5px;color:var(--text-2);text-decoration:none;border-radius:6px;line-height:1.35}
+  .rail a:hover{color:var(--brand);background:rgba(37,99,235,.05)}
+  .rail a .n{font-family:var(--mono);font-size:10px;color:var(--text-4);min-width:16px;flex-shrink:0}
+  main{padding-top:34px;min-width:0}
+  section{margin-bottom:56px;scroll-margin-top:24px}
+  .sec-head{margin-bottom:20px}
+  .sec-num{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--accent);font-weight:500;display:block;margin-bottom:7px}
+  .sec-head h2{margin:0 0 9px;font-size:21px;font-weight:650;letter-spacing:-.015em}
+  .sec-head p{margin:0;max-width:680px;font-size:13.5px;line-height:1.65;color:var(--text-2)}
+
+  .legend{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:8px}
+  .lg{background:var(--bg-elev);border:1px solid var(--border);border-radius:10px;padding:13px 15px}
+  .lg .h{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:650;margin-bottom:5px}
+  .lg p{margin:0;font-size:12.5px;line-height:1.55;color:var(--text-2)}
+  .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+  .dot.rep{background:var(--success)} .dot.par{background:var(--warning)} .dot.non{background:var(--danger)}
+
+  .track{margin-bottom:34px}
+  .track-head{display:flex;align-items:baseline;gap:12px;margin:0 0 14px;padding-bottom:9px;border-bottom:1px solid var(--border-strong)}
+  .track-head h3{margin:0;font-size:15px;font-weight:650;letter-spacing:-.01em}
+  .track-head .meta{font-family:var(--mono);font-size:10px;color:var(--text-4);margin-left:auto}
+
+  .cap{background:var(--bg-elev);border:1px solid var(--border);border-radius:13px;margin-bottom:12px;overflow:hidden}
+  .cap-top{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:11px 16px;background:var(--surface-tint);border-bottom:1px solid var(--border-soft)}
+  .cap-id{font-family:var(--mono);font-size:10px;font-weight:600;color:var(--text-3)}
+  .cap-name{font-size:13.5px;font-weight:650}
+  .chip{font-family:var(--mono);font-size:9.5px;letter-spacing:.05em;padding:3px 8px;border-radius:5px;text-transform:uppercase}
+  .chip.pri{background:rgba(37,99,235,.1);color:#1d4ed8}
+  .chip.pri.should{background:rgba(107,112,119,.12);color:var(--text-2)}
+  .chip.pri.nice{background:rgba(107,112,119,.08);color:var(--text-3)}
+  .chip.st{margin-left:auto;font-weight:600}
+  .chip.st.rep{background:rgba(16,185,129,.13);color:#047857}
+  .chip.st.par{background:rgba(245,158,11,.15);color:#92400e}
+  .chip.st.non{background:rgba(239,68,68,.12);color:#b91c1c}
+
+  .cap-body{padding:14px 16px 4px}
+  .row{display:grid;grid-template-columns:104px 1fr;gap:14px;margin-bottom:12px}
+  .row .lab{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-4);text-align:right;padding-right:12px;border-right:1px solid var(--border-soft);padding-top:2px}
+  .row .lab.ev{color:var(--success)}
+  .row .lab.gap{color:var(--warning)}
+  .row .lab.rec{color:var(--ai)}
+  .row .val{font-size:12.5px;line-height:1.6;color:var(--text-2);min-width:0}
+  .row .val b{color:var(--text);font-weight:600}
+  code{font-family:var(--mono);font-size:11.5px;background:rgba(37,99,235,.07);color:#1d4ed8;padding:1px 5px;border-radius:4px}
+  .val ul{margin:4px 0 0;padding-left:17px}
+  .val li{margin-bottom:4px}
+
+  .try{background:#0a0a0c;border-radius:8px;padding:10px 13px;margin-top:2px}
+  .try .tl{font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:#6b7077;margin-bottom:5px}
+  .try .cmd{font-family:var(--mono);font-size:11.5px;color:#a5b4fc;line-height:1.6}
+  .try .cmd .arrow{color:#6b7077}
+  .try .cmd .res{color:#d4d4d8}
+
+  .persona-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+  .ptag{font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:999px;background:rgba(37,99,235,.09);color:var(--brand)}
+
+  .build{counter-reset:b}
+  .bstep{display:grid;grid-template-columns:32px 1fr auto;gap:14px;align-items:start;background:var(--bg-elev);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:9px}
+  .bstep .bn{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--text-4);padding-top:2px}
+  .bstep h4{margin:0 0 4px;font-size:13.5px;font-weight:650}
+  .bstep p{margin:0;font-size:12.5px;line-height:1.6;color:var(--text-2)}
+  .eff{font-family:var(--mono);font-size:9px;letter-spacing:.07em;text-transform:uppercase;padding:3px 8px;border-radius:5px;white-space:nowrap;margin-top:2px}
+  .eff.s{background:rgba(16,185,129,.12);color:#047857}
+  .eff.m{background:rgba(245,158,11,.15);color:#92400e}
+  .eff.l{background:rgba(239,68,68,.1);color:#b91c1c}
+  .bstep.done{opacity:.78}
+
+  footer{border-top:1px solid var(--border);padding:26px 40px 44px;background:var(--bg-elev)}
+  .fi{max-width:1180px;margin:0 auto;font-size:12px;color:var(--text-3);line-height:1.7}
+  .fi b{color:var(--text-2);font-weight:600}
+
+  .draft{background:rgba(249,115,22,.12);border-top:1px solid rgba(249,115,22,.3);border-bottom:1px solid rgba(249,115,22,.3);padding:11px 40px;font-size:12.5px;color:#7c2d12}
+  .draft .inner{max-width:1180px;margin:0 auto}
+
+  @media(max-width:940px){
+    .shell{grid-template-columns:1fr;gap:0;padding:0 22px 70px}
+    .rail{display:none}
+    .row{grid-template-columns:1fr;gap:5px}
+    .row .lab{text-align:left;border-right:none;padding-right:0}
+    .legend,.scoreboard{grid-template-columns:1fr}
+    .masthead,.draft{padding-left:22px;padding-right:22px}
+  }
+  :focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .remains-sec .remain {
+    margin-top: 10px; padding: 13px 15px;
+    background: var(--panel, #fff); border: 1px solid var(--line, #e5e3da);
+    border-radius: 10px;
+  }
+  .remains-sec .rh { display: flex; align-items: center; gap: 9px; font-size: 13px; }
+  .remains-sec .rh .pri { margin-left: auto; font-size: 10.5px; color: var(--text-3, #8a877c); }
+  .remains-sec .pill {
+    font-size: 9.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+    padding: 2.5px 8px; border-radius: 99px; white-space: nowrap;
+  }
+  .remains-sec .pill.non { background: #fee2e2; color: #991b1b; }
+  .remains-sec .pill.blk { background: #fef3c7; color: #92400e; }
+  .remains-sec .pill.sm  { background: #dbeafe; color: #1e40af; }
+  .remains-sec .remain p { margin: 7px 0 0; font-size: 12.5px; line-height: 1.65; color: var(--text-2, #55534a); }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="mi">
+    <div class="eyebrow"><span class="sp">✦</span> CDK Unify 2.0 · AIVA · Product Requirements</div>
+    <h1>AIVA roadmap coverage —<br><em>what the prototype already proves</em></h1>
+    <p class="sub">
+      Every capability on the AIVA Functionality Roadmap, re-assessed against what is actually
+      built and running in <b>05_26_26_v4.html</b> after executing all eight build items of the
+      recommended order. Each item states whether the prototype
+      demonstrates it, which personas and commands exercise it, and — where it doesn't — a
+      specific prototype interaction that would.
+    </p>
+    <div class="scoreboard">
+      <div class="score rep"><div class="n">26</div><div class="l">Represented</div></div>
+      <div class="score par"><div class="n">3</div><div class="l">Partial</div></div>
+      <div class="score non"><div class="n">1</div><div class="l">Not represented</div></div>
+      <div class="score tot"><div class="n">30</div><div class="l">Roadmap items</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="draft">
+  <div class="inner">
+    <b>Assessment of a prototype, not a shipped system.</b> Everything marked Represented is
+    demonstrated in a clickable prototype with simulated data — it proves the interaction design
+    and the content model, not the engineering. Roadmap status for all 30 items is
+    <b>Not Started</b> in the source document; this PRD describes design-side coverage only.
+  </div>
+</div>
+
+<div class="shell">
+  <nav class="rail">
+    <div class="rail-label">Contents</div>
+    <a href="#how"><span class="n">01</span> How to read this</a>
+    <a href="#core12"><span class="n">02</span> Core Ladder 1 → 2</a>
+    <a href="#core23"><span class="n">03</span> Core Ladder 2 → 3</a>
+    <a href="#core34"><span class="n">04</span> Core Ladder 3 → 4</a>
+    <a href="#sugg"><span class="n">05</span> Contextual Suggestions</a>
+    <a href="#aiexp"><span class="n">06</span> AI Experience Integration</a>
+    <a href="#voice"><span class="n">07</span> Voice &amp; Multimodal</a>
+    <a href="#build"><span class="n">08</span> Recommended build order</a>
+  </nav>
+
+  <main>
+    <section id="how">
+      <div class="sec-head">
+        <span class="sec-num">01 / METHOD</span>
+        <h2>How to read this</h2>
+        <p>
+          The roadmap describes capabilities in engineering terms. The prototype answers a
+          different question: what should this <em>feel</em> like, and what content model does it
+          need? Where the prototype demonstrates the user-facing behaviour a capability exists to
+          produce, it's marked Represented — even though the engineering underneath is simulated.
+        </p>
+      </div>
+      <div class="legend">
+        <div class="lg"><div class="h"><span class="dot rep"></span>Represented</div>
+          <p>The behaviour is built and demonstrable. Evidence names the function, the personas, and a command you can type.</p></div>
+        <div class="lg"><div class="h"><span class="dot par"></span>Partial</div>
+          <p>Some of the behaviour exists; a specific piece is missing. The gap is stated exactly.</p></div>
+        <div class="lg"><div class="h"><span class="dot non"></span>Not represented</div>
+          <p>Nothing in the prototype demonstrates it. A concrete interaction is proposed that would.</p></div>
+      </div>
+      <p style="font-size:12.5px;line-height:1.65;color:var(--text-2);max-width:680px;margin:16px 0 0">
+        <b>Scale of what's built now:</b> 83 intents across 11 personas · 11 clarifying questions ·
+        12 extraction-driven actions with 16 extracted value types · a simulated voice channel
+        with 11 persona dictation lines · 6 invocable AI experiences ·
+        12 spotlight targets · 12 record deep-links · 62 resolution flows · 15 confirm-gated
+        resolutions plus 11 extraction-built confirm cards · 12 declared audit entries ·
+        5 coaching tips · 12 remembered entity types · 6 app insight sets with 7 persona
+        variants · 20 intents carrying source provenance. Every count above was re-measured against the live prototype,
+        not carried forward from notes.
+      </p>
+    </section>
+
+    <div id="caps"></div>
+
+    <section id="build">
+      <div class="sec-head">
+        <span class="sec-num">08 / SEQUENCING</span>
+        <h2>Recommended build order for the prototype</h2>
+        <p>
+          Ordered by demonstration value per unit of effort — what most improves the story told to
+          stakeholders and SMEs, not what's most technically interesting. All of it is prototype
+          work inside the AIVA panel. All eight are built and verified in this file — the recommended order is complete.
+        </p>
+      </div>
+      <div class="build" id="buildList"></div>
+    </section>
+
+    <section class="remains-sec">
+      <div class="tk">
+        <div class="tkh"><span class="num">09</span>
+          <div><h2>What remains, and why</h2>
+          <div class="meta">Re-evaluated after the build order completed · 4 items below Represented</div></div>
+        </div>
+        <p class="tkb">
+          With all eight build items executed, what's left divides cleanly by <em>reason</em> —
+          and only one of the four is closed by writing more prototype code.
+        </p>
+        <div class="remain" id="rm-C3.4">
+          <div class="rh"><span class="pill non">Not representable</span><b>C3.4 · Transactional execution engine</b><span class="pri">Must</span></div>
+          <p>Nothing writes, and no prototype interaction can change that — this is the boundary between
+          a prototype and a product, not a coverage gap. What the prototype <em>has</em> done is settle the
+          engine's contract in advance: every write path routes through a confirm gate, every commit writes
+          the audit entry from the confirm card's own rows, and each of the twelve actions has exactly one
+          attach point. The engine arrives with governed APIs; the interaction around it is closed.</p>
+        </div>
+        <div class="remain" id="rm-C1.4">
+          <div class="rh"><span class="pill blk">Blocked on content</span><b>C1.4 · Reference linking to full source</b><span class="pri">Should</span></div>
+          <p>Fully built for data — 20 intents carry provenance chips that deep-link to their source report.
+          For documentation it is deliberately withheld: no verified help-article URL exists in this prototype,
+          and the grounding rule forbids inventing one, so <code>D1</code> says plainly that it won't link an
+          unverified article. This closes the day the help team supplies verified titles and URLs —
+          the slot and styling already exist. Blocked on content, not on design or engineering.</p>
+        </div>
+        <div class="remain" id="rm-C1.3">
+          <div class="rh"><span class="pill sm">Buildable remainder</span><b>C1.3 · Progressive disclosure</b><span class="pri">Must</span></div>
+          <p>Chunking is built — the slot anatomy means no answer arrives as a block, and the how-to delivers
+          four grouped steps rather than seventeen granular ones. The missing half is the <em>progressive</em>
+          part: a "show the detail" affordance that expands a grouped step into its sub-steps inline. Small
+          effort; it sat outside the recommended eight-item order, which prioritised the agentic and voice
+          tracks. The one item on this list closed purely by more prototype code.</p>
+        </div>
+        <div class="remain" id="rm-C2.5">
+          <div class="rh"><span class="pill sm">Buildable remainder</span><b>C2.5 · Workflow state tracking</b><span class="pri">Nice to have</span></div>
+          <p>Upgraded to Partial on this re-evaluation: multi-step form flows now hold their state and survive
+          interruption — verified behaviourally, not assumed. What remains is making the held state
+          <em>visible</em>: a progress card and a proactive "pick up where you left off" action. Small effort,
+          lowest priority tier on the roadmap.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer>
+  <div class="fi">
+    <b>AIVA PRD — Roadmap Coverage · Revision 6</b> · CDK Unify 2.0 global navigation workstream<br>
+    Source: AIVA Functionality Roadmap (Core Ladder + Independent Tracks) · re-assessed against prototype
+    <b>05_26_26_v4.html</b> after executing all eight build items · persona jobs-to-be-done from the CDK
+    Persona Standardization Project · voice per the CDK AI Assistant personality definition · every
+    quoted count and status re-measured against the live prototype, with 40 build-08, 52 build-07, and 20 build-06 behaviour checks passing and all 44 welcome chips verified through the hardened matcher. Revision 6 is a fresh re-evaluation after the order completed: C2.5 was upgraded to Partial on a behaviourally verified interruption-resume path, and the four items below Represented are catalogued with their blocking reasons in §09.
+  </div>
+</footer>
+
+<script>
+const TRACKS = [
+  { id:'core12', num:'02', title:'Core Maturity Ladder — Stage 1 → 2', meta:'Personality · Context · Guidance',
+    blurb:'Foundational conversational quality: sounding right, knowing who is asking, and not overwhelming.' },
+  { id:'core23', num:'03', title:'Core Maturity Ladder — Stage 2 → 3', meta:'Memory · Context · UI',
+    blurb:'Continuity across turns, awareness of the live session, and pointing at the interface.' },
+  { id:'core34', num:'04', title:'Core Maturity Ladder — Stage 3 → 4', meta:'Execution &amp; Trust',
+    blurb:'The agentic step: turning intent into action, with the trust controls that make it safe. With the audit log built, execution itself is the track\'s only unrepresented item.' },
+  { id:'sugg',  num:'05', title:'Contextual Suggestions', meta:'Independent track',
+    blurb:'Proactive help matched to screen, role, and job to be done — the track the prototype covers most completely.' },
+  { id:'aiexp', num:'06', title:'AI Experience Integration', meta:'Independent track',
+    blurb:'AIVA calling the AI capabilities already built into the product, and rendering them richly.' },
+  { id:'voice', num:'07', title:'Voice &amp; Multimodal Input', meta:'Independent track',
+    blurb:'Speaking a write-up instead of typing it. Built in simulation end to end: dictation streams in, the schema fills as words land, and the result earns the same confirm-and-audit treatment as typing.' },
+];
+
+const CAPS = [
+/* ---------------- Core 1 → 2 ---------------- */
+{ tr:'core12', id:'C1.1', name:'Personality / voice configuration file', pri:'Must', st:'rep',
+  ask:'A configurable persona layer governing tone, phrasing, and formatting, decoupled from content retrieval — so AIVA sounds like a conversational assistant, not a pasted knowledge-base article.',
+  ev:`The personality definition was treated as the authoring spec for all 71 intents, and its rules are observable in the copy: answer first with no preamble, one apology maximum, insight stated as observation rather than verdict. Voice rules were reconciled against the RDS Content Style Guide, and three conflicts resolved deliberately — contractions are dropped only in payment, banking, and compliance responses (<code>F3</code>, <code>H5</code>, <code>H3</code>), and the word "see" was replaced throughout the fallback set.`,
+  personas:['All 11'],
+  try:[['Ask as Dealer Principal','"How are we doing this month?"'],['Voice check','Number → source → meaning → driver → one next step. No "Sure —", no hedging.']],
+  gap:'The layer is applied at authoring time, not configurable at runtime. Swapping tone would mean rewriting copy rather than changing a config.' },
+
+{ tr:'core12', id:'C1.2', name:'User identity &amp; permission awareness', pri:'Must', st:'rep',
+  ask:'Read access to the authenticated user\'s role and permissions, so users are warned before they hit a wall rather than after.',
+  ev:`Eleven personas drive matching: <code>aivaMatchIntent()</code> adds weight for a persona match, so the same question resolves differently by role. Permission limits are answered in first person and framed around the task, never as "access denied" — and the prototype warns <em>before</em> the wall, exactly as the roadmap asks.`,
+  personas:['Sales Associate','Fixed Ops Director','Service Manager'],
+  try:[['As Sales Associate','"What\'s the store\'s front gross this month?"'],['Result','States the limit, then offers the version the role <em>can</em> have (12 units MTD).'],['As Service Manager','"How do I add a new advisor?"'],['Result','Flags the Service admin right needed — unprompted, before step 1.']] },
+
+{ tr:'core12', id:'C1.3', name:'Content chunking / progressive disclosure', pri:'Must', st:'par',
+  ask:'Regroup a flat knowledge-base answer into fewer, logically-grouped steps — 17 granular steps condensed to 9 natural ones.',
+  ev:`The response anatomy is itself a chunking model: every answer is assembled from ordered slots (answer → provenance → insight → next step), so no reply arrives as an undifferentiated block. The how-to intent <code>D1</code> delivers four grouped steps rather than a literal transcription.`,
+  personas:['Service Manager','Fixed Ops Director'],
+  gap:'There is no <em>progressive</em> disclosure — no way to expand a grouped step into its underlying detail. Every response shows its full depth immediately.',
+  rec:'Add an expandable step: each grouped step in a how-to gets a subtle "show the detail" affordance that reveals the granular sub-steps inline, so the default stays at 4 steps and the depth is one tap away.' },
+
+{ tr:'core12', id:'C1.4', name:'Reference linking to full source', pri:'Should', st:'par',
+  ask:'Cite and link the full source doc or FAQ instead of reproducing every detail inline.',
+  ev:`For <em>data</em>, this is fully built: 20 intents carry a provenance chip naming the source report, period, and as-of time, rendered as a selectable control that deep-links rather than as prose. The chip's status dot goes amber when data is stale (<code>G1</code>, a day-old support case).`,
+  personas:['Dealer Principal','Controller','Fixed Ops Director'],
+  gap:'For <em>documentation</em>, deliberately withheld. <code>D1</code> states plainly that the help article isn\'t verified and declines to link one, under the rule that AIVA never invents a link. This is blocked on real FAQ URLs, not on design.',
+  rec:'Supply the verified article title and URL for "Scheduling — Managing Advisors" and the link renders; the slot and styling already exist.' },
+
+{ tr:'core12', id:'C1.5', name:'Proactive contextual flagging', pri:'Should', st:'rep',
+  ask:'Surface relevant caveats — required permissions, prerequisites — even when not explicitly asked, so blockers are not discovered mid-task.',
+  ev:`This is the prototype's most consistently applied behaviour. Unprompted flags appear across departments: the Parts Clerk is told the on-hand count is <em>committed</em>, so a walk-in can only be promised one; the clock-on confirm names the RO it will clock the tech <em>off</em>; the AR answer connects unapplied payments to the aging balance.`,
+  personas:['Parts Clerk','Service Technician','AR/AP Clerk','Service Manager'],
+  try:[['As Parts Clerk','"Do we have OEM-BP-447?"'],['Result','"Yes — 2 on hand" … then: one is committed to RO #124210, so treat available as 1.']] },
+
+/* ---------------- Core 2 → 3 ---------------- */
+{ tr:'core23', id:'C2.1', name:'Multi-turn session memory', pri:'Must', st:'rep',
+  ask:'Retain conversation state across turns — remember the store and payee named earlier when later asking about the amount.',
+  ev:`Session memory is now real and visible. AIVA accumulates the entities named in the conversation — by the user <em>and</em> in its own answers — across 12 types (RO, deal, part, special order, PO, customer, store, invoice, case, department, item, comparison basis), and shows what it is holding as removable chips above the input. First names resolve to known customers ("Diana" → Diana Reyes), deal and RO numbers are classified against real records rather than guessed, and a clarifying question is not re-asked once context already holds its answer. Removing a chip is how the user corrects what AIVA remembers. The thread itself stays continuous across app navigation, as before.`,
+  personas:['All 11'],
+  try:[['As Service Manager','"Why is RO #124211 on hold?"'],['Result','Watch above the input — the RO lands as a chip and is carried into the turns that follow, so "why is it still waiting?" needs no restatement.']],
+  gap:'One value per type, session-scoped by design — "clear" resets it and nothing persists across a reload.' },
+
+{ tr:'core23', id:'C2.2', name:'Session &amp; workflow context integration', pri:'Must', st:'rep',
+  ask:'Know the current store, date, and active workflow or screen without asking.',
+  ev:`<code>aivaSupportContext()</code> reads live state at the moment of use: store, the active persona's role, the screen as <em>app → active nav section</em>, the record open in the detail drawer, and transcript depth. This is what makes the support ticket prefill real rather than decorative.`,
+  personas:['All 11'],
+  try:[['Open Service, then','"open a support ticket"'],['Result','Composer prefills Statler Toyota · Service Manager · Service → Dashboard · transcript depth — none of it typed.']] },
+
+{ tr:'core23', id:'C2.3', name:'Clarifying question generation', pri:'Must', st:'rep',
+  ask:'Detect missing required inputs and ask a single targeted follow-up — "which store is this for?" — rather than presenting the whole form.',
+  ev:`Built as a first-class response type: eleven clarifying intents, one per persona, so every role can demonstrate the behaviour. Guard-based matching detects the incomplete request and asks exactly one targeted question with selectable option chips — "Which RO? You have three open" — and choosing one completes the action through the existing confirm card, one decision at a time and no form engine. A precision gap is worded differently from a missing input: "clock me onto 1242" gets "I need the full RO number — a partial matches more than one."`,
+  personas:['All 11'],
+  try:[['As Service Technician','"Clock me on"'],['Result','One question, three RO chips — selecting one renders the confirm card with the payroll side effect stated.'],['Note','Session memory skips a question already answered — say "clear" between demo runs to see it fire again.']] },
+
+{ tr:'core23', id:'C2.4', name:'UI field targeting / highlighting', pri:'Should', st:'rep',
+  ask:'Reference and visually highlight the specific live UI element AIVA is guiding the user through.',
+  ev:`Pointing now works at all three levels. Screen and record targeting remain (<code>aivaActivateSection()</code> drives real view switches; <code>aivaOpenRecord()</code> opens the detail drawer — 29 intents carry a section target, 12 records deep-link), and the field spotlight extends it one level down: twelve named control-level targets are resolved live from the DOM, ringed with a pulsing highlight that tracks the element, each with a one-line caption saying why AIVA is pointing there. When the control is not on the current screen, AIVA says so rather than describing something the user can't find.`,
+  personas:['Fixed Ops Director','Service Manager','AR/AP Clerk','Parts Clerk'],
+  try:[['In Intelligence Suite','"Where do I change the period?"'],['Result','The Month-to-Date filter pill gets a tracking ring and a caption naming what it scopes.']] },
+
+{ tr:'core23', id:'C2.5', name:'Workflow state tracking', pri:'Nice to have', st:'par',
+  ask:'Track where the user is in a multi-step workflow so AIVA can resume mid-process rather than restart.',
+  ev:`Upgraded on re-evaluation: the premise of the original assessment — "no workflow has more than one step" — stopped being true at build 07. Form completion is a multi-step flow that holds its state across turns: each answered question carries the values gathered so far, and the pending question stays live in the append-only thread. Behaviourally verified: start "Write a check", answer the payee, interrupt with an unrelated question, then come back and answer the amount from the earlier question — the flow resumes with the held payee and completes, no restart. Mid-process resume across interruptions is real, as a property of the thread rather than a feature bolted onto it.`,
+  personas:['All 11'],
+  try:[['As AR/AP Clerk','"Write a check" → pick a payee → ask "Show me the aging report" → scroll up and answer the amount question'],['Result','The check completes with the payee you chose before the detour.']],
+  gap:'The state is held but not shown: there is no position indicator ("Step 2 of 3 — payee set") and no proactive re-surfacing — resuming relies on the user scrolling back to the pending question.',
+  rec:'A persistent progress card in the thread with a "pick up where you left off" action. Small effort, and the state it would display already exists.' },
+
+/* ---------------- Core 3 → 4 ---------------- */
+{ tr:'core34', id:'C3.1', name:'Intent-to-action translation', pri:'Must', st:'rep',
+  ask:'Parse a natural-language statement of intent into a structured action object — "Write a check to ABC Towing for $450" becomes payee, amount, description.',
+  ev:`The roadmap's own example works, verbatim. An extraction pass pulls typed values from the sentence — currency, quantities, payees, memos, GL accounts, dates, and the record IDs — and a registry of eleven form schemas (one action per persona, so every role can demonstrate it) turns them into the confirm card for a real action, under a "Captured from your message" caption. Known payees resolve to their canonical vendor records; an unknown one is carried as an explicitly labelled <b>freeform</b> payee — never invented into a record that does not exist — and the card states that Payee Type is set to Freeform. Missing required fields fall back to the clarifying pattern, one decision at a time, and the confirm gate and audit log attach unchanged: parsed, approved, and logged are the same object. The matcher itself was hardened for this — overlapping keywords now score once, and ties break toward the more specific match.`,
+  personas:['All 11'],
+  try:[['As AR/AP Clerk','"Write a check to ABC Towing for $450 for the tow on RO #98664"'],['Result','A card with payee (freeform), amount, memo, and the RO — staged, because payments still require a person\'s approval.'],['Then','say just "Write a check" — the gaps get asked one at a time.']],
+  gap:'Extraction is pattern-based against the prototype\'s grounded data, not a language model — the honest boundary for a design prototype, and the interaction contract it proves is the deliverable.' },
+
+{ tr:'core34', id:'C3.2', name:'Cross-system data retrieval', pri:'Must', st:'rep',
+  ask:'Integrate with adjacent systems and records to auto-populate details, so users don\'t look information up elsewhere and retype it.',
+  ev:`Cross-system reasoning is the most distinctive content in the build. <code>C4</code> traces a special order to the PO holding it to the RO waiting on that part — three systems in one answer. <code>C6</code> connects AR aging to unapplied payments, two queues that never reference each other on screen. The Parts insight panel leads with the single PO blocking both a special order and a service hold.`,
+  personas:['Parts Manager','AR/AP Clerk','Service Manager'],
+  try:[['As Parts Manager','"What\'s holding up SO-4471?"'],['Result','Names PO #178658 in Needs Review as the real blocker — correcting the assumption that the vendor is slow.']] },
+
+{ tr:'core34', id:'C3.3', name:'Interactive UI cards in chat', pri:'Must', st:'rep',
+  ask:'Render structured, interactive components — cards with fields and action buttons — inline in chat, not walls of text.',
+  ev:`Eight card types render inline: confirm cards with itemized rows and a stated side effect, clarifying questions with selectable option chips, AI-suggestion control cards with accept/change/clear, provenance chips, insight panels with severity coding, invoked capability panels rendered in-thread, the support ticket composer with a live textarea, and action chips wired to sections, records, and resolutions. The composer is a genuine form inside the conversation.`,
+  personas:['Controller','Service Technician','Sales Associate','All'],
+  try:[['As Controller','"Why is this GL account already filled in?"'],['Result','A suggestion card naming its source (14 similar entries, 90 days) with real Accept / Change / Clear controls.']] },
+
+{ tr:'core34', id:'C3.4', name:'Transactional execution engine', pri:'Must', st:'non',
+  ask:'Write access via governed APIs so AIVA performs the action — creating and posting the check — rather than describing it.',
+  ev:'',
+  gap:'Nothing writes. Confirmations render an outcome message describing what would have happened. This is the honest boundary between a prototype and a product, and no prototype interaction can close it.',
+  rec:'Not a prototype gap — but the prototype now de-risks it twice over: every write path routes through a confirm gate, and every commit is captured in the activity log from the confirm card\'s own rows. The execution engine has exactly one place to attach per action, and its audit contract is already settled. Worth stating in the PRD that the interaction contract is closed even though the engine is not.' },
+
+{ tr:'core34', id:'C3.5', name:'Human-in-the-loop approval gate', pri:'Must', st:'rep',
+  ask:'A mandatory confirmation before any state-changing or financial action, with no bypass path.',
+  ev:`Built as a standing rule, not a per-feature choice: no write action resolves without an explicit confirm. Fifteen confirm-gated actions exist across the eleven personas — clock-on, hold override, BDC handoff, inter-store transfer, and the completions behind the clarifying questions — each stating the <em>side effect</em> rather than just the action. Since build 06, committing through a confirm card also writes the audit entry from the rows of the card itself — and every extraction-built card from build 07 routes through the same gate. For money specifically, AIVA declines entirely — "Payments require a person's approval, so I will not move money" — and offers to stage instead. Drafted communications carry "nothing has sent" in the first line.`,
+  personas:['Service Technician','AR/AP Clerk','Parts Manager','Sales Associate'],
+  try:[['As Technician','"clock me onto 124213"'],['Result','Confirm card warns it also clocks you off RO #124210 at 5.2 hr — a payroll consequence, stated before the fact.']] },
+
+{ tr:'core34', id:'C3.6', name:'Audit trail / action logging', pri:'Should', st:'rep',
+  ask:'Log what AIVA did on the user\'s behalf, when, and with what inputs, for compliance and troubleshooting.',
+  ev:`The audit trail exists, and it cannot drift from what was approved: committing through a confirm card writes the log entry from the card's own rows, so what was confirmed and what was recorded are the same object. Twelve confirm-less actions — staging an invoice, flagging a question, routing an escalation, accepting a suggestion, opening a ticket — declare their own entries. Every entry carries a timestamp, an action ID, the confirming persona, the store, the structured inputs, the stated side effect, and how it was initiated. A badge on the panel header counts entries, and Export copies a tab-delimited log to the clipboard — the artifact a Controller hands to an auditor. Two deliberate calls: declining is <em>not</em> logged (the record is what was done, not what was offered), and the log survives "clear" and "start over" — the one piece of panel state a conversation reset must not erase.`,
+  personas:['Controller','AR/AP Clerk','Service Technician'],
+  try:[['As Service Technician','"clock me onto 124213" → confirm'],['Then','open the log from the panel header — the entry carries the RO, the time, and the payroll side effect that was stated before confirming.'],['Prove durability','say "clear", reopen the log — the record is still there.']],
+  gap:'Session-scoped and client-side. A real audit trail needs server-side, tamper-evident persistence — an engineering property no prototype can carry, stated here before a stakeholder asks.' },
+
+/* ---------------- Contextual Suggestions ---------------- */
+{ tr:'sugg', id:'S1', name:'Real-time screen &amp; workflow state detection', pri:'Must', st:'rep',
+  ask:'An event-driven signal from the product shell whenever the user changes screens, so AIVA re-evaluates guidance live rather than on stale context.',
+  ev:`Implemented literally. A hook wraps <code>activateTab()</code> — the single choke point for both new app opens and tab switches — and fires an insight refresh one second later. Switching again inside that second cancels the pending update, so only the app the user lands on is surfaced. Revisits within 30 seconds are suppressed, and AIVA's own context-opens are guarded so it never refreshes over its own conversation.`,
+  personas:['All 11'],
+  try:[['Navigate','Service → Parts → Accounting'],['Result','Each arrival refreshes AIVA to that app; flicking through cancels the ones you passed.']] },
+
+{ tr:'sugg', id:'S2', name:'User role &amp; identity profile', pri:'Must', st:'rep',
+  ask:'Extend identity awareness with the specific dealership role, so the same screen offers different help to a clerk than to a manager.',
+  ev:`The roadmap's own test case passes: the same application surfaces different insights per role. Parts carries three role variants — the Parts Manager sees the PO blocking two queues, the Parts Clerk sees the back-counter pick for the RO a tech is on right now, the Service Manager sees only the Service↔Parts handoff. Seven persona variants across six applications.`,
+  personas:['Parts Manager','Parts Clerk','Service Manager','Dealer Principal','Controller','Sales Associate'],
+  try:[['Open Parts as Parts Manager, then switch persona','Same screen, different lead insight.']] },
+
+{ tr:'sugg', id:'S3', name:'Jobs-to-be-done mapping per workflow', pri:'Must', st:'rep',
+  ask:'A maintained content model associating each workflow and screen with the jobs users are trying to accomplish there — a content investment, not engineering alone.',
+  ev:`This is the content investment, done. Insight content was written from the documented KPIs, challenges, and core workflows in the Persona Standardization Project rather than from what is technically on screen: Accounting leads with the Controller's cash and close blockers, CRM separates funding from selling for the Sales Manager, Intelligence Suite leads with variances because the Fixed Ops Director lives on the report side.`,
+  personas:['Controller','Sales Manager','Fixed Ops Director','F&amp;I Manager','AR/AP Clerk'],
+  gap:'Mapped per <em>application</em>, not per screen. Document Management and F&amp;I have no role variants yet, and the severity rankings are design judgment awaiting SME confirmation.' },
+
+{ tr:'sugg', id:'S4', name:'Contextual suggestion selection engine', pri:'Must', st:'rep',
+  ask:'Logic that selects and ranks the most relevant proactive suggestions for the current screen, role, and job — refreshing as context changes.',
+  ev:`<code>aivaResolveInsights()</code> resolves per-persona content with a default fallback, and a three-level severity model (act → watch → good) drives ranking. The same priority order is reused downstream: the lead line of a panel and the headline of a collapsed-state notification both take the item needing action first.`,
+  personas:['All 11'],
+  gap:'Ranking is authored per app-and-role rather than computed, so it does not re-rank on live data changes.' },
+
+{ tr:'sugg', id:'S5', name:'AI-capability coaching / training role', pri:'Should', st:'rep',
+  ask:'Surface tips about AIVA\'s own capabilities and correct product usage — AIVA as trainer, not just assistant. The roadmap\'s example: the first time a user retypes a payee address AIVA could infer, it says "next time, I can pull this from the vendor record."',
+  ev:`Five coaching tips watch for the moment a user does something the hard way, then mention the easier path — once, quietly, appended to an answer they already wanted. Each tip teaches a capability from builds 01–04. Anti-nag guardrails are the design: tips fire on a behaviour threshold rather than a single action, at most one per response and never two in a row, three per session maximum, each shown once, dismissible for the session, and silent during a support session.`,
+  personas:['All 11'],
+  try:[['Navigate manually','to a screen AIVA had offered to open'],['Result','The next answer ends with a muted "Next time, ask me — I can take you straight there."']] },
+
+/* ---------------- AI Experience Integration ---------------- */
+{ tr:'aiexp', id:'A1', name:'Invoke existing AI experiences as tools', pri:'Should', st:'rep',
+  ask:'An orchestration layer letting AIVA call AI capabilities already built into the product — Fixed Ops\' Visit Insights — as invocable tools, so users get insights in the flow of work without knowing a separate feature exists.',
+  ev:`Both trigger paths exist. Visit Insights still fires on arrival in Service, and it is now genuinely invocable: asking about a vehicle's warranty calls <code>renderVisitInsights()</code> as a tool and renders the full panel as the answer, attributed to its source — the roadmap's own example, working. Six AI experiences are invocable this way across all eleven personas: Visit Insights, Customer 360, payoff quotes, cross-store parts availability, AR aging, and the store scorecard.`,
+  personas:['Service Manager','Service Technician','Sales Associate','Controller','Dealer Principal'],
+  try:[['As Service Manager','"What is the warranty status on this vehicle?"'],['Result','Visit Insights renders as the answer — invoked by the question, not by navigation.']] },
+
+{ tr:'aiexp', id:'A2', name:'In-context rendering of integrated AI experiences', pri:'Must', st:'rep',
+  ask:'Render the output of an invoked AI experience within AIVA\'s own chat surface, preserving the richness of the existing UI rather than reducing it to plain text.',
+  ev:`Visit Insights renders in full inside the AIVA thread — vehicle detail, warranty status, service history, declined work — as the same structured panel, not a summary paragraph. It is timestamped and labelled as a thread entry, so it reads as part of the conversation rather than a takeover.`,
+  personas:['Service Manager','Service Technician'],
+  try:[['Navigate to Service','Visit Insights appends into the thread, with recommended actions beneath it.']] },
+
+{ tr:'aiexp', id:'A3', name:'AI experience / capability registry', pri:'Should', st:'rep',
+  ask:'A registry so today\'s Visit Insights and future capabilities across other modules become discoverable and invocable without a one-off integration each time.',
+  ev:`The registry the roadmap asks for exists. <code>AIVA_CAPABILITIES</code> maps each capability to its renderer, trigger intents, and source attribution, and both paths — the automatic navigation trigger and question invocation — route through it. Six capabilities are registered; adding a seventh is a data entry rather than a new integration, which is the argument the track needs to make to engineering, now demonstrable.`,
+  personas:['All 11'],
+  try:[['As Sales Associate','"Who is this customer?"'],['Result','Customer 360 renders in-thread from the registry, attributed to its source.']] },
+
+/* ---------------- Voice ---------------- */
+{ tr:'voice', id:'V1', name:'Voice capture &amp; transcription (mobile)', pri:'Must', st:'rep',
+  ask:'A service advisor speaks a vehicle write-up into their phone while walking around the car at drop-off, instead of typing.',
+  ev:`The mic button in the AIVA input is live. It opens a listening state — pulsing indicator, streaming transcript with a cursor, a Stop affordance — and dictates a persona-appropriate spoken line word by word, as if transcribed. Every persona has a dictation line, so any role can demonstrate the channel; the Service Manager's line is the write-up itself. When the line completes, the dictation submits as the user's own message through the normal pipeline, so voice input earns the same clarify → confirm → audit treatment as typed input. Stopping mid-stream sends nothing.`,
+  personas:['All 11'],
+  try:[['As Service Manager','tap the mic in the AIVA input'],['Result','The write-up dictation streams in and the schema fields fill as their values are heard.']],
+  gap:'Transcription is simulated by design — a scripted line rather than speech-to-text. For a design prototype that is the honest scope: the deliverable is the interaction contract, which real transcription would slot into unchanged.' },
+
+{ tr:'voice', id:'V2', name:'Form schema awareness', pri:'Must', st:'rep',
+  ask:'AIVA knows the write-up form needs mileage, reported symptoms, requested services, and wait status before it starts listening.',
+  ev:`The write-up is the twelfth schema in the form registry, declaring exactly the roadmap's field set: customer, mileage, reported symptom, requested services, wait status — which are required, and how to ask when one is missing. The awareness is visible before listening starts: the moment the mic opens, the voice panel lists the schema's fields as empty slots, so the user sees what AIVA is listening for. Dictating "Start a write-up" with details missing gets each required field asked for, one decision at a time, in schema order.`,
+  personas:['Service Manager','Service Technician'],
+  gap:'' },
+
+{ tr:'voice', id:'V3', name:'Stream-of-consciousness entity extraction', pri:'Must', st:'rep',
+  ask:'"There\'s a rattle up front when braking, mileage\'s around 42,000, wants an oil change too, and she\'ll wait" is parsed into four distinct field values.',
+  ev:`The roadmap's own sentence parses, near verbatim. From the dictated line "rattle up front when braking, mileage's around 42,000, wants an oil change too, and she'll wait", the extraction pass produces four distinct field values — symptom, mileage, requested service, wait status — plus the customer, each landing in its schema slot. The same pass handles drop-off phrasings, multiple requested services from a known service list, and mileage stated in either order ("42,000 miles" or "mileage's around 42,000"). Sixteen value types are now extracted across the engine.`,
+  personas:['All 11'],
+  try:[['As Service Manager','tap the mic — or type the sentence yourself'],['Result','Four values, four fields, one breath.']],
+  gap:'Extraction is pattern-based against a known vocabulary, not a language model — the same honest boundary stated on C3.1.' },
+
+{ tr:'voice', id:'V4', name:'Automated form population from extracted values', pri:'Must', st:'rep',
+  ask:'Mileage, symptom, requested service, and wait status populate on the write-up form as AIVA processes the spoken input.',
+  ev:`The demo moment is built. As the dictation streams word by word, the extraction pass runs on each partial transcript, and a field fills with a flash animation the instant its value is heard — mileage lands on "42,000", wait status on "she'll wait" — then refines as more words sharpen a value. The transcript never has to finish before the form starts filling. When the stream completes and the confirm card renders, its rows stagger in with the same landing treatment, values marked "Captured from your message".`,
+  personas:['All 11'],
+  gap:'' },
+
+{ tr:'voice', id:'V5', name:'Gap detection &amp; targeted follow-up questioning', pri:'Must', st:'rep',
+  ask:'AIVA asks "what\'s the exact odometer reading?" because "around 42,000" wasn\'t precise enough for a required field.',
+  ev:`Both gap types are handled, and worded differently. A missing input produces "Which RO?" with the open options; a value that is present but imprecise produces "I need the full RO number — a partial matches more than one," with the ROs that start with those digits. Built once in the clarifying pattern, it serves both the typed question and the future spoken write-up gap.`,
+  personas:['Service Technician','All 11'],
+  try:[['As Service Technician','"Clock me on"'],['Missing input','→ "Which RO?" with three chips.'],['Then say "clear", and','"Clock me onto 1242"'],['Imprecise value','→ a differently-worded question with the matching ROs.']],
+  gap:'Proven for typed input; applying it to a transcribed write-up waits on V1–V4 (build 08).' },
+
+{ tr:'voice', id:'V6', name:'Confirmation &amp; correction flow', pri:'Must', st:'rep',
+  ask:'AIVA shows the completed write-up card before submitting, so the advisor can correct a misheard symptom.',
+  ev:`The pattern is fully built and mirrors the Core Ladder approval gate, as the roadmap anticipates. Nothing state-changing commits without a review step: confirm cards state side effects before acting, drafted communications lead with "nothing has sent" and offer review or discard, and the escalation packet is inspectable before it is sent.`,
+  personas:['Service Technician','Sales Associate','Service Manager'],
+  gap:'Proven for typed and generated content; not yet applied to a transcribed write-up, which needs V1–V4 first.' },
+];
+
+const BUILD = [
+  { h:'Clarifying question, one decision at a time', done:true, e:'S',
+    p:'Covers C2.3 and V5 together. Make "clock me on" with no RO ask which one, with chips. Smallest change with two roadmap items behind it, and it fixes the most conspicuous conversational gap.' },
+  { h:'Invoke Visit Insights from a question', done:true, e:'S',
+    p:'Covers A1 and lands the AI Experience Integration track\'s headline example. One intent calling the existing renderer turns an automatic panel into an invocable tool.' },
+  { h:'Session context chips above the input', done:true, e:'M',
+    p:'Covers C2.1. Accumulate named entities as they appear and show them as removable chips — makes multi-turn memory visible and correctable rather than invisible.' },
+  { h:'Field spotlight', done:true, e:'M',
+    p:'Covers C2.4. Extend the existing section/record targeting one level down to highlight a named field or button. The plumbing already resolves targets.' },
+  { h:'Coaching line on a threshold', done:true, e:'S',
+    p:'Covers S5. "Next time, ask me — I can take you straight there," fired after a user manually does something AIVA offered. Memorable in a demo, cheap to build.' },
+  { h:'Activity log tab', done:true, e:'M',
+    p:'Covers C3.6. Reuse the support ticket\'s context-packet layout to list AIVA-initiated actions with timestamp, inputs, and confirmer — the artifact Finance stakeholders will ask for.' },
+  { h:'Entity extraction pass', done:true, e:'L',
+    p:'Covers C3.1 and V3. Numbers, currency, and proper nouns extracted into a confirm card, demonstrated on the roadmap\'s own check-writing example.' },
+  { h:'Voice write-up simulation', done:true, e:'L',
+    p:'Covers V1, V2, and V4, and completes V6 for voice. Simulated transcription streaming into a schema-driven write-up card — the full Voice track story without a speech integration.' },
+];
+
+const ST_LABEL = { rep:'Represented', par:'Partial', non:'Not represented' };
+
+function capHTML(c) {
+  const rows = [];
+  rows.push(`<div class="row"><div class="lab">Roadmap ask</div><div class="val">${c.ask}</div></div>`);
+  if (c.ev) rows.push(`<div class="row"><div class="lab ev">In prototype</div><div class="val">${c.ev}${
+    c.personas ? `<div class="persona-tags">${c.personas.map(p=>`<span class="ptag">${p}</span>`).join('')}</div>` : ''}</div></div>`);
+  if (c.try) rows.push(`<div class="row"><div class="lab">Try it</div><div class="val"><div class="try"><div class="tl">Prototype walkthrough</div><div class="cmd">${
+    c.try.map(t=>`<span class="arrow">${t[0]} →</span> <span class="res">${t[1]}</span>`).join('<br>')}</div></div></div></div>`);
+  if (c.gap) rows.push(`<div class="row"><div class="lab gap">Gap</div><div class="val">${c.gap}</div></div>`);
+  if (c.rec) rows.push(`<div class="row"><div class="lab rec">Recommend</div><div class="val">${c.rec}</div></div>`);
+  return `<div class="cap">
+    <div class="cap-top">
+      <span class="cap-id">${c.id}</span>
+      <span class="cap-name">${c.name}</span>
+      <span class="chip pri ${c.pri==='Should'?'should':c.pri==='Nice to have'?'nice':''}">${c.pri}</span>
+      <span class="chip st ${c.st}">${ST_LABEL[c.st]}</span>
+    </div>
+    <div class="cap-body">${rows.join('')}</div>
+  </div>`;
+}
+
+document.getElementById('caps').innerHTML = TRACKS.map(t => {
+  const items = CAPS.filter(c => c.tr === t.id);
+  const n = { rep:0, par:0, non:0 };
+  items.forEach(i => n[i.st]++);
+  return `<section id="${t.id}">
+    <div class="sec-head">
+      <span class="sec-num">${t.num} / TRACK</span>
+      <h2>${t.title}</h2>
+      <p>${t.blurb}</p>
+    </div>
+    <div class="track-head">
+      <h3>${items.length} capabilities</h3>
+      <span class="meta">${t.meta} · ${n.rep} represented · ${n.par} partial · ${n.non} not represented</span>
+    </div>
+    ${items.map(capHTML).join('')}
+  </section>`;
+}).join('');
+
+document.getElementById('buildList').innerHTML = BUILD.map((b,i) => `
+  <div class="bstep${b.done?' done':''}">
+    <span class="bn">${String(i+1).padStart(2,'0')}</span>
+    <div><h4>${b.h}</h4><p>${b.p}</p></div>
+    ${b.done ? `<span class="eff s">Built ✓</span>`
+             : `<span class="eff ${b.e.toLowerCase()}">${b.e==='S'?'Small':b.e==='M'?'Medium':'Large'}</span>`}
+  </div>`).join('');
+</script>
+</body>
+</html>
