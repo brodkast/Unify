@@ -7744,6 +7744,169 @@
   }
   *::-webkit-scrollbar-thumb:hover { background-color: #b9b9b3; }
 
+  /* ============================================================
+     CUSTOMER CARE FLYOUT — support tickets
+     Black-and-white dark surface, matching the nav-origin panels
+     (mega menu, notifications). Strictly monochrome: status is told
+     through intensity and outline, never hue. Type calibrated to the
+     AIVA panel scale (13px body, 11–12px secondary).
+     ============================================================ */
+  .cc-flyout {
+    position: fixed;
+    top: 48px; bottom: 0; left: 60px;
+    width: 380px;
+    background: linear-gradient(180deg, #0e0e11 0%, #101014 100%);
+    border-right: 1px solid rgba(255,255,255,0.09);
+    box-shadow: 24px 0 64px rgba(0,0,0,0.45);
+    z-index: 95;
+    display: flex; flex-direction: column;
+    color: rgba(255,255,255,0.82);
+    transform: translateX(-105%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.24s cubic-bezier(0.22, 0.61, 0.36, 1),
+                opacity 0.24s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  .cc-flyout.open {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .cc-head {
+    display: flex; align-items: center; gap: 8px;
+    padding: 14px 14px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    flex-shrink: 0;
+  }
+  .cc-head h2 { margin: 0; font-size: 13px; font-weight: 650; letter-spacing: -0.01em; flex: 1; color: #fff; }
+  .cc-back {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 7px;
+    cursor: pointer; color: rgba(255,255,255,0.45);
+    background: none; border: none; padding: 0;
+  }
+  .cc-back:hover { background: rgba(255,255,255,0.08); color: #fff; }
+
+  .cc-body { flex: 1; overflow-y: auto; padding: 10px 14px 14px; }
+
+  /* — List view — */
+  .cc-toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .cc-seg {
+    display: inline-flex; background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 999px; padding: 2px;
+  }
+  .cc-seg button {
+    border: none; background: none; cursor: pointer;
+    font: inherit; font-size: 11px; font-weight: 550;
+    color: rgba(255,255,255,0.5);
+    padding: 3px 11px; border-radius: 999px; height: 22px;
+  }
+  .cc-seg button.on { background: #fff; color: #0a0a0c; }
+  .cc-new {
+    margin-left: auto;
+    display: inline-flex; align-items: center; gap: 5px;
+    background: #fff; color: #0a0a0c;
+    border: none; border-radius: 7px; cursor: pointer;
+    font: inherit; font-size: 11px; font-weight: 650;
+    padding: 0 11px; height: 26px;
+  }
+  .cc-new:hover { background: rgba(255,255,255,0.88); }
+
+  .cc-ticket {
+    border: 1px solid rgba(255,255,255,0.09); border-radius: 9px;
+    padding: 9px 11px; margin-bottom: 7px;
+    cursor: pointer;
+    background: rgba(255,255,255,0.025);
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .cc-ticket:hover { border-color: rgba(255,255,255,0.22); background: rgba(255,255,255,0.05); }
+  .cc-ticket-top { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; }
+  .cc-id { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: rgba(255,255,255,0.42); }
+  .cc-status {
+    font-size: 9px; font-weight: 650; letter-spacing: 0.3px;
+    padding: 2px 7px; border-radius: 999px; margin-left: auto;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+  }
+  /* Monochrome status scale: active states read brighter, past dimmer. */
+  .cc-status.open        { background: rgba(255,255,255,0.14); color: #fff; }
+  .cc-status.in-progress { background: #fff; color: #0a0a0c; }
+  .cc-status.waiting     { background: none; border-color: rgba(255,255,255,0.35); color: rgba(255,255,255,0.8); }
+  .cc-status.resolved    { background: none; border-color: rgba(255,255,255,0.18); color: rgba(255,255,255,0.5); }
+  .cc-status.closed      { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.38); }
+  .cc-subject { font-size: 12px; font-weight: 550; line-height: 1.35; color: rgba(255,255,255,0.92); }
+  .cc-meta { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 3px; }
+  .cc-empty { text-align: center; color: rgba(255,255,255,0.4); font-size: 11.5px; padding: 28px 0; }
+
+  /* — Create view — */
+  .cc-field { margin-bottom: 10px; }
+  .cc-field label { display: block; font-size: 10px; font-weight: 650; color: rgba(255,255,255,0.55); margin-bottom: 4px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .cc-field input[type="text"], .cc-field select, .cc-field textarea {
+    width: 100%; box-sizing: border-box;
+    border: 1px solid rgba(255,255,255,0.12); border-radius: 8px;
+    background: rgba(255,255,255,0.04); color: #fff;
+    font: inherit; font-size: 12px;
+    padding: 7px 9px;
+  }
+  .cc-field input::placeholder, .cc-field textarea::placeholder { color: rgba(255,255,255,0.3); }
+  .cc-field select option { background: #17171a; color: #fff; }
+  .cc-field textarea { min-height: 80px; resize: vertical; }
+  .cc-actions { display: flex; gap: 8px; margin-top: 14px; }
+  .cc-submit {
+    flex: 1; height: 30px;
+    background: #fff; color: #0a0a0c;
+    border: none; border-radius: 8px; cursor: pointer;
+    font: inherit; font-size: 12px; font-weight: 650;
+  }
+  .cc-submit:hover { background: rgba(255,255,255,0.88); }
+  .cc-cancel {
+    height: 30px; padding: 0 13px;
+    background: none; color: rgba(255,255,255,0.6);
+    border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; cursor: pointer;
+    font: inherit; font-size: 12px; font-weight: 550;
+  }
+  .cc-cancel:hover { color: #fff; border-color: rgba(255,255,255,0.3); }
+
+  /* — Detail view — */
+  .cc-detail-head { margin-bottom: 10px; }
+  .cc-detail-head .cc-subject { font-size: 13px; }
+  .cc-detail-meta {
+    display: grid; grid-template-columns: auto 1fr; gap: 3px 12px;
+    font-size: 10.5px; color: rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 9px; padding: 9px 11px; margin: 9px 0 12px;
+  }
+  .cc-detail-meta b { color: rgba(255,255,255,0.75); font-weight: 600; }
+  .cc-act-head { font-size: 9.5px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin: 0 0 8px; }
+  .cc-act {
+    border-left: 2px solid rgba(255,255,255,0.12);
+    padding: 0 0 11px 11px; margin-left: 4px;
+    position: relative;
+  }
+  .cc-act::before {
+    content: ''; position: absolute; left: -5px; top: 3px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #101014; border: 2px solid rgba(255,255,255,0.3);
+  }
+  .cc-act.agent::before { border-color: #fff; background: #fff; }
+  .cc-act-who { font-size: 10.5px; font-weight: 650; color: rgba(255,255,255,0.85); }
+  .cc-act-who span { font-weight: 400; color: rgba(255,255,255,0.35); margin-left: 6px; font-size: 9.5px; }
+  .cc-act-text { font-size: 11.5px; color: rgba(255,255,255,0.62); line-height: 1.45; margin-top: 2px; }
+  .cc-reply { display: flex; gap: 7px; margin-top: 10px; }
+  .cc-reply input {
+    flex: 1; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px;
+    background: rgba(255,255,255,0.04); color: #fff;
+    font: inherit; font-size: 11.5px; padding: 6px 9px;
+  }
+  .cc-reply input::placeholder { color: rgba(255,255,255,0.3); }
+  .cc-reply button {
+    height: 29px; padding: 0 12px;
+    background: #fff; color: #0a0a0c; border: none; border-radius: 8px;
+    cursor: pointer; font: inherit; font-size: 11px; font-weight: 650;
+  }
+  .cc-reply button:hover { background: rgba(255,255,255,0.88); }
+
   /* Reduced motion: theme transitions collapse with everything else */
   @media (prefers-reduced-motion: reduce) {
     .card, .app-card, .is-card, .parts-card, .dm-panel,
@@ -7962,6 +8125,9 @@
 
 <!-- ============ PERSISTENT LEFT RAIL (global — visible on home + app screens) ============ -->
 <div class="open-apps-rail" id="openAppsRail"></div>
+
+<!-- Customer Care support flyout — anchored to the rail -->
+<div class="cc-flyout" id="ccFlyout" aria-hidden="true"></div>
 
 <!-- Reveal handle: shown only while the chrome is auto-hidden -->
 <div class="chrome-reveal" id="chromeReveal" title="Show navigation">
@@ -16786,6 +16952,7 @@ function renderOpenAppsRail() {
       const it = RAIL_STATIC_ALL[en.key];
       if (!it) return '';
       const isActive =
+        (en.key === 'care' && typeof CC_STATE !== 'undefined' && CC_STATE.open) ||
         (en.key === 'dashboards' && (atInlineHome || (onHome && homeView === 'dashboard'))) ||
         (en.key === 'myUnify' && onHome && homeView === 'myunify') ||
         (en.key === 'apps' && onHome && homeView === 'apps') ||
@@ -16932,8 +17099,9 @@ function initOpenAppsRail() {
       return;
     }
     if (action === 'documents') { openAppTab('documentMgmt'); return; }
+    if (action === 'care') { e.stopPropagation(); toggleCcFlyout(); return; }
     const labels = {
-      university: 'CDK University', care: 'Customer Care', resources: 'Resource Center',
+      university: 'CDK University', resources: 'Resource Center',
     };
     toast(`${labels[action] || action} — not part of this prototype`);
   });
@@ -17002,10 +17170,15 @@ const CHROME_IDLE_MS = 5000;
 let chromeIdleTimer = null;
 
 function chromeHideEligible() {
-  // Only with an application actually open on the app screen. The home
-  // screens keep their navigation at all times.
+  // The chrome retreats only while the user is actually looking at an
+  // internal application: app screen active, apps open, AND one of them
+  // displayed. The inline home (Dashboards view on the app screen, where
+  // apps are open but none is displayed) keeps the navigation — as do
+  // My Unify, Apps, and Workflows, which live on the home screen and are
+  // excluded by the screen check.
   return document.getElementById('appScreen')?.classList.contains('active')
-      && TAB_STATE.tabs.length > 0;
+      && TAB_STATE.tabs.length > 0
+      && TAB_STATE.displayed.length > 0;
 }
 
 /* Stamp the currently displayed application onto the reveal handle, so the
@@ -17026,9 +17199,11 @@ function hideChrome() {
   if (!chromeHideEligible()) return;
   updateChromeRevealApp();
   document.body.classList.add('chrome-hidden');
-  // A hidden header must not leave the mega menu stranded on screen.
+  // A hidden header must not leave the mega menu stranded on screen —
+  // and the support flyout is anchored to the rail, so it leaves too.
   document.getElementById('megaMenu')?.classList.add('collapsed');
   document.getElementById('menuBtn')?.classList.remove('active');
+  if (typeof CC_STATE !== 'undefined' && CC_STATE.open) toggleCcFlyout();
 }
 
 function showChrome() {
@@ -17266,6 +17441,209 @@ function buildAppNav(iconKey, appLabel, items) {
       </div>
     </nav>`;
 }
+
+/* ============================================================
+   CUSTOMER CARE FLYOUT — support tickets
+   Three views inside one panel: list (open ⇄ past filter), create,
+   and detail with an activity timeline.
+   ============================================================ */
+const SUPPORT_TICKETS = [
+  { id: 'CS-4821', subject: 'AIVA not resolving RO 98664 in Visit Insights', product: 'AIVA', priority: 'High',
+    status: 'in-progress', requester: 'You', created: 'Aug 5', updated: '2h ago',
+    activity: [
+      { who: 'You', when: 'Aug 5, 9:14 AM', text: 'Searching "RO 98664" in AIVA returns no match, but the RO is open in Service for Marcus Hill.', agent: false },
+      { who: 'Priya N. — CDK Support', when: 'Aug 5, 11:02 AM', text: 'Thanks — reproduced on your store (Statler Toyota). Escalating to the AIVA indexing team.', agent: true },
+      { who: 'Priya N. — CDK Support', when: 'Aug 6, 8:40 AM', text: 'Index rebuild scheduled tonight. Will confirm once ROs re-resolve.', agent: true },
+    ]},
+  { id: 'CS-4819', subject: 'Accounting AR export to Excel times out', product: 'Accounting', priority: 'Normal',
+    status: 'waiting', requester: 'You', created: 'Aug 4', updated: '1d ago',
+    activity: [
+      { who: 'You', when: 'Aug 4, 3:22 PM', text: 'Exporting the AR customer table (14 rows) spins for ~2 min then fails.', agent: false },
+      { who: 'Deshawn C. — CDK Support', when: 'Aug 4, 4:05 PM', text: 'Could you confirm whether this happens on Last Statement view as well, or only Today?', agent: true },
+    ]},
+  { id: 'CS-4815', subject: 'Parts clerk cannot see back counter queue', product: 'Parts', priority: 'High',
+    status: 'open', requester: 'T. Alvarez', created: 'Aug 3', updated: '3d ago',
+    activity: [
+      { who: 'T. Alvarez', when: 'Aug 3, 8:05 AM', text: 'Back counter queue is empty for one clerk login; front counter shows normally.', agent: false },
+    ]},
+  { id: 'CS-4808', subject: 'Document Mgmt tag filter resets on refresh', product: 'Document Mgmt', priority: 'Low',
+    status: 'open', requester: 'You', created: 'Aug 1', updated: '5d ago',
+    activity: [
+      { who: 'You', when: 'Aug 1, 1:48 PM', text: 'Personal tag filters clear every time the dashboard reloads.', agent: false },
+    ]},
+  { id: 'CS-4790', subject: 'Lien payoff totals mismatch on deal 129518', product: 'F&I', priority: 'High',
+    status: 'resolved', requester: 'You', created: 'Jul 28', updated: 'Jul 30',
+    activity: [
+      { who: 'You', when: 'Jul 28, 10:15 AM', text: 'Lien Dashboard shows a payoff total that disagrees with the deal jacket for 129518.', agent: false },
+      { who: 'Mara K. — CDK Support', when: 'Jul 29, 9:30 AM', text: 'Root cause: stale per-diem cache. Patched on your instance.', agent: true },
+      { who: 'You', when: 'Jul 30, 8:02 AM', text: 'Confirmed matching now. Thanks!', agent: false },
+      { who: 'Mara K. — CDK Support', when: 'Jul 30, 8:20 AM', text: 'Great — marking resolved.', agent: true },
+    ]},
+  { id: 'CS-4771', subject: 'Time clock entries duplicated on RO 98733', product: 'Service', priority: 'Normal',
+    status: 'closed', requester: 'You', created: 'Jul 21', updated: 'Jul 24',
+    activity: [
+      { who: 'You', when: 'Jul 21, 7:55 AM', text: 'Tech time punches on RO 98733 (David Kim) appear twice in the labor grid.', agent: false },
+      { who: 'Deshawn C. — CDK Support', when: 'Jul 22, 2:10 PM', text: 'Duplicate-punch guard deployed. Please re-verify.', agent: true },
+      { who: 'You', when: 'Jul 24, 9:00 AM', text: 'Clean since the fix. Closing.', agent: false },
+    ]},
+  { id: 'CS-4760', subject: 'Global search slow on customer phone lookup', product: 'Unify Platform', priority: 'Low',
+    status: 'closed', requester: 'R. Okafor', created: 'Jul 15', updated: 'Jul 18',
+    activity: [
+      { who: 'R. Okafor', when: 'Jul 15, 11:30 AM', text: 'Phone-number searches take 6–8 seconds.', agent: false },
+      { who: 'Priya N. — CDK Support', when: 'Jul 17, 4:44 PM', text: 'Phone index added; lookups now sub-second. Closing after soak.', agent: true },
+    ]},
+];
+
+/* var, not const: the rail's active-state check runs at boot, before this
+   block executes — and `typeof` does NOT protect a const in its temporal
+   dead zone (it throws). var hoists as undefined, so the guard works. */
+var CC_STATE = { open: false, view: 'list', filter: 'open', detailId: null };
+const CC_OPEN_STATUSES = ['open', 'in-progress', 'waiting'];
+let CC_SEQ = 4822;
+
+function ccStatusLabel(s) { return s.replace('-', ' '); }
+
+function renderCcFlyout() {
+  const fly = document.getElementById('ccFlyout');
+  if (!fly) return;
+  fly.classList.toggle('open', CC_STATE.open);
+  fly.setAttribute('aria-hidden', String(!CC_STATE.open));
+  if (!CC_STATE.open) return;
+
+  const backBtn = CC_STATE.view === 'list' ? '' :
+    `<button class="cc-back" onclick="ccGo('list')" title="Back to tickets">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+     </button>`;
+  const titles = { list: 'Support tickets', create: 'Create support ticket', detail: 'Ticket detail' };
+
+  let body = '';
+  if (CC_STATE.view === 'list') {
+    const isOpen = CC_STATE.filter === 'open';
+    const rows = SUPPORT_TICKETS.filter(t =>
+      isOpen ? CC_OPEN_STATUSES.includes(t.status) : !CC_OPEN_STATUSES.includes(t.status));
+    body = `
+      <div class="cc-toolbar">
+        <div class="cc-seg" role="tablist">
+          <button class="${isOpen ? 'on' : ''}" onclick="ccFilter('open')">Open (${SUPPORT_TICKETS.filter(t => CC_OPEN_STATUSES.includes(t.status)).length})</button>
+          <button class="${!isOpen ? 'on' : ''}" onclick="ccFilter('past')">Past (${SUPPORT_TICKETS.filter(t => !CC_OPEN_STATUSES.includes(t.status)).length})</button>
+        </div>
+        <button class="cc-new" onclick="ccGo('create')">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New ticket
+        </button>
+      </div>
+      ${rows.length ? rows.map(t => `
+        <div class="cc-ticket" onclick="ccOpenDetail('${t.id}')">
+          <div class="cc-ticket-top">
+            <span class="cc-id">${t.id}</span>
+            <span class="cc-status ${t.status}">${ccStatusLabel(t.status)}</span>
+          </div>
+          <div class="cc-subject">${escapeHtml(t.subject)}</div>
+          <div class="cc-meta">${t.product} · ${t.priority} · opened ${t.created} · updated ${t.updated}</div>
+        </div>`).join('')
+      : `<div class="cc-empty">No ${isOpen ? 'open' : 'past'} tickets.</div>`}`;
+  } else if (CC_STATE.view === 'create') {
+    body = `
+      <div class="cc-field"><label for="ccSubject">Subject</label>
+        <input type="text" id="ccSubject" placeholder="One line describing the issue" /></div>
+      <div class="cc-field"><label for="ccProduct">Product</label>
+        <select id="ccProduct">
+          <option>Unify Platform</option><option>AIVA</option><option>Service</option>
+          <option>Parts</option><option>Accounting</option><option>F&amp;I</option>
+          <option>Modern Retail</option><option>Intelligence Suite</option><option>Document Mgmt</option>
+        </select></div>
+      <div class="cc-field"><label for="ccPriority">Priority</label>
+        <select id="ccPriority"><option>Low</option><option selected>Normal</option><option>High</option></select></div>
+      <div class="cc-field"><label for="ccDesc">Description</label>
+        <textarea id="ccDesc" placeholder="What happened? Include the store, RO, deal, or customer if relevant."></textarea></div>
+      <div class="cc-actions">
+        <button class="cc-cancel" onclick="ccGo('list')">Cancel</button>
+        <button class="cc-submit" onclick="ccSubmit()">Create ticket</button>
+      </div>`;
+  } else {
+    const t = SUPPORT_TICKETS.find(x => x.id === CC_STATE.detailId);
+    body = !t ? `<div class="cc-empty">Ticket not found.</div>` : `
+      <div class="cc-detail-head">
+        <div class="cc-ticket-top">
+          <span class="cc-id">${t.id}</span>
+          <span class="cc-status ${t.status}">${ccStatusLabel(t.status)}</span>
+        </div>
+        <div class="cc-subject">${escapeHtml(t.subject)}</div>
+      </div>
+      <div class="cc-detail-meta">
+        <b>Product</b><span>${t.product}</span>
+        <b>Priority</b><span>${t.priority}</span>
+        <b>Requester</b><span>${escapeHtml(t.requester)}</span>
+        <b>Opened</b><span>${t.created}</span>
+        <b>Updated</b><span>${t.updated}</span>
+      </div>
+      <div class="cc-act-head">Activity</div>
+      ${t.activity.map(a => `
+        <div class="cc-act ${a.agent ? 'agent' : ''}">
+          <div class="cc-act-who">${escapeHtml(a.who)}<span>${a.when}</span></div>
+          <div class="cc-act-text">${escapeHtml(a.text)}</div>
+        </div>`).join('')}
+      ${CC_OPEN_STATUSES.includes(t.status) ? `
+        <div class="cc-reply">
+          <input type="text" id="ccReplyInput" placeholder="Add a comment..." />
+          <button onclick="ccReply('${t.id}')">Send</button>
+        </div>` : ''}`;
+  }
+
+  fly.innerHTML = `
+    <div class="cc-head">
+      ${backBtn}
+      <h2>${titles[CC_STATE.view]}</h2>
+      <button class="cc-back" onclick="toggleCcFlyout()" title="Close">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="cc-body">${body}</div>`;
+}
+
+function toggleCcFlyout() {
+  CC_STATE.open = !CC_STATE.open;
+  if (CC_STATE.open) { CC_STATE.view = 'list'; CC_STATE.detailId = null; }
+  renderCcFlyout();
+  renderOpenAppsRail();   // rail item active state
+}
+function ccGo(view) { CC_STATE.view = view; renderCcFlyout(); }
+function ccFilter(f) { CC_STATE.filter = f; renderCcFlyout(); }
+function ccOpenDetail(id) { CC_STATE.detailId = id; CC_STATE.view = 'detail'; renderCcFlyout(); }
+
+function ccSubmit() {
+  const subject = document.getElementById('ccSubject')?.value.trim();
+  const product = document.getElementById('ccProduct')?.value;
+  const priority = document.getElementById('ccPriority')?.value;
+  const desc = document.getElementById('ccDesc')?.value.trim();
+  if (!subject) { toast('Add a subject to create the ticket'); return; }
+  const id = `CS-${CC_SEQ++}`;
+  SUPPORT_TICKETS.unshift({
+    id, subject, product, priority,
+    status: 'open', requester: 'You', created: 'Today', updated: 'Just now',
+    activity: [{ who: 'You', when: 'Today', text: desc || subject, agent: false }],
+  });
+  CC_STATE.view = 'list';
+  CC_STATE.filter = 'open';
+  renderCcFlyout();
+  toast(`Ticket ${id} created`);
+}
+
+function ccReply(id) {
+  const input = document.getElementById('ccReplyInput');
+  const text = input?.value.trim();
+  if (!text) return;
+  const t = SUPPORT_TICKETS.find(x => x.id === id);
+  if (!t) return;
+  t.activity.push({ who: 'You', when: 'Just now', text, agent: false });
+  t.updated = 'Just now';
+  renderCcFlyout();
+}
+
+// Esc closes the flyout, matching every other transient surface.
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && CC_STATE.open) toggleCcFlyout();
+});
 
 /* ── Rail tooltip: reveals the hidden label on hover ──────────────
    One fixed-position element at body level (the rail scrolls, so an
