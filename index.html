@@ -2584,7 +2584,7 @@
     position: fixed; top: 0; left: 0;
     /* No tab background: the mark itself is the affordance, carried by a
        2px outline rather than a filled dark panel. */
-    display: flex; align-items: center; gap: 6px;
+    display: flex; align-items: center; gap: 3px;   /* product icon 50% closer */
     padding: 8px 10px 8px 9px;
     background: none;
     border: 0;
@@ -2613,11 +2613,11 @@
   }
   .chrome-reveal:hover { color: rgba(255, 255, 255, 0.95); }
   .chrome-reveal .cr-logo {
-    width: 26px; height: 26px; border-radius: 50%;
+    width: 36px; height: 36px; border-radius: 50%;   /* +40% */
     background: white; color: #0a0a0c;
     border: 2px solid #0a0a0c;      /* outline replaces the tab panel */
     box-sizing: border-box;
-    font-size: 8px; font-weight: 900; letter-spacing: -0.2px;
+    font-size: 11px; font-weight: 900; letter-spacing: -0.2px;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
     transition: transform 0.18s ease;
@@ -2626,8 +2626,8 @@
   /* Open application's icon — smaller than the CDK dot, sitting to its
      right with a clear gap. Never overlaps the mark. */
   .chrome-reveal .cr-app {
-    width: 16px; height: 16px; border-radius: 5px;
-    font-size: 6px; font-weight: 700; font-style: italic;
+    width: 22px; height: 22px; border-radius: 6px;   /* +40%, still smaller than the dot */
+    font-size: 8px; font-weight: 700; font-style: italic;
     letter-spacing: -0.2px;
     display: flex; align-items: center; justify-content: center;
     color: white; flex-shrink: 0;
