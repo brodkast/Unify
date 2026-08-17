@@ -768,6 +768,84 @@
   .kpi-status{
     font-size:9.5px; font-weight:800; color:#fff; padding:2px 8px; border-radius:20px; flex-shrink:0;
   }
+
+  /* ---------- Insight alert cards (KPI monitoring workflow) ---------- */
+  .insight-card{
+    position:relative; display:flex; align-items:center; gap:12px;
+    border:1.5px solid var(--border); border-radius:14px; padding:13px 14px;
+    margin-bottom:10px; cursor:pointer; background:#fff;
+  }
+  .insight-card.good{ border-color:#9cc47c; background:#f2f8ec; }
+  .insight-card.bad{ border-color:#e29b9b; background:#fcf1f1; }
+  .insight-card.warn{ border-color:#f0c98a; background:#fdf6ea; }
+  .insight-ic{
+    width:32px;height:32px;border-radius:50%; display:flex;align-items:center;justify-content:center;
+    font-size:14px; font-weight:800; flex-shrink:0; background:#fff; border:2px solid transparent;
+  }
+  .insight-ic.good{ color:#1f9d55; border-color:#1f9d55; }
+  .insight-ic.bad{ color:#d93a3a; border-color:#d93a3a; }
+  .insight-ic.warn{ color:#c9791a; border-color:#c9791a; }
+  .insight-text{ flex:1; min-width:0; }
+  .insight-title{ font-size:13.5px; font-weight:700; }
+  .insight-sub{ font-size:11.5px; color:var(--gray); margin-top:2px; }
+  .insight-val-wrap{ text-align:right; flex-shrink:0; }
+  .insight-val{ font-size:21px; font-weight:800; white-space:nowrap; }
+  .insight-val .unit{ font-size:12px; font-weight:700; color:var(--gray); }
+  .insight-val-lbl{ font-size:10px; color:var(--gray); font-weight:600; }
+  .insight-assigned{
+    display:inline-flex; align-items:center; gap:4px; font-size:10.5px; font-weight:700; color:#166a3c;
+    background:var(--green-bg); padding:2px 8px; border-radius:10px; margin-top:6px;
+  }
+
+  /* ---------- KPI Detail screen ---------- */
+  .kdet-chart{ display:flex; align-items:flex-end; gap:10px; padding:22px 16px 4px; }
+  .kdet-bar-col{ flex:1; display:flex; flex-direction:column; align-items:center; }
+  .kdet-bar-val{ font-size:11px; font-weight:700; color:var(--gray); margin-bottom:6px; }
+  .kdet-bar{ width:100%; max-width:36px; background:#c7cbd1; border-radius:6px 6px 2px 2px; }
+  .kdet-bar.active{ background:var(--blue); }
+  .kdet-bar-lbl{ font-size:10.5px; color:var(--gray); margin-top:7px; font-weight:600; }
+  .kdet-divider{ height:1px; background:var(--border); margin:6px 16px; }
+  .kdet-section{ padding:10px 16px 6px; }
+  .kdet-heading{ font-size:15px; font-weight:800; margin:0 0 10px; display:flex; align-items:center; gap:6px; }
+  .kdet-body{ font-size:13px; color:var(--black); line-height:1.55; }
+  .kdet-row{ display:flex; align-items:flex-start; gap:10px; }
+  .kdet-row .insight-ic{ width:26px; height:26px; font-size:12px; margin-top:1px; }
+  .kdet-config{ background:var(--page); padding:16px; margin-top:8px; }
+  .kdet-config-row{ display:flex; justify-content:space-between; padding:8px 0; font-size:13px; border-top:1px solid #fff; }
+  .kdet-config-row:first-of-type{ border-top:none; }
+  .kdet-config-lbl{ color:var(--black); font-weight:600; }
+  .kdet-config-val{ color:var(--gray); }
+  .kdet-config-note{ font-size:11px; color:var(--gray-light); font-style:italic; margin-top:10px; }
+
+  /* ---------- AIVA recommended-action cards ---------- */
+  .aiva-action-card{
+    border:1px solid var(--border); border-radius:12px; padding:12px 14px; margin-bottom:8px; cursor:pointer; background:#fff;
+  }
+  .aiva-action-card:hover{ background:var(--blue-bg); }
+  .aiva-action-lbl{ font-size:10px; font-weight:800; color:var(--blue); text-transform:uppercase; letter-spacing:.04em; margin-bottom:3px; }
+  .aiva-action-text{ font-size:13.5px; font-weight:700; }
+  .aiva-action-general{
+    display:block; width:100%; text-align:center; background:none; border:1px dashed var(--border); border-radius:12px;
+    padding:11px; font-size:12.5px; font-weight:700; color:var(--gray); cursor:pointer; margin-top:2px;
+  }
+  .aiva-action-general:hover{ background:var(--page); }
+
+  /* ---------- Assign Action screen ---------- */
+  .assign-context{ background:var(--page); border-radius:12px; padding:12px 14px; margin-bottom:18px; }
+  .assign-context-lbl{ font-size:10px; font-weight:800; color:var(--gray-light); text-transform:uppercase; letter-spacing:.04em; margin-bottom:4px; }
+  .assign-context-text{ font-size:13.5px; font-weight:700; }
+  .assign-row{ display:flex; align-items:center; gap:12px; padding:11px 4px; border-bottom:1px solid var(--page); cursor:pointer; }
+  .assign-row:last-child{ border-bottom:none; }
+  .assign-avatar{ width:36px;height:36px;border-radius:50%; color:#fff; font-size:12.5px; font-weight:800; display:flex;align-items:center;justify-content:center; flex-shrink:0; }
+  .assign-name{ font-size:13.5px; font-weight:700; }
+  .assign-role{ font-size:11.5px; color:var(--gray); }
+  .assign-radio{ width:19px;height:19px;border-radius:50%; border:2px solid var(--border); flex-shrink:0; }
+  .assign-row.selected .assign-radio{ border-color:var(--blue); background:var(--blue); box-shadow:inset 0 0 0 3px #fff; }
+  .priority-row{ display:flex; gap:8px; margin-bottom:6px; }
+  .priority-pill{ flex:1; text-align:center; padding:9px; border-radius:10px; border:1px solid var(--border); font-size:12.5px; font-weight:700; color:var(--gray); cursor:pointer; }
+  .priority-pill.selected{ background:var(--black); color:#fff; border-color:var(--black); }
+  .assign-field-lbl{ font-size:11px; font-weight:800; color:var(--gray-light); text-transform:uppercase; letter-spacing:.04em; margin:18px 2px 8px; }
+  .assign-static{ display:flex; align-items:center; justify-content:space-between; border:1px solid var(--border); border-radius:10px; padding:11px 14px; font-size:13px; color:var(--black); }
 </style>
 </head>
 <body>
@@ -916,40 +994,45 @@
         <div id="myday-insights-view" style="display:none;">
           <div class="agenda-label">AI Insights</div>
           <div id="myday-insights-items">
-          <div class="notif-row" onclick="showToast('Reviewing exceptions…')">
-            <div class="notif-ic" style="background:#f3b98c;">⚠️</div>
-            <div class="notif-text">
-              <div class="notif-title">3 exceptions flagged in Daily Operational Control</div>
-              <div class="notif-sub">Worth clearing before they roll into tomorrow</div>
+          <div class="insight-card good" onclick="showToast('Reviewing ASR approval for John Lewis…')">
+            <div class="insight-ic good">★</div>
+            <div class="insight-text">
+              <div class="insight-title">ASR Approval <span style="font-weight:400;">for John Lewis</span></div>
+              <div class="insight-sub">18.2 pt increase over 12-mo. average</div>
             </div>
+            <div class="insight-val-wrap"><div class="insight-val">73.2<span class="unit">%</span></div></div>
           </div>
-          <div class="notif-row" onclick="showToast('Reviewing compliance alerts…')">
-            <div class="notif-ic" style="background:#f0c94e;">🚨</div>
-            <div class="notif-text">
-              <div class="notif-title">2 compliance alerts need attention</div>
-              <div class="notif-sub">Compliance Dashboard &middot; review before month-end</div>
+          <div class="insight-card bad" onclick="showToast('Reviewing inspection rate at Statler Toyota…')">
+            <div class="insight-ic bad">↓</div>
+            <div class="insight-text">
+              <div class="insight-title">Inspection Rate <span style="font-weight:400;">at Statler Toyota</span></div>
+              <div class="insight-sub">12.1 pts under last month</div>
             </div>
+            <div class="insight-val-wrap"><div class="insight-val">75.0<span class="unit">%</span></div></div>
           </div>
-          <div class="notif-row" onclick="showToast('Checking Statler Mazda performance…')">
-            <div class="notif-ic" style="background:#a9c2f0;">📉</div>
-            <div class="notif-text">
-              <div class="notif-title">Statler Mazda is trailing the group at 61%</div>
-              <div class="notif-sub">Toyota 102% &middot; Honda 94% &middot; Ford 78% &middot; Mazda 61%</div>
+          <div class="insight-card bad" onclick="showToast('Reviewing lane usage at Statler Toyota…')">
+            <div class="insight-ic bad">↓</div>
+            <div class="insight-text">
+              <div class="insight-title">Lane Usage <span style="font-weight:400;">at Statler Toyota</span></div>
+              <div class="insight-sub">11.1 pts under last month</div>
             </div>
+            <div class="insight-val-wrap"><div class="insight-val">82.2<span class="unit">%</span></div></div>
           </div>
-          <div class="notif-row" onclick="showToast('Opening Front Gross MTD…')">
-            <div class="notif-ic" style="background:var(--page);">🎯</div>
-            <div class="notif-text">
-              <div class="notif-title">Front Gross is pacing at 68% of goal</div>
-              <div class="notif-sub">$152.4k of $225k MTD &middot; +12.4% YoY</div>
+          <div class="insight-card warn" onclick="showToast('Reviewing one line ROs at Waldorf Honda…')">
+            <div class="insight-ic warn">↑</div>
+            <div class="insight-text">
+              <div class="insight-title">One Line ROs <span style="font-weight:400;">at Waldorf Honda</span></div>
+              <div class="insight-sub">Projected to be 14 over last month</div>
             </div>
+            <div class="insight-val-wrap"><div class="insight-val-lbl">Projection:</div><div class="insight-val">12</div></div>
           </div>
-          <div class="notif-row" onclick="showToast('Opening F&amp;I Overview…')">
-            <div class="notif-ic" style="background:#a8e0b8;">📈</div>
-            <div class="notif-text">
-              <div class="notif-title">F&amp;I PVR trending up</div>
-              <div class="notif-sub">$1,847 &middot; up 3.1% over the last 6 months</div>
+          <div class="insight-card warn" id="insight-elr-card" onclick="showScreen('screen-kpi-detail')">
+            <div class="insight-ic warn">↑</div>
+            <div class="insight-text">
+              <div class="insight-title">Effective Labor Rate <span style="font-weight:400;">at Astoria Acura</span></div>
+              <div class="insight-sub">5 Month Steady decline</div>
             </div>
+            <div class="insight-val-wrap"><div class="insight-val">$123<span class="unit">/hr</span></div></div>
           </div>
           </div>
         </div>
@@ -1260,6 +1343,120 @@
       </div>
     </div>
 
+    <!-- KPI Detail: Effective Labor Rate -->
+    <div class="screen" id="screen-kpi-detail">
+      <div class="statusbar light"><span>9:41</span><span class="icons">📶 🛜 🔋</span></div>
+      <div class="app-header light">
+        <button class="back-btn" onclick="showScreen('screen-myday')">‹</button>
+        <div style="flex:1; min-width:0;">
+          <h2 style="margin:0;">Effective Labor Rate</h2>
+          <div style="font-size:12px; color:var(--gray); font-weight:600; margin-top:1px;">Astoria Acura</div>
+        </div>
+        <div class="icon-btn" onclick="showToast('Date range — not built in this pass')">📅</div>
+      </div>
+      <div class="scroll-area pad-tabbar" style="padding-left:0; padding-right:0;">
+        <div class="kdet-chart">
+          <div class="kdet-bar-col"><div class="kdet-bar-val">$160</div><div class="kdet-bar" style="height:140px;"></div><div class="kdet-bar-lbl">Oct</div></div>
+          <div class="kdet-bar-col"><div class="kdet-bar-val">$150</div><div class="kdet-bar" style="height:131px;"></div><div class="kdet-bar-lbl">Nov</div></div>
+          <div class="kdet-bar-col"><div class="kdet-bar-val">$130</div><div class="kdet-bar" style="height:114px;"></div><div class="kdet-bar-lbl">Dec</div></div>
+          <div class="kdet-bar-col"><div class="kdet-bar-val">$100</div><div class="kdet-bar" style="height:88px;"></div><div class="kdet-bar-lbl">Jan</div></div>
+          <div class="kdet-bar-col"><div class="kdet-bar-val">$90</div><div class="kdet-bar" style="height:79px;"></div><div class="kdet-bar-lbl">Feb</div></div>
+          <div class="kdet-bar-col"><div class="kdet-bar-val">$80</div><div class="kdet-bar active" style="height:70px;"></div><div class="kdet-bar-lbl">Mar</div></div>
+        </div>
+
+        <div class="kdet-divider"></div>
+
+        <div class="kdet-section">
+          <div class="kdet-heading">What's Happening</div>
+          <div class="kdet-row">
+            <div class="insight-ic bad">↓</div>
+            <div class="kdet-body">Effective labor rate at this store has been steadily declining for several months.</div>
+          </div>
+        </div>
+
+        <div class="kdet-divider"></div>
+
+        <div class="kdet-section">
+          <div class="kdet-heading">Why It Matters</div>
+          <div class="kdet-body">A drop in Effective Labor Rate (ELR) reduces labor revenue per hour sold, which directly erodes service gross profit and often signals increased discounting, poor labor mix, or ineffective upsell execution.</div>
+        </div>
+
+        <div class="kdet-divider"></div>
+
+        <div class="kdet-section">
+          <div class="kdet-heading">✦ Ask AIVA</div>
+          <div class="aiva-suggest" onclick="askAivaFromKpi('Can you provide more details?')">Can you provide more details?</div>
+          <div class="aiva-suggest" onclick="askAivaFromKpi('What actions can I take to change this trend?')">What actions can I take to change this trend?</div>
+          <div class="aiva-suggest" onclick="askAivaFromKpi('What&#39;s driving this decline?')">What's driving this decline?</div>
+        </div>
+
+        <div class="kdet-config">
+          <div class="kdet-heading">KPI Configuration</div>
+          <div class="kdet-config-row"><span class="kdet-config-lbl">Goal</span><span class="kdet-config-val">145 services</span></div>
+          <div class="kdet-config-row"><span class="kdet-config-lbl">Healthy Range</span><span class="kdet-config-val">135&ndash;160 services</span></div>
+          <div class="kdet-config-row"><span class="kdet-config-lbl">Warning Range</span><span class="kdet-config-val">120&ndash;134 services</span></div>
+          <div class="kdet-config-row"><span class="kdet-config-lbl">Critical Threshold</span><span class="kdet-config-val">Below 119 services</span></div>
+          <div class="kdet-config-row"><span class="kdet-config-lbl">Direction</span><span class="kdet-config-val">Higher is better</span></div>
+          <div class="kdet-config-note">Insights are surfaced proactively before thresholds are breached</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Assign Action -->
+    <div class="screen" id="screen-assign-action">
+      <div class="statusbar light"><span>9:41</span><span class="icons">📶 🛜 🔋</span></div>
+      <div class="app-header light">
+        <button class="back-btn" onclick="showScreen('screen-aiva')">‹</button>
+        <h2>Assign Action</h2>
+      </div>
+      <div class="scroll-area">
+        <div class="assign-context">
+          <div class="assign-context-lbl">Effective Labor Rate &middot; Astoria Acura</div>
+          <div class="assign-context-text" id="assign-action-text">Audit recent ROs for labor discounting</div>
+        </div>
+
+        <div class="section-label left" style="margin-top:0;">Assign To</div>
+        <div id="assign-people-list">
+          <div class="assign-row selected" onclick="selectAssignee(this, 'the Service Manager at Astoria Acura', 'Service Manager', 'SM', '#2f7bf0')">
+            <div class="assign-avatar" style="background:#2f7bf0;">SM</div>
+            <div style="flex:1; min-width:0;"><div class="assign-name">Service Manager</div><div class="assign-role">Astoria Acura</div></div>
+            <div class="assign-radio"></div>
+          </div>
+          <div class="assign-row" onclick="selectAssignee(this, 'the Fixed Operations Director', 'Fixed Operations Director', 'FO', '#8b5cf6')">
+            <div class="assign-avatar" style="background:#8b5cf6;">FO</div>
+            <div style="flex:1; min-width:0;"><div class="assign-name">Fixed Operations Director</div><div class="assign-role">Dealership Admin</div></div>
+            <div class="assign-radio"></div>
+          </div>
+          <div class="assign-row" onclick="selectAssignee(this, 'the Astoria Acura GM', 'Astoria Acura GM', 'AA', '#f5a623')">
+            <div class="assign-avatar" style="background:#f5a623;">AA</div>
+            <div style="flex:1; min-width:0;"><div class="assign-name">Store GM</div><div class="assign-role">Astoria Acura</div></div>
+            <div class="assign-radio"></div>
+          </div>
+          <div class="assign-row" onclick="selectAssignee(this, 'the Controller/CFO', 'Controller/CFO', 'CF', '#8a93a3')">
+            <div class="assign-avatar" style="background:#8a93a3;">CF</div>
+            <div style="flex:1; min-width:0;"><div class="assign-name">Controller/CFO</div><div class="assign-role">Dealership Admin</div></div>
+            <div class="assign-radio"></div>
+          </div>
+        </div>
+
+        <div class="assign-field-lbl">Priority</div>
+        <div class="priority-row">
+          <div class="priority-pill" onclick="selectPriority(this)">Low</div>
+          <div class="priority-pill selected" onclick="selectPriority(this)">Medium</div>
+          <div class="priority-pill" onclick="selectPriority(this)">High</div>
+        </div>
+
+        <div class="assign-field-lbl">Due Date</div>
+        <div class="assign-static">This Friday, Mar 6 <span style="color:var(--gray-light);">📅</span></div>
+
+        <div class="assign-field-lbl">Note</div>
+        <div class="assign-static" style="color:var(--gray); font-weight:500;">Flagged from the Effective Labor Rate insight — please investigate and report back.</div>
+      </div>
+      <div class="bottom-bar">
+        <button class="btn-primary-block" style="width:100%;" onclick="assignAction()">Assign Action</button>
+      </div>
+    </div>
+
     <div class="tab-bar" id="tab-bar">
       <div class="tab-item" data-screen="screen-recents" onclick="showScreen('screen-recents')"><span class="tab-ic">🕘</span><span>Recents</span></div>
       <div class="tab-item" data-screen="screen-workflows" onclick="showScreen('screen-workflows')"><span class="tab-ic">🗂️</span><span>Workflows</span></div>
@@ -1283,7 +1480,9 @@
     'screen-aiva': 'AIVA tab',
     'screen-messages': 'Messages tab',
     'screen-message-thread': 'Messages — thread',
-    'screen-notifications': 'Notifications'
+    'screen-notifications': 'Notifications',
+    'screen-kpi-detail': 'My Day — KPI Detail',
+    'screen-assign-action': 'AIVA — Assign Action'
   };
 
   const rootTabs = ['screen-recents','screen-workflows','screen-myday','screen-aiva','screen-messages'];
@@ -1506,40 +1705,45 @@
           <button class="btn-writeup" onclick="showToast('Opening Sales Leaderboard…')">View Leaderboard</button>
         </div>`,
       insightsHtml: `
-        <div class="notif-row" onclick="showToast('Reviewing exceptions…')">
-          <div class="notif-ic" style="background:#f3b98c;">⚠️</div>
-          <div class="notif-text">
-            <div class="notif-title">3 exceptions flagged in Daily Operational Control</div>
-            <div class="notif-sub">Worth clearing before they roll into tomorrow</div>
+        <div class="insight-card good" onclick="showToast('Reviewing ASR approval for John Lewis…')">
+          <div class="insight-ic good">★</div>
+          <div class="insight-text">
+            <div class="insight-title">ASR Approval <span style="font-weight:400;">for John Lewis</span></div>
+            <div class="insight-sub">18.2 pt increase over 12-mo. average</div>
           </div>
+          <div class="insight-val-wrap"><div class="insight-val">73.2<span class="unit">%</span></div></div>
         </div>
-        <div class="notif-row" onclick="showToast('Reviewing compliance alerts…')">
-          <div class="notif-ic" style="background:#f0c94e;">🚨</div>
-          <div class="notif-text">
-            <div class="notif-title">2 compliance alerts need attention</div>
-            <div class="notif-sub">Compliance Dashboard &middot; review before month-end</div>
+        <div class="insight-card bad" onclick="showToast('Reviewing inspection rate at Statler Toyota…')">
+          <div class="insight-ic bad">↓</div>
+          <div class="insight-text">
+            <div class="insight-title">Inspection Rate <span style="font-weight:400;">at Statler Toyota</span></div>
+            <div class="insight-sub">12.1 pts under last month</div>
           </div>
+          <div class="insight-val-wrap"><div class="insight-val">75.0<span class="unit">%</span></div></div>
         </div>
-        <div class="notif-row" onclick="showToast('Checking Statler Mazda performance…')">
-          <div class="notif-ic" style="background:#a9c2f0;">📉</div>
-          <div class="notif-text">
-            <div class="notif-title">Statler Mazda is trailing the group at 61%</div>
-            <div class="notif-sub">Toyota 102% &middot; Honda 94% &middot; Ford 78% &middot; Mazda 61%</div>
+        <div class="insight-card bad" onclick="showToast('Reviewing lane usage at Statler Toyota…')">
+          <div class="insight-ic bad">↓</div>
+          <div class="insight-text">
+            <div class="insight-title">Lane Usage <span style="font-weight:400;">at Statler Toyota</span></div>
+            <div class="insight-sub">11.1 pts under last month</div>
           </div>
+          <div class="insight-val-wrap"><div class="insight-val">82.2<span class="unit">%</span></div></div>
         </div>
-        <div class="notif-row" onclick="showToast('Opening Front Gross MTD…')">
-          <div class="notif-ic" style="background:var(--page);">🎯</div>
-          <div class="notif-text">
-            <div class="notif-title">Front Gross is pacing at 68% of goal</div>
-            <div class="notif-sub">$152.4k of $225k MTD &middot; +12.4% YoY</div>
+        <div class="insight-card warn" onclick="showToast('Reviewing one line ROs at Waldorf Honda…')">
+          <div class="insight-ic warn">↑</div>
+          <div class="insight-text">
+            <div class="insight-title">One Line ROs <span style="font-weight:400;">at Waldorf Honda</span></div>
+            <div class="insight-sub">Projected to be 14 over last month</div>
           </div>
+          <div class="insight-val-wrap"><div class="insight-val-lbl">Projection:</div><div class="insight-val">12</div></div>
         </div>
-        <div class="notif-row" onclick="showToast('Opening F&amp;I Overview…')">
-          <div class="notif-ic" style="background:#a8e0b8;">📈</div>
-          <div class="notif-text">
-            <div class="notif-title">F&amp;I PVR trending up</div>
-            <div class="notif-sub">$1,847 &middot; up 3.1% over the last 6 months</div>
+        <div class="insight-card warn" id="insight-elr-card" onclick="showScreen('screen-kpi-detail')">
+          <div class="insight-ic warn">↑</div>
+          <div class="insight-text">
+            <div class="insight-title">Effective Labor Rate <span style="font-weight:400;">at Astoria Acura</span></div>
+            <div class="insight-sub">5 Month Steady decline</div>
           </div>
+          <div class="insight-val-wrap"><div class="insight-val">$123<span class="unit">/hr</span></div></div>
         </div>`,
       aivaWelcomeHtml: `
               Hello [Name]!<br><br>
@@ -2246,7 +2450,10 @@
     "What's driving today's variances?": "Today's variances break down to 1 in Service and 2 in Parts, out of 11 total reviewed — 8 have already been resolved.",
     "What's driving our Front Gross this month?": "Front Gross Per Unit is at $2,847, up 9.4% vs. goal MTD — AIVA flagged this trend for a closer driver analysis.",
     'Which inventory is at risk of aging out?': "The Inventory Aging Report shows units over 60 days that are worth reviewing before they age further.",
-    'How is F&I penetration trending by product?': "Back Gross Per Unit (F&I) is at $1,847, up 3.1% vs. goal MTD, though at least one product is currently below target."
+    'How is F&I penetration trending by product?': "Back Gross Per Unit (F&I) is at $1,847, up 3.1% vs. goal MTD, though at least one product is currently below target.",
+    'Can you provide more details?': "Astoria Acura's Effective Labor Rate has fallen from $160/hr in October to $80/hr in March — a steady decline every month for five straight months, with no single sharp drop.",
+    'What actions can I take to change this trend?': "This usually comes down to discounting, labor mix, or upsell execution. I'd start by auditing recent ROs for discounting, reviewing technician labor mix and flat-rate accuracy, and scheduling a labor rate review with the store's service team. Here's what I'd recommend:",
+    "What's driving this decline?": "The pattern points to increased discounting and softer upsell execution rather than a one-time event — worth checking recent ROs for pricing overrides and comparing flat-rate hours billed against hours clocked."
   };
 
   function askAiva(question){
@@ -2273,6 +2480,92 @@
       log.appendChild(aiRow);
       log.scrollTop = log.scrollHeight;
     }, 500);
+  }
+
+
+  // ---------- KPI Alert → Assigned Action workflow ----------
+  function askAivaFromKpi(question){
+    showScreen('screen-aiva');
+    askAiva(question);
+    if(question === 'What actions can I take to change this trend?'){
+      setTimeout(appendActionOptions, 900);
+    }
+  }
+
+  function appendActionOptions(){
+    const log = document.getElementById('aiva-chat-log');
+    if(!log) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'aiva-msg';
+    wrap.innerHTML = `
+      <div class="aiva-avatar-sm">✦</div>
+      <div style="flex:1; min-width:0;">
+        <div class="aiva-action-card" onclick="chooseAction('Audit recent ROs for labor discounting')">
+          <div class="aiva-action-lbl">Recommended</div>
+          <div class="aiva-action-text">Audit recent ROs for labor discounting</div>
+        </div>
+        <div class="aiva-action-card" onclick="chooseAction('Review technician labor mix and flat-rate accuracy')">
+          <div class="aiva-action-lbl">Recommended</div>
+          <div class="aiva-action-text">Review technician labor mix and flat-rate accuracy</div>
+        </div>
+        <div class="aiva-action-card" onclick="chooseAction('Schedule a labor rate review with the Astoria Acura service team')">
+          <div class="aiva-action-lbl">Recommended</div>
+          <div class="aiva-action-text">Schedule a labor rate review with the Astoria Acura service team</div>
+        </div>
+        <div class="aiva-action-general" onclick="chooseAction('Investigate the Effective Labor Rate decline')">Assign for general investigation instead</div>
+      </div>`;
+    log.appendChild(wrap);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function chooseAction(actionText){
+    const el = document.getElementById('assign-action-text');
+    if(el) el.textContent = actionText;
+    showScreen('screen-assign-action');
+  }
+
+  let selectedAssignee = { phrase: 'the Service Manager at Astoria Acura', name: 'Service Manager', initials: 'SM', color: '#2f7bf0' };
+
+  function selectAssignee(el, phrase, name, initials, color){
+    document.querySelectorAll('#assign-people-list .assign-row').forEach(r=>r.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedAssignee = { phrase, name, initials, color };
+  }
+
+  function selectPriority(el){
+    el.parentElement.querySelectorAll('.priority-pill').forEach(p=>p.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function assignAction(){
+    const action = (document.getElementById('assign-action-text') || {}).textContent || 'this action';
+
+    showToast('Assigned to ' + selectedAssignee.name + ' — they\'ve been notified');
+
+    const card = document.getElementById('insight-elr-card');
+    if(card && !card.querySelector('.insight-assigned')){
+      const tag = document.createElement('div');
+      tag.className = 'insight-assigned';
+      tag.textContent = '✓ Assigned to ' + selectedAssignee.name;
+      card.querySelector('.insight-text').appendChild(tag);
+    }
+
+    const msgList = document.getElementById('messages-list');
+    if(msgList){
+      const row = document.createElement('div');
+      row.className = 'conv-row';
+      row.setAttribute('onclick', "showToast('Opening conversation with " + selectedAssignee.name + "…')");
+      row.innerHTML = `
+        <div class="conv-avatar" style="background:${selectedAssignee.color};">${selectedAssignee.initials}</div>
+        <div class="conv-text">
+          <div class="conv-top"><span class="conv-name">${selectedAssignee.name}</span><span class="conv-time">Just now</span></div>
+          <div class="conv-sub">Got it — on it: "${action}"</div>
+        </div>
+        <div class="conv-unread"></div>`;
+      msgList.insertBefore(row, msgList.firstChild);
+    }
+
+    showScreen('screen-myday');
   }
 
 
