@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Narrated Write-Up — Interactive Concept</title>
+<style>
+  :root{
+    --black:#0b0b0c;
+    --blue:#1857c9;
+    --blue-dark:#123f96;
+    --blue-bg:#eaf1ff;
+    --green:#1f9d55;
+    --green-bg:#e7f7ee;
+    --amber:#c9791a;
+    --amber-bg:#fdf1de;
+    --red:#d93a3a;
+    --gray:#6b7280;
+    --gray-light:#9aa0aa;
+    --border:#e7e8ec;
+    --card:#ffffff;
+    --page:#eef0f4;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--page);
+    color:var(--black);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:28px 12px 60px;
+  }
+  .stage-header{
+    width:100%;
+    max-width:520px;
+    text-align:center;
+    margin-bottom:18px;
+  }
+  .stage-header h1{
+    font-size:17px;
+    font-weight:700;
+    margin:0 0 4px;
+  }
+  .stage-header p{
+    font-size:12.5px;
+    color:var(--gray);
+    margin:0 0 12px;
+  }
+  .step-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    margin-bottom:6px;
+  }
+  #step-label{
+    font-size:11.5px;
+    font-weight:600;
+    color:var(--blue);
+    background:var(--blue-bg);
+    padding:4px 10px;
+    border-radius:20px;
+  }
+  .restart-btn{
+    font-size:11.5px;
+    font-weight:600;
+    color:var(--gray);
+    background:#fff;
+    border:1px solid var(--border);
+    padding:4px 10px;
+    border-radius:20px;
+    cursor:pointer;
+  }
+  .restart-btn:hover{ background:#f5f5f7; }
+
+  .phone{
+    width:390px;
+    height:844px;
+    background:var(--black);
+    border-radius:52px;
+    padding:14px;
+    box-shadow:0 30px 60px rgba(0,0,0,0.25);
+    position:relative;
+  }
+  .phone-screen{
+    width:100%;
+    height:100%;
+    background:#fff;
+    border-radius:38px;
+    overflow:hidden;
+    position:relative;
+  }
+  .notch{
+    position:absolute;
+    top:14px;
+    left:50%;
+    transform:translateX(-50%);
+    width:120px;
+    height:22px;
+    background:var(--black);
+    border-radius:14px;
+    z-index:50;
+  }
+  .home-indicator{
+    position:absolute;
+    bottom:8px;
+    left:50%;
+    transform:translateX(-50%);
+    width:120px;
+    height:4px;
+    background:rgba(0,0,0,0.7);
+    border-radius:3px;
+    z-index:50;
+  }
+  .home-indicator.light{ background:rgba(255,255,255,0.85); }
+
+  .screen{
+    position:absolute;
+    inset:0;
+    display:none;
+    flex-direction:column;
+    background:#fff;
+  }
+  .screen.active{ display:flex; }
+
+  .statusbar{
+    height:44px;
+    flex-shrink:0;
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    padding:0 24px 6px;
+    font-size:14px;
+    font-weight:600;
+  }
+  .statusbar.dark{ background:var(--black); color:#fff; }
+  .statusbar.light{ background:#fff; color:var(--black); }
+  .statusbar .icons{ display:flex; gap:4px; align-items:center; }
+
+  .app-header{
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 16px 14px;
+  }
+  .app-header.dark{ background:var(--black); color:#fff; }
+  .app-header.light{ background:#fff; color:var(--black); border-bottom:1px solid var(--border); }
+  .app-header h2{ font-size:19px; font-weight:700; margin:0; flex:1; }
+  .avatar{
+    width:30px;height:30px;border-radius:50%;
+    background:#fff;color:var(--black);
+    display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:700; cursor:pointer;
+  }
+  .app-header.topbar{ justify-content:space-between; padding:8px 16px 4px; }
+  .top-brand{ display:flex; align-items:center; gap:8px; }
+  .brand-logo{ width:26px;height:26px;border-radius:7px; display:block; }
+  .brand-name{ font-size:17px; font-weight:800; color:#fff; letter-spacing:.01em; }
+  .brand-name-sm{ font-size:10.5px; font-weight:700; color:rgba(255,255,255,0.5); letter-spacing:.06em; text-transform:uppercase; }
+  .screen-title-row{ background:var(--black); padding:2px 16px 14px; flex-shrink:0; }
+  .screen-title{ color:#fff; font-size:25px; font-weight:800; margin:0; letter-spacing:-.01em; }
+  .user-menu{
+    position:absolute; top:34px; right:0; background:#fff; border:1px solid var(--border);
+    border-radius:12px; box-shadow:0 10px 28px rgba(0,0,0,0.16); min-width:180px; z-index:60;
+    overflow:hidden; display:none;
+  }
+  .user-menu.open{ display:block; }
+  .back-btn{
+    background:none;border:none;color:inherit;
+    display:flex;align-items:center;cursor:pointer;padding:2px;
+  }
+
+  .scroll-area{ flex:1; overflow-y:auto; padding:14px 16px 20px; }
+  .scroll-area::-webkit-scrollbar{ display:none; }
+
+  /* Appointments screen */
+  .filter-row{ display:flex; gap:8px; padding:12px 16px 8px; align-items:center; }
+  .pill-filter{
+    border:1px solid var(--border); border-radius:20px; padding:7px 12px;
+    font-size:12.5px; font-weight:600; display:flex; align-items:center; gap:4px;
+    background:#fff;
+  }
+  .filter-spacer{ flex:1; }
+  .icon-btn{ color:var(--black); display:flex; padding:4px; }
+  .tabs-row{
+    display:flex; gap:20px; padding:6px 16px 10px; border-bottom:1px solid var(--border);
+    font-size:13px; color:var(--gray-light); font-weight:600;
+  }
+  .tabs-row .tab.active{ color:var(--black); position:relative; }
+  .tabs-row .tab.active::after{
+    content:''; position:absolute; bottom:-11px; left:0; right:0; height:2px; background:var(--black);
+  }
+  .appt-card{
+    border:1px solid var(--border); border-radius:14px; padding:12px 14px;
+    display:flex; align-items:center; margin-bottom:10px; background:#fff;
+    position:relative;
+  }
+  .appt-card.accent::before{
+    content:''; position:absolute; left:0; top:10px; bottom:10px; width:3px; background:var(--blue); border-radius:2px;
+  }
+  .appt-info{ flex:1; }
+  .appt-time{ font-size:12px; color:var(--gray); font-weight:600; margin-bottom:2px; }
+  .appt-name{ font-size:14.5px; font-weight:700; margin-bottom:2px; }
+  .appt-veh{ font-size:12px; color:var(--gray); }
+  .badge{
+    display:inline-block; font-size:10px; font-weight:700; padding:2px 7px; border-radius:10px;
+    background:var(--blue); color:#fff; margin-left:6px;
+  }
+  .btn-writeup{
+    background:var(--blue); color:#fff; border:none; border-radius:10px;
+    padding:9px 14px; font-size:12.5px; font-weight:700; cursor:pointer; white-space:nowrap;
+  }
+  .bottom-bar{
+    display:flex; gap:10px; padding:10px 16px; border-top:1px solid var(--border); flex-shrink:0;
+  }
+  .btn-flat{
+    flex:1; background:var(--blue-bg); color:var(--blue); border:none; border-radius:10px;
+    padding:10px; font-size:13px; font-weight:700; cursor:pointer;
+  }
+  .bottom-nav{
+    display:flex; background:var(--black); padding:10px 0 26px; flex-shrink:0;
+  }
+  .nav-item{ flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; color:var(--gray-light); font-size:10.5px; font-weight:600; }
+  .nav-item.active{ color:#fff; }
+
+  /* generic cards / accordion */
+  .veh-card{
+    display:flex; align-items:center; gap:10px; border:1px solid var(--border); border-radius:12px;
+    padding:10px 12px; margin-bottom:12px;
+  }
+  .veh-card .car-ic{
+    width:44px;height:32px;background:var(--page);border-radius:8px;
+    display:flex;align-items:center;justify-content:center;color:var(--gray);
+  }
+  .veh-card .veh-t{ font-size:13.5px; font-weight:700; }
+  .veh-card .veh-s{ font-size:11.5px; color:var(--gray); }
+  .veh-card .chev{ margin-left:auto; color:var(--gray-light); }
+
+  .progress-wrap{ padding:2px 16px 12px; }
+  .progress-track{
+    height:6px; background:var(--border); border-radius:4px; overflow:hidden; margin-bottom:5px;
+  }
+  .progress-fill{ height:100%; background:var(--blue); border-radius:4px; }
+  .progress-label{ font-size:11px; color:var(--gray); text-align:right; }
+
+  .banner{
+    border-radius:12px; padding:11px 13px; font-size:12.5px; font-weight:600; margin-bottom:12px;
+    display:flex; gap:8px; align-items:flex-start; line-height:1.4;
+  }
+  .banner.green{ background:var(--green-bg); color:#166a3c; }
+  .banner.gray{ background:var(--page); color:var(--gray); }
+  .banner.amber{ background:var(--amber-bg); color:#8a570f; }
+  .banner b{ font-weight:700; }
+
+  .acc-item{ border-bottom:1px solid var(--border); }
+  .acc-head{
+    display:flex; align-items:center; padding:13px 2px; cursor:pointer; gap:8px;
+  }
+  .acc-head .title{ font-size:14.5px; font-weight:700; flex:1; }
+  .status-tag{ font-size:11.5px; font-weight:700; display:flex; align-items:center; gap:4px; }
+  .status-tag.ready{ color:var(--green); }
+  .status-tag.partial{ color:var(--gray); }
+  .status-tag.empty{ color:var(--gray-light); }
+  .acc-head .chev{ color:var(--gray-light); transition:transform .15s; margin-left:4px; }
+  .acc-item.open .acc-head .chev{ transform:rotate(180deg); }
+  .acc-body{ display:none; padding:0 2px 16px; }
+  .acc-item.open .acc-body{ display:block; }
+
+  .field{
+    border:1px solid var(--border); border-radius:10px; padding:10px 12px; margin-bottom:10px; position:relative;
+  }
+  .field label{ font-size:10.5px; color:var(--gray); display:block; margin-bottom:2px; }
+  .field .val{ font-size:14px; font-weight:600; }
+  .field-row{ display:flex; align-items:center; gap:8px; }
+  .field-row .field{ flex:1; margin-bottom:0; }
+  .radio-dot{
+    width:18px;height:18px;border-radius:50%;border:2px solid var(--border); flex-shrink:0;
+  }
+  .radio-dot.on{ border-color:var(--blue); position:relative; }
+  .radio-dot.on::after{
+    content:''; position:absolute; inset:3px; background:var(--blue); border-radius:50%;
+  }
+  .mini-link{ color:var(--blue); font-size:12px; font-weight:700; }
+
+  .mic-tag{
+    display:inline-flex; align-items:center; gap:3px; font-size:9.5px; font-weight:700;
+    color:var(--blue); background:var(--blue-bg); padding:2px 6px; border-radius:8px; margin-left:6px;
+    cursor:pointer; vertical-align:middle;
+  }
+  .flag-tag{
+    display:inline-flex; align-items:center; gap:3px; font-size:9.5px; font-weight:700;
+    color:var(--amber); background:var(--amber-bg); padding:2px 6px; border-radius:8px; margin-left:6px;
+    cursor:pointer; vertical-align:middle;
+  }
+
+  .insp-row{
+    display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--page);
+    font-size:12.5px;
+  }
+  .insp-row:last-child{ border-bottom:none; }
+  .insp-label{ font-weight:600; flex:1; padding-right:8px; }
+  .insp-val{ display:flex; align-items:center; gap:4px; font-weight:700; }
+  .dot-r{ width:8px;height:8px;border-radius:50%; }
+  .dot-r.green{ background:var(--green); }
+  .dot-r.yellow{ background:#e0a418; }
+  .dot-r.red{ background:var(--red); }
+  .insp-group-title{ font-size:12px; font-weight:700; color:var(--gray); margin:10px 0 2px; }
+
+  .media-row{ display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
+  .media-tile{
+    width:64px;height:64px;border-radius:9px;background:linear-gradient(135deg,#c9d6e8,#9fb3d1);
+    display:flex;align-items:center;justify-content:center;position:relative;
+  }
+  .media-tile.video::after{
+    content:''; position:absolute; inset:0; border-radius:9px; background:rgba(0,0,0,0.15);
+  }
+  textarea.notes{
+    width:100%; border:1px solid var(--border); border-radius:10px; padding:10px 12px;
+    font-size:13px; font-family:inherit; resize:none; height:56px; color:var(--black);
+  }
+
+  .concern-card{
+    border:1px solid var(--border); border-radius:10px; padding:10px 12px; margin-bottom:10px;
+  }
+  .concern-tags{ display:flex; gap:4px; margin-bottom:4px; }
+  .tag-chip{ font-size:9.5px; font-weight:700; background:var(--page); color:var(--gray); padding:1px 6px; border-radius:6px; }
+  .concern-text{ font-size:13px; font-weight:500; }
+  .concern-price{ font-size:12px; color:var(--gray); margin-top:2px; }
+
+  .btn-outline-block{
+    width:100%; border:1px solid var(--blue); color:var(--blue); background:#fff;
+    border-radius:10px; padding:11px; font-size:13px; font-weight:700; margin-bottom:8px; cursor:pointer;
+  }
+
+  .charges-bar{
+    display:flex; align-items:center; gap:12px; padding:12px 16px; border-top:1px solid var(--border); flex-shrink:0;
+  }
+  .charges-txt{ }
+  .charges-amt{ font-size:16px; font-weight:800; }
+  .charges-lbl{ font-size:10.5px; color:var(--gray); }
+  .btn-primary-block{
+    flex:1; background:var(--blue); color:#fff; border:none; border-radius:11px;
+    padding:13px; font-size:14px; font-weight:700; cursor:pointer;
+  }
+  .btn-primary-block:disabled{ background:var(--border); color:var(--gray-light); }
+
+  /* Intro screen */
+  .intro-wrap{ padding:6px 4px 4px; }
+  .new-pill{
+    display:inline-block; background:var(--blue); color:#fff; font-size:10.5px; font-weight:800;
+    letter-spacing:.03em; padding:3px 9px; border-radius:6px; margin-bottom:10px;
+  }
+  .intro-h{ font-size:21px; font-weight:800; line-height:1.25; margin:0 0 8px; }
+  .intro-p{ font-size:13px; color:var(--gray); line-height:1.5; margin:0 0 18px; }
+  .check-preview-row{
+    display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--page);
+  }
+  .check-preview-row .ic{
+    width:30px;height:30px;border-radius:8px;background:var(--blue-bg);color:var(--blue);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .check-preview-row .lbl{ font-size:13px; font-weight:600; flex:1; }
+  .outline-circle{ width:18px;height:18px;border-radius:50%;border:2px solid var(--border); }
+
+  .cta-fixed{ padding:14px 16px 18px; flex-shrink:0; }
+  .btn-cta{
+    width:100%; background:var(--blue); color:#fff; border:none; border-radius:13px;
+    padding:15px; font-size:15px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:8px;
+    cursor:pointer;
+  }
+  .link-center{ text-align:center; font-size:12.5px; color:var(--gray); margin-top:12px; text-decoration:underline; cursor:pointer; }
+
+  /* Recording screen */
+  .rec-screen{ background:#111; position:relative; height:100%; }
+  .rec-bg{
+    position:absolute; inset:0; z-index:0;
+    background:radial-gradient(ellipse at 50% 40%, #2a2f3a 0%, #14171d 70%);
+  }
+  .rec-video{
+    position:absolute; inset:0; z-index:1;
+    width:100%; height:100%; object-fit:cover; background:#000;
+  }
+  .rec-top{
+    position:relative; z-index:2; display:flex; align-items:center; justify-content:space-between;
+    padding:56px 16px 0;
+  }
+  .rec-pill{
+    display:flex; align-items:center; gap:6px; background:rgba(217,58,58,0.9); color:#fff;
+    font-size:12px; font-weight:800; padding:5px 11px; border-radius:20px;
+  }
+  .rec-dot{ width:8px;height:8px;border-radius:50%; background:#fff; animation:blink 1s infinite; }
+  @keyframes blink{ 0%,100%{opacity:1;} 50%{opacity:.25;} }
+  .rec-x, .rec-skip{ color:#fff; background:rgba(255,255,255,0.12); border:none; border-radius:16px; padding:6px 12px; font-size:12px; font-weight:700; cursor:pointer; }
+
+  .rec-checklist{
+    position:absolute; z-index:2; top:110px; right:14px; display:flex; flex-direction:column; gap:8px; align-items:flex-end;
+  }
+  .rec-chip{
+    display:flex; align-items:center; gap:6px; background:rgba(255,255,255,0.12); color:#fff;
+    font-size:11.5px; font-weight:600; padding:6px 10px; border-radius:14px; transition:all .25s;
+  }
+  .rec-chip .chk{
+    width:16px;height:16px;border-radius:50%; border:2px solid rgba(255,255,255,0.5); flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .rec-chip.done{ background:rgba(31,157,85,0.85); }
+  .rec-chip.done .chk{ border-color:#fff; background:#fff; color:var(--green); }
+
+  .rec-wave{
+    position:absolute; z-index:2; left:0; right:0; bottom:190px; display:flex; align-items:flex-end; justify-content:center; gap:3px; height:30px;
+  }
+  .rec-wave span{
+    width:3px; background:#4c9fff; border-radius:2px; animation:wave 1s ease-in-out infinite;
+  }
+  @keyframes wave{ 0%,100%{ height:6px; } 50%{ height:26px; } }
+
+  .rec-caption{
+    position:absolute; z-index:2; left:16px; right:16px; bottom:126px;
+    background:rgba(0,0,0,0.55); border-radius:12px; padding:12px 14px; color:#fff;
+    font-size:13px; line-height:1.45; min-height:44px;
+  }
+  .rec-timer{ position:absolute; z-index:2; left:16px; bottom:170px; color:#fff; font-size:11.5px; font-weight:700; opacity:.8; }
+
+  .rec-stopwrap{ position:absolute; z-index:2; bottom:34px; left:0; right:0; display:flex; justify-content:center; }
+  .rec-stop{
+    width:66px;height:66px;border-radius:50%; background:#fff; border:4px solid rgba(255,255,255,0.35);
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+  }
+  .rec-stop-inner{ width:26px;height:26px;border-radius:6px; background:var(--red); }
+
+  /* Processing */
+  .proc-wrap{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0 30px; }
+  .spinner{
+    width:52px;height:52px;border-radius:50%; border:4px solid var(--blue-bg); border-top-color:var(--blue);
+    animation:spin 0.9s linear infinite; margin-bottom:22px;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .proc-title{ font-size:16px; font-weight:800; margin-bottom:22px; text-align:center; }
+  .proc-steps{ width:100%; max-width:280px; }
+  .proc-step{
+    display:flex; align-items:center; gap:10px; font-size:13px; color:var(--gray-light); font-weight:600;
+    padding:6px 0; transition:color .2s;
+  }
+  .proc-step .dot{
+    width:18px;height:18px;border-radius:50%; border:2px solid var(--border); flex-shrink:0;
+    display:flex;align-items:center;justify-content:center; color:transparent;
+  }
+  .proc-step.done{ color:var(--black); }
+  .proc-step.done .dot{ background:var(--green); border-color:var(--green); color:#fff; }
+
+  /* Chat */
+  .chat-log{ flex:1; overflow-y:auto; padding:14px 14px 6px; }
+  .msg-row{ display:flex; margin-bottom:12px; }
+  .msg-row.user{ justify-content:flex-end; }
+  .bubble{
+    max-width:78%; padding:10px 13px; border-radius:15px; font-size:13.5px; line-height:1.45;
+  }
+  .bubble.ai{ background:var(--page); color:var(--black); border-bottom-left-radius:4px; }
+  .bubble.user{ background:var(--blue); color:#fff; border-bottom-right-radius:4px; }
+  .chip-row{ display:flex; gap:8px; flex-wrap:wrap; margin:0 0 14px 2px; }
+  .reply-chip{
+    background:#fff; border:1.5px solid var(--blue); color:var(--blue); font-weight:700; font-size:12.5px;
+    padding:8px 13px; border-radius:16px; cursor:pointer;
+  }
+  .reply-chip:hover{ background:var(--blue-bg); }
+  .cta-chip{
+    background:var(--blue); border:1.5px solid var(--blue); color:#fff; font-weight:700; font-size:12.5px;
+    padding:9px 15px; border-radius:16px; cursor:pointer;
+  }
+  .chat-inputbar{
+    display:flex; align-items:center; gap:8px; padding:10px 14px; border-top:1px solid var(--border); flex-shrink:0;
+  }
+  .chat-inputbar .mic-circ{
+    width:32px;height:32px; border-radius:50%; background:var(--blue-bg); color:var(--blue);
+    display:flex;align-items:center;justify-content:center; flex-shrink:0;
+  }
+  .chat-inputbar input{
+    flex:1; border:1px solid var(--border); border-radius:20px; padding:9px 14px; font-size:13px; background:var(--page);
+  }
+  .chat-inputbar .send-circ{
+    width:32px;height:32px; border-radius:50%; background:var(--border); color:var(--gray-light);
+    display:flex;align-items:center;justify-content:center; flex-shrink:0;
+  }
+
+  .toast{
+    position:absolute; left:50%; bottom:100px; transform:translateX(-50%);
+    background:var(--black); color:#fff; font-size:12.5px; font-weight:600;
+    padding:10px 18px; border-radius:20px; opacity:0; pointer-events:none; transition:opacity .25s; z-index:100;
+    display:flex; align-items:center; gap:6px;
+  }
+  .toast.show{ opacity:1; }
+
+  .tooltip{
+    position:fixed; background:var(--black); color:#fff; font-size:11px; font-weight:600;
+    padding:6px 10px; border-radius:8px; opacity:0; pointer-events:none; transition:opacity .15s; z-index:200; max-width:180px;
+  }
+  .tooltip.show{ opacity:1; }
+
+  /* ---------- Global tab bar ---------- */
+  .tab-bar{
+    position:absolute; left:0; right:0; bottom:0; z-index:40;
+    display:flex; background:var(--black); padding:9px 2px 24px;
+  }
+  .tab-bar.hidden{ display:none; }
+  .tab-item{
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
+    color:var(--gray-light); font-size:10px; font-weight:600; cursor:pointer; padding:2px 0;
+  }
+  .tab-item .tab-ic{ font-size:18px; line-height:1; opacity:.65; filter:grayscale(1); }
+  .tab-item.active{ color:#fff; }
+  .tab-item.active .tab-ic{ opacity:1; filter:none; }
+  .pad-tabbar{ padding-bottom:92px !important; }
+
+  /* ---------- Overflow menu (My Day) ---------- */
+  .menu-wrap{ position:relative; }
+  .overflow-menu{
+    position:absolute; top:34px; right:0; background:#fff; border:1px solid var(--border);
+    border-radius:12px; box-shadow:0 10px 28px rgba(0,0,0,0.16); min-width:180px; z-index:60;
+    overflow:hidden; display:none;
+  }
+  .overflow-menu.open{ display:block; }
+  .overflow-item{ padding:12px 15px; font-size:13px; font-weight:600; cursor:pointer; border-bottom:1px solid var(--page); }
+  .overflow-item:last-child{ border-bottom:none; }
+  .overflow-item:hover{ background:var(--page); }
+
+  /* ---------- Recents / Workflows list rows ---------- */
+  .section-label{
+    font-size:11px; font-weight:700; color:var(--gray-light); letter-spacing:.05em;
+    text-transform:uppercase; margin:4px 0 10px; text-align:center;
+  }
+  .section-label.left{ text-align:left; margin-top:20px; }
+  .list-row{
+    display:flex; align-items:center; gap:12px; padding:12px 4px; border-bottom:1px solid var(--page); cursor:pointer;
+  }
+  .list-row:last-child{ border-bottom:none; }
+  .row-badge{
+    width:34px;height:34px;border-radius:9px; display:flex;align-items:center;justify-content:center;
+    color:#fff; font-size:12px; font-weight:800; flex-shrink:0;
+  }
+  .row-badge.blue{ background:#2f7bf0; }
+  .row-badge.orange{ background:#f5a623; }
+  .row-badge.purple{ background:#8b5cf6; }
+  .row-badge.gray{ background:#8a93a3; font-size:14px; }
+  .row-text{ flex:1; min-width:0; }
+  .row-title{ font-size:14px; font-weight:700; }
+  .row-sub{ font-size:12px; color:var(--gray); margin-top:1px; }
+  .row-dot{ width:8px;height:8px;border-radius:50%; background:#f5871f; flex-shrink:0; }
+  .row-chev{ color:var(--gray-light); flex-shrink:0; font-size:18px; }
+
+  /* ---------- AIVA ---------- */
+  .aiva-wrap{
+    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:0 32px;
+  }
+  .aiva-avatar{
+    width:64px;height:64px;border-radius:50%; background:linear-gradient(135deg,#6a8dff,#8b5cf6);
+    color:#fff; font-size:26px; display:flex;align-items:center;justify-content:center; margin-bottom:16px;
+  }
+  .aiva-title{ font-size:18px; font-weight:800; margin-bottom:8px; }
+  .aiva-sub{ font-size:13px; color:var(--gray); line-height:1.5; margin-bottom:16px; }
+  .aiva-note{
+    font-size:11.5px; color:var(--gray-light); background:var(--page); padding:6px 12px;
+    border-radius:20px; font-weight:600;
+  }
+
+  /* ---------- Messages ---------- */
+  .conv-row{ display:flex; align-items:center; gap:12px; padding:12px 4px; border-bottom:1px solid var(--page); cursor:pointer; }
+  .conv-row:last-child{ border-bottom:none; }
+  .conv-avatar{
+    width:40px;height:40px;border-radius:50%; color:#fff; font-size:13px; font-weight:800;
+    display:flex;align-items:center;justify-content:center; flex-shrink:0;
+  }
+  .conv-text{ flex:1; min-width:0; }
+  .conv-top{ display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
+  .conv-name{ font-size:14px; font-weight:700; }
+  .conv-time{ font-size:11px; color:var(--gray-light); flex-shrink:0; }
+  .conv-sub{ font-size:12px; color:var(--gray); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .conv-unread{ width:8px;height:8px;border-radius:50%; background:var(--blue); flex-shrink:0; margin-left:4px; }
+
+  /* ---------- My Day: KPI carousel ---------- */
+  .kpi-scroll{
+    display:flex; gap:10px; overflow-x:auto; -webkit-overflow-scrolling:touch;
+    margin:-14px -16px 14px; padding:14px 16px 6px;
+  }
+  .kpi-scroll::-webkit-scrollbar{ display:none; }
+  .kpi-card{
+    flex:0 0 auto; width:200px; background:#fff; border:1px solid var(--border);
+    border-radius:14px; padding:13px;
+  }
+  .kpi-head{
+    display:flex; justify-content:space-between; align-items:center; font-size:9.5px; font-weight:800;
+    letter-spacing:.04em; color:var(--gray); text-transform:uppercase; margin-bottom:12px;
+  }
+  .kpi-head .arrow{ color:var(--gray-light); font-size:13px; }
+
+  .donut-wrap{ display:flex; align-items:center; gap:10px; }
+  .donut{
+    position:relative; width:64px;height:64px;border-radius:50%; flex-shrink:0;
+    background:conic-gradient(#2f6fea 0% 51.1%, #1f9d55 51.1% 83%, #f5a623 83% 100%);
+  }
+  .donut::before{ content:''; position:absolute; inset:8px; background:#fff; border-radius:50%; }
+  .donut-center{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .donut-num{ font-size:16px; font-weight:800; }
+  .donut-lbl{ font-size:7px; color:var(--gray-light); font-weight:700; letter-spacing:.03em; }
+
+  .kpi-legend{ flex:1; display:flex; flex-direction:column; gap:6px; min-width:0; }
+  .legend-row{ display:flex; align-items:center; gap:5px; font-size:10px; }
+  .legend-dot{ width:6px;height:6px;border-radius:50%; flex-shrink:0; }
+  .legend-lbl{ flex:1; color:var(--gray); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .legend-val{ font-weight:700; flex-shrink:0; }
+
+  .kpi-big{ font-size:24px; font-weight:800; line-height:1; margin-bottom:6px; }
+  .kpi-pill{ display:inline-flex; align-items:center; gap:3px; font-size:10px; font-weight:700; padding:2px 7px; border-radius:8px; margin-bottom:6px; }
+  .kpi-pill.up{ background:var(--green-bg); color:#166a3c; }
+  .kpi-pill.down{ background:#fde7e7; color:#a3282c; }
+  .kpi-sub{ font-size:10.5px; color:var(--gray); }
+  .sparkline{ width:100%; height:32px; margin-top:6px; display:block; }
+
+  .tech-row{ margin-bottom:8px; }
+  .tech-row:last-child{ margin-bottom:0; }
+  .tech-top{ display:flex; justify-content:space-between; gap:6px; font-size:10.5px; margin-bottom:3px; }
+  .tech-name{ font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .tech-val{ color:var(--gray); flex-shrink:0; }
+  .tech-bar-track{ height:5px; background:var(--page); border-radius:3px; overflow:hidden; }
+  .tech-bar-fill{ height:100%; border-radius:3px; }
+
+  /* ---------- My Day: segmented control + condensed agenda ---------- */
+  .segmented{ display:flex; background:var(--page); border-radius:10px; padding:3px; margin:0 0 12px; gap:2px; }
+  .segment{ flex:1; text-align:center; padding:7px 2px; font-size:12px; font-weight:600; color:var(--gray); border-radius:8px; cursor:pointer; }
+  .segment.active{ background:#fff; color:var(--black); font-weight:700; box-shadow:0 1px 3px rgba(0,0,0,0.15); }
+
+  .appt-card.condensed{ padding:9px 12px; margin-bottom:8px; }
+  .appt-card.condensed .appt-name{ font-size:13px; margin-bottom:1px; }
+  .appt-card.condensed .appt-veh{ font-size:11px; }
+  .appt-card.condensed .appt-time{ font-size:10.5px; margin-bottom:1px; }
+  .appt-card.condensed .btn-writeup{ padding:7px 11px; font-size:11.5px; }
+  .agenda-label{ font-size:11px; font-weight:700; color:var(--gray-light); letter-spacing:.04em; text-transform:uppercase; margin:2px 2px 8px; }
+</style>
+</head>
+<body>
+
+<div class="stage-header">
+  <h1>Sales Advisor Mobile App — Interactive Concept</h1>
+  <p>Tap through the screen below just like a real device. Recents, Workflows, My Day, AIVA, and Messages form the app shell; My Day's Write Up flow demonstrates the AI-narrated walkaround.</p>
+  <div class="step-row">
+    <span id="step-label">My Day</span>
+    <button class="restart-btn" onclick="location.reload()">Restart demo</button>
+  </div>
+</div>
+
+<div class="phone">
+  <div class="notch"></div>
+  <div class="phone-screen">
+
+    <!-- 1: My Day -->
+    <div class="screen active" id="screen-myday">
+      <div class="statusbar dark"><span>9:41</span><span class="icons">📶 🛜 🔋</span></div>
+      <div class="app-header dark topbar">
+        <span class="brand-name-sm">Service</span>
+        <div class="menu-wrap">
+          <div class="avatar" onclick="toggleUserMenu(event)">JP</div>
+          <div class="user-menu">
+            <div class="overflow-item" onclick="closeAllUserMenus(); showToast('Profile — not built in this pass')">👤 Profile</div>
+            <div class="overflow-item" onclick="closeAllUserMenus(); showToast('App Settings — not built in this pass')">⚙️ App Settings</div>
+            <div class="overflow-item" onclick="closeAllUserMenus(); showToast('Logged out (demo)')">🚪 Log Out</div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-title-row"><h1 class="screen-title">My Day</h1></div>
+      <div class="filter-row">
+        <div class="pill-filter">📅 Thu Feb 26</div>
+        <div class="pill-filter">All Advisors</div>
+        <div class="filter-spacer"></div>
+        <div class="icon-btn">🔍</div>
+        <div class="menu-wrap">
+          <div class="icon-btn" onclick="toggleOverflowMenu(event)">⋮</div>
+          <div class="overflow-menu" id="overflow-menu">
+            <div class="overflow-item" onclick="closeOverflowMenu(); showToast('Walk In flow — not built in this pass')">🚶 Walk In</div>
+            <div class="overflow-item" onclick="closeOverflowMenu(); showToast('Create Appointment flow — not built in this pass')">➕ Create Appointment</div>
+          </div>
+        </div>
+      </div>
+      <div class="scroll-area pad-tabbar">
+        <div class="kpi-scroll">
+          <div class="kpi-card">
+            <div class="kpi-head">Open ROs<span class="arrow">→</span></div>
+            <div class="donut-wrap">
+              <div class="donut">
+                <div class="donut-center"><div class="donut-num">47</div><div class="donut-lbl">ACTIVE</div></div>
+              </div>
+              <div class="kpi-legend">
+                <div class="legend-row"><span class="legend-dot" style="background:#f5a623;"></span><span class="legend-lbl">Awaiting Parts</span><span class="legend-val">8</span></div>
+                <div class="legend-row"><span class="legend-dot" style="background:#2f6fea;"></span><span class="legend-lbl">Work in Progress</span><span class="legend-val">24</span></div>
+                <div class="legend-row"><span class="legend-dot" style="background:#1f9d55;"></span><span class="legend-lbl">Ready for Review</span><span class="legend-val">15</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-head">Today's Appointments<span class="arrow">→</span></div>
+            <div class="kpi-big">42</div>
+            <div class="kpi-pill up">↑ +4 vs avg</div>
+            <div class="kpi-sub">Booked through 5 PM</div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-head">Carryover ROs<span class="arrow">→</span></div>
+            <div class="kpi-big">103</div>
+            <div class="kpi-pill down">↓ -6</div>
+            <div class="kpi-sub">14-day trend</div>
+            <svg class="sparkline" viewBox="0 0 172 32" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#f5a623" stop-opacity="0.35"/>
+                  <stop offset="100%" stop-color="#f5a623" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <polyline points="0,32 0,20 20,14 40,22 60,10 80,18 100,8 120,16 140,6 160,12 172,4 172,32" fill="url(#sparkFill)" stroke="none"/>
+              <polyline points="0,20 20,14 40,22 60,10 80,18 100,8 120,16 140,6 160,12 172,4" fill="none" stroke="#f5a623" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-head">Tech Utilization<span class="arrow">→</span></div>
+            <div class="tech-row">
+              <div class="tech-top"><span class="tech-name">Fabrizio Moretti</span><span class="tech-val">4 ROs</span></div>
+              <div class="tech-bar-track"><div class="tech-bar-fill" style="width:40%; background:#2f6fea;"></div></div>
+            </div>
+            <div class="tech-row">
+              <div class="tech-top"><span class="tech-name">Nikolai Fraiture</span><span class="tech-val">10 ROs</span></div>
+              <div class="tech-bar-track"><div class="tech-bar-fill" style="width:100%; background:#1f9d55;"></div></div>
+            </div>
+            <div class="tech-row">
+              <div class="tech-top"><span class="tech-name">Julian Casablancas</span><span class="tech-val">7 ROs</span></div>
+              <div class="tech-bar-track"><div class="tech-bar-fill" style="width:70%; background:#29b6d1;"></div></div>
+            </div>
+            <div class="tech-row">
+              <div class="tech-top"><span class="tech-name">Nick Valensi</span><span class="tech-val">6 ROs</span></div>
+              <div class="tech-bar-track"><div class="tech-bar-fill" style="width:60%; background:#2f6fea;"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="segmented">
+          <div class="segment active" onclick="setSegment(this)">All</div>
+          <div class="segment" onclick="setSegment(this)">Scheduled</div>
+          <div class="segment" onclick="setSegment(this)">Paused</div>
+          <div class="segment" onclick="setSegment(this)">No Show</div>
+        </div>
+
+        <div class="agenda-label">Today's Agenda</div>
+        <div class="appt-card condensed">
+          <div class="appt-info">
+            <div class="appt-time">7:30 AM</div>
+            <div class="appt-name">Pete Giancarlo Davidson Soprano</div>
+            <div class="appt-veh">2020 Toyota Corolla LE &middot; 8ACE123</div>
+          </div>
+          <button class="btn-writeup" onclick="showScreen('screen-intro')">Write Up</button>
+        </div>
+        <div class="appt-card condensed accent">
+          <div class="appt-info">
+            <div class="appt-time">7:45 AM <span class="badge">Paused</span></div>
+            <div class="appt-name">Tom Brady</div>
+            <div class="appt-veh">2022 4Runner TRD Off-Road Premium &middot; 8BAH985</div>
+          </div>
+          <button class="btn-writeup">Continue</button>
+        </div>
+        <div class="appt-card condensed">
+          <div class="appt-info">
+            <div class="appt-time">8:00 AM</div>
+            <div class="appt-name">Maria Gonzalez</div>
+            <div class="appt-veh">2019 Toyota RAV4 XLE &middot; 7XKL902</div>
+          </div>
+          <button class="btn-writeup">Write Up</button>
+        </div>
+        <div class="appt-card condensed">
+          <div class="appt-info">
+            <div class="appt-time">8:15 AM</div>
+            <div class="appt-name">James Whitfield</div>
+            <div class="appt-veh">2021 Toyota Tacoma TRD Sport &middot; 9BNR411</div>
+          </div>
+          <button class="btn-writeup">Write Up</button>
+        </div>
+        <div class="appt-card condensed">
+          <div class="appt-info">
+            <div class="appt-time">8:30 AM <span class="badge" style="background:var(--red);">No Show</span></div>
+            <div class="appt-name">Linda Park</div>
+            <div class="appt-veh">2018 Toyota Corolla SE &middot; 5RTP221</div>
+          </div>
+          <button class="btn-writeup">Write Up</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recents -->
+    <div class="screen" id="screen-recents">
+      <div class="statusbar dark"><span>9:41</span><span class="icons">📶 🛜 🔋</span></div>
+      <div class="app-header dark topbar">
+        <span class="brand-name-sm">Service</span>
+        <div class="menu-wrap">
+          <div class="avatar" onclick="toggleUserMenu(event)">JP</div>
+          <div class="user-menu">
+            <div class="overflow-item" onclick="closeAllUserMenus(); showToast('Profile — not built in this pass')">👤 Profile</div>
+            <div class="overflow-item" onclick="closeAllUserMenus(); showToast('App Settings — not built in this pass')">⚙️ App Settings</div>
+            <div class="overflow-item" onclick="closeAllUserMenus(); showToast('Logged out (demo)')">🚪 Log Out</div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-title-row"><h1 class="screen-title">Recents</h1></div>
+      <div class="scroll-area pad-tabbar">
+        <div class="section-label">Recently Opened</div>
+        <div class="list-row" onclick="showToast('Opening RO #124210…')">
+          <div class="row-badge blue">Se</div>
+          <div class="row-text"><div class="row-title">RO #124210</div><div class="row-sub">Gray, S. &middot; Working</div></div>
+          <div class="row-dot"></div>
+        </div>
+        <div class="list-row" onclick="showToast('Opening RO #98664…')">
+          <div class="row-badge blue">Se</div>
+          <div class="row-text"><div class="row-title">RO #98664</div><div class="row-sub">Lacy, C. &middot; MPI approval needed</div></div>
+          <div class="row-dot"></div>
+        </div>
+        <div class="list-row" onclick="showToast('Opening RO #124211…')">
+          <div class="row-badge blue">Se</div>
+          <div class="row-text"><div class="row-title">RO #124211</div><div class="row-sub">Murray, B. &middot; Awaiting parts</div></div>
+          <div class="row-dot"></div>
+        </div>
+        <div class="list-row" onclick="showScreen('screen-myday')">
+          <div class="row-badge blue">Se</div>
+          <div class="row-text"><div class="row-title">Scheduling</div><div class="row-sub">Today &middot; 42 appointments</div></div>
+          <div class="row-dot"></div>
+        </div>
+        <div class="list-row" onclick="showToast('Opening RO #124209…')">
+          <div class="row-badge blue">Se</div>
+          <div class="row-text"><div class="row-title">RO #124209</div><div class="row-sub">Daly, J. &middot; Ready for review</div></div>
+          <div class="row-dot"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Workflows -->
+    <div class="screen" id="screen-workflows">
+      <div class="statusbar dark"><span>9:41</span><span class="icons">📶 🛜 🔋</span></div>
+      <div class="app-header dark topbar">
+        <span class="brand-name-sm">Service</span>
+        <div class="menu-wrap">
+          <div class="avatar" onclick="toggleUserMenu(event)">JP</div>
+          <div class="user-menu">
+            <div class="overflow-item" onclick="closeAllUserMenus(); showToast('Profile — not built in this pass')">👤 Profile</div>
+            <div class="overflow-item" onclick="closeAllUserMenus(); showToast('App Settings — not built in this pass')">⚙️ App Settings</div>
+            <div class="overflow-item" onclick="closeAllUserMenus(); showToast('Logged out (demo)')">🚪 Log Out</div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-title-row"><h1 class="screen-title">Workflows</h1></div>
+      <div class="scroll-area pad-tabbar">
+        <div class="section-label left" style="margin-top:0;">Service</div>
+        <div class="list-row" onclick="showToast('Opening Customers…')"><div class="row-badge blue">Se</div><div class="row-text"><div class="row-title">Customers</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Scheduling…')"><div class="row-badge blue">Se</div><div class="row-text"><div class="row-title">Scheduling</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showScreen('screen-myday')"><div class="row-badge blue">Se</div><div class="row-text"><div class="row-title">Repair Orders</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Warranty…')"><div class="row-badge blue">Se</div><div class="row-text"><div class="row-title">Warranty</div></div><div class="row-chev">›</div></div>
+
+        <div class="section-label left">Parts</div>
+        <div class="list-row" onclick="showToast('Opening Parts…')"><div class="row-badge orange">Pa</div><div class="row-text"><div class="row-title">Parts</div></div><div class="row-chev">›</div></div>
+
+        <div class="section-label left">Document Mgmt</div>
+        <div class="list-row" onclick="showToast('Opening Document Mgmt…')"><div class="row-badge gray">DM</div><div class="row-text"><div class="row-title">Document Mgmt</div></div><div class="row-chev">›</div></div>
+
+        <div class="section-label left">Intelligence Suite</div>
+        <div class="list-row" onclick="showToast('Opening Reports…')"><div class="row-badge purple">IS</div><div class="row-text"><div class="row-title">Reports</div></div><div class="row-chev">›</div></div>
+
+        <div class="section-label left">Resources</div>
+        <div class="list-row" onclick="showToast('Opening CDK University…')"><div class="row-badge blue">U</div><div class="row-text"><div class="row-title">CDK University</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening a support ticket…')"><div class="row-badge gray">🎫</div><div class="row-text"><div class="row-title">Open a Support Ticket</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Starting a chat with support…')"><div class="row-badge gray">💬</div><div class="row-text"><div class="row-title">Chat with Support</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Online Help…')"><div class="row-badge gray">❓</div><div class="row-text"><div class="row-title">Online Help</div></div><div class="row-chev">›</div></div>
+        <div class="list-row" onclick="showToast('Opening Documents…')"><div class="row-badge gray">📁</div><div class="row-text"><div class="row-title">Documents</div></div><div class="row-chev">›</div></div>
+      </div>
+    </div>
+
+    <!-- AIVA -->
+    <div class="screen" id="screen-aiva">
+      <div class="statusbar dark"><span>9:41</span><span class="icons">📶 🛜 🔋</span></div>
+      <div class="app-header dark topbar">
+        <span class="brand-name-sm">Service</span>
+        <div class="menu-wrap">
+          <div class="avatar" onclick="toggleUserMenu(event)">JP</div>
+          <div class="user-menu">
+            <div class="overflow-item" onclick="closeAllUserMenus(); showToast('Profile — not built in this pass')">👤 Profile</div>
+            <div class="overflow-item" onclick="closeAllUserMenus(); showToast('App Settings — not built in this pass')">⚙️ App Settings</div>
+            <div class="overflow-item" onclick="closeAllUserMenus(); showToast('Logged out (demo)')">🚪 Log Out</div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-title-row"><h1 class="screen-title">AIVA</h1></div>
+      <div class="aiva-wrap">
+        <div class="aiva-avatar">✨</div>
+        <div class="aiva-title">Hi, I'm AIVA</div>
+        <div class="aiva-sub">Your AI assistant for repair orders, scheduling, and customers. Ask me anything.</div>
+        <div class="aiva-note">Chat demo coming in a later pass</div>
+      </div>
+      <div class="chat-inputbar" style="margin-bottom:84px;">
+        <div class="mic-circ">🎙</div>
+        <input type="text" placeholder="Ask AIVA…" disabled>
+        <div class="send-circ">➤</div>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="screen" id="screen-messages">
+      <div class="statusbar dark"><span>9:41</span><span class="icons">📶 🛜 🔋</span></div>
+      <div class="app-header dark topbar">
+        <span class="brand-name-sm">Service</span>
+        <div class="menu-wrap">
+          <div class="avatar" onclick="toggleUserMenu(event)">JP</div>
+          <div class="user-menu">
+            <div class="overflow-item" onclick="closeAllUserMenus(); showToast('Profile — not built in this pass')">👤 Profile</div>
+            <div class="overflow-item" onclick="closeAllUserMenus(); showToast('App Settings — not built in this pass')">⚙️ App Settings</div>
+            <div class="overflow-item" onclick="closeAllUserMenus(); showToast('Logged out (demo)')">🚪 Log Out</div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-title-row"><h1 class="screen-title">Messages</h1></div>
+      <div class="scroll-area pad-tabbar">
+        <div class="conv-row" onclick="showScreen('screen-message-thread')">
+          <div class="conv-avatar" style="background:#2f7bf0;">MT</div>
+          <div class="conv-text">
+            <div class="conv-top"><span class="conv-name">Mike Torres</span><span class="conv-time">9:14 AM</span></div>
+            <div class="conv-sub">Technician &middot; Brake pads confirmed on 124210, starting now.</div>
+          </div>
+          <div class="conv-unread"></div>
+        </div>
+        <div class="conv-row" onclick="showToast('Opening conversation with Ana Reyes…')">
+          <div class="conv-avatar" style="background:#f5a623;">AR</div>
+          <div class="conv-text">
+            <div class="conv-top"><span class="conv-name">Ana Reyes</span><span class="conv-time">9:02 AM</span></div>
+            <div class="conv-sub">Service Porter &middot; Can you bring the Corolla around to the front?</div>
+          </div>
+          <div class="conv-unread"></div>
+        </div>
+        <div class="conv-row" onclick="showToast('Opening conversation with Dave Klein…')">
+          <div class="conv-avatar" style="background:#8a93a3;">DK</div>
+          <div class="conv-text">
+            <div class="conv-top"><span class="conv-name">Dave Klein</span><span class="conv-time">Yesterday</span></div>
+            <div class="conv-sub">Service Manager &middot; Did Murray's RO get customer approval yet?</div>
+          </div>
+        </div>
+        <div class="conv-row" onclick="showToast('Opening conversation with James Park…')">
+          <div class="conv-avatar" style="background:#2f7bf0;">JP</div>
+          <div class="conv-text">
+            <div class="conv-top"><span class="conv-name">James Park</span><span class="conv-time">Yesterday</span></div>
+            <div class="conv-sub">Technician &middot; MPI's done on 98664, need your approval to proceed.</div>
+          </div>
+          <div class="conv-unread"></div>
+        </div>
+        <div class="conv-row" onclick="showToast('Opening conversation with Front Desk…')">
+          <div class="conv-avatar" style="background:#8b5cf6;">FD</div>
+          <div class="conv-text">
+            <div class="conv-top"><span class="conv-name">Front Desk</span><span class="conv-time">Mon</span></div>
+            <div class="conv-sub">Customer Gray is here for pickup.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message thread detail -->
+    <div class="screen" id="screen-message-thread">
+      <div class="statusbar light"><span>9:41</span><span class="icons">📶 🛜 🔋</span></div>
+      <div class="app-header light">
+        <button class="back-btn" onclick="showScreen('screen-messages')">‹</button>
+        <h2>Mike Torres</h2>
+      </div>
+      <div class="chat-log">
+        <div class="msg-row"><div class="bubble ai">Hey, starting the brake job on 124210 — pads confirmed in stock.</div></div>
+        <div class="msg-row user"><div class="bubble user">Great, thanks. Customer's waiting on an ETA.</div></div>
+        <div class="msg-row"><div class="bubble ai">Should have it done in about 45 min. I'll ping you when it's ready.</div></div>
+        <div class="msg-row user"><div class="bubble user">Perfect, I'll let them know.</div></div>
+      </div>
+      <div class="chat-inputbar">
+        <div class="mic-circ">🎙</div>
+        <input type="text" placeholder="Message Mike…" disabled>
+        <div class="send-circ">➤</div>
+      </div>
+    </div>
+
+    <!-- 2: Intro -->
+    <div class="screen" id="screen-intro">
+      <div class="statusbar light"><span>9:41</span><span class="icons">📶 🛜 🔋</span></div>
+      <div class="app-header light">
+        <button class="back-btn" onclick="showScreen('screen-myday')">‹</button>
+        <h2>Write Up</h2>
+      </div>
+      <div class="scroll-area">
+        <div class="veh-card">
+          <div class="car-ic">🚗</div>
+          <div>
+            <div class="veh-t">2020 Toyota Corolla LE</div>
+            <div class="veh-s">Pete Giancarlo Davidson Soprano</div>
+          </div>
+        </div>
+        <div class="intro-wrap">
+          <span class="new-pill">NEW</span>
+          <h1 class="intro-h">Walk the vehicle. Talk it through. We'll fill in the rest.</h1>
+          <p class="intro-p">Start recording, then narrate your walkaround like you normally would out loud &mdash; lights, glass, tires, condition, odometer, and anything the customer told you. We'll transcribe it and fill in the write-up automatically.</p>
+
+          <div class="check-preview-row"><div class="ic">💡</div><div class="lbl">Lights, glass &amp; wipers</div><div class="outline-circle"></div></div>
+          <div class="check-preview-row"><div class="ic">🛞</div><div class="lbl">All 4 tires &mdash; tread, pressure, wear</div><div class="outline-circle"></div></div>
+          <div class="check-preview-row"><div class="ic">🎥</div><div class="lbl">Body condition &amp; damage</div><div class="outline-circle"></div></div>
+          <div class="check-preview-row"><div class="ic">🔢</div><div class="lbl">Odometer &amp; tag</div><div class="outline-circle"></div></div>
+          <div class="check-preview-row"><div class="ic">🗣️</div><div class="lbl">Customer concern</div><div class="outline-circle"></div></div>
+        </div>
+      </div>
+      <div class="cta-fixed">
+        <button class="btn-cta" onclick="showScreen('screen-recording')">🎥 Start Narrated Walkaround</button>
+        <div class="link-center" onclick="showScreen('screen-manual')">See today's manual process instead</div>
+      </div>
+    </div>
+
+    <!-- 3: Manual baseline -->
+    <div class="screen" id="screen-manual">
+      <div class="statusbar light"><span>9:41</span><span class="icons">📶 🛜 🔋</span></div>
+      <div class="app-header light">
+        <button class="back-btn" onclick="showScreen('screen-intro')">‹</button>
+        <h2>Write Up</h2>
+      </div>
+      <div class="scroll-area">
+        <div class="banner gray"><span>📋</span><div><b>Today's process</b> &mdash; 6 sections, all typed by hand. Roughly 30&ndash;40 taps to complete a full write-up.</div></div>
+        <div class="progress-wrap">
+          <div class="progress-track"><div class="progress-fill" style="width:16.6%"></div></div>
+          <div class="progress-label">1/6 Tasks</div>
+        </div>
+        <div class="veh-card">
+          <div class="car-ic">🚗</div>
+          <div><div class="veh-t">2020 Toyota Corolla LE</div><div class="veh-s">Pete Giancarlo Davidson Soprano</div></div>
+        </div>
+
+        <div class="acc-item open">
+          <div class="acc-head" onclick="toggleAcc(this)"><span class="title">Customer</span><span class="status-tag ready">Ready ✓</span><span class="chev">⌄</span></div>
+          <div class="acc-body">
+            <div class="field-row" style="margin-bottom:10px;">
+              <div class="field"><label>Phone number</label><div class="val">(555) 555-5555</div></div>
+              <div class="radio-dot on"></div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>Email</label><div class="val">p.soprano@mail.com</div></div>
+              <div class="radio-dot"></div>
+            </div>
+          </div>
+        </div>
+        <div class="acc-item"><div class="acc-head" onclick="toggleAcc(this)"><span class="title">Vehicle</span><span class="status-tag partial">Not started</span><span class="chev">⌄</span></div><div class="acc-body"></div></div>
+        <div class="acc-item"><div class="acc-head" onclick="toggleAcc(this)"><span class="title">RO Info</span><span class="status-tag empty">0/3 complete</span><span class="chev">⌄</span></div><div class="acc-body"></div></div>
+        <div class="acc-item"><div class="acc-head" onclick="toggleAcc(this)"><span class="title">Walkaround</span><span class="status-tag empty">No media added</span><span class="chev">⌄</span></div><div class="acc-body"></div></div>
+        <div class="acc-item"><div class="acc-head" onclick="toggleAcc(this)"><span class="title">Inspection</span><span class="status-tag empty">0/16 complete</span><span class="chev">⌄</span></div><div class="acc-body"></div></div>
+        <div class="acc-item"><div class="acc-head" onclick="toggleAcc(this)"><span class="title">Services</span><span class="status-tag empty">0 services added</span><span class="chev">⌄</span></div><div class="acc-body"></div></div>
+      </div>
+      <div class="cta-fixed" style="padding-top:6px;">
+        <button class="btn-cta" onclick="showScreen('screen-intro')">Try the AI-narrated alternative</button>
+      </div>
+    </div>
+
+    <!-- 4: Recording -->
+    <div class="screen rec-screen" id="screen-recording">
+      <video id="rec-video" class="rec-video" src="walkaround_narration.mp4" playsinline preload="auto"></video>
+      <div class="rec-bg" id="rec-bg-fallback"></div>
+      <div class="rec-top">
+        <button class="rec-x" onclick="stopRecordingTimers();showScreen('screen-intro')">✕</button>
+        <div class="rec-pill"><span class="rec-dot"></span>REC</div>
+        <button class="rec-skip" onclick="skipRecording()">Skip ➜</button>
+      </div>
+      <div class="rec-checklist" id="rec-checklist">
+        <div class="rec-chip" data-idx="0"><span class="chk"></span>Lights &amp; glass</div>
+        <div class="rec-chip" data-idx="1"><span class="chk"></span>Wipers &amp; dash</div>
+        <div class="rec-chip" data-idx="2"><span class="chk"></span>Tires (4/4)</div>
+        <div class="rec-chip" data-idx="3"><span class="chk"></span>Odometer &amp; tag</div>
+        <div class="rec-chip" data-idx="4"><span class="chk"></span>Customer concern</div>
+      </div>
+      <div class="rec-timer" id="rec-timer">0:00</div>
+      <div class="rec-wave"><span style="animation-delay:0s"></span><span style="animation-delay:.1s"></span><span style="animation-delay:.2s"></span><span style="animation-delay:.3s"></span><span style="animation-delay:.4s"></span><span style="animation-delay:.3s"></span><span style="animation-delay:.2s"></span><span style="animation-delay:.1s"></span></div>
+      <div class="rec-caption" id="rec-caption">Tap play to begin narrating your walkaround&hellip;</div>
+      <div class="rec-stopwrap">
+        <div class="rec-stop" onclick="goProcessing()"><div class="rec-stop-inner"></div></div>
+      </div>
+      <div class="home-indicator light"></div>
+    </div>
+
+    <!-- 5: Processing -->
+    <div class="screen" id="screen-processing">
+      <div class="statusbar light"><span>9:41</span><span class="icons">📶 🛜 🔋</span></div>
+      <div class="app-header light"><h2 style="text-align:center;width:100%;">Write Up</h2></div>
+      <div class="proc-wrap">
+        <div class="spinner"></div>
+        <div class="proc-title">Analyzing your walkaround&hellip;</div>
+        <div class="proc-steps" id="proc-steps">
+          <div class="proc-step"><span class="dot">✓</span>Transcribing narration</div>
+          <div class="proc-step"><span class="dot">✓</span>Reading odometer &amp; tag</div>
+          <div class="proc-step"><span class="dot">✓</span>Matching inspection checklist</div>
+          <div class="proc-step"><span class="dot">✓</span>Detecting vehicle condition</div>
+          <div class="proc-step"><span class="dot">✓</span>Drafting customer concern</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6: Summary (AI-filled) -->
+    <div class="screen" id="screen-summary">
+      <div class="statusbar light"><span>9:41</span><span class="icons">📶 🛜 🔋</span></div>
+      <div class="app-header light">
+        <button class="back-btn" onclick="showScreen('screen-myday')">‹</button>
+        <h2>Write Up</h2>
+      </div>
+      <div class="scroll-area">
+        <div class="banner green"><span>✅</span><div><b>Walkaround analyzed.</b> Most of your write-up is already filled in from your narration.</div></div>
+        <div class="progress-wrap">
+          <div class="progress-track"><div class="progress-fill" style="width:83%"></div></div>
+          <div class="progress-label">5/6 Tasks</div>
+        </div>
+        <div class="veh-card">
+          <div class="car-ic">🚗</div>
+          <div><div class="veh-t">2020 Toyota Corolla LE</div><div class="veh-s">Pete Giancarlo Davidson Soprano</div></div>
+        </div>
+
+        <div class="acc-item"><div class="acc-head" onclick="toggleAcc(this)"><span class="title">Customer</span><span class="status-tag ready">Ready ✓</span><span class="chev">⌄</span></div><div class="acc-body"></div></div>
+        <div class="acc-item"><div class="acc-head" onclick="toggleAcc(this)"><span class="title">Vehicle</span><span class="status-tag ready">Ready ✓</span><span class="chev">⌄</span></div><div class="acc-body"></div></div>
+
+        <div class="acc-item open">
+          <div class="acc-head" onclick="toggleAcc(this)"><span class="title">RO Info</span><span class="status-tag ready">Ready ✓</span><span class="chev">⌄</span></div>
+          <div class="acc-body">
+            <div class="field"><label>Tag</label><div class="val">BRAV411 <span class="flag-tag" onclick="showTip(event,'Heard \'Bravo four one one\' — likely means B411. Confirm in chat')">🎙 verify</span></div></div>
+            <div class="field"><label>Odometer</label><div class="val">34,218 <span class="mic-tag" onclick="showTip(event,'From narration @ 0:01')">🎙 0:01</span></div></div>
+            <div class="field"><label>Transport Type</label><div class="val">Drop Off</div></div>
+            <div class="field"><label>Promised Date / Time</label><div class="val">07/23/2026 &middot; 5:00 PM</div></div>
+          </div>
+        </div>
+
+        <div class="acc-item open">
+          <div class="acc-head" onclick="toggleAcc(this)"><span class="title">Walkaround</span><span class="status-tag ready">Video + notes ✓</span><span class="chev">⌄</span></div>
+          <div class="acc-body">
+            <div class="media-row"><div class="media-tile video">▶</div></div>
+            <textarea class="notes" readonly>Scratch noted on rear left quarter panel; nothing major.</textarea>
+            <div style="text-align:right;"><span class="mic-tag" onclick="showTip(event,'From narration @ 0:54')">🎙 0:54</span></div>
+          </div>
+        </div>
+
+        <div class="acc-item open">
+          <div class="acc-head" onclick="toggleAcc(this)"><span class="title">Inspection</span><span class="status-tag ready">16/16 complete</span><span class="chev">⌄</span></div>
+          <div class="acc-body">
+            <div class="insp-row"><div class="insp-label">Lights (head/tail/turn/brake/hazard)</div><div class="insp-val"><span class="dot-r green"></span>Green</div></div>
+            <div class="insp-row"><div class="insp-label">Windshield</div><div class="insp-val"><span class="dot-r yellow"></span>Yellow <span class="flag-tag" onclick="showTip(event,'Chip noted &mdash; details pending')">🎙 verify</span></div></div>
+            <div class="insp-row"><div class="insp-label">Wiper Blades</div><div class="insp-val"><span class="dot-r green"></span>Green</div></div>
+            <div class="insp-row"><div class="insp-label">Dashboard Lights</div><div class="insp-val"><span class="dot-r green"></span>Green</div></div>
+            <div class="insp-group-title">Left Front Tire</div>
+            <div class="insp-row"><div class="insp-label">Tread Depth</div><div class="insp-val">6/32"</div></div>
+            <div class="insp-row"><div class="insp-label">Pressure</div><div class="insp-val"><span class="dot-r green"></span>Green</div></div>
+            <div class="insp-row"><div class="insp-label">Wear Pattern</div><div class="insp-val"><span class="dot-r green"></span>Green</div></div>
+            <div class="insp-group-title">Right Front Tire</div>
+            <div class="insp-row"><div class="insp-label">Tread Depth</div><div class="insp-val">4/32"</div></div>
+            <div class="insp-row"><div class="insp-label">Pressure</div><div class="insp-val"><span class="dot-r green"></span>Green</div></div>
+            <div class="insp-row"><div class="insp-label">Wear Pattern</div><div class="insp-val"><span class="dot-r green"></span>Green</div></div>
+            <div class="insp-group-title">Left Rear Tire</div>
+            <div class="insp-row"><div class="insp-label">Tread Depth</div><div class="insp-val">6/32"</div></div>
+            <div class="insp-row"><div class="insp-label">Pressure</div><div class="insp-val"><span class="dot-r green"></span>Green</div></div>
+            <div class="insp-row"><div class="insp-label">Wear Pattern</div><div class="insp-val"><span class="dot-r green"></span>Green</div></div>
+            <div class="insp-group-title">Right Rear Tire</div>
+            <div class="insp-row"><div class="insp-label">Tread Depth</div><div class="insp-val">2/32" <span class="flag-tag" onclick="showTip(event,'Near legal minimum')">⚠</span></div></div>
+            <div class="insp-row"><div class="insp-label">Pressure</div><div class="insp-val"><span class="dot-r green"></span>Green</div></div>
+            <div class="insp-row"><div class="insp-label">Wear Pattern</div><div class="insp-val"><span class="dot-r yellow"></span>Yellow</div></div>
+            <div style="text-align:right;margin-top:6px;"><span class="mic-tag" onclick="showTip(event,'From narration @ 1:12–1:38')">🎙 from walkaround</span></div>
+          </div>
+        </div>
+
+        <div class="acc-item open">
+          <div class="acc-head" onclick="toggleAcc(this)"><span class="title">Services</span><span class="status-tag ready">1 concern added ✓</span><span class="chev">⌄</span></div>
+          <div class="acc-body">
+            <div class="concern-card">
+              <div class="concern-tags"><span class="tag-chip">CC</span><span class="tag-chip">CP</span><span class="mic-tag" onclick="showTip(event,'From narration @ 0:58')">🎙 0:58</span></div>
+              <div class="concern-text">Brakes are making a loud squeaking noise, started a week ago</div>
+              <div class="concern-price">$0.00</div>
+            </div>
+            <button class="btn-outline-block">Add Customer Concern</button>
+            <button class="btn-outline-block">🔍 Search All Services</button>
+          </div>
+        </div>
+      </div>
+      <div class="charges-bar">
+        <div class="charges-txt"><div class="charges-amt">$0.00</div><div class="charges-lbl">Estimated Charges</div></div>
+        <button class="btn-primary-block" onclick="showScreen('screen-chat')" style="flex:1.3;">3 quick things to confirm</button>
+      </div>
+    </div>
+
+    <!-- 7: Chat gap-fill -->
+    <div class="screen" id="screen-chat">
+      <div class="statusbar light"><span>9:41</span><span class="icons">📶 🛜 🔋</span></div>
+      <div class="app-header light">
+        <button class="back-btn" onclick="showScreen('screen-summary')">‹</button>
+        <h2>Write-Up Assistant</h2>
+      </div>
+      <div class="chat-log" id="chat-log"></div>
+      <div class="chat-inputbar">
+        <div class="mic-circ">🎙</div>
+        <input type="text" placeholder="Type or tap the mic to reply&hellip;" disabled>
+        <div class="send-circ">➤</div>
+      </div>
+    </div>
+
+    <!-- 8: Final -->
+    <div class="screen" id="screen-final">
+      <div class="statusbar light"><span>9:41</span><span class="icons">📶 🛜 🔋</span></div>
+      <div class="app-header light">
+        <button class="back-btn" onclick="showScreen('screen-myday')">‹</button>
+        <h2>Write Up</h2>
+      </div>
+      <div class="scroll-area">
+        <div class="banner green"><span>✅</span><div><b>All caught up.</b> Write-up complete and ready to submit.</div></div>
+        <div class="progress-wrap">
+          <div class="progress-track"><div class="progress-fill" style="width:100%"></div></div>
+          <div class="progress-label">6/6 Tasks</div>
+        </div>
+        <div class="veh-card">
+          <div class="car-ic">🚗</div>
+          <div><div class="veh-t">2020 Toyota Corolla LE</div><div class="veh-s">Pete Giancarlo Davidson Soprano</div></div>
+        </div>
+
+        <div class="acc-item"><div class="acc-head" onclick="toggleAcc(this)"><span class="title">Customer</span><span class="status-tag ready">Ready ✓</span><span class="chev">⌄</span></div><div class="acc-body"></div></div>
+        <div class="acc-item"><div class="acc-head" onclick="toggleAcc(this)"><span class="title">Vehicle</span><span class="status-tag ready">Ready ✓</span><span class="chev">⌄</span></div><div class="acc-body"></div></div>
+
+        <div class="acc-item">
+          <div class="acc-head" onclick="toggleAcc(this)"><span class="title">RO Info</span><span class="status-tag ready">Ready ✓</span><span class="chev">⌄</span></div>
+          <div class="acc-body">
+            <div class="field"><label>Tag</label><div class="val">B411 <span class="mic-tag">✓ confirmed</span></div></div>
+            <div class="field"><label>Odometer</label><div class="val">34,218</div></div>
+            <div class="field"><label>Transport Type</label><div class="val">Drop Off</div></div>
+            <div class="field"><label>Promised Date / Time</label><div class="val">07/23/2026 &middot; 5:00 PM</div></div>
+          </div>
+        </div>
+        <div class="acc-item">
+          <div class="acc-head" onclick="toggleAcc(this)"><span class="title">Walkaround</span><span class="status-tag ready">Video + notes ✓</span><span class="chev">⌄</span></div>
+          <div class="acc-body">
+            <div class="media-row"><div class="media-tile video">▶</div></div>
+            <textarea class="notes" readonly>Scratch noted on rear left quarter panel. Windshield chip, lower corner &mdash; recommend replacement quote.</textarea>
+          </div>
+        </div>
+        <div class="acc-item"><div class="acc-head" onclick="toggleAcc(this)"><span class="title">Inspection</span><span class="status-tag ready">16/16 complete</span><span class="chev">⌄</span></div><div class="acc-body"></div></div>
+
+        <div class="acc-item open">
+          <div class="acc-head" onclick="toggleAcc(this)"><span class="title">Services</span><span class="status-tag ready">2 items added ✓</span><span class="chev">⌄</span></div>
+          <div class="acc-body">
+            <div class="concern-card">
+              <div class="concern-tags"><span class="tag-chip">CC</span><span class="tag-chip">CP</span></div>
+              <div class="concern-text">Brakes are making a loud squeaking noise, started a week ago</div>
+              <div class="concern-price">$0.00</div>
+            </div>
+            <div class="concern-card">
+              <div class="concern-tags"><span class="tag-chip">AI</span><span class="tag-chip">CP</span></div>
+              <div class="concern-text">Recommend rear right tire replacement &mdash; tread near legal minimum (2/32")</div>
+              <div class="concern-price">Est. $189.00</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="charges-bar">
+        <div class="charges-txt"><div class="charges-amt">$189.00</div><div class="charges-lbl">Estimated Charges</div></div>
+        <button class="btn-primary-block" onclick="submitWriteup()">Submit Write-Up</button>
+      </div>
+    </div>
+
+    <div class="tab-bar" id="tab-bar">
+      <div class="tab-item" data-screen="screen-recents" onclick="showScreen('screen-recents')"><span class="tab-ic">🕘</span><span>Recents</span></div>
+      <div class="tab-item" data-screen="screen-workflows" onclick="showScreen('screen-workflows')"><span class="tab-ic">🗂️</span><span>Workflows</span></div>
+      <div class="tab-item" data-screen="screen-myday" onclick="showScreen('screen-myday')"><span class="tab-ic">🗓️</span><span>My Day</span></div>
+      <div class="tab-item" data-screen="screen-aiva" onclick="showScreen('screen-aiva')"><span class="tab-ic">✨</span><span>AIVA</span></div>
+      <div class="tab-item" data-screen="screen-messages" onclick="showScreen('screen-messages')"><span class="tab-ic">💬</span><span>Messages</span></div>
+    </div>
+
+    <div class="home-indicator" id="home-ind"></div>
+    <div class="toast" id="global-toast"></div>
+  </div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+  const stepLabels = {
+    'screen-recents': 'Recents tab',
+    'screen-workflows': 'Workflows tab',
+    'screen-myday': 'My Day tab',
+    'screen-aiva': 'AIVA tab (placeholder)',
+    'screen-messages': 'Messages tab',
+    'screen-message-thread': 'Messages — thread',
+    'screen-intro': 'Write-Up · Step 1 of 7 — Start',
+    'screen-manual': "Write-Up · Today's Process (baseline)",
+    'screen-recording': 'Write-Up · Step 2 of 7 — Narrated Walkaround',
+    'screen-processing': 'Write-Up · Step 3 of 7 — AI Processing',
+    'screen-summary': 'Write-Up · Step 4 of 7 — Auto-Filled Review',
+    'screen-chat': 'Write-Up · Step 5 of 7 — Confirm the Gaps',
+    'screen-final': 'Write-Up · Step 6 of 7 — Ready to Submit'
+  };
+
+  const rootTabs = ['screen-recents','screen-workflows','screen-myday','screen-aiva','screen-messages'];
+
+  let recTimerInterval = null;
+  let recTimeouts = [];
+  let recSeconds = 0;
+
+  function showScreen(id){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.getElementById('step-label').textContent = stepLabels[id] || '';
+    closeOverflowMenu();
+
+    const tabBar = document.getElementById('tab-bar');
+    const isRootTab = rootTabs.includes(id);
+    tabBar.classList.toggle('hidden', !isRootTab);
+    tabBar.querySelectorAll('.tab-item').forEach(item=>{
+      item.classList.toggle('active', item.dataset.screen === id);
+    });
+
+    const homeInd = document.getElementById('home-ind');
+    if(isRootTab || id === 'screen-recording'){
+      homeInd.classList.add('light');
+    } else {
+      homeInd.classList.remove('light');
+    }
+    if(id === 'screen-recording'){ resetRecordingUI(); startRecording(); }
+    if(id === 'screen-chat'){ startChat(); }
+  }
+
+  function toggleAcc(headEl){
+    headEl.parentElement.classList.toggle('open');
+  }
+
+  function setSegment(el){
+    el.parentElement.querySelectorAll('.segment').forEach(s=>s.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function showTip(evt, text){
+    evt.stopPropagation();
+    const tip = document.getElementById('tooltip');
+    tip.textContent = text;
+    const r = evt.target.getBoundingClientRect();
+    tip.style.left = Math.max(8, r.left - 20) + 'px';
+    tip.style.top = (r.top - 34) + 'px';
+    tip.classList.add('show');
+    clearTimeout(window._tipTO);
+    window._tipTO = setTimeout(()=>tip.classList.remove('show'), 2200);
+  }
+
+  function showToast(msg){
+    const toast = document.getElementById('global-toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(window._toastTO);
+    window._toastTO = setTimeout(()=>toast.classList.remove('show'), 2200);
+  }
+
+  function toggleOverflowMenu(evt){
+    evt.stopPropagation();
+    document.getElementById('overflow-menu').classList.toggle('open');
+  }
+  function closeOverflowMenu(){
+    const menu = document.getElementById('overflow-menu');
+    if(menu) menu.classList.remove('open');
+  }
+  document.addEventListener('click', closeOverflowMenu);
+
+  function toggleUserMenu(evt){
+    evt.stopPropagation();
+    const menu = evt.currentTarget.parentElement.querySelector('.user-menu');
+    const wasOpen = menu.classList.contains('open');
+    closeAllUserMenus();
+    if(!wasOpen) menu.classList.add('open');
+  }
+  function closeAllUserMenus(){
+    document.querySelectorAll('.user-menu.open').forEach(m=>m.classList.remove('open'));
+  }
+  document.addEventListener('click', ()=>closeAllUserMenus());
+
+  // ---------- Recording screen ----------
+  // Caption cue times are anchored to real pause points detected in the actual
+  // walkaround audio (ffmpeg silencedetect), not a guess — so captions track
+  // the real recording even though exact word-level alignment is approximate.
+  const transcriptScript = [
+    {t:1.2,  text:"Starting a walkaround on the Corolla. Odometer reading 34,218."},
+    {t:8.2,  text:"Tag number is Bravo 411.", mark:3},
+    {t:12.4, text:"Windshield's got a small chip on it in the lower corner — calling that a yellow."},
+    {t:21.9, text:"Wipers look good. Dash lights look good, no warnings.", mark:1},
+    {t:28.6, text:"Front left tire — tread about 6/32, pressure is good, wear is even."},
+    {t:31.2, text:"Headlights, turn signals, hazards — they're all working."},
+    {t:34.8, text:"Front right tire — a bit lower, maybe 4/32, pressure is good, wear is even."},
+    {t:40.6, text:"Rear right tire — this one's low, about 2/32. Pressure's fine, but wear looks a little uneven on the outer edges."},
+    {t:44.1, text:"Tail lights, brake lights — both green.", mark:0},
+    {t:49.7, text:"Rear left tire — 6/32, pressure is good, even wear.", mark:2},
+    {t:53.7, text:"There's a small scratch on the rear left quarter panel, nothing major."},
+    {t:58.2, text:"And the customer mentioned the brakes have been making loud squeaking noises —"},
+    {t:66.9, text:"She said it started about a week ago.", mark:4}
+  ];
+  let recVideoHandler = null;
+  let recNextCue = 0;
+
+  function resetRecordingUI(){
+    const video = document.getElementById('rec-video');
+    recNextCue = 0;
+    document.getElementById('rec-timer').textContent = '0:00';
+    document.getElementById('rec-caption').textContent = 'Loading walkaround video…';
+    document.querySelectorAll('.rec-chip').forEach(c=>c.classList.remove('done'));
+    if(video){ try{ video.pause(); video.currentTime = 0; }catch(e){} }
+  }
+
+  function stopRecordingTimers(){
+    const video = document.getElementById('rec-video');
+    if(video){
+      if(recVideoHandler){ video.removeEventListener('timeupdate', recVideoHandler); recVideoHandler = null; }
+      video.onended = null;
+      try{ video.pause(); }catch(e){}
+    }
+    if(recTimerInterval) clearInterval(recTimerInterval);
+    recTimeouts.forEach(id=>clearTimeout(id));
+    recTimeouts = [];
+  }
+
+  function startRecording(){
+    stopRecordingTimers();
+    const video = document.getElementById('rec-video');
+    const timerEl = document.getElementById('rec-timer');
+    const capEl = document.getElementById('rec-caption');
+
+    recVideoHandler = function(){
+      const cur = video.currentTime;
+      const m = Math.floor(cur/60), s = Math.floor(cur%60);
+      timerEl.textContent = m+':'+(s<10?'0':'')+s;
+      while(recNextCue < transcriptScript.length && cur >= transcriptScript[recNextCue].t){
+        const step = transcriptScript[recNextCue];
+        capEl.textContent = step.text;
+        if(step.mark !== undefined){
+          const chip = document.querySelector('.rec-chip[data-idx="'+step.mark+'"]');
+          if(chip) chip.classList.add('done');
+        }
+        recNextCue++;
+      }
+    };
+    video.addEventListener('timeupdate', recVideoHandler);
+    video.onended = function(){ goProcessing(); };
+
+    const playPromise = video.play();
+    if(playPromise && playPromise.catch){
+      playPromise.catch(()=>{
+        capEl.textContent = "Tap anywhere to start playback with sound.";
+        const resume = ()=>{ video.play(); document.getElementById('screen-recording').removeEventListener('click', resume); };
+        document.getElementById('screen-recording').addEventListener('click', resume);
+      });
+    }
+  }
+
+  function skipRecording(){
+    stopRecordingTimers();
+    document.querySelectorAll('.rec-chip').forEach(c=>c.classList.add('done'));
+    document.getElementById('rec-caption').textContent = transcriptScript[transcriptScript.length-1].text;
+    setTimeout(()=>goProcessing(), 400);
+  }
+
+  // ---------- Processing screen ----------
+  function goProcessing(){
+    stopRecordingTimers();
+    showScreen('screen-processing');
+    document.querySelectorAll('#proc-steps .proc-step').forEach(s=>s.classList.remove('done'));
+    const steps = document.querySelectorAll('#proc-steps .proc-step');
+    let delay = 0;
+    steps.forEach((el,i)=>{
+      delay += 550 + (i===0?0:250);
+      setTimeout(()=>el.classList.add('done'), delay);
+    });
+    setTimeout(()=>showScreen('screen-summary'), delay + 700);
+  }
+
+  // ---------- Chat ----------
+  const chatSteps = [
+    { ai: "Nice work — I pulled most of this from your walkaround. Three quick things to confirm.",
+      chips: [{label:"Let's go"}] },
+    { ai: "I heard the tag as 'Bravo four one one' — I've entered it as BRAV411. Did you mean B411?",
+      chips: [{label:"Yes, B411", reply:"Yes, B411"}, {label:"No, let me fix it", reply:"No, let me fix it"}] },
+    { ai: "Got it, noted. You mentioned a chip on the windshield — want me to add a note for the tech?",
+      chips: [{label:"Yes, add note", reply:"Yes, add note"}, {label:"Skip", reply:"Skip"}] },
+    { ai: 'Rear right tread is at 2/32" — that\'s near the legal minimum. Want me to add a tire replacement recommendation to Services?',
+      chips: [{label:"Add recommendation", reply:"Add recommendation"}, {label:"Not now", reply:"Not now"}] },
+    { ai: "All set. Your write-up is complete — take a look before you submit.",
+      chips: [{label:"Review Write-Up", action:()=>showScreen('screen-final')}] }
+  ];
+  let chatIdx = 0;
+
+  function startChat(){
+    document.getElementById('chat-log').innerHTML = '';
+    chatIdx = 0;
+    renderChatStep();
+  }
+
+  function renderChatStep(){
+    const log = document.getElementById('chat-log');
+    const step = chatSteps[chatIdx];
+    if(!step) return;
+
+    const aiRow = document.createElement('div');
+    aiRow.className = 'msg-row';
+    aiRow.innerHTML = '<div class="bubble ai">'+step.ai+'</div>';
+    log.appendChild(aiRow);
+
+    const chipRow = document.createElement('div');
+    chipRow.className = 'chip-row';
+    step.chips.forEach(chip=>{
+      const btn = document.createElement('button');
+      btn.className = chip.action ? 'cta-chip' : 'reply-chip';
+      btn.textContent = chip.label;
+      btn.onclick = ()=>{
+        if(chip.reply){
+          const userRow = document.createElement('div');
+          userRow.className = 'msg-row user';
+          userRow.innerHTML = '<div class="bubble user">'+chip.reply+'</div>';
+          log.appendChild(userRow);
+        }
+        chipRow.remove();
+        log.scrollTop = log.scrollHeight;
+        if(chip.action){
+          setTimeout(chip.action, 350);
+        } else {
+          chatIdx++;
+          setTimeout(renderChatStep, 500);
+        }
+      };
+      chipRow.appendChild(btn);
+    });
+    log.appendChild(chipRow);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function submitWriteup(){
+    showToast('✓ Write-up submitted');
+  }
+
+  // Initialize tab bar / labels for the default landing screen.
+  showScreen('screen-myday');
+</script>
+</body>
+</html>
