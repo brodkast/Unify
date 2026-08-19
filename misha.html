@@ -155,6 +155,17 @@
   <button class="close" id="closePanel">← Back</button>
   <h2>Voice</h2>
   <div class="field">
+    <label for="srcSel">Voice source</label>
+    <select id="srcSel">
+      <option value="cloud">ElevenLabs — same voice on every device</option>
+      <option value="device">This device's built-in voices</option>
+    </select>
+  </div>
+  <div class="field" id="elField">
+    <label for="elVoiceSel">ElevenLabs voice</label>
+    <select id="elVoiceSel"><option>Loading voices…</option></select>
+  </div>
+  <div class="field" id="devField" style="display:none">
     <label for="voiceSel">Russian voice on this device</label>
     <select id="voiceSel"></select>
   </div>
@@ -182,6 +193,16 @@
   // A remembered (typed) key always wins over this embedded one.
   // ══════════════════════════════════════════════════════════════════
   const EMBEDDED_KEY = "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";
+
+  // ElevenLabs TTS — one consistent Russian voice on every device, via
+  // eleven_multilingual_v2. Free tier ≈ 10K chars/month (~100 Misha turns).
+  // This key is in public source: free-tier caps the damage, but rotate it
+  // at elevenlabs.io if usage looks wrong. On any cloud failure the app
+  // falls back to the device voices automatically.
+  const EL_KEY = "cba89458aa3a27daf3b95122ef7c15a8b049d52813b9779fe15d8a8fc0f63b83";
+  const EL_MODEL = "eleven_multilingual_v2";
+  // ~150-byte silent mp3: lets the begin tap "unlock" the audio element on mobile.
+  const SILENT_MP3 = "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7v/////////////////////////////////////////////AAAAAExhdmM1OC4xMwAAAAAAAAAAAAAAACQCgAAAAAAAAAGGkAty0AAAAAAA//sQZAAP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVV//sQZB4P8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV";
   const SYSTEM = `You are a friendly Russian-speaking companion in a language-immersion app. The user is an adult English speaker with ZERO Russian background.
 
 ABSOLUTE RULES:
@@ -228,6 +249,7 @@ You have ALREADY opened the conversation with this message (do not repeat it): {
     }catch(e){}
     $("#setup").style.display = "none";
     unlockSpeech();
+    try{ audioEl.src = SILENT_MP3; audioEl.play().catch(()=>{}); }catch(e){}  // unlock <audio> for mobile
     if(!greeted){ greeted = true; greet(); }
     startRec();   // passive listening begins now; no-op if Misha is already speaking
   });
@@ -307,6 +329,19 @@ You have ALREADY opened the conversation with this message (do not repeat it): {
     loadVoices(true);
   }
 
+  $("#srcSel").addEventListener("change", e => {
+    ttsMode = e.target.value;
+    try{ localStorage.setItem("govorim_tts_mode", ttsMode); }catch(err){}
+    $("#elField").style.display = ttsMode === "cloud" ? "" : "none";
+    $("#devField").style.display = ttsMode === "device" ? "" : "none";
+    $("#voiceLabel").textContent = ttsMode === "cloud" ? elVoiceName() : (voice ? voice.name : "device voice");
+  });
+  $("#elVoiceSel").addEventListener("change", e => {
+    elVoiceId = e.target.value;
+    try{ localStorage.setItem("govorim_el_voice", elVoiceId); }catch(err){}
+    if(ttsMode === "cloud") $("#voiceLabel").textContent = elVoiceName();
+  });
+
   $("#voiceSel").addEventListener("change", e => {
     const v = voices[+e.target.value];
     if(!v) return;                       // "None available" placeholder → no-op
@@ -317,6 +352,11 @@ You have ALREADY opened the conversation with this message (do not repeat it): {
   $("#rate").addEventListener("input", e => { rate = +e.target.value; $("#rateVal").textContent = rate.toFixed(2); });
   $("#testVoice").addEventListener("click", () => {
     const st = $("#speechStatus");
+    if(ttsMode === "cloud" && EL_KEY){
+      st.textContent = "Requesting the line from ElevenLabs (" + elVoiceName() + ")…";
+      speak("Привет! Меня зовут Миша. Сегодня хорошая погода.", null, rate);
+      return;
+    }
     if(!synth){ st.textContent = "This browser has no speech engine at all — try Chrome or Safari."; return; }
     audioDead = false;                   // explicit test = permission to try again
     st.textContent = voice
@@ -339,9 +379,95 @@ You have ALREADY opened the conversation with this message (do not repeat it): {
     return list;
   }
 
+  /* ---------- cloud TTS (ElevenLabs) ---------- */
+  const audioEl = new Audio();
+  let ttsMode = "device", elVoiceId = "", elVoices = [], audioUrl = null, elReady = null;
+  try{
+    ttsMode = localStorage.getItem("govorim_tts_mode") || (EL_KEY ? "cloud" : "device");
+    elVoiceId = localStorage.getItem("govorim_el_voice") || "";
+  }catch(e){ ttsMode = EL_KEY ? "cloud" : "device"; }
+  if(!EL_KEY) ttsMode = "device";
+  // Reflect the persisted mode in the UI (runs after state init — settings handlers only fire on events)
+  $("#srcSel").value = ttsMode;
+  $("#elField").style.display = ttsMode === "cloud" ? "" : "none";
+  $("#devField").style.display = ttsMode === "device" ? "" : "none";
+
+  async function loadElVoices(){
+    const sel = $("#elVoiceSel");
+    try{
+      const res = await fetch("https://api.elevenlabs.io/v1/voices", { headers: { "xi-api-key": EL_KEY } });
+      if(!res.ok) throw new Error("ElevenLabs said " + res.status + (res.status === 401 ? " — key rejected" : ""));
+      const data = await res.json();
+      elVoices = data.voices || [];
+      if(!elVoices.length) throw new Error("no voices on this account");
+      if(!elVoiceId || !elVoices.some(v => v.voice_id === elVoiceId)) elVoiceId = elVoices[0].voice_id;
+      sel.innerHTML = "";
+      elVoices.forEach(v => {
+        const o = document.createElement("option");
+        o.value = v.voice_id; o.textContent = v.name;
+        if(v.voice_id === elVoiceId) o.selected = true;
+        sel.appendChild(o);
+      });
+      if(ttsMode === "cloud") $("#voiceLabel").textContent = elVoiceName();
+    }catch(e){
+      sel.innerHTML = "<option>Unavailable — " + String(e.message || e).slice(0,60) + "</option>";
+      const st = $("#speechStatus");
+      if(st) st.textContent = "Couldn't reach ElevenLabs (" + String(e.message || e).slice(0,80) + "). Misha will use this device's voice until it recovers.";
+    }
+  }
+  function elVoiceName(){
+    const v = elVoices.find(v => v.voice_id === elVoiceId);
+    return v ? v.name + " · ElevenLabs" : "ElevenLabs";
+  }
+  if(EL_KEY) elReady = loadElVoices();
+
+  async function speakCloud(text, node, r){
+    const id = ++utterSeq;
+    speaking = true;
+    stopRec();                    // never listen while Misha talks
+    if(synth && (synth.speaking || synth.pending)){ try{ synth.cancel(); }catch(e){} }
+    const done = () => {
+      if(id !== utterSeq) return;
+      speaking = false;
+      if(node) node.classList.remove("speaking");
+      startRec();
+    };
+    try{
+      if(!elVoiceId && elReady) await elReady;
+      if(!elVoiceId) throw new Error("no ElevenLabs voice available");
+      const res = await fetch("https://api.elevenlabs.io/v1/text-to-speech/" + elVoiceId, {
+        method: "POST",
+        headers: { "xi-api-key": EL_KEY, "content-type": "application/json" },
+        body: JSON.stringify({ text: text, model_id: EL_MODEL })
+      });
+      if(!res.ok) throw new Error("ElevenLabs " + res.status + (res.status === 401 ? " (key rejected)" : res.status === 429 ? " (quota exhausted)" : ""));
+      const blob = await res.blob();
+      if(id !== utterSeq) return;         // superseded while fetching
+      if(audioUrl) URL.revokeObjectURL(audioUrl);
+      audioUrl = URL.createObjectURL(blob);
+      audioEl.src = audioUrl;
+      audioEl.playbackRate = r || rate;
+      audioEl.onplay = () => { if(node) node.classList.add("speaking"); };
+      audioEl.onended = done;
+      audioEl.onerror = done;
+      await audioEl.play();
+    }catch(e){
+      const st = $("#speechStatus");
+      if(st) st.textContent = "Cloud voice failed: " + String(e.message || e).slice(0,90) + " — falling back to this device's voice.";
+      if(id !== utterSeq) return;
+      speakDevice(text, node, r);         // seamless fallback, same sentence
+    }
+  }
+
   function speak(text, node, r){
+    try{ audioEl.pause(); }catch(e){}
+    if(ttsMode === "cloud" && EL_KEY){ speakCloud(text, node, r); return; }
+    speakDevice(text, node, r);
+  }
+
+  function speakDevice(text, node, r){
     if(!synth) return;
-    if(audioDead){                 // every voice already failed — don't hold the mic
+    if(audioDead){                 // every device voice already failed — don't hold the mic
       const st = $("#speechStatus");
       if(st && !st.textContent) st.textContent = "Audio is off — every voice failed. Pick a voice and hit Play a test line to retry.";
       return;
@@ -671,6 +797,8 @@ You have ALREADY opened the conversation with this message (do not repeat it): {
     rows.push(synth ? yes + "Speech engine present" : no + "No speech engine — nothing can be spoken in this viewer");
     rows.push(SR ? yes + "Speech recognition present" : no + "No speech recognition — the mic cannot work in this viewer");
     if(synth) rows.push(voices.length ? yes + voices.length + " Russian voice(s): " + voices.map(v => v.name + (v.localService ? " (on-device)" : " (network — unreliable in Chrome)")).join(", ") : no + "No Russian voice listed yet");
+    rows.push(EL_KEY ? (elVoices.length ? yes + "ElevenLabs reachable — " + elVoices.length + " voice(s), using " + elVoiceName() : no + "ElevenLabs key present but voices didn't load — check network or key") : no + "No ElevenLabs key embedded");
+    rows.push("Voice source: " + (ttsMode === "cloud" ? "ElevenLabs (falls back to device on failure)" : "this device"));
 
     let verdict = "";
     if(inApp){
