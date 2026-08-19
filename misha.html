@@ -118,11 +118,11 @@
 <div id="setup">
   <h1>Говорим<span>Talk — prototype</span></h1>
   <p>You speak English. It answers in Russian, out loud, with the English underneath. It never breaks into English. Register is pitched at about a seven-year-old.</p>
-  <div class="field">
+  <div class="field" id="keyField">
     <label for="key">Anthropic API key</label>
     <input id="key" type="password" inputmode="text" autocomplete="off" placeholder="sk-ant-…">
   </div>
-  <p class="note">Held in memory for this session only — reloading the page clears it. Fine for a bench test; a real build puts the key behind a proxy.</p>
+  <p class="note" id="keyNote">Held in memory for this session only — reloading the page clears it. Fine for a bench test; a real build puts the key behind a proxy.</p>
   <button class="btn-primary" id="begin" disabled>Start talking</button>
 </div>
 
@@ -171,6 +171,11 @@
   "use strict";
 
   const MODEL = "claude-sonnet-4-6";
+
+  // Embedded key: skips the entry field. WARNING — this file is publicly hosted;
+  // anyone who views source can read this key. Keep a spend limit on it in the
+  // Anthropic Console (Settings → Limits) and rotate it if usage looks wrong.
+  const EMBEDDED_KEY = "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";
   const SYSTEM = `You are a friendly Russian-speaking companion in a language-immersion app. The user is an adult English speaker with ZERO Russian background.
 
 ABSOLUTE RULES:
@@ -192,9 +197,14 @@ You have ALREADY opened the conversation with this message (do not repeat it): {
   let apiKey = "", history = [], voices = [], voice = null, rate = 0.9, busy = false, listening = false, rec = null;
 
   /* ---------- setup ---------- */
+  if(EMBEDDED_KEY){
+    $("#keyField").style.display = "none";
+    $("#keyNote").textContent = "Key is built in. One tap wakes the voice and the microphone.";
+    $("#begin").disabled = false;
+  }
   $("#key").addEventListener("input", e => { $("#begin").disabled = e.target.value.trim().length < 10; });
   $("#begin").addEventListener("click", () => {
-    apiKey = $("#key").value.trim();
+    apiKey = EMBEDDED_KEY || $("#key").value.trim();
     $("#setup").style.display = "none";
     unlockSpeech();
     greet();
@@ -239,10 +249,10 @@ You have ALREADY opened the conversation with this message (do not repeat it): {
       return;
     }
     $("#warn").style.display = "none";
-    // Prefer known-good voices per platform: Milena (macOS), Google русский (Chrome), then anything local, then first.
+    // Prefer voices that actually play: Milena (macOS) → any on-device voice → Google network voices → first.
     voice = voices.find(v => /milena/i.test(v.name))
-         || voices.find(v => /google/i.test(v.name))
          || voices.find(v => v.localService)
+         || voices.find(v => /google/i.test(v.name))
          || voices[0];
     voices.forEach((v,i) => {
       const o = document.createElement("option");
@@ -269,21 +279,58 @@ You have ALREADY opened the conversation with this message (do not repeat it): {
     const v = voices[+e.target.value];
     if(!v) return;                       // "None available" placeholder → no-op
     voice = v;
+    audioDead = false;                   // manual pick = permission to try again
     $("#voiceLabel").textContent = voice.name;
   });
   $("#rate").addEventListener("input", e => { rate = +e.target.value; $("#rateVal").textContent = rate.toFixed(2); });
   $("#testVoice").addEventListener("click", () => {
     const st = $("#speechStatus");
     if(!synth){ st.textContent = "This browser has no speech engine at all — try Chrome or Safari."; return; }
+    audioDead = false;                   // explicit test = permission to try again
     st.textContent = voice
       ? "Playing with " + voice.name + "…"
       : "No Russian voice is listed — trying the system default with lang set to ru-RU…";
     speak("Привет! Меня зовут Миша. Сегодня хорошая погода.", null, rate);
   });
 
-  let utterSeq = 0, speaking = false;
+  let utterSeq = 0, speaking = false, audioDead = false;
+
+  // Ordered candidate list: current pick first, then local Russian voices, then
+  // network voices (Chrome's remote "Google" voices silently fail often), then
+  // null = no voice object, lang="ru-RU" only — lets the engine choose.
+  function voiceCandidates(){
+    const locals  = voices.filter(v => v.localService && v !== voice);
+    const remotes = voices.filter(v => !v.localService && v !== voice);
+    const list = [];
+    if(voice) list.push(voice);
+    list.push(...locals, ...remotes, null);
+    return list;
+  }
+
   function speak(text, node, r){
     if(!synth) return;
+    if(audioDead){                 // every voice already failed — don't hold the mic
+      const st = $("#speechStatus");
+      if(st && !st.textContent) st.textContent = "Audio is off — every voice failed. Pick a voice and hit Play a test line to retry.";
+      return;
+    }
+    speakTry(text, node, r, voiceCandidates(), 0);
+  }
+
+  function speakTry(text, node, r, cands, ci){
+    if(ci >= cands.length){
+      // Ladder exhausted — audio genuinely unavailable. Never hold the mic hostage.
+      audioDead = true;
+      speaking = false;
+      if(node) node.classList.remove("speaking");
+      const st = $("#speechStatus");
+      if(st) st.textContent = "Tried every voice (" + cands.filter(Boolean).map(v=>v.name).join(", ") + " and the system default) — none produced sound. This device needs a Russian TTS voice installed. Mac: System Settings → Accessibility → Spoken Content → Manage Voices → add Milena. Android: Settings → System → Languages → Text-to-speech → Google engine → install Russian.";
+      $("#warn").style.display = "block";
+      $("#warn").textContent = "No installed voice could speak. Text works; see Settings for the install steps for your device.";
+      startRec();
+      return;
+    }
+    const cand = cands[ci];
     const id = ++utterSeq;
 
     speaking = true;
@@ -296,7 +343,7 @@ You have ALREADY opened the conversation with this message (do not repeat it): {
     };
 
     const u = new SpeechSynthesisUtterance(text);
-    if(voice){ u.voice = voice; u.lang = voice.lang; }
+    if(cand){ u.voice = cand; u.lang = cand.lang; }
     else { u.lang = "ru-RU"; }   // engine can often find a Russian voice from lang alone
     u.rate = r || rate; u.pitch = 1;
     let started = false, watchdog = null;
@@ -304,14 +351,21 @@ You have ALREADY opened the conversation with this message (do not repeat it): {
       started = true;
       clearTimeout(watchdog);
       if(node) node.classList.add("speaking");
+      // This one actually plays — promote it so every future line uses it directly.
+      if(cand && voice !== cand){
+        voice = cand;
+        $("#voiceLabel").textContent = voice.name;
+        const st = $("#speechStatus");
+        if(st) st.textContent = "Switched to " + voice.name + " — it actually plays on this device.";
+      }
     };
     u.onend = () => { clearTimeout(watchdog); done(); };
     u.onerror = ev => {
       clearTimeout(watchdog);
-      const st = $("#speechStatus");
-      if(st && ev.error && ev.error !== "interrupted" && ev.error !== "canceled")
-        st.textContent = "Speech error: " + ev.error;
-      done();
+      if(id !== utterSeq) return;
+      if(ev.error === "interrupted" || ev.error === "canceled"){ done(); return; }
+      // Real failure on this voice → next rung, same text.
+      speakTry(text, node, r, cands, ci + 1);
     };
 
     // Safari (macOS/iOS) swallows an utterance queued in the same tick as cancel().
@@ -320,14 +374,15 @@ You have ALREADY opened the conversation with this message (do not repeat it): {
       if(id !== utterSeq) return;          // superseded while waiting
       synth.speak(u);
       synth.resume();                       // desktop Chrome can wedge in a paused state after cancel
-      // Watchdog: if the engine never starts speaking, don't hold the mic hostage — release and report.
+      // Watchdog: engine accepted but never started — this voice is a dud (classic
+      // Chrome network-voice failure). Try the next rung with the same text.
       watchdog = setTimeout(() => {
         if(id !== utterSeq || started) return;
         try{ synth.cancel(); }catch(e){}
         const st = $("#speechStatus");
-        if(st) st.textContent = "The speech engine accepted the line but never played it. Audio is unavailable right now; the mic has been released.";
-        done();
-      }, 3000);
+        if(st) st.textContent = (cand ? cand.name : "System default (ru-RU)") + " didn't play — trying the next voice…";
+        speakTry(text, node, r, cands, ci + 1);
+      }, 2500);
     };
     if(synth.speaking || synth.pending){ synth.cancel(); setTimeout(kick, 80); }
     else kick();
@@ -576,7 +631,7 @@ You have ALREADY opened the conversation with this message (do not repeat it): {
     rows.push((window.isSecureContext ? yes + "Secure context (HTTPS)" : no + "NOT a secure context — the microphone is blocked here. Serve over HTTPS, not file:// or http://"));
     rows.push(synth ? yes + "Speech engine present" : no + "No speech engine — nothing can be spoken in this viewer");
     rows.push(SR ? yes + "Speech recognition present" : no + "No speech recognition — the mic cannot work in this viewer");
-    if(synth) rows.push(voices.length ? yes + voices.length + " Russian voice(s): " + voices.map(v=>v.name).join(", ") : no + "No Russian voice listed yet");
+    if(synth) rows.push(voices.length ? yes + voices.length + " Russian voice(s): " + voices.map(v => v.name + (v.localService ? " (on-device)" : " (network — unreliable in Chrome)")).join(", ") : no + "No Russian voice listed yet");
 
     let verdict = "";
     if(inApp){
