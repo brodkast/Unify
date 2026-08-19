@@ -123,6 +123,9 @@
     <input id="key" type="password" inputmode="text" autocomplete="off" placeholder="sk-ant-…">
   </div>
   <p class="note" id="keyNote">Held in memory for this session only — reloading the page clears it. Fine for a bench test; a real build puts the key behind a proxy.</p>
+  <label class="note" style="display:flex;align-items:center;gap:8px;cursor:pointer">
+    <input type="checkbox" id="rememberKey" style="width:18px;height:18px"> Remember on this device
+  </label>
   <button class="btn-primary" id="begin" disabled>Start talking</button>
 </div>
 
@@ -172,9 +175,12 @@
 
   const MODEL = "claude-sonnet-4-6";
 
-  // Embedded key: skips the entry field. WARNING — this file is publicly hosted;
-  // anyone who views source can read this key. Keep a spend limit on it in the
-  // Anthropic Console (Settings → Limits) and rotate it if usage looks wrong.
+  // ══════════════════════════════════════════════════════════════════
+  // REPLACE THE STRING BELOW with your NEW key from console.anthropic.com.
+  // The one currently here is the OLD REVOKED key — it will be rejected,
+  // and the app will fall back to the key-entry screen automatically.
+  // A remembered (typed) key always wins over this embedded one.
+  // ══════════════════════════════════════════════════════════════════
   const EMBEDDED_KEY = "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";
   const SYSTEM = `You are a friendly Russian-speaking companion in a language-immersion app. The user is an adult English speaker with ZERO Russian background.
 
@@ -197,19 +203,45 @@ You have ALREADY opened the conversation with this message (do not repeat it): {
   let apiKey = "", history = [], voices = [], voice = null, rate = 0.9, busy = false, listening = false, rec = null;
 
   /* ---------- setup ---------- */
-  if(EMBEDDED_KEY){
+  const KEY_STORE = "govorim_api_key";
+  let savedKey = "", greeted = false;
+  try{ savedKey = localStorage.getItem(KEY_STORE) || ""; }catch(e){}
+
+  if(savedKey){
+    // A key the user typed and chose to remember always outranks the embedded one —
+    // it only exists because they entered it deliberately (usually after the embed died).
+    $("#key").value = savedKey;
+    $("#rememberKey").checked = true;
+    $("#keyNote").textContent = "Using the key remembered on this device. Untick below to forget it.";
+    $("#begin").disabled = false;
+  } else if(EMBEDDED_KEY){
     $("#keyField").style.display = "none";
     $("#keyNote").textContent = "Key is built in. One tap wakes the voice and the microphone.";
     $("#begin").disabled = false;
   }
   $("#key").addEventListener("input", e => { $("#begin").disabled = e.target.value.trim().length < 10; });
   $("#begin").addEventListener("click", () => {
-    apiKey = EMBEDDED_KEY || $("#key").value.trim();
+    apiKey = $("#key").value.trim() || EMBEDDED_KEY;
+    try{
+      if($("#key").value.trim() && $("#rememberKey").checked) localStorage.setItem(KEY_STORE, apiKey);
+      else localStorage.removeItem(KEY_STORE);
+    }catch(e){}
     $("#setup").style.display = "none";
     unlockSpeech();
-    greet();
+    if(!greeted){ greeted = true; greet(); }
     startRec();   // passive listening begins now; no-op if Misha is already speaking
   });
+
+  // Called when the API rejects the key mid-conversation (e.g. the embedded one is revoked).
+  function reopenSetup(msg){
+    try{ localStorage.removeItem(KEY_STORE); }catch(e){}
+    $("#keyField").style.display = "";      // always show the field on recovery, embed or not
+    $("#key").value = "";
+    $("#begin").disabled = true;
+    $("#keyNote").textContent = msg;
+    $("#setup").style.display = "";
+    stopRec();
+  }
 
   /* ---------- speech synthesis ---------- */
   // Feature-detect: some WebViews / embedded browsers have no speechSynthesis at all.
@@ -496,7 +528,14 @@ You have ALREADY opened the conversation with this message (do not repeat it): {
 
       if(!res.ok){
         const t = await res.text();
-        throw new Error(res.status === 401 ? "API key was rejected." : "Server said " + res.status + ". " + t.slice(0,120));
+        if(res.status === 401){
+          skel.remove();
+          history.pop();
+          reopenSetup("That key was rejected by the API — it's revoked or mistyped. Paste a fresh one from console.anthropic.com → API Keys, and tick remember.");
+          busy = false;
+          return;
+        }
+        throw new Error("Server said " + res.status + ". " + t.slice(0,120));
       }
 
       const data = await res.json();
