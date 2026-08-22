@@ -711,7 +711,7 @@
   /* No padding/margin to reset since the sidebar never pushed content */
   body.sidebar-mode.sidebar-collapsed .mega-menu { left: 0; }
 
-  /* AIVA top-nav button — subtle, matches other header buttons */
+  /* ALI top-nav button — subtle, matches other header buttons */
   .aiva-btn {
     display: flex; align-items: center; gap: 5px;
     background: transparent;
@@ -731,7 +731,7 @@
   .aiva-btn svg { flex-shrink: 0; opacity: 0.85; }
   .aiva-btn:hover svg { opacity: 1; }
 
-  /* Collapsed — while AIVA is minimized the FAB is the single entry point,
+  /* Collapsed — while ALI is minimized the FAB is the single entry point,
      so the header control hides to avoid two affordances for one feature.
      Width/padding collapse (rather than display:none) so the surrounding
      icon cluster slides instead of jumping. */
@@ -5934,7 +5934,7 @@
   }
   .stat-card .stat-meta { font-size: 11.5px; color: var(--text-3); margin-top: 4px; }
 
-  /* ===== AIVA Panel — persistent draggable floating assistant ===== */
+  /* ===== ALI Panel — persistent draggable floating assistant ===== */
   .aiva-panel {
     position: fixed;
     bottom: 24px; right: 24px;
@@ -6246,7 +6246,7 @@
   .aiva-tab svg { opacity: 0.7; }
   .aiva-tab.active svg { opacity: 1; }
 
-  /* ===== AIVA conversation engine — slot components =====
+  /* ===== ALI conversation engine — slot components =====
      Renders the northstar response anatomy: answer, provenance,
      insight, limit, control, confirm, next. */
   .aiva-prov {
@@ -6399,7 +6399,7 @@
   }
   .aiva-ctx-note svg { flex-shrink: 0; opacity: 0.7; }
 
-  /* ===== AIVA app insights — surfaced on sub-app navigation ===== */
+  /* ===== ALI app insights — surfaced on sub-app navigation ===== */
   .aiva-ins-sub {
     font-family: 'JetBrains Mono', ui-monospace, monospace;
     font-size: 10px; color: var(--text-4);
@@ -6428,7 +6428,7 @@
 
 
 
-  /* ===== Activity log — what AIVA did on your behalf =====
+  /* ===== Activity log — what ALI did on your behalf =====
      Traceability for an agent that takes action: every committed action
      with its timestamp, its inputs, and who confirmed it. */
   .aiva-log-btn { position: relative; }
@@ -6526,7 +6526,7 @@
   .aiva-log-foot .exp { margin-left: auto; color: var(--brand); font-weight: 600; cursor: pointer; }
   .aiva-log-foot .exp:hover { text-decoration: underline; }
   /* ===== Capability coaching =====
-     AIVA teaching the user something about AIVA. Deliberately muted and
+     ALI teaching the user something about ALI. Deliberately muted and
      threshold-driven — it appends to an answer the user already wanted,
      never interrupts, and never repeats. */
   .aiva-coach {
@@ -6544,8 +6544,8 @@
   }
   .aiva-coach .cd:hover { color: var(--brand); }
   /* ===== Field spotlight =====
-     AIVA pointing at the exact control it is describing. Sits above app
-     content (20) but below the AIVA panel (90) so its explanation stays
+     ALI pointing at the exact control it is describing. Sits above app
+     content (20) but below the ALI panel (90) so its explanation stays
      readable while the target is highlighted. */
   .aiva-spot-ring {
     position: fixed;
@@ -6579,7 +6579,7 @@
   }
   .aiva-spot-label.below::after { bottom: auto; top: -4px; }
   /* ===== Session context chips =====
-     Multi-turn memory, made visible. Each chip is something AIVA is
+     Multi-turn memory, made visible. Each chip is something ALI is
      carrying from earlier in the conversation; removing one is how the
      user corrects it. */
   .aiva-ctx {
@@ -6636,7 +6636,7 @@
   }
   .aiva-ctx-recall .again:hover { text-decoration: underline; }
   /* ===== Invoked AI experiences =====
-     AIVA calls an existing product capability as a tool and renders its
+     ALI calls an existing product capability as a tool and renders its
      real output inline, attributed to its source — the richness of the
      standalone panel, in the flow of the conversation. */
   .aiva-cap {
@@ -6694,7 +6694,7 @@
   }
   /* ===== Clarifying question — one decision at a time =====
      When a request is missing a required input, or the value given
-     isn't precise enough, AIVA asks a single targeted question with
+     isn't precise enough, ALI asks a single targeted question with
      the real options rather than presenting a form. */
   .aiva-clarify {
     background: linear-gradient(135deg, rgba(37,99,235,0.05), rgba(59,130,246,0.03));
@@ -6864,7 +6864,7 @@
   .aiva-input.in-support { border-color: rgba(16,185,129,0.5); }
   .aiva-input.in-support:focus-within { box-shadow: 0 0 0 3px rgba(16,185,129,0.12); }
 
-  /* Active state for header AIVA button when panel is visible */
+  /* Active state for header ALI button when panel is visible */
   .aiva-btn.is-active {
     background: rgba(99, 102, 241, 0.18);
     color: white;
@@ -6878,7 +6878,7 @@
   body.in-login .sidebar-nav,
   body.in-onboarding .sidebar-nav { display: none; }
 
-  /* ===== AIVA FAB — the collapsed state of the assistant panel =====
+  /* ===== ALI FAB — the collapsed state of the assistant panel =====
      On minimize the panel collapses into this floating action button at
      the panel's own last position, so the feature relocates with it
      rather than snapping back to a fixed corner. Draggable, and it
@@ -7193,7 +7193,7 @@
   .mr-active-banner .nm { font-size: 14px; font-weight: 600; }
   .mr-active-banner .meta { font-size: 11.5px; color: var(--text-3); margin-top: 2px; }
 
-  /* AIVA orb for live session */
+  /* ALI orb for live session */
   .aiva-orb-mr {
     width: 36px; height: 36px;
     border-radius: 50%;
@@ -7264,7 +7264,7 @@
     border-radius: 999px;
   }
 
-  /* AIVA insight strip */
+  /* ALI insight strip */
   .aiva-insight {
     background: linear-gradient(135deg, rgba(123, 97, 255, 0.06), rgba(99, 102, 241, 0.04));
     border: 1px solid rgba(123, 97, 255, 0.2);
@@ -7749,7 +7749,7 @@
      Black-and-white dark surface, matching the nav-origin panels
      (mega menu, notifications). Strictly monochrome: status is told
      through intensity and outline, never hue. Type calibrated to the
-     AIVA panel scale (13px body, 11–12px secondary).
+     ALI panel scale (13px body, 11–12px secondary).
      ============================================================ */
   .cc-flyout {
     position: fixed;
@@ -7939,9 +7939,9 @@
   </div>
 
   <div class="right-icons">
-    <button class="aiva-btn anim-scale-in" style="animation-delay:0.15s" id="aivaBtn" title="Ask AIVA">
+    <button class="aiva-btn anim-scale-in" style="animation-delay:0.15s" id="aivaBtn" title="Ask ALI">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/></svg>
-      <span>AIVA</span>
+      <span>ALI</span>
     </button>
 
     <div class="icon-cluster anim-fade-in-up" style="animation-delay:0.21s">
@@ -8209,7 +8209,7 @@
 
 
 
-<!-- ============ AIVA PANEL (persistent floating assistant) ============ -->
+<!-- ============ ALI PANEL (persistent floating assistant) ============ -->
 <div class="aiva-panel" id="aivaPanel">
   <!-- Stage: the expanded work surface. Empty until an experience fills it. -->
   <div class="aiva-stage" id="aivaStage"></div>
@@ -8218,16 +8218,16 @@
     <div class="logo">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/></svg>
     </div>
-    <div class="title">AIVA Opportunity</div>
+    <div class="title">ALI Opportunity</div>
     <div class="aiva-head-actions">
-      <button class="aiva-head-btn aiva-log-btn" id="aivaLogBtn" title="Activity log — what AIVA has done on your behalf" onclick="aivaToggleLog()">
+      <button class="aiva-head-btn aiva-log-btn" id="aivaLogBtn" title="Activity log — what ALI has done on your behalf" onclick="aivaToggleLog()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>
         <span class="aiva-log-count" id="aivaLogCount">0</span>
       </button>
       <button class="aiva-head-btn" title="Save" onclick="toast('Bookmarked')">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
       </button>
-      <button class="aiva-head-btn" title="Minimize" onclick="closeAIVA()">
+      <button class="aiva-head-btn" title="Minimize" onclick="closeALI()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
       </button>
     </div>
@@ -8235,7 +8235,7 @@
   <div class="aiva-body" id="aivaBody"></div>
   <div class="aiva-body" id="aivaLogView" hidden></div>
   <div class="aiva-foot">
-    <!-- What AIVA is holding from this conversation. Visible so the user
+    <!-- What ALI is holding from this conversation. Visible so the user
          can see it, and removable so they can correct it. -->
     <div class="aiva-ctx" id="aivaCtxBar" hidden>
       <span class="aiva-ctx-label">Remembering</span>
@@ -8245,7 +8245,7 @@
       <span class="clip" title="Attach" onclick="toast('Attach file')">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
       </span>
-      <input type="text" id="aivaInput" placeholder="Ask AIVA Anything" autocomplete="off" />
+      <input type="text" id="aivaInput" placeholder="Ask ALI Anything" autocomplete="off" />
       <button class="aiva-input-btn" title="Dictate (simulated)" id="aivaMicBtn" onclick="aivaVoiceStart()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
       </button>
@@ -8260,7 +8260,7 @@
       </div>
       <div class="aiva-tab active" data-tab="aiva" onclick="setAivaTab('aiva')">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/></svg>
-        AIVA
+        ALI
       </div>
       <div class="aiva-tab" data-tab="email" onclick="setAivaTab('email')">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
@@ -8271,8 +8271,8 @@
   </div><!-- /aiva-col -->
 </div>
 
-<!-- ============ AIVA FAB (collapsed state of the panel) ============ -->
-<button class="aiva-fab hidden" id="aivaFab" title="Open AIVA" aria-label="Open AIVA assistant">
+<!-- ============ ALI FAB (collapsed state of the panel) ============ -->
+<button class="aiva-fab hidden" id="aivaFab" title="Open ALI" aria-label="Open ALI assistant">
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/></svg>
   <span class="aiva-fab-badge" id="aivaFabBadge">1</span>
 </button>
@@ -8287,7 +8287,7 @@
     <span id="aivaFabNoteHead">Insights updated</span>
   </div>
   <div class="fn-body" id="aivaFabNoteBody"></div>
-  <div class="fn-cta">Open AIVA →</div>
+  <div class="fn-cta">Open ALI →</div>
 </div>
 
 <!-- ============ DETAIL DRAWER ============ -->
@@ -8890,18 +8890,18 @@ const PERSONAS = {
 
   salesAssoc: {
     label: 'Sales Associate', short: 'Sales Rep', color: '#f97316',
-    bannerNote: 'Showroom-floor companion — appointments, leads, and AIVA-powered customer sessions.',
+    bannerNote: 'Showroom-floor companion — appointments, leads, and ALI-powered customer sessions.',
     activity: [
       { icon: 'crm-red', text: 'Juan Gonzalez — In showroom',      sub: 'Step 4 of 7 · Test Drive · live' },
       { icon: 'crm-red', text: '10:00 AM Test drive',              sub: 'Maria Hernandez · 2025 CR-V' },
       { icon: 'crm-red', text: 'Internet Lead: David Kim',         sub: '2m · Telluride SX-P · Cars.com' },
       { icon: 'crm-red', text: 'Follow-up overdue: Marcus Hill',   sub: '45 min · Silverado LTZ' },
-      { icon: 'crm-red', text: 'AIVA-drafted reply: Diana Reyes',  sub: 'Silverado lease comparison' },
+      { icon: 'crm-red', text: 'ALI-drafted reply: Diana Reyes',  sub: 'Silverado lease comparison' },
     ],
     apps: appsFor(['crm-red']),
     workflows: [
       { icon: 'crm-red', label: 'My Day' },         { icon: 'crm-red', label: 'Hot Leads' },      { icon: 'crm-red', label: 'Test Drive' },
-      { icon: 'crm-red', label: 'AIVA Session' },   { icon: 'crm-red', label: 'Smart Scan' },     { icon: 'crm-red', label: 'Walk-around' },
+      { icon: 'crm-red', label: 'ALI Session' },   { icon: 'crm-red', label: 'Smart Scan' },     { icon: 'crm-red', label: 'Walk-around' },
       { icon: 'crm-red', label: 'Quick Quote' },    null,                                          null,
     ],
     dashboardsLabel: 'My Performance',
@@ -8925,7 +8925,7 @@ const PERSONAS = {
     myAppsLabels: ['Modern Retail'],
     workflowGroup: { icon: 'crm-red', title: 'Sales Rep Workflows',
       subs: [
-        { h: 'Live Session with AIVA', p: 'AIVA listens during showroom conversations, auto-captures F.O.R.M. notes and key fields.' },
+        { h: 'Live Session with ALI', p: 'ALI listens during showroom conversations, auto-captures F.O.R.M. notes and key fields.' },
         { h: 'Quick Quote',            p: 'Build a quote from the active session and send straight to the desk for approval.' },
         { h: 'Smart Scan',             p: 'Scan VIN, license, or insurance card to autofill customer and vehicle records.' },
       ] },
@@ -9601,11 +9601,11 @@ initGlobalSearch();
 
 
 /* ============================================================
-   AIVA PERSISTENT PANEL — draggable floating assistant
+   ALI PERSISTENT PANEL — draggable floating assistant
    ============================================================ */
 
 /* Per-persona suggested "Next Best Action" chips shown in the welcome card. */
-const AIVA_ACTIONS_BY_PERSONA = {
+const ALI_ACTIONS_BY_PERSONA = {
   owner:          ['How are we doing this month?',      'Compare the stores', 'Show me the store scorecard',      'Where do I change the period?'],
   ops:            ['What needs my approval right now?', 'Where do I start?',  'What\'s the vehicle service history?', 'Where do I filter by store?'],
   serviceManager: ['What appointments do I have tomorrow?', 'What needs my approval right now?', 'Approve it',         'What\'s the warranty status?',      'Where do I find pending authorization?'],
@@ -9620,17 +9620,17 @@ const AIVA_ACTIONS_BY_PERSONA = {
 };
 
 /* Build the welcome message based on the active persona — uses the persona's
-   bannerNote so AIVA echoes the same context the persona banner conveys. */
+   bannerNote so ALI echoes the same context the persona banner conveys. */
 function renderAivaWelcome(personaKey) {
   const p = PERSONAS[personaKey] || PERSONAS.serviceManager;
-  const actions = AIVA_ACTIONS_BY_PERSONA[personaKey] || [];
+  const actions = ALI_ACTIONS_BY_PERSONA[personaKey] || [];
   const now = new Date();
   const tStr = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 
   return `
     <div class="aiva-welcome">
       <div class="aiva-welcome-head">
-        AIVA
+        ALI
         <span class="ts">${tStr}</span>
         <span class="feedback">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" onclick="toast('Thanks!')"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
@@ -9665,17 +9665,17 @@ function updateAivaWelcome(personaKey) {
 }
 
 /* ============================================================
-   AIVA CONVERSATION ENGINE — northstar interaction pattern
+   ALI CONVERSATION ENGINE — northstar interaction pattern
    Simulated intents written against the CAR assistant personality
    definition ("Humbly Confident"), grounded in the persona data
    already in this prototype. Every response is assembled from
    ordered slots: answer → provenance → insight → limit → control
-   → confirm → next. When a response refers to an app, AIVA opens
-   that app tab for context (AIVA_CONTEXT_OPENING suppresses the
+   → confirm → next. When a response refers to an app, ALI opens
+   that app tab for context (ALI_CONTEXT_OPENING suppresses the
    Visit Insights auto-load so the chat thread survives).
    ============================================================ */
 
-const AIVA_APP_LABEL = {
+const ALI_APP_LABEL = {
   service: "Service", parts: "Parts", accounting: "Accounting",
   fi: "F&I", crm: "Modern Retail", is: "Intelligence Suite",
   documentMgmt: "Document Mgmt",
@@ -9693,14 +9693,14 @@ const _nx  = (acts, h)        => ({ t: "acts", acts, h });
 /* Action shapes: { t:"Label", p:true } routes label back through askAiva;
    { t, open:"appKey" } opens the app; { t, res:"KEY" } runs a resolution. */
 
-const AIVA_INTENTS = [
+const ALI_INTENTS = [
 
 /* ---------- A. Orientation & role scoping ---------- */
 { id: "A1", personas: null, checking: null,
   kw: ["hello", "hey", "good morning", "hi aiva", "hi"],
   app: null,
   blocks: [
-    _m("Hi — I'm AIVA, your AI assistant. What can I help you find or work out?"),
+    _m("Hi — I'm ALI, your AI assistant. What can I help you find or work out?"),
   ], usePersonaChips: true },
 
 { id: "A2", personas: ["salesAssoc"], checking: null,
@@ -9850,7 +9850,7 @@ const AIVA_INTENTS = [
   app: "crm", sec: "Priority Feed",
   blocks: [
     _m("Juan Gonzalez is at <b>step 4 of 7</b> — test drive, live right now."),
-    _pv("AIVA Session · in progress"),
+    _pv("ALI Session · in progress"),
     _m("Two things moved while you were out there. Marcus Hill's follow-up went overdue 45 min ago on the Silverado LTZ, and David Kim came in from Cars.com 2 min ago on a Telluride SX-P."),
     _nx([{ t: "Stay on Juan's session", open: "crm", sec: "Priority Feed", p: true }, { t: "Hand Marcus to the BDC", res: "C8_HAND" }]),
   ] },
@@ -10106,7 +10106,7 @@ const AIVA_INTENTS = [
   ] },
 
 /* ---------- SP. Pointing at the interface ----------
-   "Where is it?" questions. AIVA explains in a sentence and then
+   "Where is it?" questions. ALI explains in a sentence and then
    highlights the actual control, so the user looks instead of hunts. */
 
 { id: "SP1", personas: ["owner"], spot: "isPeriod",
@@ -10158,7 +10158,7 @@ const AIVA_INTENTS = [
 
 /* ---------- AX. Invoking existing AI experiences ----------
    These questions are really requests for a capability that already
-   exists in the product. AIVA recognises that and calls it, so the
+   exists in the product. ALI recognises that and calls it, so the
    user never needs to know the separate feature is there. */
 
 { id: "AX1", personas: ["serviceManager", "tech", "ops"], cap: "visitInsights",
@@ -10421,7 +10421,7 @@ const AIVA_INTENTS = [
 ];
 
 /* ---- Resolutions: what confirm cards and flag/stage chips resolve to ---- */
-const AIVA_RESOLUTIONS = {
+const ALI_RESOLUTIONS = {
   F1_YES:   { app: "service", sec: "Repair Orders", rec: "RO-124213", blocks: [
     _m("Done — you're clocked on <b>RO #124213</b> as of 11:42am. RO #124210 closed out at 5.2 hr."),
     _nx([{ t: "Open RO #124213", open: "service", sec: "Repair Orders", rec: "RO-124213", p: true }]) ] },
@@ -10696,7 +10696,7 @@ function aivaRenderBlocks(blocks) {
         // The card is registered so that committing through it writes an
         // audit entry built from these exact rows — approved and logged
         // can never drift apart.
-        const cardIdx = AIVA_CONFIRM_CARDS.push({ rows: b.rows, warn: b.warn }) - 1;
+        const cardIdx = ALI_CONFIRM_CARDS.push({ rows: b.rows, warn: b.warn }) - 1;
         return `<div class="aiva-confirm">${b.cap ? `<div class="cc-cap">${b.cap}</div>` : ""}${b.rows.map(r => `<div class="cc-row"><span class="k">${escapeHtml(r.k)}</span><span class="v">${escapeHtml(r.v)}</span></div>`).join("")}${b.warn ? `<div class="cc-warn">${b.warn}</div>` : ""}</div><div class="aiva-inline-acts">${(b.acts || []).map(a => aivaActBtn(a, cardIdx)).join("")}</div>`;
       }
       case "acts": return `${b.h ? `<div class="aiva-msg">${b.h}</div>` : ""}<div class="aiva-actions">${(b.acts || []).map(a => aivaActBtn(a)).join("")}</div>`;
@@ -10709,7 +10709,7 @@ function aivaRenderBlocks(blocks) {
 function aivaAppendReply(blocks, appKey, sec, rec) {
   const body = document.getElementById("aivaBody");
   if (!body) return;
-  const where = appKey ? (AIVA_APP_LABEL[appKey] || appKey) + (sec ? " → " + sec : "") : "";
+  const where = appKey ? (ALI_APP_LABEL[appKey] || appKey) + (sec ? " → " + sec : "") : "";
   const ctx = appKey ? `
     <div class="aiva-ctx-note">
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
@@ -10717,13 +10717,13 @@ function aivaAppendReply(blocks, appKey, sec, rec) {
     </div>` : "";
   body.insertAdjacentHTML("beforeend", `
     <div class="aiva-welcome" style="margin-top:-4px">
-      <div class="aiva-welcome-head">AIVA <span class="ts">${aivaTs()}</span></div>
+      <div class="aiva-welcome-head">ALI <span class="ts">${aivaTs()}</span></div>
       ${aivaRenderBlocks(blocks)}
       ${ctx}
       ${aivaCoachHTML()}
     </div>`);
   body.scrollTop = body.scrollHeight;
-  // What AIVA surfaces is context too — the RO it just named is what
+  // What ALI surfaces is context too — the RO it just named is what
   // "it" refers to on the next turn.
   aivaCtxHarvest(blocks.map(b => b.h || b.body || "").join(" "));
   if (rec && /^RO-/.test(rec)) aivaCtxSet("ro", rec.replace("RO-", ""), "#" + rec.replace("RO-", ""));
@@ -10731,14 +10731,14 @@ function aivaAppendReply(blocks, appKey, sec, rec) {
 }
 
 /* Open an app tab for conversational context without disturbing the
-   AIVA thread (Visit Insights auto-load is suppressed via the flag).
+   ALI thread (Visit Insights auto-load is suppressed via the flag).
    `section` highlights the matching item in the app's nav rail —
    driving real view switches where they exist (Accounting) and the
    active state elsewhere. `recordKey` opens the detail drawer with
-   the referenced record so the user lands on the thing AIVA named. */
+   the referenced record so the user lands on the thing ALI named. */
 /* ============================================================
    SUPPORT TICKET + "SUPPORT TECH" LIVE SESSION
-   Opened from inside the AIVA conversation. AIVA captures the
+   Opened from inside the ALI conversation. ALI captures the
    context automatically (store, role, app/screen, record in view,
    transcript), the user adds notes, and submitting hands off to a
    seamless live messaging session labelled "Support Tech". While
@@ -10755,9 +10755,9 @@ function aivaSupportContext() {
   const cur = TAB_STATE.displayed[0];
   const tab = cur && TAB_STATE.tabs.find(t => t.id === cur);
   const onApp = document.getElementById("appScreen")?.classList.contains("active");
-  const app = (onApp && tab) ? (AIVA_APP_LABEL[tab.appKey] || tab.appKey) : "Home dashboard";
+  const app = (onApp && tab) ? (ALI_APP_LABEL[tab.appKey] || tab.appKey) : "Home dashboard";
   const sec = (onApp && tab)
-    ? (document.querySelector(`${AIVA_APP_ROOT[tab.appKey] || ".app-nav"} .app-nav-item.active .app-nav-label`)?.textContent || "").trim()
+    ? (document.querySelector(`${ALI_APP_ROOT[tab.appKey] || ".app-nav"} .app-nav-item.active .app-nav-label`)?.textContent || "").trim()
     : "";
   const drawerTitle = document.getElementById("detailDrawer")?.classList.contains("open")
     ? document.getElementById("detailDrawerTitle")?.textContent : "";
@@ -10779,7 +10779,7 @@ function aivaRenderTicketComposer() {
   SUPPORT_STATE.composerId = id;
   return `
     <div class="aiva-welcome" style="margin-top:-4px">
-      <div class="aiva-welcome-head">AIVA <span class="ts">${aivaTs()}</span></div>
+      <div class="aiva-welcome-head">ALI <span class="ts">${aivaTs()}</span></div>
       <div class="aiva-msg">I can open a support ticket and stay with you while it's picked up. I've captured where you are so you don't have to re-explain it:</div>
       <div class="aiva-ticket">
         <div class="aiva-ticket-cap">✦ Captured automatically</div>
@@ -10804,7 +10804,7 @@ window.aivaCancelTicket = function(btn) {
   if (body) {
     body.insertAdjacentHTML("beforeend", `
       <div class="aiva-welcome" style="margin-top:-4px">
-        <div class="aiva-welcome-head">AIVA <span class="ts">${aivaTs()}</span></div>
+        <div class="aiva-welcome-head">ALI <span class="ts">${aivaTs()}</span></div>
         <div class="aiva-msg">No ticket opened — nothing was sent. I'm here if you want to try again.</div>
       </div>`);
     body.scrollTop = body.scrollHeight;
@@ -10824,7 +10824,7 @@ window.aivaSubmitTicket = function(notesId) {
   const card = ta ? ta.closest(".aiva-welcome") : null;
   if (card) {
     card.innerHTML = `
-      <div class="aiva-welcome-head">AIVA <span class="ts">${aivaTs()}</span></div>
+      <div class="aiva-welcome-head">ALI <span class="ts">${aivaTs()}</span></div>
       <div class="aiva-msg">Ticket <b>#${num}</b> is open, with the context and your notes attached.</div>
       <div class="aiva-ticket">
         <div class="aiva-ticket-cap">✦ Sent with the ticket</div>
@@ -10876,7 +10876,7 @@ function aivaStartSupportSession(num) {
 
   // Greeting, typed in after a beat so it reads as a person arriving.
   setTimeout(() => {
-    aivaSupportSay(`Hi — Support Tech here, I've got ticket <b>#${num}</b> in front of me along with the context AIVA captured. Give me a moment to look, and tell me anything else that helps.`);
+    aivaSupportSay(`Hi — Support Tech here, I've got ticket <b>#${num}</b> in front of me along with the context ALI captured. Give me a moment to look, and tell me anything else that helps.`);
   }, 700);
 }
 
@@ -10910,10 +10910,10 @@ window.aivaEndSupport = function() {
   SUPPORT_STATE.active = false;
 
   const titleEl = document.querySelector("#aivaPanel .title");
-  if (titleEl) titleEl.textContent = "AIVA";
+  if (titleEl) titleEl.textContent = "ALI";
   document.querySelector(".aiva-input")?.classList.remove("in-support");
   const input = document.getElementById("aivaInput");
-  if (input) input.placeholder = "Ask AIVA Anything";
+  if (input) input.placeholder = "Ask ALI Anything";
 
   if (session) {
     // Collapse in place: the transcript is kept but hidden behind a row
@@ -10946,26 +10946,26 @@ window.aivaToggleSupport = function(sid, row) {
 window.aivaOpenTicket = function() {
   const body = document.getElementById("aivaBody");
   if (!body) return;
-  openAIVA();
+  openALI();
   body.insertAdjacentHTML("beforeend", aivaRenderTicketComposer());
   body.scrollTop = body.scrollHeight;
 };
 
 window.aivaOpenApp = function(appKey, section, recordKey, silent) {
-  window.AIVA_CONTEXT_OPENING = true;
-  try { openAppTab(appKey); } finally { window.AIVA_CONTEXT_OPENING = false; }
-  openAIVA();
+  window.ALI_CONTEXT_OPENING = true;
+  try { openAppTab(appKey); } finally { window.ALI_CONTEXT_OPENING = false; }
+  openALI();
   if (section || recordKey) {
     setTimeout(() => {
       if (section) aivaActivateSection(appKey, section);
       if (recordKey) aivaOpenRecord(recordKey);
     }, 90);
   }
-  if (!silent) toast(`Opened ${AIVA_APP_LABEL[appKey] || appKey}${section ? " · " + section : ""}`);
+  if (!silent) toast(`Opened ${ALI_APP_LABEL[appKey] || appKey}${section ? " · " + section : ""}`);
 };
 
 /* Highlight (and where real, switch to) a section in the app nav rail. */
-const AIVA_APP_ROOT = {
+const ALI_APP_ROOT = {
   service: ".svc-app", parts: ".parts-app", accounting: ".acct-app",
   crm: ".crm-app", is: ".is-app", documentMgmt: ".dm-app", fi: ".fi-app",
 };
@@ -10975,7 +10975,7 @@ function aivaActivateSection(appKey, section) {
     if (section === "AR Dashboard")   { switchAcctView("aging");        return; }
     if (section === "AR Performance") { switchAcctView("performance");  return; }
   }
-  const root = document.querySelector(AIVA_APP_ROOT[appKey] || ".app-nav");
+  const root = document.querySelector(ALI_APP_ROOT[appKey] || ".app-nav");
   if (!root) return;
   const items = root.querySelectorAll(".app-nav-item");
   let hit = null;
@@ -11005,9 +11005,9 @@ if (typeof window.openDetailDrawer !== "function") {
   };
 }
 
-/* Record details AIVA can open — grounded in the same values the
+/* Record details ALI can open — grounded in the same values the
    persona activity lists and cards already show. */
-const AIVA_RECORDS = {
+const ALI_RECORDS = {
   "RO-98664": { title: "RO #98664 — Lacy, C.", rows: [
     ["Status", "MPI awaiting approval"], ["Waiting since", "9:12am"],
     ["Advisor", "J. Hallenbeck"], ["Technician", "M. Scott"],
@@ -11051,21 +11051,21 @@ const AIVA_RECORDS = {
     ["Next action", "CAR support engineer replies in the case"],
     ["Updated", "Yesterday 4:15pm"] ] },
   "CASE-PT-4423": { title: "Support Case #PT-4423 — Warranty escalation", rows: [
-    ["Status", "Open · just routed by AIVA"],
+    ["Status", "Open · just routed by ALI"],
     ["Carries", "Store · RO #98664 · claim + rejection codes · transcript"],
     ["Next action", "Support reads the packet, then contacts you"],
     ["You re-explain", "Nothing"] ] },
 };
 
 window.aivaOpenRecord = function(key) {
-  const r = AIVA_RECORDS[key];
+  const r = ALI_RECORDS[key];
   if (!r) return;
   openDetailDrawer(r.title, r.rows.map(([k, v]) =>
     `<div class="detail-row"><span class="k">${escapeHtml(k)}</span><span class="v">${escapeHtml(v)}</span></div>`
   ).join(""));
 };
 
-/* "AIVA, let's start over" — close every open app through the tab
+/* "ALI, let's start over" — close every open app through the tab
    system's own cleanup path (cache clear, split-mode exit, home-screen
    restore with banners), close the drawer and menus, and land the user
    back on the desktop. Returns how many apps were closed. */
@@ -11082,14 +11082,14 @@ window.aivaStartOver = function() {
     document.getElementById('menuBtn')?.classList.remove('active');
   }
   if (typeof closeSideNav === 'function') closeSideNav();
-  openAIVA();
+  openALI();
   return n;
 };
 
 /* ============================================================
-   AIVA APP INSIGHTS — refreshed on sub-app navigation.
+   ALI APP INSIGHTS — refreshed on sub-app navigation.
    When the user navigates to any open app (new open or tab
-   switch), AIVA surfaces what that role should look at in that
+   switch), ALI surfaces what that role should look at in that
    app and recommends next actions. Extends the Service "Visit
    Insights" pattern to every app. Content is grounded in the
    dealership persona jobs-to-be-done (KPIs, workflows, pain
@@ -11101,7 +11101,7 @@ window.aivaStartOver = function() {
    active role has a distinct job to be done in that app.
    Severity: act = needs action now, watch = keep an eye on,
    good = healthy signal, info = context. */
-const AIVA_APP_INSIGHTS = {
+const ALI_APP_INSIGHTS = {
 
   parts: {
     /* Parts Manager JTBD: ROs with parts hold, invoices open,
@@ -11178,7 +11178,7 @@ const AIVA_APP_INSIGHTS = {
       salesAssoc: { sub: "Your floor · right now", items: [
         { s: "act",   h: "<b>Marcus Hill's follow-up went overdue 45 min ago</b> (Silverado LTZ) — and David Kim just came in from Cars.com on a Telluride SX-P." },
         { s: "watch", h: "Juan Gonzalez is live at step 4 of 7 — the test drive. Nothing here is worth leaving that for." },
-        { s: "info",  h: "An AIVA-drafted reply for Diana Reyes is waiting on your review. Nothing has sent." },
+        { s: "info",  h: "An ALI-drafted reply for Diana Reyes is waiting on your review. Nothing has sent." },
       ], acts: [
         { t: "Hand Marcus to the BDC", res: "C8_HAND", p: true },
         { t: "Did you send the email to Diana?" },
@@ -11243,7 +11243,7 @@ const AIVA_APP_INSIGHTS = {
 /* Service gets a persona-aware "Recommended for you" row appended
    beneath the existing Visit Insights panel — building on it, not
    replacing it. */
-const AIVA_SERVICE_ACTIONS = {
+const ALI_SERVICE_ACTIONS = {
   serviceManager: [
     { t: "What needs my approval right now?", p: true },
     { t: "Why is RO #124211 on hold?" },
@@ -11266,23 +11266,23 @@ function aivaInsightActionsHTML(acts) {
 
 function aivaServiceActionsRowHTML() {
   const me = currentPersonaKey();
-  const acts = AIVA_SERVICE_ACTIONS[me] || AIVA_SERVICE_ACTIONS.serviceManager;
+  const acts = ALI_SERVICE_ACTIONS[me] || ALI_SERVICE_ACTIONS.serviceManager;
   return `<div class="aiva-welcome" style="margin-top:-4px">${aivaInsightActionsHTML(acts)}</div>`;
 }
 
 function aivaResolveInsights(appKey) {
-  const set = AIVA_APP_INSIGHTS[appKey];
+  const set = ALI_APP_INSIGHTS[appKey];
   if (!set) return null;
   const me = currentPersonaKey();
   return (set.byPersona && set.byPersona[me]) || set.default;
 }
 
 function aivaInsightPanelHTML(appKey, ins, compact) {
-  const label = AIVA_APP_LABEL[appKey] || appKey;
+  const label = ALI_APP_LABEL[appKey] || appKey;
   const items = compact ? ins.items.filter(i => i.s === "act").slice(0, 1) : ins.items;
   return `
     <div class="aiva-welcome" style="margin-top:-4px">
-      <div class="aiva-welcome-head">AIVA · ${escapeHtml(label)} insights <span class="ts">${aivaTs()}</span></div>
+      <div class="aiva-welcome-head">ALI · ${escapeHtml(label)} insights <span class="ts">${aivaTs()}</span></div>
       <div class="aiva-ins-sub">${escapeHtml(ins.sub || "")}</div>
       <div>
         ${items.map(i => `<div class="aiva-ins-row"><span class="aiva-ins-dot ${i.s}"></span><span class="tx">${i.h}</span></div>`).join("")}
@@ -11292,10 +11292,10 @@ function aivaInsightPanelHTML(appKey, ins, compact) {
 }
 
 /* Debounce so flicking between tabs doesn't stack duplicate panels. */
-const AIVA_INSIGHTS_LAST = {};
+const ALI_INSIGHTS_LAST = {};
 
-/* Refresh AIVA for the app the user just navigated to.
-   The AIVA panel is ONE continuous thread: insight panels and
+/* Refresh ALI for the app the user just navigated to.
+   The ALI panel is ONE continuous thread: insight panels and
    conversations from previous areas are kept, and every update is
    appended — never a wipe — until the user types "clear" or
    "new context". Service appends its Visit Insights content as a
@@ -11304,22 +11304,22 @@ function loadAppInsights(appKey) {
   const body = document.getElementById("aivaBody");
   if (!body) return;
   const now = Date.now();
-  if (AIVA_INSIGHTS_LAST[appKey] && now - AIVA_INSIGHTS_LAST[appKey] < 30000) return;
-  AIVA_INSIGHTS_LAST[appKey] = now;
+  if (ALI_INSIGHTS_LAST[appKey] && now - ALI_INSIGHTS_LAST[appKey] < 30000) return;
+  ALI_INSIGHTS_LAST[appKey] = now;
 
   const convoActive = !!body.querySelector(".aiva-user-msg");
-  // If the user has collapsed AIVA, respect that: the thread still updates
+  // If the user has collapsed ALI, respect that: the thread still updates
   // in the background, but the panel stays closed and the FAB reports that
   // page-level messaging changed.
   const collapsed = aivaIsMinimized();
-  if (!collapsed) openAIVA();
+  if (!collapsed) openALI();
   const titleEl = document.querySelector("#aivaPanel .title");
 
   if (appKey === "service") {
     if (titleEl) titleEl.textContent = "Visit Insights";
     body.insertAdjacentHTML("beforeend", `
       <div class="aiva-welcome" style="margin-top:-4px">
-        <div class="aiva-welcome-head">AIVA · Service insights <span class="ts">${aivaTs()}</span></div>
+        <div class="aiva-welcome-head">ALI · Service insights <span class="ts">${aivaTs()}</span></div>
       </div>`);
     body.insertAdjacentHTML("beforeend", renderVisitInsights());
     body.scrollTop = body.scrollHeight;
@@ -11333,13 +11333,13 @@ function loadAppInsights(appKey) {
   // Repeat visits to an app with a capability this role has never asked
   // for — the cue to mention that it can be reached from here.
   const capHere = aivaCapabilityFor(appKey);
-  if (capHere && !AIVA_COACH.counts["invoked:" + appKey]) {
+  if (capHere && !ALI_COACH.counts["invoked:" + appKey]) {
     aivaCoachSignal("appVisitNoAsk", { label: capHere.label });
   }
 
   const ins = aivaResolveInsights(appKey);
   if (!ins) return;
-  if (titleEl) titleEl.textContent = `${AIVA_APP_LABEL[appKey] || appKey} Insights`;
+  if (titleEl) titleEl.textContent = `${ALI_APP_LABEL[appKey] || appKey} Insights`;
   body.insertAdjacentHTML("beforeend", aivaInsightPanelHTML(appKey, ins, convoActive));
   body.scrollTop = body.scrollHeight;
   if (collapsed) {
@@ -11360,9 +11360,9 @@ window.aivaClearContext = function() {
   body.innerHTML = "";
   aivaCtxReset();
   aivaCoachReset();
-  Object.keys(AIVA_INSIGHTS_LAST).forEach(k => delete AIVA_INSIGHTS_LAST[k]);
+  Object.keys(ALI_INSIGHTS_LAST).forEach(k => delete ALI_INSIGHTS_LAST[k]);
   const titleEl = document.querySelector("#aivaPanel .title");
-  if (titleEl) titleEl.textContent = "AIVA";
+  if (titleEl) titleEl.textContent = "ALI";
   updateAivaWelcome(currentPersonaKey());
   const cur = TAB_STATE.displayed[0];
   const tab = cur && TAB_STATE.tabs.find(t => t.id === cur);
@@ -11374,16 +11374,16 @@ window.aivaClearContext = function() {
 /* Hook: user navigation between open sub-apps. activateTab is the
    single choke point for both new opens (via openAppTab) and tab
    clicks, so wrapping it covers every user-driven navigation. The
-   AIVA update is delayed 1 second after the app loads; switching
+   ALI update is delayed 1 second after the app loads; switching
    again within that second cancels the pending update so only the
-   app the user lands on gets surfaced. The AIVA_CONTEXT_OPENING
-   guard keeps AIVA's own context opens from refreshing over the
+   app the user lands on gets surfaced. The ALI_CONTEXT_OPENING
+   guard keeps ALI's own context opens from refreshing over the
    conversation it is having. */
-let AIVA_INSIGHTS_TIMER = null;
+let ALI_INSIGHTS_TIMER = null;
 /* Clicking through an app's own nav rail is the hunting behaviour the
    "ask me where it is" tip is watching for. */
 document.addEventListener("click", (e) => {
-  if (window.AIVA_CONTEXT_OPENING) return;
+  if (window.ALI_CONTEXT_OPENING) return;
   if (e.target.closest(".app-nav-item")) aivaCoachSignal("manualSectionNav");
 }, true);
 
@@ -11394,20 +11394,20 @@ document.addEventListener("click", (e) => {
     orig(tabId);
     const cur = TAB_STATE.displayed[0];
     if (cur === prev) return;
-    if (window.AIVA_CONTEXT_OPENING) return;
+    if (window.ALI_CONTEXT_OPENING) return;
     const tab = TAB_STATE.tabs.find(t => t.id === cur);
     if (!tab) return;
-    clearTimeout(AIVA_INSIGHTS_TIMER);
-    AIVA_INSIGHTS_TIMER = setTimeout(() => {
+    clearTimeout(ALI_INSIGHTS_TIMER);
+    ALI_INSIGHTS_TIMER = setTimeout(() => {
       // Only surface if the user is still on this app after the delay.
       if (TAB_STATE.displayed[0] === tab.id) loadAppInsights(tab.appKey);
     }, 1000);
   };
 })();
 
-/* First-load reveal: AIVA appears 1 second after the prototype
+/* First-load reveal: ALI appears 1 second after the prototype
    (desktop) screen first shows, rather than popping in with it. */
-let AIVA_FIRST_REVEALED = false;
+let ALI_FIRST_REVEALED = false;
 (function hookAivaFirstReveal() {
   const panel = document.getElementById("aivaPanel");
   if (panel) panel.classList.add("minimized");
@@ -11415,25 +11415,25 @@ let AIVA_FIRST_REVEALED = false;
   const orig = showScreen;
   showScreen = function(name) {
     orig(name);
-    if (name === "prototype" && !AIVA_FIRST_REVEALED) {
-      AIVA_FIRST_REVEALED = true;
-      setTimeout(() => openAIVA(), 1000);
+    if (name === "prototype" && !ALI_FIRST_REVEALED) {
+      ALI_FIRST_REVEALED = true;
+      setTimeout(() => openALI(), 1000);
     }
   };
   // If the prototype screen is already active at load (e.g. deep link),
   // schedule the same delayed reveal.
   if (document.getElementById("prototypeScreen")?.classList.contains("active")) {
-    AIVA_FIRST_REVEALED = true;
-    setTimeout(() => openAIVA(), 1000);
+    ALI_FIRST_REVEALED = true;
+    setTimeout(() => openALI(), 1000);
   }
 })();
 
 window.aivaResolve = function(key) {
   // Board commits flip the card to "Added" so the surface and the
   // conversation agree about what has happened.
-  const r0 = AIVA_RESOLUTIONS[key];
+  const r0 = ALI_RESOLUTIONS[key];
   if (r0 && typeof r0.onCommit === "number") {
-    AIVA_APPT_ADDED[r0.onCommit] = true;
+    ALI_APPT_ADDED[r0.onCommit] = true;
     if (document.getElementById("aivaStageBody")) {
       const sc = document.getElementById("aivaStageBody");
       const y = sc ? sc.scrollTop : 0;
@@ -11442,7 +11442,7 @@ window.aivaResolve = function(key) {
       if (s2) s2.scrollTop = y;
     }
   }
-  const r = AIVA_RESOLUTIONS[key];
+  const r = ALI_RESOLUTIONS[key];
   if (!r) return;
   // Actions with no confirm step still leave a record.
   if (r.log) aivaLogAdd(r.log);
@@ -11462,7 +11462,7 @@ function aivaMatchIntent(text) {
   const q = aivaCtxAugment(raw);
   const me = currentPersonaKey();
   let best = null, bestScore = 0, bestLen = 0;
-  for (const it of AIVA_INTENTS) {
+  for (const it of ALI_INTENTS) {
     const hits = [];
     for (const k of it.kw) {
       const hit = k.length <= 4
@@ -11490,7 +11490,7 @@ function aivaMatchIntent(text) {
 
 /* ============================================================
    ACTIVITY LOG — traceability for an agent that acts
-   Every action AIVA takes on the user's behalf is recorded with its
+   Every action ALI takes on the user's behalf is recorded with its
    timestamp, the inputs it used, the side effect it warned about, and
    who confirmed it.
 
@@ -11504,15 +11504,15 @@ function aivaMatchIntent(text) {
    conversation must not erase the record of what was done.
    ============================================================ */
 
-const AIVA_LOG = [];
-const AIVA_CONFIRM_CARDS = [];
-let AIVA_LOG_OPEN = false;
-let AIVA_LOG_PREV_TITLE = "AIVA";
+const ALI_LOG = [];
+const ALI_CONFIRM_CARDS = [];
+let ALI_LOG_OPEN = false;
+let ALI_LOG_PREV_TITLE = "ALI";
 
 function aivaLogAdd(entry) {
   const now = new Date();
-  AIVA_LOG.unshift({
-    id: "ACT-" + String(4400 + AIVA_LOG.length + 1),
+  ALI_LOG.unshift({
+    id: "ACT-" + String(4400 + ALI_LOG.length + 1),
     ts: now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", second: "2-digit" }),
     date: now.toLocaleDateString([], { month: "short", day: "numeric" }),
     actor: (PERSONAS[currentPersonaKey()] || {}).label || "—",
@@ -11520,11 +11520,11 @@ function aivaLogAdd(entry) {
     action: entry.action || "Action",
     inputs: entry.inputs || [],
     side: entry.side || "",
-    source: entry.source || "AIVA conversation",
+    source: entry.source || "ALI conversation",
     state: entry.state || "committed",
   });
   aivaLogBadge();
-  if (AIVA_LOG_OPEN) aivaRenderLog();
+  if (ALI_LOG_OPEN) aivaRenderLog();
 }
 window.aivaLogAdd = aivaLogAdd;
 
@@ -11532,14 +11532,14 @@ function aivaLogBadge() {
   const btn = document.getElementById("aivaLogBtn");
   const n = document.getElementById("aivaLogCount");
   if (!btn || !n) return;
-  n.textContent = AIVA_LOG.length > 9 ? "9+" : String(AIVA_LOG.length);
-  btn.classList.toggle("has-entries", AIVA_LOG.length > 0);
+  n.textContent = ALI_LOG.length > 9 ? "9+" : String(ALI_LOG.length);
+  btn.classList.toggle("has-entries", ALI_LOG.length > 0);
 }
 
 /* Committing through a confirm card: the card's own rows become the
    audit inputs, so what was approved and what was logged cannot drift. */
 window.aivaCommit = function(cardIdx, label, res) {
-  const card = AIVA_CONFIRM_CARDS[cardIdx];
+  const card = ALI_CONFIRM_CARDS[cardIdx];
   if (card) {
     aivaLogAdd({
       action: label,
@@ -11582,18 +11582,18 @@ function aivaRenderLog() {
   view.innerHTML = `
     <div class="aiva-log-head">
       <span class="lt">Activity log</span>
-      <span class="ls">${AIVA_LOG.length} action${AIVA_LOG.length === 1 ? "" : "s"}</span>
+      <span class="ls">${ALI_LOG.length} action${ALI_LOG.length === 1 ? "" : "s"}</span>
       <span class="lback" onclick="aivaToggleLog()">Back to chat</span>
     </div>
-    ${AIVA_LOG.length
-      ? AIVA_LOG.map(aivaLogEntryHTML).join("") + `
+    ${ALI_LOG.length
+      ? ALI_LOG.map(aivaLogEntryHTML).join("") + `
         <div class="aiva-log-foot">
           Kept for the session — a conversation reset does not clear it.
           <span class="exp" onclick="aivaLogExport()">Export</span>
         </div>`
       : `<div class="aiva-log-empty">
            <b>Nothing yet</b>
-           Anything AIVA does on your behalf is recorded here — with the inputs it used and who confirmed it.
+           Anything ALI does on your behalf is recorded here — with the inputs it used and who confirmed it.
          </div>`}`;
 }
 
@@ -11602,33 +11602,33 @@ window.aivaToggleLog = function() {
   const view = document.getElementById("aivaLogView");
   const titleEl = document.querySelector("#aivaPanel .title");
   if (!body || !view) return;
-  openAIVA();
-  AIVA_LOG_OPEN = !AIVA_LOG_OPEN;
-  if (AIVA_LOG_OPEN) {
-    AIVA_LOG_PREV_TITLE = titleEl ? titleEl.textContent : "AIVA";
+  openALI();
+  ALI_LOG_OPEN = !ALI_LOG_OPEN;
+  if (ALI_LOG_OPEN) {
+    ALI_LOG_PREV_TITLE = titleEl ? titleEl.textContent : "ALI";
     aivaRenderLog();
     body.hidden = true; view.hidden = false;
     if (titleEl) titleEl.textContent = "Activity log";
   } else {
     body.hidden = false; view.hidden = true;
-    if (titleEl) titleEl.textContent = AIVA_LOG_PREV_TITLE;
+    if (titleEl) titleEl.textContent = ALI_LOG_PREV_TITLE;
   }
 };
 
 window.aivaLogExport = function() {
-  const lines = AIVA_LOG.map(e =>
+  const lines = ALI_LOG.map(e =>
     `${e.date} ${e.ts}\t${e.id}\t${e.action}\t${e.actor}\t${e.store}\t` +
     e.inputs.map(([k, v]) => `${k}=${v}`).join("; "));
   const text = ["date time\tid\taction\tconfirmed by\tstore\tinputs", ...lines].join("\n");
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text).catch(() => {});
   }
-  toast(`Exported ${AIVA_LOG.length} action${AIVA_LOG.length === 1 ? "" : "s"} to the clipboard`);
+  toast(`Exported ${ALI_LOG.length} action${ALI_LOG.length === 1 ? "" : "s"} to the clipboard`);
 };
 
 /* ============================================================
    CAPABILITY COACHING
-   AIVA as trainer, not just assistant. It watches for the moment a
+   ALI as trainer, not just assistant. It watches for the moment a
    user does something the hard way, then — once, quietly, appended to
    an answer they already wanted — mentions the easier path.
 
@@ -11640,13 +11640,13 @@ window.aivaLogExport = function() {
      · silent during a support session
    ============================================================ */
 
-const AIVA_COACH = {
+const ALI_COACH = {
   counts: {}, shown: {}, dismissed: {},
   responses: 0, lastShownAt: -99, total: 0, pending: null,
   MAX_PER_SESSION: 3, MIN_GAP: 3,
 };
 
-const AIVA_COACH_TIPS = {
+const ALI_COACH_TIPS = {
   askToNavigate: {
     signal: "manualAppOpen", threshold: 2,
     text: () => 'Next time, just ask — I can open an app <b>and land you on the right screen</b>, so you skip the menu.',
@@ -11672,39 +11672,39 @@ const AIVA_COACH_TIPS = {
 /* Which registered capability this persona could be using in this app. */
 function aivaCapabilityFor(appKey) {
   const me = currentPersonaKey();
-  const intent = AIVA_INTENTS.find(i => i.cap
-    && AIVA_CAPABILITIES[i.cap] && AIVA_CAPABILITIES[i.cap].app === appKey
+  const intent = ALI_INTENTS.find(i => i.cap
+    && ALI_CAPABILITIES[i.cap] && ALI_CAPABILITIES[i.cap].app === appKey
     && (!i.personas || i.personas.includes(me)));
-  return intent ? AIVA_CAPABILITIES[intent.cap] : null;
+  return intent ? ALI_CAPABILITIES[intent.cap] : null;
 }
 
 /* Record a behaviour. Only queues a tip once the threshold is crossed. */
 function aivaCoachSignal(signal, meta) {
   if (typeof SUPPORT_STATE !== "undefined" && SUPPORT_STATE.active) return;
-  if (AIVA_COACH.total >= AIVA_COACH.MAX_PER_SESSION) return;
-  AIVA_COACH.counts[signal] = (AIVA_COACH.counts[signal] || 0) + 1;
-  const id = Object.keys(AIVA_COACH_TIPS).find(k => AIVA_COACH_TIPS[k].signal === signal);
+  if (ALI_COACH.total >= ALI_COACH.MAX_PER_SESSION) return;
+  ALI_COACH.counts[signal] = (ALI_COACH.counts[signal] || 0) + 1;
+  const id = Object.keys(ALI_COACH_TIPS).find(k => ALI_COACH_TIPS[k].signal === signal);
   if (!id) return;
-  const tip = AIVA_COACH_TIPS[id];
-  if (AIVA_COACH.shown[id] || AIVA_COACH.dismissed[id]) return;
-  if (AIVA_COACH.counts[signal] < tip.threshold) return;
-  AIVA_COACH.pending = { id, meta: meta || {} };
+  const tip = ALI_COACH_TIPS[id];
+  if (ALI_COACH.shown[id] || ALI_COACH.dismissed[id]) return;
+  if (ALI_COACH.counts[signal] < tip.threshold) return;
+  ALI_COACH.pending = { id, meta: meta || {} };
 }
 window.aivaCoachSignal = aivaCoachSignal;
 
 /* Rendered at the end of a response the user already wanted. */
 function aivaCoachHTML() {
-  AIVA_COACH.responses += 1;
-  const p = AIVA_COACH.pending;
+  ALI_COACH.responses += 1;
+  const p = ALI_COACH.pending;
   if (!p) return "";
-  if (AIVA_COACH.total >= AIVA_COACH.MAX_PER_SESSION) return "";
-  if (AIVA_COACH.responses - AIVA_COACH.lastShownAt < AIVA_COACH.MIN_GAP) return "";
-  const tip = AIVA_COACH_TIPS[p.id];
-  if (!tip || AIVA_COACH.shown[p.id] || AIVA_COACH.dismissed[p.id]) { AIVA_COACH.pending = null; return ""; }
-  AIVA_COACH.shown[p.id] = true;
-  AIVA_COACH.total += 1;
-  AIVA_COACH.lastShownAt = AIVA_COACH.responses;
-  AIVA_COACH.pending = null;
+  if (ALI_COACH.total >= ALI_COACH.MAX_PER_SESSION) return "";
+  if (ALI_COACH.responses - ALI_COACH.lastShownAt < ALI_COACH.MIN_GAP) return "";
+  const tip = ALI_COACH_TIPS[p.id];
+  if (!tip || ALI_COACH.shown[p.id] || ALI_COACH.dismissed[p.id]) { ALI_COACH.pending = null; return ""; }
+  ALI_COACH.shown[p.id] = true;
+  ALI_COACH.total += 1;
+  ALI_COACH.lastShownAt = ALI_COACH.responses;
+  ALI_COACH.pending = null;
   return `<div class="aiva-coach" data-tip="${p.id}">
       <svg class="ci" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/></svg>
       <span class="ct">${tip.text(p.meta)}</span>
@@ -11713,26 +11713,26 @@ function aivaCoachHTML() {
 }
 
 window.aivaCoachDismiss = function(id, el) {
-  AIVA_COACH.dismissed[id] = true;
+  ALI_COACH.dismissed[id] = true;
   el?.closest(".aiva-coach")?.remove();
 };
 
 function aivaCoachReset() {
-  AIVA_COACH.counts = {}; AIVA_COACH.shown = {}; AIVA_COACH.dismissed = {};
-  AIVA_COACH.responses = 0; AIVA_COACH.lastShownAt = -99;
-  AIVA_COACH.total = 0; AIVA_COACH.pending = null;
+  ALI_COACH.counts = {}; ALI_COACH.shown = {}; ALI_COACH.dismissed = {};
+  ALI_COACH.responses = 0; ALI_COACH.lastShownAt = -99;
+  ALI_COACH.total = 0; ALI_COACH.pending = null;
 }
 window.aivaCoachReset = aivaCoachReset;
 
 /* ============================================================
    FIELD SPOTLIGHT
-   Extends AIVA's targeting one level below screen and record: it can
+   Extends ALI's targeting one level below screen and record: it can
    point at the individual control it is talking about. Targets are
-   resolved live from the DOM, so if a control isn't on screen AIVA
+   resolved live from the DOM, so if a control isn't on screen ALI
    says so rather than describing something the user can't find.
    ============================================================ */
 
-const AIVA_SPOTLIGHTS = {
+const ALI_SPOTLIGHTS = {
   isPeriod: {
     app: "is", sec: "Dealer Overview",
     sel: ".is-filter-pill", text: "Month to Date",
@@ -11807,8 +11807,8 @@ const AIVA_SPOTLIGHTS = {
   },
 };
 
-let AIVA_SPOT_TIMER = null;
-let AIVA_SPOT_TRACK = null;
+let ALI_SPOT_TIMER = null;
+let ALI_SPOT_TRACK = null;
 
 function aivaSpotResolve(spot) {
   const nodes = [...document.querySelectorAll(spot.sel)];
@@ -11821,8 +11821,8 @@ function aivaSpotResolve(spot) {
 window.aivaSpotlightDismiss = function() {
   document.getElementById("aivaSpotRing")?.remove();
   document.getElementById("aivaSpotLabel")?.remove();
-  clearTimeout(AIVA_SPOT_TIMER);
-  if (AIVA_SPOT_TRACK) { clearInterval(AIVA_SPOT_TRACK); AIVA_SPOT_TRACK = null; }
+  clearTimeout(ALI_SPOT_TIMER);
+  if (ALI_SPOT_TRACK) { clearInterval(ALI_SPOT_TRACK); ALI_SPOT_TRACK = null; }
 };
 
 function aivaSpotPlace(el, label) {
@@ -11854,7 +11854,7 @@ function aivaSpotPlace(el, label) {
 /* Point at a control. Opens the app and section first, waits for the
    render, then resolves the element from the live DOM. */
 window.aivaSpotlight = function(id) {
-  const spot = AIVA_SPOTLIGHTS[id];
+  const spot = ALI_SPOTLIGHTS[id];
   const body = document.getElementById("aivaBody");
   if (!spot || !body) return false;
   aivaSpotlightDismiss();
@@ -11868,7 +11868,7 @@ window.aivaSpotlight = function(id) {
       // Never describe a control the user can't actually find.
       body.insertAdjacentHTML("beforeend", `
         <div class="aiva-welcome" style="margin-top:-4px">
-          <div class="aiva-welcome-head">AIVA <span class="ts">${aivaTs()}</span></div>
+          <div class="aiva-welcome-head">ALI <span class="ts">${aivaTs()}</span></div>
           <div class="aiva-msg limit">I can't point at that from here — it isn't on the screen right now.</div>
         </div>`);
       body.scrollTop = body.scrollHeight;
@@ -11878,25 +11878,25 @@ window.aivaSpotlight = function(id) {
     if (!aivaSpotPlace(el, spot.label)) return;
     // Track the target while the highlight is up, so scrolling or a
     // resize can't leave the ring stranded.
-    AIVA_SPOT_TRACK = setInterval(() => {
+    ALI_SPOT_TRACK = setInterval(() => {
       const live = aivaSpotResolve(spot);
       if (!live || !document.body.contains(live)) return aivaSpotlightDismiss();
       aivaSpotPlace(live, spot.label);
     }, 200);
-    AIVA_SPOT_TIMER = setTimeout(aivaSpotlightDismiss, 7000);
+    ALI_SPOT_TIMER = setTimeout(aivaSpotlightDismiss, 7000);
   };
   setTimeout(attempt, 120);
   return true;
 };
 
-/* An intent that points: AIVA explains, then highlights. */
+/* An intent that points: ALI explains, then highlights. */
 function aivaRenderSpotlight(id) {
-  const spot = AIVA_SPOTLIGHTS[id];
+  const spot = ALI_SPOTLIGHTS[id];
   const body = document.getElementById("aivaBody");
   if (!spot || !body) return;
   body.insertAdjacentHTML("beforeend", `
     <div class="aiva-welcome" style="margin-top:-4px">
-      <div class="aiva-welcome-head">AIVA <span class="ts">${aivaTs()}</span></div>
+      <div class="aiva-welcome-head">ALI <span class="ts">${aivaTs()}</span></div>
       <div class="aiva-msg">${spot.say}</div>
       <div class="aiva-actions">
         <button class="aiva-action primary" onclick="aivaSpotlight('${id}')">Show me again</button>
@@ -11909,14 +11909,14 @@ function aivaRenderSpotlight(id) {
 
 /* ============================================================
    SESSION CONTEXT — multi-turn memory, made visible
-   AIVA accumulates the entities named in the conversation (by the
+   ALI accumulates the entities named in the conversation (by the
    user, and in its own answers) and carries them forward, so the
    user never restates something they already said. What it is
    holding is shown as chips above the input; removing a chip is how
    the user corrects it. One value per type, most recent wins.
    ============================================================ */
 
-const AIVA_CTX = {};
+const ALI_CTX = {};
 
 /* Known prototype records. Deal and RO numbers are the same shape, so
    they are classified against the real records rather than guessed. */
@@ -11950,22 +11950,22 @@ const CTX_LABEL = {
 
 function aivaCtxSet(type, value, label) {
   if (!type || !value) return;
-  AIVA_CTX[type] = { value: String(value), label: label || String(value), at: Date.now() };
+  ALI_CTX[type] = { value: String(value), label: label || String(value), at: Date.now() };
   aivaRenderCtxChips();
 }
-function aivaCtxGet(type) { return AIVA_CTX[type] || null; }
+function aivaCtxGet(type) { return ALI_CTX[type] || null; }
 window.aivaCtxDrop = function(type) {
-  delete AIVA_CTX[type];
+  delete ALI_CTX[type];
   aivaRenderCtxChips();
 };
 function aivaCtxReset() {
-  Object.keys(AIVA_CTX).forEach(k => delete AIVA_CTX[k]);
+  Object.keys(ALI_CTX).forEach(k => delete ALI_CTX[k]);
   aivaRenderCtxChips();
 }
 window.aivaCtxReset = aivaCtxReset;
 
 /* Pull entities out of a message. Used on what the user types and on
-   what AIVA answers — a number AIVA surfaces is context too. Only the
+   what ALI answers — a number ALI surfaces is context too. Only the
    first of each type is taken, so the primary subject wins over
    anything mentioned in passing. */
 function aivaCtxHarvest(text) {
@@ -12010,7 +12010,7 @@ function aivaRenderCtxChips() {
   const wrap = document.getElementById("aivaCtxChips");
   if (!bar || !wrap) return;
   // Newest first, capped so the bar never crowds the input.
-  const held = Object.entries(AIVA_CTX).sort((a, b) => b[1].at - a[1].at).slice(0, 4);
+  const held = Object.entries(ALI_CTX).sort((a, b) => b[1].at - a[1].at).slice(0, 4);
   if (!held.length) { bar.hidden = true; wrap.innerHTML = ""; return; }
   bar.hidden = false;
   wrap.innerHTML = held.map(([type, v]) => `
@@ -12026,12 +12026,12 @@ function aivaRenderCtxChips() {
 const CTX_REFERENCE = /\b(it|its|it's|that|this|those|these|them|they|there|the same|same one|him|her)\b/;
 function aivaCtxAugment(low) {
   if (!CTX_REFERENCE.test(low)) return low;
-  const vals = Object.values(AIVA_CTX).map(v => v.value.toLowerCase());
+  const vals = Object.values(ALI_CTX).map(v => v.value.toLowerCase());
   return vals.length ? low + " " + vals.join(" ") : low;
 }
 
 /* A clarifying question that has already been answered shouldn't be
-   asked again — if context holds one of the options, AIVA uses it and
+   asked again — if context holds one of the options, ALI uses it and
    says so, with a way to change its mind. */
 function aivaCtxResolveOption(intent, opts) {
   const types = intent.clarify.ctxTypes || (intent.clarify.ctxType ? [intent.clarify.ctxType] : []);
@@ -12052,11 +12052,11 @@ window.aivaCtxAskAgain = function(type, q) {
 
 /* ============================================================
    TOMORROW'S APPOINTMENTS \u2014 an experience inside the expanded
-   AIVA display (build 09)
+   ALI display (build 09)
 
    The conversation stays where it is and grows a work surface to its
    left: fourteen simulated appointments with their booked work, their
-   upsell opportunities, and AIVA's read on each one. The conversation
+   upsell opportunities, and ALI's read on each one. The conversation
    drives the surface \u2014 walking through appointments scrolls and
    focuses each card in turn \u2014 and any commitment still routes
    through the same confirm card and the same audit log as every other
@@ -12066,7 +12066,7 @@ window.aivaCtxAskAgain = function(type, q) {
    than declared, so the strip and the cards cannot drift apart.
    ============================================================ */
 
-const AIVA_APPTS = [
+const ALI_APPTS = [
   { t: "8:15 AM", n: "Sarah Lee", v: "2021 Toyota RAV4", pref: true, life: "$6,840 lifetime", vis: "11 visits",
     concern: "Squeaky noise when braking",
     cur: [{ n: "Oil Change & Filter", p: 89.95 }],
@@ -12171,9 +12171,9 @@ const AIVA_APPTS = [
 ];
 
 /* Selection state: every opportunity starts checked, as on the board. */
-let AIVA_APPT_SEL = AIVA_APPTS.map(a => a.ups.map(() => true));
-let AIVA_APPT_ADDED = AIVA_APPTS.map(() => false);
-let AIVA_APPT_WALK = -1;
+let ALI_APPT_SEL = ALI_APPTS.map(a => a.ups.map(() => true));
+let ALI_APPT_ADDED = ALI_APPTS.map(() => false);
+let ALI_APPT_WALK = -1;
 
 function aivaMoney(v) {
   return "$" + v.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -12183,7 +12183,7 @@ function aivaMoney0(v) {
 }
 function aivaApptSum() {
   let curS = 0, addS = 0, curH = 0, addH = 0, curG = 0, addG = 0, opps = 0, withOpps = 0;
-  AIVA_APPTS.forEach((a, i) => {
+  ALI_APPTS.forEach((a, i) => {
     a.cur.forEach(l => curS += l.p);
     curH += a.hrs[0]; addH += a.hrs[1];
     curG += a.gp[0];  addG += a.gp[1];
@@ -12197,13 +12197,13 @@ function aivaApptSum() {
 /* What is currently ticked \u2014 moves as the advisor checks boxes. */
 function aivaApptSelected() {
   let sales = 0, count = 0;
-  AIVA_APPTS.forEach((a, i) => a.ups.forEach((u, j) => {
-    if (AIVA_APPT_SEL[i][j]) { sales += u.p; count++; }
+  ALI_APPTS.forEach((a, i) => a.ups.forEach((u, j) => {
+    if (ALI_APPT_SEL[i][j]) { sales += u.p; count++; }
   }));
   return { sales, count };
 }
 function aivaApptPotential(i) {
-  return AIVA_APPTS[i].ups.reduce((t, u, j) => t + (AIVA_APPT_SEL[i][j] ? u.p : 0), 0);
+  return ALI_APPTS[i].ups.reduce((t, u, j) => t + (ALI_APPT_SEL[i][j] ? u.p : 0), 0);
 }
 
 const CBX_SVG = '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
@@ -12211,9 +12211,9 @@ const CBX_SVG = '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" strok
 function aivaApptCard(a, i) {
   const cur = a.cur.reduce((t, l) => t + l.p, 0);
   const sel = aivaApptPotential(i);
-  const added = AIVA_APPT_ADDED[i];
+  const added = ALI_APPT_ADDED[i];
   return `
-  <div class="appt${AIVA_APPT_WALK === i ? " focused" : ""}${added ? " done" : ""}" id="appt${i}">
+  <div class="appt${ALI_APPT_WALK === i ? " focused" : ""}${added ? " done" : ""}" id="appt${i}">
     <div class="ap-top">
       <span class="ap-time">${a.t}</span>
       <span class="ap-name">${escapeHtml(a.n)} \u00b7 ${escapeHtml(a.v)}</span>
@@ -12233,7 +12233,7 @@ function aivaApptCard(a, i) {
       <div class="ap-box">
         <div class="bh op">\u2726 Upsell opportunities</div>
         ${a.ups.length ? a.ups.map((u, j) => `
-          <div class="ap-line sel${AIVA_APPT_SEL[i][j] ? " on" : ""}" onclick="aivaApptToggle(${i},${j})">
+          <div class="ap-line sel${ALI_APPT_SEL[i][j] ? " on" : ""}" onclick="aivaApptToggle(${i},${j})">
             <span class="lt"><span class="cbx">${CBX_SVG}</span>${escapeHtml(u.n)}</span>
             <span class="lp">${u.tag === "Warranty" ? "Warranty" : aivaMoney(u.p) + (u.tag === "additional" ? " additional" : "")}</span>
           </div>`).join("")
@@ -12242,7 +12242,7 @@ function aivaApptCard(a, i) {
       </div>
     </div>
     <div class="ap-ins">
-      <div class="ih">AIVA's insight</div>
+      <div class="ih">ALI's insight</div>
       <div class="it">${a.ins}</div>
     </div>
   </div>`;
@@ -12263,7 +12263,7 @@ function aivaRenderApptStage() {
         <div class="stg-close" onclick="aivaCloseStage()">Close</div>
       </div>
       <div class="stg-kpis">
-        <div class="stg-kpi"><div class="kv" id="kpiOpp">${s.opps}</div><div class="kl">Opportunities</div><div class="kc">across ${s.withOpps} of ${AIVA_APPTS.length} appointments</div></div>
+        <div class="stg-kpi"><div class="kv" id="kpiOpp">${s.opps}</div><div class="kl">Opportunities</div><div class="kc">across ${s.withOpps} of ${ALI_APPTS.length} appointments</div></div>
         <div class="stg-kpi"><div class="kv">${aivaMoney0(s.potS)}</div><div class="kl">Potential Sales</div><div class="kc">${aivaMoney0(s.curS)} current</div></div>
         <div class="stg-kpi"><div class="kv">${aivaMoney0(s.potG)}</div><div class="kl">Potential Gross Profit</div><div class="kc">${aivaMoney0(s.curG)} current</div></div>
         <div class="stg-kpi"><div class="kv">${s.potH.toFixed(1)} hr</div><div class="kl">Potential Labor Hours</div><div class="kc">${s.curH.toFixed(1)} hr current</div></div>
@@ -12271,12 +12271,12 @@ function aivaRenderApptStage() {
       </div>
     </div>
     <div class="stg-body" id="aivaStageBody">
-      ${AIVA_APPTS.map((a, i) => aivaApptCard(a, i)).join("")}
+      ${ALI_APPTS.map((a, i) => aivaApptCard(a, i)).join("")}
     </div>`;
 }
 
 window.aivaApptToggle = function(i, j) {
-  AIVA_APPT_SEL[i][j] = !AIVA_APPT_SEL[i][j];
+  ALI_APPT_SEL[i][j] = !ALI_APPT_SEL[i][j];
   const scroll = document.getElementById("aivaStageBody");
   const y = scroll ? scroll.scrollTop : 0;
   aivaRenderApptStage();
@@ -12287,9 +12287,9 @@ window.aivaApptToggle = function(i, j) {
 window.aivaOpenApptStage = function(mode) {
   const panel = document.getElementById("aivaPanel");
   if (!panel) return;
-  openAIVA();
+  openALI();
   panel.classList.add("expanded");
-  AIVA_APPT_WALK = -1;
+  ALI_APPT_WALK = -1;
   aivaRenderApptStage();
   if (mode === "walk") setTimeout(() => aivaApptWalk(0), 420);
 };
@@ -12299,14 +12299,14 @@ window.aivaCloseStage = function() {
   if (panel) panel.classList.remove("expanded");
   const st = document.getElementById("aivaStage");
   if (st) st.innerHTML = "";
-  AIVA_APPT_WALK = -1;
+  ALI_APPT_WALK = -1;
 };
 
 /* The conversation drives the surface: each step scrolls the list to
    the appointment being discussed and focuses it. */
 window.aivaApptWalk = function(i) {
-  if (i >= AIVA_APPTS.length) {
-    AIVA_APPT_WALK = -1;
+  if (i >= ALI_APPTS.length) {
+    ALI_APPT_WALK = -1;
     aivaRenderApptStage();
     aivaAppendReply([
       _m("That's all fourteen. <b>" + aivaApptSelected().count + "</b> opportunities are still ticked, worth <b>" + aivaMoney(aivaApptSelected().sales) + "</b> if they all land."),
@@ -12314,7 +12314,7 @@ window.aivaApptWalk = function(i) {
     ], null);
     return;
   }
-  AIVA_APPT_WALK = i;
+  ALI_APPT_WALK = i;
   const scroll = document.getElementById("aivaStageBody");
   const prev = scroll ? scroll.scrollTop : 0;
   aivaRenderApptStage();
@@ -12324,11 +12324,11 @@ window.aivaApptWalk = function(i) {
     if (typeof card.scrollIntoView === "function") card.scrollIntoView({ behavior: "smooth", block: "center" });
     else body.scrollTop = prev;
   }
-  const a = AIVA_APPTS[i];
+  const a = ALI_APPTS[i];
   const pot = aivaApptPotential(i);
   const acts = [];
-  if (a.ups.length && !AIVA_APPT_ADDED[i]) acts.push({ t: "Add these to the RO", js: "aivaApptAdd(" + i + ")", p: true });
-  acts.push({ t: i + 1 < AIVA_APPTS.length ? "Next appointment" : "Finish", js: "aivaApptWalk(" + (i + 1) + ")" });
+  if (a.ups.length && !ALI_APPT_ADDED[i]) acts.push({ t: "Add these to the RO", js: "aivaApptAdd(" + i + ")", p: true });
+  acts.push({ t: i + 1 < ALI_APPTS.length ? "Next appointment" : "Finish", js: "aivaApptWalk(" + (i + 1) + ")" });
   acts.push({ t: "Stop walking", js: "aivaApptStopWalk()" });
   aivaAppendReply([
     _m("<b>" + a.t + " \u00b7 " + escapeHtml(a.n) + "</b> \u2014 " + escapeHtml(a.v) + ". In for \u201c" + escapeHtml(a.concern) + "\u201d."
@@ -12341,7 +12341,7 @@ window.aivaApptWalk = function(i) {
 };
 
 window.aivaApptStopWalk = function() {
-  AIVA_APPT_WALK = -1;
+  ALI_APPT_WALK = -1;
   aivaRenderApptStage();
   aivaAppendReply([_m("Stopped. The board stays open \u2014 tick or untick anything you like, or close it when you're done.")], null);
 };
@@ -12349,16 +12349,16 @@ window.aivaApptStopWalk = function() {
 /* Committing from the board uses the same confirm card and the same
    audit log as every other action in the prototype. */
 window.aivaApptAdd = function(i) {
-  const a = AIVA_APPTS[i];
-  const picked = a.ups.filter((u, j) => AIVA_APPT_SEL[i][j]);
-  if (!picked.length || AIVA_APPT_ADDED[i]) return;
+  const a = ALI_APPTS[i];
+  const picked = a.ups.filter((u, j) => ALI_APPT_SEL[i][j]);
+  if (!picked.length || ALI_APPT_ADDED[i]) return;
   const total = picked.reduce((t, u) => t + u.p, 0);
   const resKey = "APPT_OUT_" + i;
-  AIVA_RESOLUTIONS[resKey] = { blocks: [
+  ALI_RESOLUTIONS[resKey] = { blocks: [
     _m("Added to <b>" + escapeHtml(a.n) + "</b>'s appointment \u2014 " + picked.length + " item" + (picked.length > 1 ? "s" : "")
       + ", <b>" + aivaMoney(total) + "</b>. It shows as recommended work on the RO when she arrives; nothing is charged until she approves it in person."),
   ] };
-  AIVA_RESOLUTIONS[resKey].onCommit = i;
+  ALI_RESOLUTIONS[resKey].onCommit = i;
   aivaAppendReply([
     _m("Here's what you're adding to " + escapeHtml(a.n) + "'s appointment \u2014 nothing goes on the RO until you confirm."),
     { t: "cfm", cap: "\u2726 Selected on the board",
@@ -12370,7 +12370,7 @@ window.aivaApptAdd = function(i) {
 };
 
 /* Mark the card added once its confirm card is committed. */
-const AIVA_RESOLVE_BASE = null;
+const ALI_RESOLVE_BASE = null;
 
 /* ============================================================
    ENTITY EXTRACTION + SCHEMA-DRIVEN ACTION FORMS  (build 07)
@@ -12389,12 +12389,12 @@ const AIVA_RESOLVE_BASE = null;
    record that does not exist.
    ============================================================ */
 
-const AIVA_KNOWN_PAYEES = [
+const ALI_KNOWN_PAYEES = [
   ["Testenger, INC",     ["testenger"]],
   ["Waterson Auto Shop", ["waterson"]],
   ["Northside Fleet",    ["northside"]],
 ];
-const AIVA_GL = {
+const ALI_GL = {
   "4000": "New Vehicle Sales", "4100": "Used Vehicle Sales",
   "4200": "Service Labor Sales", "4300": "Parts Sales",
   "5000": "Cost of Vehicle Sales", "6000": "Salaries & Wages",
@@ -12424,15 +12424,15 @@ function aivaExtractValues(text) {
     || low.match(/\badd\s+(?:a\s+|an\s+|\d+\s+[a-z]+\s+of\s+)?([a-z][a-z ]{1,24}?)\s+to\b/);
   if (item) out.item = { v: item[1].trim(), label: item[1].trim() };
 
-  const gl = (t.match(/\b([456]\d{3})\b/g) || []).find(x => AIVA_GL[x]);
-  if (gl) out.account = { v: gl, label: gl + " \u00b7 " + AIVA_GL[gl] };
+  const gl = (t.match(/\b([456]\d{3})\b/g) || []).find(x => ALI_GL[x]);
+  if (gl) out.account = { v: gl, label: gl + " \u00b7 " + ALI_GL[gl] };
 
   const until = low.match(/\b(month-end|end of month|today|tomorrow|friday|monday)\b/);
   if (until) out.until = { v: until[1], label: until[1].replace(/^\w/, c => c.toUpperCase()) };
 
   // Payees: known names resolve to canonical records; anything else
   // capitalized after to/from/pay is carried as an explicit freeform.
-  for (const [canon, aliases] of AIVA_KNOWN_PAYEES) {
+  for (const [canon, aliases] of ALI_KNOWN_PAYEES) {
     if (aliases.some(a => low.includes(a))) { out.payee = { v: canon, label: canon, known: true }; break; }
   }
   const np = t.match(/\b(?:to|from|pay)\s+((?:[A-Z][\w&.'\u2019-]*)(?:\s+(?:[A-Z][\w&.'\u2019-]*|of|and|&))*)/);
@@ -12485,11 +12485,11 @@ function aivaExtractValues(text) {
 }
 window.aivaExtractValues = aivaExtractValues;
 
-/* The form registry: a reusable form definition AIVA can reason
+/* The form registry: a reusable form definition ALI can reason
    about — the generalisation the Voice track's V2 asks for. Each
    field names where its value comes from, whether it is required,
    and how to ask for it when it is missing. */
-const AIVA_FORMS = {
+const ALI_FORMS = {
 
   writeCheck: {
     actionLabel: "Stage the check",
@@ -12733,7 +12733,7 @@ const AIVA_FORMS = {
   },
 };
 
-let AIVA_FORM_SEQ = 0;
+let ALI_FORM_SEQ = 0;
 
 function aivaFormFill(form, text) {
   const ex = aivaExtractValues(text);
@@ -12754,7 +12754,7 @@ function aivaFormFill(form, text) {
    and runs the same pass again, so multiple gaps are asked one
    decision at a time, exactly like the clarifying intents. */
 function aivaFormProceed(intent, text, values) {
-  const form = AIVA_FORMS[intent.form];
+  const form = ALI_FORMS[intent.form];
   if (!form) { aivaRenderFallback(); return; }
   const missing = form.fields.filter(f => f.req && !values[f.k]);
   if (missing.length) {
@@ -12775,8 +12775,8 @@ function aivaFormProceed(intent, text, values) {
   }));
   rows.push({ k: "Store", v: "Statler Toyota" });
   const extraWarn = typeof form.warn === "function" ? form.warn(values) : (form.warn || "");
-  const resKey = "FORM_OUT_" + (++AIVA_FORM_SEQ);
-  AIVA_RESOLUTIONS[resKey] = { blocks: form.outcome(values) };
+  const resKey = "FORM_OUT_" + (++ALI_FORM_SEQ);
+  ALI_RESOLUTIONS[resKey] = { blocks: form.outcome(values) };
   aivaAppendReply([
     _m(form.lead || "Here's what I captured from what you said \u2014 nothing happens until you confirm it."),
     { t: "cfm", cap: "\u2726 Captured from your message", rows: rows,
@@ -12798,7 +12798,7 @@ function aivaFormProceed(intent, text, values) {
    treatment as typed input. Transcription is simulated by design:
    the deliverable is the interaction contract, not speech-to-text.
    ------------------------------------------------------------ */
-const AIVA_VOICE_LINES = {
+const ALI_VOICE_LINES = {
   owner:          "Alert me if any store's variance passes $5,000",
   ops:            "Flag any RO older than 5 days",
   serviceManager: "Start a write-up for Diana Reyes \u2014 rattle up front when braking, mileage's around 42,000, wants an oil change too, and she'll wait",
@@ -12811,18 +12811,18 @@ const AIVA_VOICE_LINES = {
   salesAssoc:     "Log a $500 deposit from David Kim on deal 129518",
   controller:     "Accrue $1,200 to 6100 for July advertising",
 };
-let AIVA_VOICE_TICK = 170;
-let AIVA_VOICE = { active: false, el: null, timer: null };
+let ALI_VOICE_TICK = 170;
+let ALI_VOICE = { active: false, el: null, timer: null };
 
 window.aivaVoiceStart = function() {
-  if (AIVA_VOICE.active) { aivaVoiceCancel(); return; }
-  const text = AIVA_VOICE_LINES[currentPersonaKey()];
+  if (ALI_VOICE.active) { aivaVoiceCancel(); return; }
+  const text = ALI_VOICE_LINES[currentPersonaKey()];
   if (!text) return;
-  openAIVA();
+  openALI();
   const body = document.getElementById("aivaBody");
   if (!body) return;
   const intent = aivaMatchIntent(text.toLowerCase());
-  const form = intent && intent.form ? AIVA_FORMS[intent.form] : null;
+  const form = intent && intent.form ? ALI_FORMS[intent.form] : null;
   const vid = "aivaVoice" + Date.now();
   body.insertAdjacentHTML("beforeend", `
     <div class="aiva-voice" id="${vid}">
@@ -12859,35 +12859,35 @@ window.aivaVoiceStart = function() {
     body.scrollTop = body.scrollHeight;
     if (i >= words.length) aivaVoiceDone(text);
   };
-  AIVA_VOICE = { active: true, el, timer: setInterval(step, AIVA_VOICE_TICK) };
+  ALI_VOICE = { active: true, el, timer: setInterval(step, ALI_VOICE_TICK) };
 };
 
 function aivaVoiceDone(text) {
-  if (!AIVA_VOICE.active) return;
-  clearInterval(AIVA_VOICE.timer);
-  const el = AIVA_VOICE.el;
+  if (!ALI_VOICE.active) return;
+  clearInterval(ALI_VOICE.timer);
+  const el = ALI_VOICE.el;
   el.classList.add("settled");
   const head = el.querySelector(".av-head");
   if (head) head.innerHTML = '<span class="av-dot done"></span>Heard it \u2014 sending';
   const mic = document.getElementById("aivaMicBtn");
   if (mic) mic.classList.remove("mic-live");
-  AIVA_VOICE = { active: false, el: null, timer: null };
+  ALI_VOICE = { active: false, el: null, timer: null };
   // Voice earns the same pipeline as typing: clarify if incomplete,
   // confirm before acting, audit when committed.
   setTimeout(() => askAiva(text), 480);
 }
 
 window.aivaVoiceCancel = function() {
-  if (!AIVA_VOICE.active) return;
-  clearInterval(AIVA_VOICE.timer);
-  if (AIVA_VOICE.el) AIVA_VOICE.el.remove();
+  if (!ALI_VOICE.active) return;
+  clearInterval(ALI_VOICE.timer);
+  if (ALI_VOICE.el) ALI_VOICE.el.remove();
   const mic = document.getElementById("aivaMicBtn");
   if (mic) mic.classList.remove("mic-live");
-  AIVA_VOICE = { active: false, el: null, timer: null };
+  ALI_VOICE = { active: false, el: null, timer: null };
 };
 
 function aivaRenderForm(intent, text) {
-  const form = AIVA_FORMS[intent.form];
+  const form = ALI_FORMS[intent.form];
   if (!form) { aivaRenderFallback(); return; }
   aivaFormProceed(intent, text, aivaFormFill(form, text));
 }
@@ -12896,13 +12896,13 @@ window.aivaRenderForm = aivaRenderForm;
 /* ============================================================
    AI EXPERIENCE REGISTRY
    Existing product capabilities registered as invocable tools.
-   AIVA calls one behind the scenes when a question is really a
+   ALI calls one behind the scenes when a question is really a
    request for that experience, and renders its real output inline
    — attributed to its source, at full fidelity. Adding a capability
    is a data entry here, not a new branch in the conversation code.
    ============================================================ */
 
-const AIVA_CAPABILITIES = {
+const ALI_CAPABILITIES = {
 
   /* The flagship: the Fixed Ops panel that already exists in the
      product, rendered verbatim by its own function. */
@@ -13026,25 +13026,25 @@ const AIVA_CAPABILITIES = {
 /* Invoke a registered capability and render its output in the chat
    surface, attributed to the experience it came from. */
 function aivaInvokeCapability(id) {
-  const cap = AIVA_CAPABILITIES[id];
+  const cap = ALI_CAPABILITIES[id];
   const body = document.getElementById("aivaBody");
   if (!cap || !body) return;
   // Discovered — stop coaching this one.
-  if (cap.app) AIVA_COACH.counts["invoked:" + cap.app] = 1;
+  if (cap.app) ALI_COACH.counts["invoked:" + cap.app] = 1;
   let panel = "";
   try { panel = cap.render(); }
   catch (e) { panel = `<div class="aiva-msg">${escapeHtml(cap.label)} isn't responding right now — that's on us, not you.</div>`; }
 
   body.insertAdjacentHTML("beforeend", `
     <div class="aiva-welcome" style="margin-top:-4px">
-      <div class="aiva-welcome-head">AIVA <span class="ts">${aivaTs()}</span></div>
+      <div class="aiva-welcome-head">ALI <span class="ts">${aivaTs()}</span></div>
       <div class="aiva-msg">${cap.lead}</div>
       <div class="aiva-cap">
         <div class="aiva-cap-head">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/></svg>
           ${escapeHtml(cap.label)}
           <span class="src">${escapeHtml(cap.source)}</span>
-          <span class="inv">Invoked by AIVA</span>
+          <span class="inv">Invoked by ALI</span>
         </div>
         <div class="aiva-cap-body">${panel}</div>
       </div>
@@ -13060,27 +13060,27 @@ window.aivaInvokeCapability = aivaInvokeCapability;
 /* ============================================================
    CLARIFYING QUESTIONS — "one decision at a time"
    When a request is missing a required input, or gives one that
-   isn't precise enough, AIVA asks a single targeted follow-up with
+   isn't precise enough, ALI asks a single targeted follow-up with
    the real options rather than handing over a form. Choosing an
    option records the decision as the user's own message and
    completes the original request — usually into the confirm card
    the full request would have produced.
    ============================================================ */
 
-const AIVA_CLARIFY_SETS = [];
+const ALI_CLARIFY_SETS = [];
 
 function aivaRenderClarify(intent, text) {
   const body = document.getElementById("aivaBody");
   if (!body) return;
   const c = intent.clarify;
   const opts = typeof c.options === "function" ? c.options(text.toLowerCase()) : c.options;
-  const setIdx = AIVA_CLARIFY_SETS.push(opts) - 1;
+  const setIdx = ALI_CLARIFY_SETS.push(opts) - 1;
   const q   = typeof c.q === "function" ? c.q(text.toLowerCase()) : c.q;
   const sub = typeof c.sub === "function" ? c.sub(text.toLowerCase()) : c.sub;
 
   body.insertAdjacentHTML("beforeend", `
     <div class="aiva-welcome" style="margin-top:-4px">
-      <div class="aiva-welcome-head">AIVA <span class="ts">${aivaTs()}</span></div>
+      <div class="aiva-welcome-head">ALI <span class="ts">${aivaTs()}</span></div>
       <div class="aiva-clarify">
         <div class="aiva-clarify-q">${q}</div>
         ${sub ? `<div class="aiva-clarify-sub">${sub}</div>` : ""}
@@ -13097,7 +13097,7 @@ function aivaRenderClarify(intent, text) {
 }
 
 window.aivaClarifyPick = function(setIdx, optIdx) {
-  const opt = (AIVA_CLARIFY_SETS[setIdx] || [])[optIdx];
+  const opt = (ALI_CLARIFY_SETS[setIdx] || [])[optIdx];
   if (!opt) return;
   const body = document.getElementById("aivaBody");
   if (!body) return;
@@ -13114,7 +13114,7 @@ window.aivaClarifyPick = function(setIdx, optIdx) {
     // The answer merges into the form's values and the same pass runs
     // again — remaining gaps get asked one decision at a time.
     const fr = opt.formResume;
-    const it = AIVA_INTENTS.find(x => x.id === fr.intentId);
+    const it = ALI_INTENTS.find(x => x.id === fr.intentId);
     if (it) {
       const vals = Object.assign({}, fr.values);
       vals[fr.fieldK] = fr.val;
@@ -13134,7 +13134,7 @@ function aivaClarifyRecall(intent, known, text) {
   const q = escapeHtml(text).replace(/&#39;/g, "\\'");
   body.insertAdjacentHTML("beforeend", `
     <div class="aiva-welcome" style="margin-top:-4px">
-      <div class="aiva-welcome-head">AIVA <span class="ts">${aivaTs()}</span></div>
+      <div class="aiva-welcome-head">ALI <span class="ts">${aivaTs()}</span></div>
       <div class="aiva-ctx-recall">
         Using <b>${escapeHtml(known.held.label)}</b> from earlier.
         <span class="again" onclick="aivaCtxAskAgain('${known.type}', '${q}')">Not that one</span>
@@ -13151,7 +13151,7 @@ function aivaClarifyRecall(intent, known, text) {
    capture path, and the active persona's suggestions. Never a guess. */
 function aivaRenderFallback() {
   const me = currentPersonaKey();
-  const chips = (AIVA_ACTIONS_BY_PERSONA[me] || []).map(t => ({ t }));
+  const chips = (ALI_ACTIONS_BY_PERSONA[me] || []).map(t => ({ t }));
   aivaAppendReply([
     _lim("I don't have a confident answer for that one, and I'd rather not guess."),
     _m("I can flag it for your CAR team to answer directly — usually same day — or here's what I can help with right now:"),
@@ -13169,7 +13169,7 @@ window.askAiva = function(text) {
   // A live Support Tech session owns the input while it is open — every
   // entry goes to the agent, not the intent matcher.
   if (SUPPORT_STATE.active) {
-    openAIVA();
+    openALI();
     aivaSupportEntry(text);
     return;
   }
@@ -13182,26 +13182,26 @@ window.askAiva = function(text) {
     return;
   }
 
-  openAIVA();
+  openALI();
   const titleEl = document.querySelector("#aivaPanel .title");
-  if (titleEl) titleEl.textContent = "AIVA";
+  if (titleEl) titleEl.textContent = "ALI";
 
   body.insertAdjacentHTML("beforeend", `<div class="aiva-user-msg">${escapeHtml(text)}</div>`);
   body.scrollTop = body.scrollHeight;
 
-  // Retyping a value AIVA is already carrying — the moment to mention
+  // Retyping a value ALI is already carrying — the moment to mention
   // that a reference would have done.
   const low = text.toLowerCase();
-  const held = Object.values(AIVA_CTX).find(v => v.value.length > 3 && low.includes(v.value.toLowerCase()));
+  const held = Object.values(ALI_CTX).find(v => v.value.length > 3 && low.includes(v.value.toLowerCase()));
   if (held) aivaCoachSignal("retypedHeldValue", { label: held.label });
 
   aivaCtxHarvest(text);
   const intent = aivaMatchIntent(text);
   const src = intent && intent.checking;
   // An invoked capability names itself while it loads, so the user sees
-  // which existing experience AIVA is calling on their behalf.
-  const capLabel = intent && intent.cap && AIVA_CAPABILITIES[intent.cap]
-    ? AIVA_CAPABILITIES[intent.cap].label : null;
+  // which existing experience ALI is calling on their behalf.
+  const capLabel = intent && intent.cap && ALI_CAPABILITIES[intent.cap]
+    ? ALI_CAPABILITIES[intent.cap].label : null;
   const thinkTxt = capLabel ? "Invoking " + escapeHtml(capLabel) + " ..."
     : (intent && intent.form) ? "Reading the details ..."
     : src ? "Checking " + escapeHtml(src) + " ..." : "Thinking ...";
@@ -13239,14 +13239,14 @@ window.askAiva = function(text) {
     if (typeof blocks === "function") blocks = blocks();
     if (intent.usePersonaChips) {
       const me = currentPersonaKey();
-      const chips = (AIVA_ACTIONS_BY_PERSONA[me] || []).map((t, i) => ({ t, p: i === 0 }));
+      const chips = (ALI_ACTIONS_BY_PERSONA[me] || []).map((t, i) => ({ t, p: i === 0 }));
       blocks = blocks.concat([_nx(chips)]);
     }
     aivaAppendReply(blocks, intent.app || null, intent.sec || null, intent.rec || null);
   }, (src || capLabel) ? 1100 : 650);
 };
 
-/* AIVA tab bar — just visual state for now. */
+/* ALI tab bar — just visual state for now. */
 window.setAivaTab = function(tab) {
   document.querySelectorAll('.aiva-tab').forEach(el => {
     el.classList.toggle('active', el.dataset.tab === tab);
@@ -13254,7 +13254,7 @@ window.setAivaTab = function(tab) {
 };
 
 /* ============================================================
-   VISIT INSIGHTS — auto-loaded into AIVA when Service app opens
+   VISIT INSIGHTS — auto-loaded into ALI when Service app opens
    Mirrors the "Visit Insights" panel design (Marty McFly reference).
    ============================================================ */
 function renderVisitInsights(withActions = true) {
@@ -13362,7 +13362,7 @@ function renderVisitInsights(withActions = true) {
 }
 
 /* Called by openAppTab when the Service app is launched.
-   Shows the AIVA panel and loads Visit Insights content into it. */
+   Shows the ALI panel and loads Visit Insights content into it. */
 /* Tracks whether Visit Insights has been shown at least once this session. */
 let VISIT_INSIGHTS_SHOWN = false;
 
@@ -13378,7 +13378,7 @@ function loadServiceVisitInsights() {
     const body = document.getElementById('aivaBody');
     if (body) body.innerHTML = renderVisitInsights();
     // Open / expand the panel
-    openAIVA();
+    openALI();
     VISIT_INSIGHTS_SHOWN = true;
   }
 
@@ -13397,7 +13397,7 @@ function loadServiceVisitInsights() {
   }
 }
 
-window.openAIVA = function(restoreTitle = false) {
+window.openALI = function(restoreTitle = false) {
   document.getElementById('aivaPanel').classList.remove('minimized');
   const btnOpen = document.getElementById('aivaBtn');
   btnOpen?.classList.add('is-active');
@@ -13406,10 +13406,10 @@ window.openAIVA = function(restoreTitle = false) {
   aivaClearFabUpdates();
   if (restoreTitle) {
     const titleEl = document.querySelector('#aivaPanel .title');
-    if (titleEl) titleEl.textContent = 'AIVA Opportunity';
+    if (titleEl) titleEl.textContent = 'ALI Opportunity';
   }
 };
-window.closeAIVA = function() {
+window.closeALI = function() {
   const panel = document.getElementById('aivaPanel');
   // Capture where the panel sits before hiding it, so the FAB takes its
   // place — the feature relocates on minimization instead of snapping
@@ -13421,9 +13421,9 @@ window.closeAIVA = function() {
   btnClose?.classList.add('is-collapsed');
   aivaShowFabAt(rect);
 };
-window.toggleAIVA = function() {
+window.toggleALI = function() {
   const p = document.getElementById('aivaPanel');
-  if (p.classList.contains('minimized')) openAIVA(); else closeAIVA();
+  if (p.classList.contains('minimized')) openALI(); else closeALI();
 };
 
 /* ---- FAB: collapsed state, positioned where the panel was ---- */
@@ -13455,11 +13455,11 @@ function aivaHideFab() {
 }
 
 /* ---- Page-change notification while collapsed ---- */
-let AIVA_FAB_UPDATES = 0;
-let AIVA_FAB_NOTE_TIMER = null;
+let ALI_FAB_UPDATES = 0;
+let ALI_FAB_NOTE_TIMER = null;
 
 function aivaClearFabUpdates() {
-  AIVA_FAB_UPDATES = 0;
+  ALI_FAB_UPDATES = 0;
   const fab = document.getElementById('aivaFab');
   fab?.classList.remove('has-updates');
   aivaHideFabNote();
@@ -13467,7 +13467,7 @@ function aivaClearFabUpdates() {
 
 function aivaHideFabNote() {
   document.getElementById('aivaFabNote')?.classList.remove('show');
-  clearTimeout(AIVA_FAB_NOTE_TIMER);
+  clearTimeout(ALI_FAB_NOTE_TIMER);
 }
 
 /* Anchor the note just above the FAB, flipping sides near a viewport edge. */
@@ -13491,31 +13491,31 @@ function aivaPositionFabNote() {
   note.style.top  = top + 'px';
 }
 
-/* Called when page-level messaging changes while AIVA is collapsed. */
+/* Called when page-level messaging changes while ALI is collapsed. */
 function aivaNotifyPageChange(appKey, headline) {
   if (!aivaIsMinimized()) return;
   const fab  = document.getElementById('aivaFab');
   const note = document.getElementById('aivaFabNote');
   if (!fab || !note) return;
 
-  AIVA_FAB_UPDATES += 1;
+  ALI_FAB_UPDATES += 1;
   const badge = document.getElementById('aivaFabBadge');
-  if (badge) badge.textContent = AIVA_FAB_UPDATES > 9 ? '9+' : String(AIVA_FAB_UPDATES);
+  if (badge) badge.textContent = ALI_FAB_UPDATES > 9 ? '9+' : String(ALI_FAB_UPDATES);
   fab.classList.add('has-updates');
 
-  const label = AIVA_APP_LABEL[appKey] || appKey;
+  const label = ALI_APP_LABEL[appKey] || appKey;
   const head = document.getElementById('aivaFabNoteHead');
   const bodyEl = document.getElementById('aivaFabNoteBody');
   if (head) head.textContent = `${label} insights updated`;
   if (bodyEl) {
-    bodyEl.innerHTML = AIVA_FAB_UPDATES > 1
-      ? `${headline} <span style="color:var(--text-3)">· ${AIVA_FAB_UPDATES} updates waiting</span>`
+    bodyEl.innerHTML = ALI_FAB_UPDATES > 1
+      ? `${headline} <span style="color:var(--text-3)">· ${ALI_FAB_UPDATES} updates waiting</span>`
       : headline;
   }
   aivaPositionFabNote();
   note.classList.add('show');
-  clearTimeout(AIVA_FAB_NOTE_TIMER);
-  AIVA_FAB_NOTE_TIMER = setTimeout(() => note.classList.remove('show'), 6000);
+  clearTimeout(ALI_FAB_NOTE_TIMER);
+  ALI_FAB_NOTE_TIMER = setTimeout(() => note.classList.remove('show'), 6000);
 }
 window.aivaNotifyPageChange = aivaNotifyPageChange;
 
@@ -13537,7 +13537,7 @@ function initAivaFab() {
     panel.style.top  = top + 'px';
     panel.style.right = 'auto';
     panel.style.bottom = 'auto';
-    openAIVA();
+    openALI();
   };
 
   /* Drag the FAB — the collapsed feature stays relocatable. A small
@@ -13631,13 +13631,13 @@ function initAivaDrag() {
   });
 }
 
-/* Wire the header AIVA button to toggle the panel. */
+/* Wire the header ALI button to toggle the panel. */
 function initAivaHeaderButton() {
   const btn = document.getElementById('aivaBtn');
   if (!btn) return;
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
-    toggleAIVA();
+    toggleALI();
   });
   btn.classList.add('is-active');
 }
@@ -14348,7 +14348,7 @@ function renderPersona(key) {
     personaBannerEl.classList.add('hidden');
   }, 6000);
 
-  // Refresh AIVA's welcome message so it echoes the new persona's banner context
+  // Refresh ALI's welcome message so it echoes the new persona's banner context
   if (typeof updateAivaWelcome === 'function') updateAivaWelcome(key);
 
   let body = `<div class="section-head anim-fade-in-up" style="animation-delay:0.35s">
@@ -14375,7 +14375,7 @@ function renderPersona(key) {
   const personaChanged = CURRENT_PERSONA_KEY !== key;
   CURRENT_PERSONA_KEY = key;
 
-  // Changing persona resets the AIVA conversation: a new role gets a
+  // Changing persona resets the ALI conversation: a new role gets a
   // fresh thread, welcome, and suggestions. Live dictation is cancelled
   // and the expanded board is closed, since both belong to the previous
   // role's conversation. The activity log deliberately survives, exactly
@@ -16591,14 +16591,14 @@ function openAppTab(appKey) {
   }
   closeSideNav();
 
-  // Opened by the user rather than by AIVA — the behaviour the
+  // Opened by the user rather than by ALI — the behaviour the
   // navigation tip is watching for.
-  if (!window.AIVA_CONTEXT_OPENING) aivaCoachSignal("manualAppOpen");
+  if (!window.ALI_CONTEXT_OPENING) aivaCoachSignal("manualAppOpen");
 
   // App-navigation insight refresh (including Service's Visit Insights)
-  // is handled by the activateTab hook in the AIVA engine — activateTab
+  // is handled by the activateTab hook in the ALI engine — activateTab
   // above already fired it. Calling loadServiceVisitInsights here as well
-  // would double-render and, mid-conversation, wipe the AIVA thread.
+  // would double-render and, mid-conversation, wipe the ALI thread.
 }
 
 function activateTab(tabId) {
@@ -16851,7 +16851,7 @@ function initTabBarHandlers() {
 /* ============================================================
    PERSISTENT LEFT RAIL — static Unify destinations plus the
    open applications (replaces the horizontal tab bar).
-   AIVA is intentionally absent: it already lives in the top nav.
+   ALI is intentionally absent: it already lives in the top nav.
    ============================================================ */
 
 const RAIL_STATIC_TOP = [
@@ -17448,11 +17448,11 @@ function buildAppNav(iconKey, appLabel, items) {
    and detail with an activity timeline.
    ============================================================ */
 const SUPPORT_TICKETS = [
-  { id: 'CS-4821', subject: 'AIVA not resolving RO 98664 in Visit Insights', product: 'AIVA', priority: 'High',
+  { id: 'CS-4821', subject: 'ALI not resolving RO 98664 in Visit Insights', product: 'ALI', priority: 'High',
     status: 'in-progress', requester: 'You', created: 'Aug 5', updated: '2h ago',
     activity: [
-      { who: 'You', when: 'Aug 5, 9:14 AM', text: 'Searching "RO 98664" in AIVA returns no match, but the RO is open in Service for Marcus Hill.', agent: false },
-      { who: 'Priya N. — CAR Support', when: 'Aug 5, 11:02 AM', text: 'Thanks — reproduced on your store (Statler Toyota). Escalating to the AIVA indexing team.', agent: true },
+      { who: 'You', when: 'Aug 5, 9:14 AM', text: 'Searching "RO 98664" in ALI returns no match, but the RO is open in Service for Marcus Hill.', agent: false },
+      { who: 'Priya N. — CAR Support', when: 'Aug 5, 11:02 AM', text: 'Thanks — reproduced on your store (Statler Toyota). Escalating to the ALI indexing team.', agent: true },
       { who: 'Priya N. — CAR Support', when: 'Aug 6, 8:40 AM', text: 'Index rebuild scheduled tonight. Will confirm once ROs re-resolve.', agent: true },
     ]},
   { id: 'CS-4819', subject: 'Accounting AR export to Excel times out', product: 'Accounting', priority: 'Normal',
@@ -17548,7 +17548,7 @@ function renderCcFlyout() {
         <input type="text" id="ccSubject" placeholder="One line describing the issue" /></div>
       <div class="cc-field"><label for="ccProduct">Product</label>
         <select id="ccProduct">
-          <option>Unify Platform</option><option>AIVA</option><option>Service</option>
+          <option>Unify Platform</option><option>ALI</option><option>Service</option>
           <option>Parts</option><option>Accounting</option><option>F&amp;I</option>
           <option>Modern Retail</option><option>Intelligence Suite</option><option>Document Mgmt</option>
         </select></div>
@@ -19132,7 +19132,7 @@ function personaDescription(key) {
     arap: 'Invoices, statements, payments.',
     fi: 'Deal jacket, contracts, e-sign.',
     salesManager: 'Floor performance, leaderboard, CITs.',
-    salesAssoc: 'Showroom companion, leads, AIVA.',
+    salesAssoc: 'Showroom companion, leads, ALI.',
     controller: 'GL oversight, month-end close, compliance.',
   })[key] || '';
 }
