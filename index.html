@@ -19701,6 +19701,9 @@ function goToDashboard() {
   TAB_STATE.displayed = [];
   TAB_STATE.splitMode = false;
   renderTabSystem();
+  // Nothing is in front now, so the chrome must come back immediately
+  // rather than waiting for the next stray mouse movement.
+  if (typeof chromeIdleReset === 'function') chromeIdleReset();
 }
 
 function renderInlineHome() {
@@ -19838,7 +19841,11 @@ function reconcileRailOrder() {
   }
 }
 
+/* Any change to which application is displayed changes hide eligibility,
+   so the idle cycle is re-evaluated whenever the rail re-renders — that
+   is the one place every tab change passes through. */
 function renderOpenAppsRail() {
+  setTimeout(() => { if (typeof chromeIdleReset === 'function') chromeIdleReset(); }, 0);
   const rail = document.getElementById('openAppsRail');
   if (!rail) return;
   reconcileRailOrder();
@@ -20089,11 +20096,28 @@ function aivaNavDrawerOpen() {
   return b.contains('sidebar-mode') && !b.contains('sidebar-collapsed');
 }
 
+/* Is a Unify destination what the user is looking at, rather than an
+   application? Two ways that happens even with tabs open:
+     - the prototype screen is in front (My Unify, Apps, Workflows,
+       Dashboards)
+     - the app screen is in front but every application is minimized, so
+       it is showing its inline My Dashboards
+   In both, the global navigation IS the workspace. */
+function aivaUnifyDestinationInFront() {
+  const onApp = document.getElementById('appScreen')?.classList.contains('active');
+  if (!onApp) return true;
+  return TAB_STATE.displayed.length === 0;
+}
+
 function chromeHideEligible() {
   // Only with an application actually open on the app screen. The home
   // screens keep their navigation at all times.
   if (!document.getElementById('appScreen')?.classList.contains('active')) return false;
   if (!TAB_STATE.tabs.length) return false;
+  // An application may be open but minimized, or a Unify destination may
+  // be in front. Either way no application is actually being worked in,
+  // so the navigation stays.
+  if (aivaUnifyDestinationInFront()) return false;
   // And never while the user has the navigation open — sliding the chrome
   // away under an open drawer is not a thing anyone asked for.
   if (aivaNavDrawerOpen()) return false;
