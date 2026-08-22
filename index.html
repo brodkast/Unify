@@ -180,7 +180,7 @@
 
 
   .logo {
-    width: 38px; height: 38px;   /* CDK dot: 32px + ~20% */
+    width: 38px; height: 38px;   /* CAR dot: 32px + ~20% */
     border-radius: 50%;
     background: white;
     color: #0a0a0c;
@@ -2007,7 +2007,7 @@
     padding: 40px;
     gap: 40px;
   }
-  /* CDK Global logo — DO NOT MODIFY */
+  /* CAR Global logo — DO NOT MODIFY */
   .login-brand {
     display: flex; align-items: center; gap: 22px;
     justify-content: flex-end; padding-right: 60px;
@@ -2578,7 +2578,7 @@
   body.chrome-hidden .screen-app.active .app-body { margin-left: 0; }
 
   /* Reveal handle — the only affordance while the chrome is away.
-     Carries the CDK mark so the corner still reads as Unify, with the
+     Carries the CAR mark so the corner still reads as Unify, with the
      hairlines beside it hinting at the hidden navigation. */
   .chrome-reveal {
     position: fixed; top: 0; left: 0;
@@ -2623,7 +2623,7 @@
     transition: transform 0.18s ease;
   }
 
-  /* Open application's icon — smaller than the CDK dot, sitting to its
+  /* Open application's icon — smaller than the CAR dot, sitting to its
      right with a clear gap. Never overlaps the mark. */
   .chrome-reveal .cr-app {
     width: 22px; height: 22px; border-radius: 6px;   /* +40%, still smaller than the dot */
@@ -2825,7 +2825,7 @@
   /* Content shifts right to clear the rail */
   .screen-app.active .app-body { margin-left: 60px; }
 
-  /* App sub-header (under the global CDK GLOBAL bar)
+  /* App sub-header (under the global CAR GLOBAL bar)
      Kept low z-index and a fixed height so it never animates or pushes the
      content below around. When the tab bar empties (last tab closed), the
      screen swaps to the prototype home rather than collapsing this strip,
@@ -3562,7 +3562,7 @@
   }
   .sr-nav-btn:hover { background: var(--surface-tint); color: var(--text); }
 
-  /* Mirrored CDK header */
+  /* Mirrored CAR header */
   .cr-top-bar {
     background: #0a0a0c; height: 48px;
     display: flex; align-items: center; padding: 0 20px; gap: 16px;
@@ -7920,7 +7920,7 @@
 <!-- ============ GLOBAL HEADER + MEGA MENU ============ -->
 <!-- ============ HEADER ============ -->
 <div class="header">
-  <div class="logo" id="cdkLogoBtn" title="My Dashboard" onclick="goHome()">CDK</div>
+  <div class="logo" id="cdkLogoBtn" title="My Dashboard" onclick="goHome()">CAR</div>
   <div class="menu-btn anim-fade-in-up" id="menuBtn" style="animation-delay:0.05s">
     <div class="grid-icon"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
     <span>Menu</span>
@@ -8017,7 +8017,7 @@
 <div class="screen screen-login active" id="loginScreen">
   <div class="login-wrap">
     <div class="login-brand">
-      <div class="cdk-circle">CDK</div>
+      <div class="cdk-circle">CAR</div>
       <div class="global-text">GLOBAL</div>
     </div>
     <div class="login-card">
@@ -8048,12 +8048,12 @@
       <button class="login-btn" id="signInBtn">Sign In</button>
 
       <p class="login-help">Need to request an account? Contact your enterprise administrator.</p>
-      <p class="login-help">For additional assistance, please contact <b>CDK Support</b>.</p>
+      <p class="login-help">For additional assistance, please contact <b>CAR Support</b>.</p>
 
       <hr class="login-divider-thin" />
-      <button class="login-signup" id="signUpBtn">New to CDK? Start free trial</button>
+      <button class="login-signup" id="signUpBtn">New to CAR? Start free trial</button>
 
-      <p class="login-copyright">©2026 CDK Global, LLC · <a class="login-reset">reset cache</a></p>
+      <p class="login-copyright">©2026 CAR Global, LLC · <a class="login-reset">reset cache</a></p>
     </div>
   </div>
 </div>
@@ -8062,7 +8062,7 @@
 <div class="screen screen-onboarding" id="onboardingScreen">
   <div class="ob-header">
     <div class="ob-brand">
-      <div class="cdk-mini">CDK</div>
+      <div class="cdk-mini">CAR</div>
       <span>GLOBAL</span>
     </div>
     <div style="display:flex; align-items:center; gap:14px;">
@@ -8095,7 +8095,7 @@
   <div class="alert-banner anim-fade-in" id="alertBanner" style="animation-delay:0.2s">
     <div class="left">
       <b>Product Alerts</b>
-      <span>Appointment Data Issues - CDK Service</span>
+      <span>Appointment Data Issues - CAR Service</span>
       <span class="ts">06/20/2024 8:23 AM CST</span>
     </div>
     <div class="right">
@@ -8108,10 +8108,10 @@
   <div class="persona-banner anim-fade-in-up" style="animation-delay:0.25s" id="personaBanner"></div>
 
   <div class="campaign anim-fade-in-up" style="animation-delay:0.3s" id="campaignBanner">
-    <div class="cdk-circle">CDK</div>
+    <div class="cdk-circle">CAR</div>
     <div class="copy">
       <h4>Automation test campaign</h4>
-      <p>CDK Unify is a flexible cloud-based interface that provides a personalized, secure and single sign-on experience to key CDK applications, workflows, and your favorites, all in a single dashboard.</p>
+      <p>CAR Unify is a flexible cloud-based interface that provides a personalized, secure and single sign-on experience to key CAR applications, workflows, and your favorites, all in a single dashboard.</p>
     </div>
     <button class="learn-more">Learn More</button>
     <span class="campaign-close" onclick="document.getElementById('campaignBanner').classList.add('is-dismissed')" title="Dismiss">×</span>
@@ -8131,7 +8131,7 @@
 
 <!-- Reveal handle: shown only while the chrome is auto-hidden -->
 <div class="chrome-reveal" id="chromeReveal" title="Show navigation">
-  <div class="cr-logo">CDK</div>
+  <div class="cr-logo">CAR</div>
   <div class="cr-app tile-icon" id="chromeRevealApp"></div>
 </div>
 
@@ -8330,7 +8330,7 @@
       <span id="pickerFooterLeft">
         <span class="ai-footer-badge">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.09 6.26L20 10l-5.91 1.74L12 18l-2.09-6.26L4 10l5.91-1.74L12 2z"/></svg>
-          AI-powered search across all CDK systems
+          AI-powered search across all CAR systems
         </span>
       </span>
       <span class="hint">
@@ -8468,7 +8468,7 @@ function stackedProgress(items) {
    PERSONAS
    ============================================================ */
 const RESOURCES = [
-  { type: 'u', label: 'CDK University' },
+  { type: 'u', label: 'CAR University' },
   { type: 'msg', label: 'Customer Care' },
   { type: 'doc', label: 'Documents' },
 ];
@@ -8540,7 +8540,7 @@ const PERSONAS = {
       { icon: 'is', text: 'RO Aging Report', sub: '8 over 30 days' },
       { icon: 'is', text: 'Service Gross Profit', sub: 'MTD · $284.6k' },
       { icon: 'is', text: 'Tech Performance', sub: 'July 2026' },
-      { icon: 'dm', text: 'Support Case #PT-4419', sub: 'CDK Support · open' },
+      { icon: 'dm', text: 'Support Case #PT-4419', sub: 'CAR Support · open' },
     ],
     apps: appsFor(['se','pa','is','dm']),
     workflows: [
@@ -9666,7 +9666,7 @@ function updateAivaWelcome(personaKey) {
 
 /* ============================================================
    AIVA CONVERSATION ENGINE — northstar interaction pattern
-   Simulated intents written against the CDK assistant personality
+   Simulated intents written against the CAR assistant personality
    definition ("Humbly Confident"), grounded in the persona data
    already in this prototype. Every response is assembled from
    ordered slots: answer → provenance → insight → limit → control
@@ -9894,7 +9894,7 @@ const AIVA_INTENTS = [
       "Select <b>Add Advisor</b>, then choose the person and their shift pattern.",
       "Select <b>Save</b> — the board picks them up on the next refresh.",
     ]),
-    _m("The full help article for this flow isn't verified in this prototype yet, so I won't link one — for anything past these steps, your CDK team can walk it with you."),
+    _m("The full help article for this flow isn't verified in this prototype yet, so I won't link one — for anything past these steps, your CAR team can walk it with you."),
     _m("One heads-up: this needs Service admin rights. If Manage Advisors isn't on that menu for you, that's why."),
     _nx([{ t: "Show me where to start", spot: "svcScheduling", p: true },
           { t: "Open Scheduling", open: "service", sec: "Scheduling" }]),
@@ -9986,7 +9986,7 @@ const AIVA_INTENTS = [
   kw: ["support case", "my case", "pt-4419", "where's my support"],
   app: "documentMgmt", sec: "My Documents", rec: "CASE-PT-4419",
   blocks: [
-    _m("Case <b>#PT-4419</b> is open and with CDK support."),
+    _m("Case <b>#PT-4419</b> is open and with CAR support."),
     _pv("Support Cases · updated yesterday 4:15pm", true),
     _m("It's past first response and in diagnosis. The next action is theirs — a support engineer replies in the case, and it lands in your Document Management."),
     _nx([{ t: "Open case #PT-4419", open: "documentMgmt", sec: "My Documents", rec: "CASE-PT-4419", p: true }, { t: "Add a note for support", res: "NOTE_ADD" }]),
@@ -10007,7 +10007,7 @@ const AIVA_INTENTS = [
   app: null,
   blocks: [
     _lim("I don't have access to billing or contract terms from here."),
-    _m("Those stay with your CDK account team, which keeps contract detail in one place. I can flag the question so they reach out, or point you to Support to contact them directly."),
+    _m("Those stay with your CAR account team, which keeps contract detail in one place. I can flag the question so they reach out, or point you to Support to contact them directly."),
     _nx([{ t: "Flag it for my account team", res: "FLAG_Q", p: true }, { t: "Open Support", res: "OPEN_TICKET" }]),
   ] },
 
@@ -10035,7 +10035,7 @@ const AIVA_INTENTS = [
   blocks: [
     _m("Here is what I can share: forms in the library are maintained to current state requirements for each jurisdiction, and validation checks the form set against the deal's state."),
     _lim("That does not answer whether your specific contract is compliant. I do not make compliance determinations."),
-    _m("Your compliance officer or CDK account team can go deeper, and I can pass along the deal and its form set so they are not starting cold."),
+    _m("Your compliance officer or CAR account team can go deeper, and I can pass along the deal and its form set so they are not starting cold."),
     _nx([{ t: "Flag for compliance review", res: "FLAG_Q", p: true }]),
   ] },
 
@@ -10044,7 +10044,7 @@ const AIVA_INTENTS = [
   app: null,
   blocks: [
     _lim("I don't have a confident answer on that, and I'd rather not guess."),
-    _m("What I can tell you is how your last 90 days of electrical returns were actually processed, if that's useful. For the policy itself, I can flag the question for your CDK team — usually same day."),
+    _m("What I can tell you is how your last 90 days of electrical returns were actually processed, if that's useful. For the policy itself, I can flag the question for your CAR team — usually same day."),
     _nx([{ t: "Flag the question", res: "FLAG_Q", p: true }, { t: "Show my return history", res: "H4_HISTORY" }]),
   ] },
 
@@ -10063,7 +10063,7 @@ const AIVA_INTENTS = [
   blocks: [
     _m("That's on us, not you — the reporting service isn't responding right now."),
     _m("Your CIT data itself is fine and nothing you were working on is lost. It's the report that can't render."),
-    _m("Give it a couple of minutes and reload. If it's still stuck, I'll open a case with your CDK team so you're not refreshing a page all afternoon."),
+    _m("Give it a couple of minutes and reload. If it's still stuck, I'll open a case with your CAR team so you're not refreshing a page all afternoon."),
     _nx([{ t: "Try again", res: "H6_RETRY", p: true }, { t: "Open a case now", res: "H6_CASE" }]),
   ] },
 
@@ -10083,7 +10083,7 @@ const AIVA_INTENTS = [
   app: "service", sec: "Warranty",
   blocks: [
     _m("Three times is two too many. This one needs a person who'll stay with it."),
-    _m("I'll route it to your CDK support team with the context attached, so you don't start over: Statler Toyota, RO #98664, the warranty claim and its rejection codes, and this conversation."),
+    _m("I'll route it to your CAR support team with the context attached, so you don't start over: Statler Toyota, RO #98664, the warranty claim and its rejection codes, and this conversation."),
     _nx([{ t: "Review what I'll send", res: "I1_REVIEW", p: true }, { t: "Send it now", res: "I1_SEND" }]),
   ] },
 
@@ -10091,7 +10091,7 @@ const AIVA_INTENTS = [
   kw: ["weather", "forecast", "raining"],
   app: null,
   blocks: [
-    _m("Weather's outside my lane — I'm best on anything in your CDK platform and your store's data."),
+    _m("Weather's outside my lane — I'm best on anything in your CAR platform and your store's data."),
     _nx([{ t: "Show Saturday's schedule", res: "I2_SAT", p: true }], "Want Saturday's appointment load instead?"),
   ] },
 
@@ -10578,8 +10578,8 @@ const AIVA_RESOLUTIONS = {
     _m("Resubmitted — the lender typically returns a fresh payoff within the hour, and the quote moves back to Pending."),
     _m("One thing to know: payoffs still can't be initiated until onboarding is complete.") ] },
 
-  FLAG_Q:   { log: { action: "Flagged a question for CDK", inputs: [["Route", "CDK account team"]] }, blocks: [
-    _m("Captured. I flagged the question for your CDK team — usually same day — and the answer lands back here and in your email."),
+  FLAG_Q:   { log: { action: "Flagged a question for CAR", inputs: [["Route", "CAR account team"]] }, blocks: [
+    _m("Captured. I flagged the question for your CAR team — usually same day — and the answer lands back here and in your email."),
     _nx([{ t: "Open a support ticket instead", res: "OPEN_TICKET" }]) ] },
   OPEN_TICKET: { ticket: true, blocks: [] },
   FLAG_ADMIN:{ log: { action: "Flagged an access request", inputs: [["Route", "Store admin"]] }, blocks: [ _m("Flagged for your admin with the view you asked about attached. You'll be notified when it's granted.") ] },
@@ -10628,7 +10628,7 @@ const AIVA_RESOLUTIONS = {
     _m("That's how yours were handled — not what the new policy says. The flag for the policy itself is still the reliable path.") ] },
 
   H6_RETRY: { app: "crm", sec: "Reports", blocks: [ _m("Reloading the CIT report now. If it hangs again, say the word and I'll open the case with everything attached.") ] },
-  H6_CASE:  { log: { action: "Opened a support case", inputs: [["Reason", "Reporting service not responding"]] }, blocks: [ _m("Case opened with your CDK team — it carries the report name, the store, and when it started failing. They follow up with you directly.") ] },
+  H6_CASE:  { log: { action: "Opened a support case", inputs: [["Reason", "Reporting service not responding"]] }, blocks: [ _m("Case opened with your CAR team — it carries the report name, the store, and when it started failing. They follow up with you directly.") ] },
 
   I1_REVIEW: { blocks: [
     _m("Here's the packet, exactly as it will arrive:"),
@@ -10637,7 +10637,7 @@ const AIVA_RESOLUTIONS = {
       "Support reads this before they contact you — you will not re-explain anything.",
       [{ t: "Send it", res: "I1_SEND", p: true }, { t: "Hold it", res: "I1_NO", danger: true }]) ] },
   I1_SEND: { log: { action: "Routed an escalation to support", inputs: [["Case", "#PT-4423"], ["Store", "Statler Toyota"], ["RO", "#98664 · Lacy, C."], ["Carries", "Claim codes + transcript"]], side: "Support reads the packet before contacting you." }, app: "documentMgmt", sec: "My Documents", rec: "CASE-PT-4423", blocks: [
-    _m("Routed to CDK support with the full packet — case <b>#PT-4423</b>. They follow up with you directly, and the case shows in your Support Cases list."),
+    _m("Routed to CAR support with the full packet — case <b>#PT-4423</b>. They follow up with you directly, and the case shows in your Support Cases list."),
     _nx([{ t: "Open case #PT-4423", open: "documentMgmt", sec: "My Documents", rec: "CASE-PT-4423", p: true }]) ] },
   I1_NO:   { blocks: [ _m("Held — nothing sent. The packet stays assembled if you change your mind.") ] },
 
@@ -11048,7 +11048,7 @@ const AIVA_RECORDS = {
     ["Note", "Applying payments may reduce this balance"] ] },
   "CASE-PT-4419": { title: "Support Case #PT-4419", rows: [
     ["Status", "Open · in diagnosis"], ["Age", "6 days"],
-    ["Next action", "CDK support engineer replies in the case"],
+    ["Next action", "CAR support engineer replies in the case"],
     ["Updated", "Yesterday 4:15pm"] ] },
   "CASE-PT-4423": { title: "Support Case #PT-4423 — Warranty escalation", rows: [
     ["Status", "Open · just routed by AIVA"],
@@ -11218,7 +11218,7 @@ const AIVA_APP_INSIGHTS = {
 
   documentMgmt: {
     default: { sub: "Support Cases · read-only", items: [
-      { s: "act",   h: "<b>#PT-4402 is waiting on the dealer</b>, not on CDK — 9 days open and it moves the moment someone responds." },
+      { s: "act",   h: "<b>#PT-4402 is waiting on the dealer</b>, not on CAR — 9 days open and it moves the moment someone responds." },
       { s: "watch", h: "#PT-4419 (6 days) is in diagnosis; the next action belongs to a support engineer." },
     ], acts: [
       { t: "Open case #PT-4419", open: "documentMgmt", sec: "My Documents", rec: "CASE-PT-4419", p: true },
@@ -13154,7 +13154,7 @@ function aivaRenderFallback() {
   const chips = (AIVA_ACTIONS_BY_PERSONA[me] || []).map(t => ({ t }));
   aivaAppendReply([
     _lim("I don't have a confident answer for that one, and I'd rather not guess."),
-    _m("I can flag it for your CDK team to answer directly — usually same day — or here's what I can help with right now:"),
+    _m("I can flag it for your CAR team to answer directly — usually same day — or here's what I can help with right now:"),
     _nx([{ t: "Flag the question", res: "FLAG_Q", p: true }, ...chips]),
   ], null);
 }
@@ -13768,7 +13768,7 @@ const TASKS_BY_PERSONA = {
   ],
   ops: [
     { id: 'op1', text: 'Resolve 3 daily variances',             meta: 'Daily Operational Control' },
-    { id: 'op2', text: 'Follow up Support Case #PT-4419',       meta: 'CDK Support · open' },
+    { id: 'op2', text: 'Follow up Support Case #PT-4419',       meta: 'CAR Support · open' },
     { id: 'op3', text: 'Review RO aging — 8 over 30 days',      meta: 'Service · escalate' },
   ],
   serviceManager: [
@@ -14785,7 +14785,7 @@ const PAGE_DIRECTORY = [
   { cat: 'Reports & Dashboards', icon: 'is', text: 'Goals & Forecasting',          sub: 'Track department goals MTD' },
 
   // ----- Resources -----
-  { cat: 'Resources', icon: 'is', text: 'CDK University',  sub: 'Training & certification' },
+  { cat: 'Resources', icon: 'is', text: 'CAR University',  sub: 'Training & certification' },
   { cat: 'Resources', icon: 'crm-red', text: 'Customer Care', sub: 'Open or track support cases' },
   { cat: 'Resources', icon: 'dm', text: 'Documents',       sub: 'GCM document library' },
 ];
@@ -14952,7 +14952,7 @@ function renderPicker() {
     if (footerLeft) footerLeft.innerHTML = `
       <span class="ai-footer-badge">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.09 6.26L20 10l-5.91 1.74L12 18l-2.09-6.26L4 10l5.91-1.74L12 2z"/></svg>
-        AI-powered search across all CDK systems
+        AI-powered search across all CAR systems
       </span>`;
     return;
   }
@@ -15131,7 +15131,7 @@ startBannerIdleTimer();
    SCREEN MANAGEMENT — login → onboarding → prototype
    ============================================================ */
 
-/* CDK logo — go to home dashboard, minimising apps without closing them */
+/* CAR logo — go to home dashboard, minimising apps without closing them */
 window.goHome = function() {
   const isAlreadyHome = document.getElementById('prototypeScreen')?.classList.contains('active');
   // Collapse mega-menu if open
@@ -16868,7 +16868,7 @@ const RAIL_STATIC_TOP = [
 ];
 
 const RAIL_STATIC_BOTTOM = [
-  { key: 'university', label: 'CDK University',
+  { key: 'university', label: 'CAR University',
     svg: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 3v9a6 6 0 0 0 12 0V3"/><line x1="4" y1="21" x2="20" y2="21"/></svg>' },
   { key: 'care',       label: 'Customer Care',
     svg: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a9 9 0 0 0-9 9c0 4.97 4.03 9 9 9 1.2 0 2.34-.23 3.39-.66L20 21l-1.1-4.02A8.96 8.96 0 0 0 21 11a9 9 0 0 0-9-9z"/><text x="12" y="14.5" text-anchor="middle" font-size="10" font-weight="700" fill="#0a0a0c">?</text></svg>' },
@@ -17101,7 +17101,7 @@ function initOpenAppsRail() {
     if (action === 'documents') { openAppTab('documentMgmt'); return; }
     if (action === 'care') { e.stopPropagation(); toggleCcFlyout(); return; }
     const labels = {
-      university: 'CDK University', resources: 'Resource Center',
+      university: 'CAR University', resources: 'Resource Center',
     };
     toast(`${labels[action] || action} — not part of this prototype`);
   });
@@ -17452,14 +17452,14 @@ const SUPPORT_TICKETS = [
     status: 'in-progress', requester: 'You', created: 'Aug 5', updated: '2h ago',
     activity: [
       { who: 'You', when: 'Aug 5, 9:14 AM', text: 'Searching "RO 98664" in AIVA returns no match, but the RO is open in Service for Marcus Hill.', agent: false },
-      { who: 'Priya N. — CDK Support', when: 'Aug 5, 11:02 AM', text: 'Thanks — reproduced on your store (Statler Toyota). Escalating to the AIVA indexing team.', agent: true },
-      { who: 'Priya N. — CDK Support', when: 'Aug 6, 8:40 AM', text: 'Index rebuild scheduled tonight. Will confirm once ROs re-resolve.', agent: true },
+      { who: 'Priya N. — CAR Support', when: 'Aug 5, 11:02 AM', text: 'Thanks — reproduced on your store (Statler Toyota). Escalating to the AIVA indexing team.', agent: true },
+      { who: 'Priya N. — CAR Support', when: 'Aug 6, 8:40 AM', text: 'Index rebuild scheduled tonight. Will confirm once ROs re-resolve.', agent: true },
     ]},
   { id: 'CS-4819', subject: 'Accounting AR export to Excel times out', product: 'Accounting', priority: 'Normal',
     status: 'waiting', requester: 'You', created: 'Aug 4', updated: '1d ago',
     activity: [
       { who: 'You', when: 'Aug 4, 3:22 PM', text: 'Exporting the AR customer table (14 rows) spins for ~2 min then fails.', agent: false },
-      { who: 'Deshawn C. — CDK Support', when: 'Aug 4, 4:05 PM', text: 'Could you confirm whether this happens on Last Statement view as well, or only Today?', agent: true },
+      { who: 'Deshawn C. — CAR Support', when: 'Aug 4, 4:05 PM', text: 'Could you confirm whether this happens on Last Statement view as well, or only Today?', agent: true },
     ]},
   { id: 'CS-4815', subject: 'Parts clerk cannot see back counter queue', product: 'Parts', priority: 'High',
     status: 'open', requester: 'T. Alvarez', created: 'Aug 3', updated: '3d ago',
@@ -17475,22 +17475,22 @@ const SUPPORT_TICKETS = [
     status: 'resolved', requester: 'You', created: 'Jul 28', updated: 'Jul 30',
     activity: [
       { who: 'You', when: 'Jul 28, 10:15 AM', text: 'Lien Dashboard shows a payoff total that disagrees with the deal jacket for 129518.', agent: false },
-      { who: 'Mara K. — CDK Support', when: 'Jul 29, 9:30 AM', text: 'Root cause: stale per-diem cache. Patched on your instance.', agent: true },
+      { who: 'Mara K. — CAR Support', when: 'Jul 29, 9:30 AM', text: 'Root cause: stale per-diem cache. Patched on your instance.', agent: true },
       { who: 'You', when: 'Jul 30, 8:02 AM', text: 'Confirmed matching now. Thanks!', agent: false },
-      { who: 'Mara K. — CDK Support', when: 'Jul 30, 8:20 AM', text: 'Great — marking resolved.', agent: true },
+      { who: 'Mara K. — CAR Support', when: 'Jul 30, 8:20 AM', text: 'Great — marking resolved.', agent: true },
     ]},
   { id: 'CS-4771', subject: 'Time clock entries duplicated on RO 98733', product: 'Service', priority: 'Normal',
     status: 'closed', requester: 'You', created: 'Jul 21', updated: 'Jul 24',
     activity: [
       { who: 'You', when: 'Jul 21, 7:55 AM', text: 'Tech time punches on RO 98733 (David Kim) appear twice in the labor grid.', agent: false },
-      { who: 'Deshawn C. — CDK Support', when: 'Jul 22, 2:10 PM', text: 'Duplicate-punch guard deployed. Please re-verify.', agent: true },
+      { who: 'Deshawn C. — CAR Support', when: 'Jul 22, 2:10 PM', text: 'Duplicate-punch guard deployed. Please re-verify.', agent: true },
       { who: 'You', when: 'Jul 24, 9:00 AM', text: 'Clean since the fix. Closing.', agent: false },
     ]},
   { id: 'CS-4760', subject: 'Global search slow on customer phone lookup', product: 'Unify Platform', priority: 'Low',
     status: 'closed', requester: 'R. Okafor', created: 'Jul 15', updated: 'Jul 18',
     activity: [
       { who: 'R. Okafor', when: 'Jul 15, 11:30 AM', text: 'Phone-number searches take 6–8 seconds.', agent: false },
-      { who: 'Priya N. — CDK Support', when: 'Jul 17, 4:44 PM', text: 'Phone index added; lookups now sub-second. Closing after soak.', agent: true },
+      { who: 'Priya N. — CAR Support', when: 'Jul 17, 4:44 PM', text: 'Phone index added; lookups now sub-second. Closing after soak.', agent: true },
     ]},
 ];
 
@@ -18977,7 +18977,7 @@ function renderStepContent(id) {
   if (id === 'accounting') {
     return `<div class="ob-card wide">
       <h1>Set up your accounting</h1>
-      <p class="ob-subtitle">Upload your existing Chart of Accounts or start from a CDK-recommended template designed for automotive dealerships.</p>
+      <p class="ob-subtitle">Upload your existing Chart of Accounts or start from a CAR-recommended template designed for automotive dealerships.</p>
       <div class="ob-upload" id="ob-upload-coa">
         <div class="ob-upload-icon">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
@@ -18985,7 +18985,7 @@ function renderStepContent(id) {
         <h4>Drop your Chart of Accounts here</h4>
         <p>CSV or XLSX format · we'll map columns automatically</p>
         <div class="or-divider">or</div>
-        <button class="ob-secondary-btn" id="ob-load-coa-template">Use CDK Standard Template</button>
+        <button class="ob-secondary-btn" id="ob-load-coa-template">Use CAR Standard Template</button>
       </div>
       <div id="ob-coa-preview" style="margin-top:18px; ${obData.coa ? '' : 'display:none;'}">
         <div class="ob-section-label">Chart of Accounts · ${obData.coa ? obData.coa.length + ' accounts loaded' : ''}</div>
@@ -19093,7 +19093,7 @@ function renderStepContent(id) {
 
   if (id === 'finish') {
     const tasks = [
-      'Creating your CDK Global account',
+      'Creating your CAR Global account',
       'Provisioning Service & Parts modules',
       `Importing ${obData.inventory.length} vehicles to inventory`,
       `Loading ${obData.customers.length} customer records into CRM`,
