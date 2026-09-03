@@ -8125,6 +8125,18 @@
   .aiva-node.nd-auto    { background: #EAF7EA; color: #0A6B05; border-color: #CDE9CC; }
 
 
+
+
+/* ============================================================
+   VOICE: the settled state
+   brand29 set `.settled` on completion but never styled it, so a finished
+   dictation looked identical to one still in progress. The meter stands
+   down and the transcript stops reading as live.
+   ============================================================ */
+.aiva-voice.settled .av-meter { opacity: 0.25; }
+.aiva-voice.settled .av-meter i { animation: none; }
+.aiva-voice.settled .av-transcript { color: var(--text, #151B25); }
+.aiva-voice .av-dot.done { animation: none; background: #09AD00; }
 </style>
 <style>
 /* ==================================================================
@@ -13158,18 +13170,256 @@ const AIVA_HELP_TOPICS = {
    the low-confidence fallback. Every entry is a help topic; no
    action prompts live in this branch.
    ============================================================ */
+/* Four chips per persona, one from each interaction class the assistant
+   actually has: a live view, a question about a real record, a deliberately
+   underspecified ask (the clarifying question is a capability too), and a
+   gated write. How-to chips are not repeated here because the tier above
+   this one is already the help index. Every line below was validated
+   against the matcher under its own persona; several intents are
+   persona-scoped, so a chip that resolves for one role can be a miss for
+   another. Change a line here and re-run test_chips09.mjs before shipping.
+   Grounded records only: the ROs, deals, part numbers and vendors are the
+   fixed constants this prototype is built on. */
+/* ============================================================
+   WELCOME CHIPS — TIER 1: WORK ON THIS PAGE
+   Cross-product runner steps and the more involved actions that apply to
+   whatever is loaded, keyed by the same page key the help index uses
+   ("appKey" or "appKey::Section"). `p` lists the personas a chip is
+   offered to; omit it and the chip is offered to everyone who can reach
+   the intent. Only one how-to is allowed through per page, appended last
+   by the renderer, so the help index stays reachable without being the
+   whole offer.
+
+   Every line was validated against aivaMatchIntent under each listed
+   persona. Most of these intents are persona-scoped, so a phrasing that
+   resolves for one role is a silent miss for another. Change a line and
+   re-run test_chips10.mjs before shipping.
+   ============================================================ */
+const AIVA_PAGE_ACTIONS = {
+  "service::Repair Orders": [
+    { q: "Why is RO 124211 on hold?", p: ["serviceManager", "ops", "tech"] }, // D3
+    { q: "What needs my approval?",            p: ["serviceManager", "ops"] }, // C1
+    { q: "Who is due for service?",            p: ["serviceManager", "ops"] }, // P1A runner
+    { q: "Start a write-up for Diana Reyes",   p: ["serviceManager", "tech"] }, // F82
+    { q: "What's next for me?",                p: ["tech"] },                // C2
+    { q: "Add 2 quarts of oil to RO 124213",   p: ["tech"] },                // F72
+    { q: "Clock me on",                        p: ["tech"] },                // CL1
+  ],
+  "service::Scheduling": [
+    { q: "What appointments do I have tomorrow?", p: ["serviceManager"] },   // AP1
+    { q: "Find her an appointment",            p: ["serviceManager", "ops"] }, // P1C runner
+    { q: "Walk me through them",               p: ["serviceManager"] },      // AP2
+    { q: "Who is due for service?",            p: ["serviceManager", "ops"] }, // P1A runner
+  ],
+  "service::Inspections": [
+    { q: "What should the tech look for?",     p: ["serviceManager", "ops", "tech"] }, // P2A runner
+    { q: "Review the inspection photos",       p: ["serviceManager", "ops", "tech"] }, // P2B runner
+    { q: "What would the engine repair cost?", p: ["serviceManager", "ops", "tech", "parts"] }, // P2C
+    { q: "Hand it to sales",                   p: ["serviceManager", "ops"] }, // P3A runner
+  ],
+  "parts::Inventory": [
+    { q: "Do we have OEM-BP-447 in stock?",    p: ["parts", "partsClerk"] }, // C3
+    { q: "Who has it across the group?",       p: ["parts", "partsClerk"] }, // AX4
+    { q: "Reorder 6 units of OEM-BP-447",      p: ["parts"] },               // F74
+    { q: "What parts would we need for her visit?", p: ["parts", "partsClerk"] }, // P1B runner
+  ],
+  "parts::Special Orders": [
+    { q: "What's holding up SO-4471?",         p: ["parts", "partsClerk", "ops"] }, // C4
+    { q: "Release the PO",                     p: ["parts", "ops"] },        // F2
+    { q: "Order it",                           p: ["parts"] },               // CL4
+  ],
+  "parts::Counter Sale": [
+    { q: "Counter sale \u2014 OEM-BP-447 for Marcus Hill", p: ["partsClerk"] }, // F73
+    { q: "Do we have OEM-BP-447?",             p: ["parts", "partsClerk"] }, // C3
+    { q: "Pull the part",                      p: ["partsClerk"] },          // CL5
+  ],
+  "accounting::AR Dashboard": [
+    { q: "Which invoices are past due?",       p: ["arap"] },                // C6
+    { q: "Show me the aging report",           p: ["arap", "controller"] },  // AX5
+    { q: "Apply the payment",                  p: ["arap", "controller"] },  // CL6
+  ],
+  "accounting::Apply Payments": [
+    { q: "Apply the payment",                  p: ["arap", "controller"] },  // CL6
+    { q: "Which invoices are past due?",       p: ["arap"] },                // C6
+  ],
+  "accounting::AP Payments": [
+    { q: "Write a check to ABC Towing for $450 for the tow on RO #98664", p: ["arap"] }, // F71
+    { q: "Read back the vendor bank details",  p: ["arap", "controller"] },  // H5
+    { q: "Just pay the Testenger invoice",     p: ["arap", "controller"] },  // F3
+  ],
+  "accounting::Journal Entry": [
+    { q: "The GL account is already filled in", p: ["arap", "controller"] }, // E1
+    { q: "Accrue $1,200 to 6100 for July advertising", p: ["controller"] },  // F76
+    { q: "Post the deal to accounting",        p: ["controller", "arap"] },  // P4D runner
+  ],
+  "fi::Lien Dashboard": [
+    { q: "Show me the payoff quotes",          p: ["fi"] },                  // AX3
+    { q: "Why did deal 129522 kick back?",     p: ["fi"] },                  // C7
+    { q: "Resubmit it",                        p: ["fi"] },                  // CL11
+    { q: "Log a $300 chargeback on deal 129521 for the cancelled VSC", p: ["fi"] }, // F81
+  ],
+  "crm::Pipeline": [
+    { q: "How are we pacing this month?",      p: ["salesManager"] },        // C5
+    { q: "What's stuck?",                      p: ["salesManager"] },        // CL9
+    { q: "Hold $750 on deal 129522 for the delivery spiff", p: ["salesManager"] }, // F79
+    { q: "Start the deal",                     p: ["salesManager", "salesAssoc"] }, // P4A runner
+  ],
+  "crm::Customers": [
+    { q: "Who is this customer?",              p: ["salesManager", "salesAssoc"] }, // AX2
+    { q: "Where am I with Juan Gonzalez?",     p: ["salesAssoc"] },          // C8
+    { q: "Who do I follow up with next?",      p: ["salesAssoc"] },          // CL10
+    { q: "What should I show her?",            p: ["salesManager", "salesAssoc"] }, // P3B runner
+  ],
+  "is::Dealer Overview": [
+    { q: "How are we doing this month?",       p: ["owner"] },               // B1
+    { q: "Why is Mazda at 61%?",               p: ["owner"] },               // B2
+    { q: "Break gross out by store",           p: ["owner"] },               // B5
+    { q: "Show me the store scorecard",        p: ["owner"] },               // AX6
+  ],
+};
+
+/* ============================================================
+   WELCOME CHIPS — TIER 2: ANALYTICS
+   Number questions only — comparisons, breakdowns, variances, utilisation,
+   cost projections. No how-tos here by construction; the test asserts it.
+
+   KNOWN GAP, FLAGGED FOR SME INPUT: Service Manager, Parts Manager, Parts
+   Clerk, Technician and F&I Manager have no true departmental KPI question
+   in the build. Effective labour rate, fill rate, technician proficiency,
+   PVR and product penetration would all be the right chips for these roles,
+   and every one of them needs figures this prototype does not have. Rather
+   than invent them, these personas get the computed answers that do exist
+   — capability panels that count from the registries, and cost projections
+   carrying grounded figures. Kevin Gleason (Fixed Ops) and Daniel Showalter
+   (F&I) are the people to close this with.
+   ============================================================ */
+const AIVA_METRICS_BY_PERSONA = {
+  owner: [
+    "Break gross out by store",                     // B5  gross split
+    "Compare inventory aging across stores",        // B6  aging comparison
+    "How are we doing this month?",                 // B1  period roll-up
+    "Where are the operational control variances?", // D2  variance
+  ],
+  ops: [
+    "Show me Toyota tech utilization",              // H2B utilisation
+    "How do Honda's tech hours compare?",           // H2  cross-store compare
+    "Where are the operational control variances?", // D2  variance
+    "Which ROs are waiting on parts?",              // C11 counted backlog
+  ],
+  serviceManager: [
+    "Which ROs are waiting on parts?",              // C11 counted backlog
+    "What needs my approval?",                      // C1  counted queue
+    "What would the engine repair cost?",           // P2C cost projection
+    "Show me the service history",                  // AX1 computed panel
+  ],
+  parts: [
+    "Who has it across the group?",                 // AX4 computed availability
+    "What would the engine repair cost?",           // P2C parts cost projection
+    "What parts would we need for her visit?",      // P1B computed demand
+  ],
+  partsClerk: [
+    "Who has it across the group?",                 // AX4 computed availability
+    "What parts would we need for her visit?",      // P1B computed demand
+  ],
+  tech: [
+    "Show me the service history",                  // AX1 computed panel
+    "What did the MPI find?",                       // P2B inspection findings
+    "What would the engine repair cost?",           // P2C cost projection
+  ],
+  arap: [
+    "Show me the aging report",                     // AX5 computed aging
+    "Which invoices are past due?",                 // C6  counted exposure
+  ],
+  fi: [
+    "Show me the payoff quotes",                    // AX3 computed quote board
+    "What coverage options should I offer her?",    // P4B computed options
+  ],
+  salesManager: [
+    "How are we pacing this month?",                // C5  pace vs target
+    "Show me the CIT report",                       // H7  contracts in transit
+    "What should I show her?",                      // P3B computed match
+  ],
+  salesAssoc: [
+    "What's the store's front gross?",              // A2  store roll-up
+    "Show my numbers",                              // C9  personal roll-up
+    "Where am I with Juan Gonzalez?",               // C8  deal position
+  ],
+  controller: [
+    "Where does month-end close stand?",            // B4  close position
+    "Where are the operational control variances?", // D2  variance
+    "Show me the aging \u2014 who owes us?",         // AX5 computed aging
+  ],
+};
+
+/* Page-agnostic fallback: used when the loaded page has no entry in
+   AIVA_PAGE_ACTIONS, so every page still offers real work. */
 const AIVA_ACTIONS_BY_PERSONA = {
-  owner:          ["How do I set a goal?", "How do I export a report for offline viewing?", "Where can I find my DMS enterprise administrator?"],
-  ops:            ["What's the best report for gross profit and sales?", "How do I view benchmarks?", "How do I prepare for a PartScan Physical Inventory?"],
-  serviceManager: ["How do I dispatch work to a technician?", "How do I override tech time on a repair order?", "How do I set up a Mobile ASR?"],
-  parts:          ["How do I prepare for a PartScan Physical Inventory?", "How do you create, modify, or delete an SOR?", "Where can I see parts history?"],
-  partsClerk:     ["How do I print SOR labels with PartScan?", "How can I quickly receipt FedEx and UPS shipments with PartScan?", "How do you set up a price code?"],
-  tech:           ["How do I add or update tech time on a repair order?", "Where can I find the Electronic Timeclock (ETC)?", "How do I complete a Multi-Point Inspection?"],
-  arap:           ["How do I split an invoice?", "How do I see my AR deposit history?", "Can I skip the authorization step in AP Payments?"],
-  fi:             ["Where do I change lienholder information?", "How do I bulk sign documents?", "How do I access the Evidence Summary?"],
-  salesManager:   ["How do I unwind a sold deal?", "Help me prepare for my appointment with Adam Jones", "How do I view benchmarks?"],
-  salesAssoc:     ["How do I send a credit application?", "How do I access and use CRM Video?", "How do I adjust fees on a quote?"],
-  controller:     ["How do I adjust entries?", "Can I search across companies in GL Inquiry?", "How do I create a 1099 filing?"],
+  owner: [
+    "Show me the store scorecard",                                   // live view (AX6)
+    "Why is Mazda at 61%?",                                          // grounded ask (B2)
+    "Compare the stores for me",                                     // clarifies (CL8)
+    "Alert me if any store's variance passes $5,000",                // gated action (F77)
+  ],
+  ops: [
+    "Show me this vehicle's service history",                        // live view (AX1)
+    "What's holding up SO-4471?",                                    // grounded ask (C4)
+    "Where do I start today?",                                       // clarifies (CL3)
+    "Flag any RO older than 5 days",                                 // gated action (F78)
+  ],
+  serviceManager: [
+    "What appointments do I have tomorrow?",                         // live view (AP1)
+    "Why is RO 124211 on hold?",                                     // grounded ask (D3)
+    "Who is due for service?",                                       // cross-product (P1A)
+    "Start a write-up for Diana Reyes",                              // gated action (F82)
+  ],
+  parts: [
+    "Check group availability across stores",                        // live view (AX4)
+    "Do we have OEM-BP-447 in stock?",                               // grounded ask (C3)
+    "What's holding up SO-4471?",                                    // grounded ask (C4)
+    "Reorder 6 units of OEM-BP-447",                                 // gated action (F74)
+  ],
+  partsClerk: [
+    "Who has it across the group?",                                  // live view (AX4)
+    "Do we have OEM-BP-447?",                                        // grounded ask (C3)
+    "What's holding up SO-4471?",                                    // grounded ask (C4)
+    "Counter sale \u2014 OEM-BP-447 for Marcus Hill",                 // gated action (F73)
+  ],
+  tech: [
+    "What's next for me?",                                           // grounded ask (C2)
+    "Why is RO 124211 on hold?",                                     // grounded ask (D3)
+    "Clock me on",                                                   // clarifies (CL1)
+    "Add 2 quarts of oil to RO 124213",                              // gated action (F72)
+  ],
+  arap: [
+    "Show me the aging report",                                      // live view (AX5)
+    "Which invoices are past due?",                                  // grounded ask (C6)
+    "Apply the payment",                                             // clarifies (CL6)
+    "Write a check to ABC Towing for $450 for the tow on RO #98664", // gated action (F71)
+  ],
+  fi: [
+    "Show me the payoff quotes",                                     // live view (AX3)
+    "Why did deal 129522 kick back?",                                // grounded ask (C7)
+    "Is this deal compliant for Illinois?",                          // grounded ask (H3)
+    "Log a $300 chargeback on deal 129521 for the cancelled VSC",    // gated action (F81)
+  ],
+  salesManager: [
+    "Pull up the customer record",                                   // live view (AX2)
+    "How are we pacing this month?",                                 // grounded ask (C5)
+    "What's stuck?",                                                 // clarifies (CL9)
+    "Hold $750 on deal 129522 for the delivery spiff",               // gated action (F79)
+  ],
+  salesAssoc: [
+    "Show my numbers",                                               // grounded ask (C9)
+    "Who is this customer?",                                         // live view (AX2)
+    "Who do I follow up with next?",                                 // clarifies (CL10)
+    "Log a $500 deposit from David Kim on deal 129518",              // gated action (F80)
+  ],
+  controller: [
+    "Show me the aging \u2014 who owes us?",                          // live view (AX5)
+    "Where does month-end close stand?",                             // grounded ask (B4)
+    "Close the month",                                               // clarifies (CL7)
+    "Accrue $1,200 to 6100 for July advertising",                    // gated action (F76)
+  ],
 };
 
 /* ============================================================
@@ -13334,19 +13584,263 @@ window.aivaOpenHelpSite = function(siteKey) {
 
 /* What AIVA can currently do, stated from the help layer itself rather
    than from a hand-written list, so it cannot drift from reality. */
+/* Every figure below is counted from the registry the feature itself reads,
+   at the moment the panel is opened. Nothing is hard-coded, so the panel
+   cannot fall out of step with the build the way its predecessor did. */
+
+/* ============================================================
+   DEMO INVENTORY — the fourth wall, on purpose
+   Reached from the capabilities panel. Everything below is counted from
+   the registry the feature itself reads, at the moment it is opened, so
+   this cannot drift from the build. It speaks as the prototype rather
+   than as AIVA, which is the honest register for the question being
+   asked: not "what would my role type" but "what is actually wired".
+   ============================================================ */
+
+/* One place to ask what a persona can say. Every entry is a phrasing that
+   has been validated against the matcher under that persona — these are
+   the same curated registries the welcome card draws from, not keywords
+   scraped out of intents, because a keyword is not a sentence a user
+   would type. */
+function aivaDemoCommands(personaKey) {
+  const seen = new Set();
+  const uniq = (list) => (list || []).filter(q => {
+    const k = aivaHelpNorm(q);
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+  // Numbers are claimed first. Several phrasings sit in both the page-work
+  // and analytics registries, and whichever group is built first takes them
+  // — building work first left the Service Manager showing two of four
+  // analytics chips.
+  const numbers = uniq(AIVA_METRICS_BY_PERSONA[personaKey] || []);
+  // The voice line is claimed next for the same reason: several roles can
+  // type their spoken line verbatim, and listing it in both groups reads as
+  // a duplicate rather than as two ways in.
+  const voice = AIVA_VOICE_LINES[personaKey] || null;
+  if (voice) uniq([voice]);
+  // Page work, flattened across every page this persona is offered on.
+  const work = [];
+  for (const pageKey of Object.keys(AIVA_PAGE_ACTIONS)) {
+    for (const a of AIVA_PAGE_ACTIONS[pageKey]) {
+      if (!a.p || a.p.includes(personaKey)) work.push(a.q);
+    }
+  }
+  const custQ = aivaCustomerAskQ(personaKey);
+  return {
+    work:     uniq(work.concat(AIVA_ACTIONS_BY_PERSONA[personaKey] || [])),
+    numbers:  numbers,
+    customer: uniq(custQ ? [custQ] : []),
+    voice:    voice,
+  };
+}
+
+/* Clicking a command from another role has to move to that role first, or
+   the intent is out of scope and the answer is a fallback. */
+window.aivaDemoRun = function(personaKey, q) {
+  if (personaKey && personaKey !== currentPersonaKey()) renderPersona(personaKey);
+  askAiva(q);
+};
+
+function aivaDemoChipRow(personaKey, list) {
+  return list.map(q => {
+    const safe = escapeHtml(q).replace(/&#39;/g, "\\'");
+    return `<button class="aiva-action" onclick="aivaDemoRun('${personaKey}', '${safe}')">${escapeHtml(q)}</button>`;
+  }).join("");
+}
+
+window.aivaDemoInventory = function() {
+  openAIVA();
+  const runSteps  = AIVA_RUN_STEPS.length;
+  const runUCs    = [...new Set(AIVA_RUN_STEPS.map(s => s.uc).filter(u => u && u !== "\u2014"))].length;
+  const runRoles  = AIVA_RUN_STEPS.filter(s => s.switches).length + 1;
+  const caps      = Object.values(AIVA_CAPABILITIES).length;
+  const forms     = Object.keys(AIVA_FORMS).length;
+  const logged    = Object.values(AIVA_RESOLUTIONS).filter(r => r.log).length;
+  const clarify   = AIVA_INTENTS.filter(i => i.clarify).length;
+  const spots     = Object.keys(AIVA_SPOTLIGHTS).length;
+  const voices    = Object.keys(AIVA_VOICE_LINES).length;
+  const personas  = Object.keys(PERSONAS).length;
+  const records   = Object.keys(AIVA_RECORDS).length;
+  const topics    = aivaHelpIndex().length;
+  const sites     = new Set(aivaHelpIndex().map(t => t.s)).size;
+  const entities  = Object.keys(CTX_LABEL).length;
+  const intents   = AIVA_INTENTS.length;
+
+  const me  = currentPersonaKey();
+  const mine = aivaDemoCommands(me);
+  const meLabel = (PERSONAS[me] && PERSONAS[me].label) || me;
+
+  aivaAppendReply([
+    _m("<b>What this prototype demonstrates</b>"),
+    _m(`Stepping outside the role for a second \u2014 you asked from the
+        capabilities panel, so here is the build rather than the pitch.
+        Every figure below is counted from this file as it loads.`),
+
+    _m(`<b>The cross-product flow.</b> One customer, carried through Service,
+        Parts, Sales, F&amp;I and Accounting: ${runSteps} steps covering
+        ${runUCs} use cases, with ${runRoles} role handoffs along the way. Run
+        it from the bar at the bottom of the screen, guided or automatic.`),
+
+    _m(`<b>What is wired.</b> ${intents} intents across ${personas} personas.
+        ${caps} live capability panels. ${forms} gated action forms, and
+        ${logged} resolutions that write to the activity log. ${clarify} asks that stop and
+        ask a clarifying question instead of guessing. ${spots} field
+        spotlights that point at the screen. ${voices} voice write-up lines,
+        one per role. ${records} grounded records addressable by number, and
+        ${entities} entity types carried forward between turns. Help answers
+        come from ${topics} indexed topics across ${sites} CDK sites.`),
+
+    _m(`<b>Three classes, one gate.</b> Monitoring and Rules Engine work is
+        advisory and cannot write to the log \u2014 that is enforced in code,
+        not by convention. Automation changes state, always behind a
+        confirmation card, always audited.`),
+
+    _m(`<b>What you can type right now, as ${escapeHtml(meLabel)}:</b>`),
+    { t: "raw", h: `<div class="aiva-actions">${
+      aivaDemoChipRow(me, mine.customer.concat(mine.work).slice(0, 6))
+    }</div>` },
+    mine.numbers.length ? { t: "raw", h:
+      `<div class="aiva-next-actions-label">Numbers</div>
+       <div class="aiva-actions">${aivaDemoChipRow(me, mine.numbers)}</div>` } : null,
+    mine.voice ? { t: "raw", h:
+      `<div class="aiva-next-actions-label">Or press the mic and say</div>
+       <div class="aiva-actions">${aivaDemoChipRow(me, [mine.voice])}</div>` } : null,
+
+    _lim(`The data is fixed and grounded \u2014 same records, customers and
+          accounts every time \u2014 and the integrations behind the write
+          actions are simulated. This is a reference implementation, not a
+          shippable build.`),
+
+    _nx([
+      { t: "Show every command, by persona", js: "aivaDemoByPersona()", p: true },
+      { t: "Run the cross-product flow", js: "aivaRunOpen()" },
+      { t: "Show me the activity log", res: "OPEN_LOG" },
+    ]),
+  ].filter(Boolean), null);
+};
+
+window.aivaDemoByPersona = function() {
+  openAIVA();
+  const me = currentPersonaKey();
+  const blocks = [
+    _m("<b>Every command in the build, by persona</b>"),
+    _m(`Most of these are scoped to a role, so clicking one switches you to
+        that persona first \u2014 otherwise the intent is out of scope and you
+        would get a fallback rather than the answer. You are currently
+        <b>${escapeHtml((PERSONAS[me] && PERSONAS[me].label) || me)}</b>.`),
+  ];
+
+  for (const key of Object.keys(PERSONAS)) {
+    const c = aivaDemoCommands(key);
+    const label = escapeHtml((PERSONAS[key] && PERSONAS[key].label) || key);
+    const count = c.customer.length + c.work.length + c.numbers.length + (c.voice ? 1 : 0);
+    let h = `<div class="aiva-next-actions-label">${label}${key === me ? " \u2014 you" : ""} \u00b7 ${count} commands</div>`;
+    const doing = c.customer.concat(c.work);
+    if (doing.length)      h += `<div class="aiva-actions">${aivaDemoChipRow(key, doing)}</div>`;
+    if (c.numbers.length)  h += `<div class="aiva-actions">${aivaDemoChipRow(key, c.numbers)}</div>`;
+    if (c.voice)           h += `<div class="aiva-actions">${aivaDemoChipRow(key, [c.voice])}</div>`;
+    blocks.push({ t: "raw", h });
+  }
+
+  blocks.push(_lim(`This list is generated from the same registries the chips
+    themselves are drawn from, so it is the whole set \u2014 not a curated
+    highlight reel. If a phrasing is not here, it is not wired.`));
+  blocks.push(_nx([
+    { t: "Back to what this demos", js: "aivaDemoInventory()" },
+    { t: "Run the cross-product flow", js: "aivaRunOpen()" },
+  ]));
+
+  aivaAppendReply(blocks, null);
+};
+
 window.aivaShowCapabilities = function() {
   openAIVA();
-  const page = aivaHelpPage();
-  const idx = aivaHelpIndex();
-  const sites = new Set(idx.map(t => t.s));
+
+  const page   = aivaHelpPage();
+  const idx    = aivaHelpIndex();
+  const sites  = new Set(idx.map(t => t.s));
+  const caps   = Object.values(AIVA_CAPABILITIES);
+  const capApps = [...new Set(caps.map(c => c.app))]
+    .map(k => AIVA_APP_LABEL[k] || k);
+  const forms  = Object.keys(AIVA_FORMS).length;
+  const logged = Object.values(AIVA_RESOLUTIONS).filter(r => r.log).length;
+  const commits = Object.values(AIVA_RESOLUTIONS).filter(r => typeof r.fn === "function").length;
+  const personas = Object.keys(AIVA_ACTIONS_BY_PERSONA).length;
+  const entities = Object.keys(CTX_LABEL).length;
+  const records  = Object.keys(AIVA_RECORDS).length;
+  const spots    = Object.keys(AIVA_SPOTLIGHTS).length;
+  const clarify  = AIVA_INTENTS.filter(i => i.clarify).length;
+  const sourced  = AIVA_INTENTS.filter(i => i.checking).length;
+  const pageTopics = (page.topics || []).length;
+  const here = escapeHtml(page.label);
+
   aivaAppendReply([
     _m("<b>Current capabilities</b>"),
-    _m(`I answer <b>how-to</b> and <b>where-do-I-find-it</b> questions from
-        ${sites.size} CDK help sites — ${idx.length} indexed topics in all.
-        I don't act on records, open screens, or change anything.`),
-    _m(`On this page — <b>${escapeHtml(page.label)}</b> — I can cover
-        ${(page.topics || []).length} of them.`),
-    _nx([{ t: "What topics are on this page?" }]),
+    _m(`Everything I do falls into one of three classes. The class decides
+        whether I stop and ask you first, and whether the action is written
+        to the activity log.`),
+
+    /* ---- Monitoring: reads, changes nothing ---- */
+    _nd("monitor"),
+    _m(`<b>I read and I notice.</b> I answer how-to and where-do-I-find-it
+        questions from ${sites.size} CDK help sites — ${idx.length} indexed
+        topics across ${Object.keys(AIVA_HELP_TOPICS).length} pages. On this
+        page — <b>${here}</b> — I cover ${pageTopics}.`),
+    _m(`I also pull live views into the conversation:
+        ${caps.length} of them, across ${capApps.join(", ")}. I resolve
+        ${records} grounded records by number — repair orders, deals, parts,
+        POs, invoices, support cases — and I say which system each answer
+        came from on ${sourced} of my replies.`),
+
+    /* ---- Rules engine: recommends, changes nothing ---- */
+    _nd("rules"),
+    _m(`<b>I recommend, and I show my reasoning.</b> I rank options against
+        your constraints and tell you why the top one is on top. Nothing here
+        is written — a recommendation you ignore costs you nothing.`),
+    _m(`I ask a clarifying question rather than guess when a request is
+        ambiguous (${clarify} of my intents do this), I point at the actual
+        field on screen when the answer is a place rather than a fact
+        (${spots} spotlights), and I carry ${entities} kinds of entity forward
+        in a conversation so you never restate them. What I am holding shows
+        as chips above the input, and removing a chip is how you correct me.`),
+
+    /* ---- Automation: changes state, always gated ---- */
+    _nd("auto"),
+    _m(`<b>I change things — and this is the part with the gate.</b> I fill
+        and submit ${forms} action forms, scoped to your role: there are
+        ${personas} role-specific action sets, and you only ever see yours.`),
+    _m(`Every one of these stops for a confirmation card that states exactly
+        what will happen before it happens. ${logged} actions write an entry
+        to the activity log, and ${commits} of them commit a state change you
+        can see reflected on the screen behind me. The log is the durable
+        record: it survives clearing the conversation, and it carries the
+        inputs I used and who confirmed them.`),
+    _m(`I can hand a customer's case from one department to the next —
+        Service, Parts, Sales, F&amp;I, Accounting — carrying who sent it and
+        why, so the next person does not start cold.`),
+    _m(`I take dictation too — one spoken line per role, extracted into the
+        form as it is heard. Voice gets no shortcut: the sentence goes through
+        the same clarify, confirm and audit pipeline as typing.`),
+
+    /* ---- Boundaries ---- */
+    _lim(`<b>What I will not do.</b> I never change state without a
+          confirmation card, and Monitoring and Rules Engine work is
+          <i>blocked in code</i> from writing to the activity log — the log is
+          a record of what I did, not what I considered. I do not answer from
+          documentation I cannot cite. When something sits outside what I can
+          reach, I say so and offer to flag it for your CDK team rather than
+          guess.`),
+    _lim(`This is a prototype. The data is a fixed, grounded set — the records,
+          customers and accounts are the same every time — and the integrations
+          behind the write actions are simulated, not live.`),
+
+    _nx([
+      { t: "What topics are on this page?" },
+      { t: "What does this prototype demo?", js: "aivaDemoInventory()", p: true },
+      { t: "Show me the activity log", res: "OPEN_LOG" },
+    ]),
   ], null);
 };
 
@@ -13894,15 +14388,38 @@ function renderAivaWelcome(personaKey) {
   // section is three chips total: the customer question plus two page
   // topics. Resolved before the topics are sliced.
   const custQ = aivaCustomerAskQ(personaKey);
+
+  // TIER 1 — work on this page. Page-scoped actions and runner steps the
+  // active persona can actually reach, then at most ONE how-to from the
+  // help index, appended last. The help topics used to be the entire tier;
+  // they are now the tail of it.
+  const pageWork = (AIVA_PAGE_ACTIONS[pageKey] || [])
+    .filter(a => !a.p || a.p.includes(personaKey))
+    .map(a => a.q);
+  // Tier 2's chips are reserved before tier 1's fallback is chosen. The
+  // fallback set and the analytics set overlap for several roles, and
+  // whichever tier is built first would otherwise starve the other — AR/AP
+  // lost its entire analytics tier this way.
+  const reserved = new Set((AIVA_METRICS_BY_PERSONA[personaKey] || []).map(aivaHelpNorm));
+  // Fall back to the role's own action set on pages with no entry, so a
+  // page without a script still offers real work rather than only how-tos.
+  const work = pageWork.length
+    ? pageWork.slice(0, 4)
+    : (AIVA_ACTIONS_BY_PERSONA[personaKey] || [])
+        .filter(a => !reserved.has(aivaHelpNorm(a))).slice(0, 3);
+  const ONE_HOWTO = 1;
+  const seen = new Set(work.map(aivaHelpNorm));
+  if (custQ) seen.add(aivaHelpNorm(custQ));
   const pageTopics = (page.topics || [])
-    .slice(0, CHIPS_PER_SECTION - (custQ ? 1 : 0));
+    .filter(t => !seen.has(aivaHelpNorm(t.q)))
+    .slice(0, ONE_HOWTO);
+  pageTopics.forEach(t => seen.add(aivaHelpNorm(t.q)));
   const pageSites = aivaHelpSiteLine(aivaHelpPageSites(page));
-  // Role topics that are not already offered by the page, so the two
-  // tiers never repeat each other.
-  const onPage = new Set(pageTopics.map(t => aivaHelpNorm(t.q)));
-  if (custQ) onPage.add(aivaHelpNorm(custQ));
-  const actions = (AIVA_ACTIONS_BY_PERSONA[personaKey] || [])
-    .filter(a => !onPage.has(aivaHelpNorm(a))).slice(0, CHIPS_PER_SECTION);
+
+  // TIER 2 — analytics only. Never how-tos: this list is a separate
+  // registry precisely so a help topic cannot leak into it.
+  const metrics = (AIVA_METRICS_BY_PERSONA[personaKey] || [])
+    .filter(m => !seen.has(aivaHelpNorm(m)));
   const now = new Date();
   const tStr = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 
@@ -13920,15 +14437,16 @@ function renderAivaWelcome(personaKey) {
       ${aivaIsUnsupportedPage(pageKey) ? `
         <div class="aiva-msg">Ah, looks like this isn't something I can help with just yet. I know that's not the answer you were hoping for. If it'd help, you can share feedback or ideas with us by selecting the \u201Cthumbs down\u201D below, so we can continue to improve your CDK experience.</div>
       ` : `
-      <div class="aiva-next-actions-label">Help topics on this page — ${escapeHtml(page.label)}</div>
+      <div class="aiva-next-actions-label">Things you can do on ${escapeHtml(page.label)} \u2014 anything that changes state stops for your confirmation first</div>
       <div class="aiva-actions">
         ${custQ ? `<button class="aiva-action" onclick="askAiva('${escapeHtml(custQ).replace(/&#39;/g, "\\'")}')">${escapeHtml(custQ)}</button>` : ''}
+        ${work.map(a => `<button class="aiva-action" onclick="askAiva('${escapeHtml(a).replace(/&#39;/g, "\\'")}')">${escapeHtml(a)}</button>`).join('')}
         ${pageTopics.map(t => `<button class="aiva-action" onclick="askAiva('${escapeHtml(t.q).replace(/&#39;/g, "\\'")}')">${escapeHtml(t.q)}</button>`).join('')}
       </div>
-      ${actions.length ? `
-        <div class="aiva-next-actions-label">You can also ask metrics questions related to your business.</div>
+      ${metrics.length ? `
+        <div class="aiva-next-actions-label">Or ask me to run the numbers</div>
         <div class="aiva-actions">
-          ${actions.map(a => `<button class="aiva-action" onclick="askAiva('${escapeHtml(a).replace(/&#39;/g, "\\'")}')">${escapeHtml(a)}</button>`).join('')}
+          ${metrics.map(a => `<button class="aiva-action" onclick="askAiva('${escapeHtml(a).replace(/&#39;/g, "\\'")}')">${escapeHtml(a)}</button>`).join('')}
         </div>
       ` : ''}`}
     </div>
@@ -15483,6 +16001,9 @@ function aivaActBtn(a, confirmIdx) {
 function aivaRenderBlocks(blocks) {
   return blocks.map(b => {
     switch (b.t) {
+      // Pre-built markup, used by the demo inventory to emit chip rows that
+      // are already escaped. Never fed anything user-supplied.
+      case "raw":  return b.h;
       case "node": {
         const n = AIVA_NODES[b.kind];
         if (!n) return "";
@@ -16291,6 +16812,8 @@ window.aivaClearContext = function() {
   // An answer to a question that has just been cleared does not belong in
   // the thread that replaced it.
   if (typeof aivaCancelReply === "function") aivaCancelReply();
+  // A dictation in flight belongs to the thread being cleared.
+  if (typeof aivaVoiceCancel === "function") aivaVoiceCancel();
   body.innerHTML = "";
   aivaCtxReset();
   aivaCoachReset();
@@ -17697,6 +18220,8 @@ function aivaRunResetState() {
   clearTimeout(AIVA_RUN.balloonTimer);
   clearTimeout(AIVA_RUN.askTimer);
   if (typeof aivaRunTypeCancel === "function") aivaRunTypeCancel();
+  // A dictation in flight belongs to the thread being cleared.
+  if (typeof aivaVoiceCancel === "function") aivaVoiceCancel();
   if (typeof aivaBalloonsClear === "function") aivaBalloonsClear();
 
   // Dismiss the persona indicator so a reset mid-announcement does not leave
@@ -18897,20 +19422,55 @@ function aivaFormProceed(intent, text, values) {
    treatment as typed input. Transcription is simulated by design:
    the deliverable is the interaction contract, not speech-to-text.
    ------------------------------------------------------------ */
-let AIVA_VOICE = { active: false, el: null };
+/* ============================================================
+   VOICE & MULTIMODAL INPUT
+   The roadmap's Voice track is six steps, and this is all six: capture,
+   form schema awareness, stream-of-consciousness entity extraction,
+   automated population, gap detection, and a confirmation gate.
 
-/* Voice is a listening state and nothing more.
-   It used to dictate a per-persona line word by word, pull entities out
-   of the partial transcript, land them into form fields and then hand
-   the sentence to askAiva, which ran the full confirm-and-commit
-   pipeline. None of that happens now: the mic opens a listening state
-   with a level meter, and that is the whole behaviour. Nothing is
-   transcribed, extracted, sent, or acted on. */
+   The dictation is simulated — there is no speech recognition here — but
+   everything downstream of the transcript is the real pipeline. Words
+   arrive one at a time; the extractor runs on each partial, so a field
+   lands the moment its value is heard and refines as more words arrive;
+   and the finished sentence is handed to askAiva, which is the same door
+   typing goes through. That last part is the point. Voice earns no
+   shortcut: if the sentence is incomplete AIVA asks a clarifying
+   question, if it changes state it stops at a confirmation card, and if
+   it commits it writes to the audit log. A voice channel that could act
+   without the gate would be the gate's biggest hole.
+
+   One line per persona, because the whole claim is that every role can
+   work this way — not that the feature exists somewhere.
+   ============================================================ */
+const AIVA_VOICE_LINES = {
+  owner:          "Alert me if any store's variance passes $5,000",
+  ops:            "Flag any RO older than 5 days",
+  serviceManager: "Start a write-up for Diana Reyes \u2014 rattle up front when braking, mileage's around 42,000, wants an oil change too, and she'll wait",
+  parts:          "Reorder 6 units of OEM-BP-447",
+  partsClerk:     "Counter sale \u2014 OEM-BP-447 for Marcus Hill",
+  tech:           "Add 2 quarts of oil to RO 124213",
+  arap:           "Write a check to ABC Towing for $450 for the tow on RO #98664",
+  fi:             "Log a $300 chargeback on deal 129521 for the cancelled VSC",
+  salesManager:   "Hold $750 on deal 129522 for the delivery spiff",
+  salesAssoc:     "Log a $500 deposit from David Kim on deal 129518",
+  controller:     "Accrue $1,200 to 6100 for July advertising",
+};
+let AIVA_VOICE_TICK = 170;
+let AIVA_VOICE = { active: false, el: null, timer: null };
+
 window.aivaVoiceStart = function() {
   if (AIVA_VOICE.active) { aivaVoiceCancel(); return; }
+  const text = AIVA_VOICE_LINES[currentPersonaKey()];
+  if (!text) return;
   openAIVA();
   const body = document.getElementById("aivaBody");
   if (!body) return;
+
+  // Form schema awareness: the form's own field list is what gets drawn,
+  // so the pending fields are visible before a single value is heard.
+  const intent = aivaMatchIntent(text.toLowerCase());
+  const form = intent && intent.form ? AIVA_FORMS[intent.form] : null;
+
   const vid = "aivaVoice" + Date.now();
   body.insertAdjacentHTML("beforeend", `
     <div class="aiva-voice" id="${vid}">
@@ -18921,19 +19481,71 @@ window.aivaVoiceStart = function() {
       <div class="av-meter" aria-hidden="true">
         <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
       </div>
+      <div class="av-transcript"></div>
+      ${form ? `<div class="av-fields">${form.fields.map(f =>
+        `<div class="av-field" data-k="${f.k}"><span class="fk">${escapeHtml(f.label)}</span><span class="fv">\u2014</span></div>`
+      ).join("")}</div>` : ""}
     </div>`);
   body.scrollTop = body.scrollHeight;
+
+  const el = document.getElementById(vid);
+  const tEl = el.querySelector(".av-transcript");
   const mic = document.getElementById("aivaMicBtn");
   if (mic) mic.classList.add("mic-live");
-  AIVA_VOICE = { active: true, el: document.getElementById(vid) };
+
+  const words = text.split(/\s+/);
+  let i = 0;
+  const step = () => {
+    i++;
+    const partial = words.slice(0, i).join(" ");
+    tEl.textContent = partial;
+    if (form) {
+      // The same extraction pass the typed path uses, run on the partial
+      // transcript: a field lands the moment its value is heard, and
+      // refines as more words arrive.
+      const ex = aivaExtractValues(partial);
+      for (const f of form.fields) {
+        const val = ex[f.from || f.k];
+        if (!val) continue;
+        const fv = el.querySelector(`.av-field[data-k="${f.k}"] .fv`);
+        if (!fv) continue;
+        if (fv.textContent !== val.label) {
+          fv.textContent = val.label;
+          fv.classList.add("landed");
+        }
+      }
+    }
+    body.scrollTop = body.scrollHeight;
+    if (i >= words.length) aivaVoiceDone(text);
+  };
+  AIVA_VOICE = { active: true, el, timer: setInterval(step, AIVA_VOICE_TICK) };
 };
+
+function aivaVoiceDone(text) {
+  if (!AIVA_VOICE.active) return;
+  clearInterval(AIVA_VOICE.timer);
+  const el = AIVA_VOICE.el;
+  if (el) {
+    el.classList.add("settled");
+    const head = el.querySelector(".av-head");
+    if (head) head.innerHTML = '<span class="av-dot done"></span>Heard it \u2014 sending';
+  }
+  const mic = document.getElementById("aivaMicBtn");
+  if (mic) mic.classList.remove("mic-live");
+  AIVA_VOICE = { active: false, el: null, timer: null };
+  // Voice earns the same pipeline as typing: clarify if incomplete,
+  // confirm before acting, audit when committed.
+  setTimeout(() => askAiva(text), 480);
+}
+window.aivaVoiceDone = aivaVoiceDone;
 
 window.aivaVoiceCancel = function() {
   if (!AIVA_VOICE.active) return;
+  clearInterval(AIVA_VOICE.timer);
   if (AIVA_VOICE.el) AIVA_VOICE.el.remove();
   const mic = document.getElementById("aivaMicBtn");
   if (mic) mic.classList.remove("mic-live");
-  AIVA_VOICE = { active: false, el: null };
+  AIVA_VOICE = { active: false, el: null, timer: null };
 };
 
 function aivaRenderForm(intent, text) {
