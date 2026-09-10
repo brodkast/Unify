@@ -8137,6 +8137,82 @@
 .aiva-voice.settled .av-meter i { animation: none; }
 .aiva-voice.settled .av-transcript { color: var(--text, #151B25); }
 .aiva-voice .av-dot.done { animation: none; background: #09AD00; }
+
+
+/* ============================================================
+   CLTV PROVENANCE FOOTNOTE
+   Sits at the end of a reply, below reply size: 10px on the RDS scale
+   (Overline step) with medium-muted ink and a hairline above. It should
+   read as a citation, not as a second sentence.
+   ============================================================ */
+.aiva-cltv-src {
+  font-size: 10px;
+  line-height: 14px;
+  letter-spacing: 0.3px;
+  color: rgba(21, 27, 37, 0.55);
+  margin-top: 8px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(21, 27, 37, 0.08);
+}
+body.theme-dark .aiva-cltv-src {
+  color: rgba(255, 255, 255, 0.5);
+  border-top-color: rgba(255, 255, 255, 0.10);
+}
+
+
+/* ============================================================
+   INLINE DATA VISUALIZATION
+   Renders inside the reply, at reply width. RDS scale throughout: 12px
+   body in cells, 10px Overline for headers with its 1.5px tracking.
+   Colour never carries meaning alone — every bar and fill sits beside a
+   readable figure, because --green (3.00:1) and --amber (2.14:1) fail AA
+   as text and are only safe as fills.
+   ============================================================ */
+.aiva-tbl-wrap { margin: 8px 0; overflow-x: auto; }
+.aiva-tbl { width: 100%; border-collapse: collapse; font-size: 12px; line-height: 16px; }
+.aiva-tbl th {
+  font-size: 10px; line-height: 14px; letter-spacing: 1.5px; text-transform: uppercase;
+  text-align: left; font-weight: 600; color: rgba(21,27,37,0.70);
+  padding: 4px 8px 4px 0; border-bottom: 1px solid var(--border, #DCDDDE); white-space: nowrap;
+}
+.aiva-tbl th.n, .aiva-tbl td.n { text-align: right; padding-right: 0; }
+.aiva-tbl td {
+  padding: 6px 8px 6px 0; border-bottom: 1px solid rgba(21,27,37,0.06);
+  color: var(--text, #151B25); vertical-align: middle;
+}
+.aiva-tbl tr:last-child td { border-bottom: none; }
+.aiva-tbl .tb-total td {
+  border-top: 1px solid var(--border, #DCDDDE); border-bottom: none;
+  font-weight: 700; padding-top: 8px;
+}
+/* in-cell proportion: bar behind, figure in front, both legible */
+.aiva-tbl .tb-wrap {
+  display: inline-block; width: 44px; height: 6px; border-radius: 3px;
+  background: rgba(21,27,37,0.08); margin-right: 8px; vertical-align: middle; overflow: hidden;
+}
+.aiva-tbl .tb-fill { display: block; height: 100%; border-radius: 3px; }
+.aiva-tbl .tb-v { font-variant-numeric: tabular-nums; }
+
+.aiva-bars { margin: 8px 0; display: flex; flex-direction: column; gap: 8px; }
+.aiva-bars .ab-row { display: flex; align-items: center; gap: 8px; font-size: 12px; line-height: 16px; }
+.aiva-bars .ab-k { flex: 0 0 34%; color: var(--text, #151B25); }
+.aiva-bars .ab-track { flex: 1 1 auto; height: 8px; border-radius: 4px; background: rgba(21,27,37,0.08); overflow: hidden; }
+.aiva-bars .ab-fill { display: block; height: 100%; border-radius: 4px; }
+.aiva-bars .ab-v { flex: 0 0 auto; min-width: 56px; text-align: right; font-weight: 600;
+  color: var(--text, #151B25); font-variant-numeric: tabular-nums; }
+
+.aiva-stats { display: flex; flex-wrap: wrap; gap: 16px; margin: 8px 0; }
+.aiva-stats .as-cell { min-width: 72px; }
+.aiva-stats .as-n { font-size: 20px; line-height: 24px; font-weight: 700; color: var(--text, #151B25);
+  font-variant-numeric: tabular-nums; }
+.aiva-stats .as-k { font-size: 10px; line-height: 14px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: rgba(21,27,37,0.70); }
+
+body.theme-dark .aiva-tbl th, body.theme-dark .aiva-stats .as-k { color: rgba(255,255,255,0.65); }
+body.theme-dark .aiva-tbl td, body.theme-dark .aiva-bars .ab-k,
+body.theme-dark .aiva-bars .ab-v, body.theme-dark .aiva-stats .as-n { color: rgba(255,255,255,0.95); }
+body.theme-dark .aiva-tbl td { border-bottom-color: rgba(255,255,255,0.08); }
+body.theme-dark .aiva-tbl .tb-wrap, body.theme-dark .aiva-bars .ab-track { background: rgba(255,255,255,0.12); }
 </style>
 <style>
 /* ==================================================================
@@ -13197,6 +13273,7 @@ const AIVA_HELP_TOPICS = {
    ============================================================ */
 const AIVA_PAGE_ACTIONS = {
   "service::Repair Orders": [
+    { q: "When will RO 124213 be done?", p: ["serviceManager", "ops"] },
     { q: "Why is RO 124211 on hold?", p: ["serviceManager", "ops", "tech"] }, // D3
     { q: "What needs my approval?",            p: ["serviceManager", "ops"] }, // C1
     { q: "Who is due for service?",            p: ["serviceManager", "ops"] }, // P1A runner
@@ -13218,6 +13295,7 @@ const AIVA_PAGE_ACTIONS = {
     { q: "Hand it to sales",                   p: ["serviceManager", "ops"] }, // P3A runner
   ],
   "parts::Inventory": [
+    { q: "Did PO 178658 post to inventory?", p: ["parts", "partsClerk"] },
     { q: "Do we have OEM-BP-447 in stock?",    p: ["parts", "partsClerk"] }, // C3
     { q: "Who has it across the group?",       p: ["parts", "partsClerk"] }, // AX4
     { q: "Reorder 6 units of OEM-BP-447",      p: ["parts"] },               // F74
@@ -13234,6 +13312,7 @@ const AIVA_PAGE_ACTIONS = {
     { q: "Pull the part",                      p: ["partsClerk"] },          // CL5
   ],
   "accounting::AR Dashboard": [
+    { q: "Are there any unapplied payments right now?", p: ["arap", "controller"] },
     { q: "Which invoices are past due?",       p: ["arap"] },                // C6
     { q: "Show me the aging report",           p: ["arap", "controller"] },  // AX5
     { q: "Apply the payment",                  p: ["arap", "controller"] },  // CL6
@@ -13243,6 +13322,7 @@ const AIVA_PAGE_ACTIONS = {
     { q: "Which invoices are past due?",       p: ["arap"] },                // C6
   ],
   "accounting::AP Payments": [
+    { q: "Which vendor invoices are past due?", p: ["arap", "controller"] },
     { q: "Write a check to ABC Towing for $450 for the tow on RO #98664", p: ["arap"] }, // F71
     { q: "Read back the vendor bank details",  p: ["arap", "controller"] },  // H5
     { q: "Just pay the Testenger invoice",     p: ["arap", "controller"] },  // F3
@@ -13253,18 +13333,23 @@ const AIVA_PAGE_ACTIONS = {
     { q: "Post the deal to accounting",        p: ["controller", "arap"] },  // P4D runner
   ],
   "fi::Lien Dashboard": [
+    { q: "Run deal 129522 at 60 and 72 months and show me which lenders fit her credit profile", p: ["fi"] },
+    { q: "Pull up the Illinois title application form for this deal", p: ["fi"] },
     { q: "Show me the payoff quotes",          p: ["fi"] },                  // AX3
     { q: "Why did deal 129522 kick back?",     p: ["fi"] },                  // C7
     { q: "Resubmit it",                        p: ["fi"] },                  // CL11
     { q: "Log a $300 chargeback on deal 129521 for the cancelled VSC", p: ["fi"] }, // F81
   ],
   "crm::Pipeline": [
+    { q: "How are sales trending this month and who's leading?", p: ["salesManager"] },
     { q: "How are we pacing this month?",      p: ["salesManager"] },        // C5
     { q: "What's stuck?",                      p: ["salesManager"] },        // CL9
     { q: "Hold $750 on deal 129522 for the delivery spiff", p: ["salesManager"] }, // F79
     { q: "Start the deal",                     p: ["salesManager", "salesAssoc"] }, // P4A runner
   ],
   "crm::Customers": [
+    { q: "Do we have any Venue SEL in stock?", p: ["salesManager", "salesAssoc"] },
+    { q: "Run a credit check for Bonita Murray", p: ["salesAssoc"] },
     { q: "Who is this customer?",              p: ["salesManager", "salesAssoc"] }, // AX2
     { q: "Where am I with Juan Gonzalez?",     p: ["salesAssoc"] },          // C8
     { q: "Who do I follow up with next?",      p: ["salesAssoc"] },          // CL10
@@ -13275,6 +13360,51 @@ const AIVA_PAGE_ACTIONS = {
     { q: "Why is Mazda at 61%?",               p: ["owner"] },               // B2
     { q: "Break gross out by store",           p: ["owner"] },               // B5
     { q: "Show me the store scorecard",        p: ["owner"] },               // AX6
+  ],
+  /* --- PI3 pages, added in build 16 so the audit's rows are findable ---
+     Routing is the coverage audit's own "Unify page" column. Common Admin
+     rows land on home because Common Admin is still a placeholder app. */
+  "accounting::GL Inquiry": [
+    { q: "Show me anything in this month's expense postings that looks like a posting error.", p: ["controller", "arap"] },
+    { q: "Does the cash position on my dashboard match the GL?", p: ["controller", "arap"] },
+    { q: "Did anything change significantly in this month\u2019s financials versus last month?", p: ["controller", "owner"] },
+  ],
+  "accounting::AP Invoice": [
+    { q: "Which vendor invoices are past due?", p: ["arap", "controller"] },
+    { q: "Remind me Friday to follow up with Testenger on invoice INV-114051", p: ["arap", "controller"] },
+  ],
+  "accounting::Vehicle Schedule": [
+    { q: "Summarise last month's sales by salesperson for commissions.", p: ["controller", "arap"] },
+    { q: "Generate the GST and PST report for Q2.", p: ["controller"] },
+  ],
+  "service::Warranty": [
+    { q: "Is the axle covered under warranty on this VIN?", p: ["serviceManager", "ops", "tech"] },
+    { q: "Show open campaigns and TSBs for this VIN", p: ["serviceManager", "tech", "ops"] },
+    { q: "What's the paint code for this VIN?", p: ["tech", "serviceManager"] },
+  ],
+  "service::Reports": [
+    { q: "Generate today's day-end service report.", p: ["serviceManager", "ops"] },
+    { q: "When will RO 124213 be done?", p: ["serviceManager", "ops"] },
+  ],
+  "parts::Receiving": [
+    { q: "Did PO 178658 post to inventory?", p: ["parts", "partsClerk"] },
+    { q: "Let parts know I need the OEM-BP-447 for RO 124211 by 2 pm", p: ["serviceManager"] },
+  ],
+  "is::Reports": [
+    { q: "Pull the aged inventory report filtered to units over 90 days.", p: ["controller", "owner"] },
+    { q: "Give me a quarterly sales summary by salesperson.", p: ["salesManager", "controller"] },
+    { q: "Open last month's financial statement.", p: ["owner", "controller"] },
+  ],
+  "documentMgmt::eForms": [
+    { q: "Pull up the Illinois title application form for this deal", p: ["fi"] },
+    { q: "Remind Bonita Murray we still need her proof of insurance", p: ["fi"] },
+  ],
+  "home": [
+    { q: "What did I miss while I was away?", p: ["serviceManager", "ops"] },
+    { q: "What clean-up items need my attention?", p: ["owner"] },
+    { q: "Show me users who haven't logged in for 90 days.", p: ["owner"] },
+    { q: "Add AR over 90 days across all stores to my dashboard", p: ["arap", "controller"] },
+    { q: "How long has stock #H9551 been on the lot?", p: ["salesManager", "salesAssoc"] },
   ],
 };
 
@@ -13295,56 +13425,78 @@ const AIVA_PAGE_ACTIONS = {
    ============================================================ */
 const AIVA_METRICS_BY_PERSONA = {
   owner: [
+    "Did anything change significantly in this month\u2019s financials versus last month?", // AC5
+    "What is Adam Jones worth to us over the next five years?", // CLTV
     "Break gross out by store",                     // B5  gross split
     "Compare inventory aging across stores",        // B6  aging comparison
     "How are we doing this month?",                 // B1  period roll-up
     "Where are the operational control variances?", // D2  variance
   ],
   ops: [
+    "Generate today's day-end service report.", // RP6
+    "Which customers are about to fall off warranty?", // CLTV
     "Show me Toyota tech utilization",              // H2B utilisation
     "How do Honda's tech hours compare?",           // H2  cross-store compare
     "Where are the operational control variances?", // D2  variance
     "Which ROs are waiting on parts?",              // C11 counted backlog
   ],
   serviceManager: [
+    "Generate today's day-end service report.", // RP6
+    "What is Adam Jones likely to spend with us in service over the next two years?", // CLTV
     "Which ROs are waiting on parts?",              // C11 counted backlog
     "What needs my approval?",                      // C1  counted queue
     "What would the engine repair cost?",           // P2C cost projection
     "Show me the service history",                  // AX1 computed panel
   ],
   parts: [
+    "Did PO 178658 post to inventory?", // PS11
+    "Who are my top wholesale accounts by margin?", // CLTV
     "Who has it across the group?",                 // AX4 computed availability
     "What would the engine repair cost?",           // P2C parts cost projection
     "What parts would we need for her visit?",      // P1B computed demand
   ],
   partsClerk: [
+    "Did PO 178658 post to inventory?", // PS11
+    "When did Adam Jones last buy at the counter, and what does he usually get?", // CLTV
     "Who has it across the group?",                 // AX4 computed availability
     "What parts would we need for her visit?",      // P1B computed demand
   ],
   tech: [
+    "What's the paint code for this VIN?", // PS13
+    "What should I inspect on Adam Jones's vehicle?", // CLTV
     "Show me the service history",                  // AX1 computed panel
     "What did the MPI find?",                       // P2B inspection findings
     "What would the engine repair cost?",           // P2C cost projection
   ],
   arap: [
+    "Compare AR over 90 days across all my stores.", // AC9
+    "Is Adam Jones on account?", // CLTV
     "Show me the aging report",                     // AX5 computed aging
     "Which invoices are past due?",                 // C6  counted exposure
   ],
   fi: [
+    "Run deal 129522 at 60 and 72 months and show me which lenders fit her credit profile", // FI1
+    "What did we structure Adam Jones's last deal at?", // CLTV
     "Show me the payoff quotes",                    // AX3 computed quote board
     "What coverage options should I offer her?",    // P4B computed options
   ],
   salesManager: [
+    "Give me a quarterly sales summary by salesperson.", // RP5
+    "Who on my team closes the leads they are handed?", // CLTV
     "How are we pacing this month?",                // C5  pace vs target
     "Show me the CIT report",                       // H7  contracts in transit
     "What should I show her?",                      // P3B computed match
   ],
   salesAssoc: [
+    "How long has stock #H9551 been on the lot?", // SI1
+    "Does Adam Jones show up when he books?", // CLTV
     "What's the store's front gross?",              // A2  store roll-up
     "Show my numbers",                              // C9  personal roll-up
     "Where am I with Juan Gonzalez?",               // C8  deal position
   ],
   controller: [
+    "Does the cash position on my dashboard match the GL?", // AC6
+    "Which of our customer predictions should I not trust yet?", // CLTV
     "Where does month-end close stand?",            // B4  close position
     "Where are the operational control variances?", // D2  variance
     "Show me the aging \u2014 who owes us?",         // AX5 computed aging
@@ -14362,7 +14514,16 @@ function aivaHelpHandle(text) {
   // Customer intelligence answers ahead of the help set: these are data
   // questions, not documentation questions.
   const ci = aivaCiFind(text);
-  if (ci) { AIVA_UNANSWERED = 0; aivaAppendReply(aivaCiDecorate(ci.render(), ci.key), null); return true; }
+  if (ci) {
+    AIVA_UNANSWERED = 0;
+    const ciBlocks = aivaCiDecorate(ci.render(), ci.key);
+    // Tier-1 CLTV regrounding: the answer is unchanged; the citation is new.
+    if (typeof CLTV_GROUNDING !== "undefined" && CLTV_GROUNDING[ci.key]) {
+      ciBlocks.push(_cltv(CLTV_GROUNDING[ci.key]));
+    }
+    aivaAppendReply(ciBlocks, null);
+    return true;
+  }
   if (aivaIsPageTopicsAsk(text)) { aivaAppendReply(aivaHelpPageBlocks(), null); return true; }
   const topic = aivaHelpFind(text);
   if (!topic) return false;
@@ -14548,6 +14709,140 @@ const _src = (s)              => ({ t: "src",  s });
 
 /* Action shapes: { t:"Label", p:true } routes label back through askAiva;
    { t, open:"appKey" } opens the app; { t, res:"KEY" } runs a resolution. */
+
+
+/* ============================================================
+   CLTV — CDP Insights data mart, as a fixture
+   Grounded values are the prototype's existing Adam Jones constants and the
+   VIP set, verbatim. Every value in the PLACEHOLDER section is marked with a
+   dagger on screen and listed in the catalog's Appendix A register; none is
+   real until an SME closes its row. The split is structural on purpose:
+   grounded and placeholder cannot be confused because they do not live in
+   the same object.
+   ============================================================ */
+const CLTV = {
+  adam: { // grounded — existing fixture
+    lifeSales: "$27,071", lifeGP: "$6,408", margin: "23.7%",
+    vehPrice: "$25,365", vehDate: "May 7, 2026", vehCount: 1,
+    fixed: "$1,706", cp: "$546", roCount: 6,
+    firstRO: "Jul 15, 2020", lastRO: "Nov 20, 2025",
+    parts: "$0", otc: 0, ar: "$0.00",
+    p2yTotal: "$0–$30K", p2yTotalConf: "100%",
+    p2ySvc: "$2K–$5K", p2ySvcConf: "48%",
+    p5yTotal: "$0–$40K", p5yTotalConf: "100%",
+    store: "S000091899",
+  },
+  vip: { // grounded — existing fixture
+    joes:  { n: "Joe's Wholesale", lv: "$14,446,441", gp: "$2,455,933", m: "17.0%", units: 271 },
+    terry: { n: "Terry Campbell",  lv: "$550,161", m: "60.4%" },
+    jim:   { n: "Jim Jones",       lv: "$468,824", m: "6.0%" },
+    blended: "18.2%",
+  },
+};
+
+/* Placeholder fixture — every value here renders with a dagger and the
+   review line. Register rows in the catalog, owner per row. */
+const CLTV_PH = {
+  appIds: { drive: "84112", elead: "AJ-2094", service: "55871" },
+  household: { name: "Karen Jones", ros: 4, life: "$1,180", last: "Feb 2026" },
+  distance: "9 miles",
+  internalLabor: "$310",
+  dealStruct: { term: "60 mo", apr: "6.9%", pmt: "$412/mo", end: "May 2031" },
+  cliff: [
+    { n: "R. Delgado",   ends: "Oct 2026", svc: "$3,410", cp: "22%" },
+    { n: "M. Okafor",    ends: "Nov 2026", svc: "$2,180", cp: "61%" },
+    { n: "S. Whitfield", ends: "Nov 2026", svc: "$1,905", cp: "8%"  },
+  ],
+  lost: [
+    { n: "D. Reyes-Ortega", gp: "$8,940", last: "Jan 2025", note: "11-year history" },
+    { n: "T. Nakamura",     gp: "$6,210", last: "Oct 2024", note: "bought two vehicles here" },
+  ],
+  predDate: "August 28, 2026",
+  lowConf: { threshold: "60%", files: "214", share: "12%" },
+  leads: { total: 3, good: 2, bad: 1, sold: 1, close: "50%",
+           respMed: "22 minutes", respTarget: "30-minute", respSold: "9 minutes",
+           ups: { showroom: 2, internet: 1 },
+           appts: { sched: 2, shown: 2, rate: "100%" } },
+  repeatClose: { repeat: "31%", fresh: "14%" },
+  campaigns: [
+    { n: "Service-to-Sales May", sold: 7, good: 41, rate: "17%" },
+    { n: "spring campaign two", sold: 1 }, { n: "spring campaign three", sold: 0 },
+  ],
+  showroom: { when: "April 2026", demo: "yes", to: "yes", quoted: "yes", beback: "his second that month" },
+  touches: { total: 11, calls: 4, emails: 5, texts: 2, lastOut: "6 days ago" },
+  badLeads: { n: 14, of: 187, pct: "7.5%" },
+  team: [
+    { n: "Colin Vasquez", close: "24%", internet: "22%", showroom: "58%", phone: "12%", campaign: "8%" },
+    { n: "Lex Anderson",  close: "19%", internet: "41%", showroom: "33%", phone: "15%", campaign: "11%" },
+    { n: "Jay Parker",    close: "11%", internet: "63%", showroom: "19%", phone: "9%",  campaign: "9%" },
+  ],
+  storeLine: "18%",
+  video: { adamCreated: 2, adamViewed: 2, adamOpen: "35 minutes",
+           unwatchedRo: "124213", sentAgo: "2h 40m ago",
+           approveWith: "41 minutes", approveWithout: "3.2 hours",
+           textClick: "78%", emailClick: "31%" },
+  month: {
+    payType: { cp: "$148,200 (54%)", w: "$92,400 (34%)", i: "$33,100 (12%)" },
+    laborGP: "$168,900", partsGP: "$104,800", partsShift: "3 points",
+    otc: { wSales: "$61,300", wM: "12%", rSales: "$28,700", rM: "31%" },
+  },
+  wholesale: [
+    { n: "Fleet & Sons Garage", life: "$84K", m: "16%" },
+    { n: "Route 9 Collision",   life: "$61K", m: "14%" },
+    { n: "Hilltop Independent", life: "$42K", m: "19%" },
+  ],
+  jimDeals: [
+    { d: "Mar 2023", amt: "$151,200", gp: "$16,630", m: "11.0%" },
+    { d: "Jan 2025", amt: "$148,400", gp: "$10,390", m: "7.0%" },
+    { d: "May 2026", amt: "$169,224", gp: "$1,105",  m: "0.7%" },
+  ],
+};
+
+
+/* ---- inline visualization builders ----------------------------------
+   Kept to three. A chat column is ~360px wide and a reply is read, not
+   explored: a table, a horizontal comparison and a stat strip cover the
+   audit's viz column without inventing a charting library inside a
+   single-file prototype. */
+const _tbl   = (cols, rows, cap) => ({ t: "tbl", cols, rows, cap });
+const _bars  = (items, cap) => ({ t: "bars", items, cap });
+const _stats = (items) => ({ t: "stats", items });
+/* Total rows rule off; pass { total: true, cells: [...] }. */
+const _total = (cells) => ({ total: true, cells });
+/* A cell that draws its own proportion: value stays ink, bar carries colour. */
+const _cbar  = (v, pct, c) => ({ v, bar: pct, c });
+
+/* Provenance footnote: the CLTV column(s) an answer was computed from.
+   A dedicated block type, so the renderer can move it to the end of the
+   reply and style it below reply size — a citation is metadata, and it
+   should be findable, not loud. */
+const _cltv = (cols) => ({ t: "cltvsrc", cols });
+/* The on-screen placeholder rule, one line, same wording everywhere. */
+const _ph = () => _lim("Figures marked \u2020 are placeholder values for review \u2014 " +
+  "the shape of the answer is the point, not the numbers.");
+const _d = (v) => `${v}\u2020`;
+
+/* ============================================================
+   TIER 1 — provenance on existing answers
+   The twelve regrounded answers keep their copy; this map is the only
+   change. Keys are CI keys and intent ids; values are the citation line.
+   Applied at the two render paths below.
+   ============================================================ */
+const CLTV_GROUNDING = {
+  cust_owner:          "LIFETIME_TOTAL_SALES, LIFETIME_GROSS_PROFIT \u00b7 joined on GOLDEN_ID",
+  topVips:             "LIFETIME_GROSS_PROFIT ranked across GOLDEN_ID, store S000091899",
+  cust_parts:          "LIFETIME_RO_CUSTOMER_PAY_PARTS_SALES, LIFETIME_RO_WARRANTY_PAY_PARTS_SALES \u00b7 repair_order_clean$vw",
+  cust_salesManager:   "DEAL_TERM_END (LASTPAYDATE), NEWEST_VEHICLE_SALE_DATE \u00b7 vehicle_sales_raw$vw",
+  cust_fi:             "LIFETIME_BACK_GROSS_PROFIT, LIFETIME_INSURANCE_PREMIUM_TOTAL \u00b7 BACKGROSS",
+  cust_serviceManager: "NEWEST_RO_DATE, RO_COUNT, NEWEST_VEHICLE_SALE_DATE",
+  cust_tech:           "ODOMETER, VIN, RO_COUNT \u00b7 repair_order_clean$vw vehicle:*",
+  adamJones:           "CLTV summary row for GOLDEN_ID \u00b7 sales, GP, RO and prediction columns",
+  B1:  "Total Sales = Total Fixed Ops + Total Variable Ops \u00b7 components Confirmed Valid",
+  B5:  "FRONTGROSS, BACKGROSS \u00b7 vehicle_sales_raw$vw \u00b7 Confirmed Valid",
+  C5:  "Total Deals = count(distinct DEALNUMBER), finalized (F) only \u00b7 Confirmed Valid",
+  P1A: "NEWEST_RO_DATE against interval, per GOLDEN_ID \u00b7 recall joined from OEM feed",
+  P2B: "PICTURES_CAPTURED_QUANTITY \u00b7 TRUVIDEO_ALLSERVICE$VW, joined to the RO",
+};
 
 const AIVA_INTENTS = [
 
@@ -15461,6 +15756,904 @@ const AIVA_INTENTS = [
       _m("Sent. She'll see the estimate and the timeframe, and nothing moves until she answers.") ];
   } },
 
+
+/* ============================================================
+   CLTV INTENTS — Tiers 2-5 of the response catalog, plus the four
+   Draft-2 chained responses. Node chip first, answer, provenance,
+   insight, limit where a readiness caveat applies, NEXT chips whose
+   labels are themselves wired prompts. CL-E7 and CL-J7 are absent on
+   purpose: out of scope by the source sheet's own note.
+   ============================================================ */
+
+/* ---- Family A: identity and household ---- */
+{ id: "CLA1", personas: ["salesManager", "salesAssoc"], checking: "CLTV Data Mart",
+  kw: ["same customer in drive", "drive, elead"], app: "crm", sec: "Customers",
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>One customer, three systems.</b> Yes \u2014 the records resolve to a single Golden ID. Drive <b>${_d(CLTV_PH.appIds.drive)}</b>, eLead <b>${_d(CLTV_PH.appIds.elead)}</b> and CDK Service <b>${_d(CLTV_PH.appIds.service)}</b> each carry their own ID for him, all stitched under one identity \u2014 which is why his service history and his deal show up in the same answer.`),
+    _cltv("GOLDEN_ID, APPLICATION_CUST_IDS (array)"),
+    _m(`Everything else I can tell you about Adam \u2014 the six years of service before the sale, the ${CLTV.adam.lifeSales} lifetime \u2014 only exists as one story because of this stitch. Without it he is three unrelated records.`),
+    _ph(),
+    _nx([{ t: "Who else in Adam Jones's household has bought or serviced with us?" }, { t: "What is Adam Jones worth to the store?" }]) ] },
+
+{ id: "CLA2", personas: ["salesAssoc", "salesManager", "owner"], checking: "CLTV Data Mart",
+  kw: ["jones's household", "household has bought"], app: "crm", sec: "Customers",
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Household: Jones.</b> One other member on the household ID: <b>${_d(CLTV_PH.household.name)}</b> \u2014 service-only, <b>${_d(CLTV_PH.household.ros + " ROs")}</b>, <b>${_d(CLTV_PH.household.life)}</b> lifetime, last visit <b>${_d(CLTV_PH.household.last)}</b>, no vehicle purchase on file.`),
+    _cltv("HOUSEHOLD_ID, aggregates per member GOLDEN_ID"),
+    _m(`This is the lead the trade answer pointed at. Adam is three months into a new vehicle \u2014 nothing to work there. A household member with a service habit and no purchase history is a first-vehicle conversation, not a trade conversation.`),
+    _ph(),
+    _nx([{ t: "Prep me for a household outreach", p: true }, { t: "Is Adam Jones a trade-in opportunity?" }]) ] },
+
+{ id: "CLA3", personas: ["owner", "ops"], checking: "CLTV Data Mart",
+  kw: ["driving to service", "how far is adam"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>About ${_d(CLTV_PH.distance)}</b> \u2014 his postal code sits one town over from the store, well inside the primary market area\u2020.`),
+    _cltv("POSTAL_CODE (geolocation) vs store location"),
+    _m(`Distance is a retention variable nobody prices: a nine-mile customer who lapses did not leave for convenience. When his first-service window closes without a visit, geography will not be the excuse.`),
+    _ph(),
+    _nx([{ t: "Is Adam Jones due for a service visit?" }]) ] },
+
+{ id: "CLA4", personas: ["parts", "partsClerk", "arap"], checking: "CLTV Data Mart",
+  kw: ["fleet account"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>No \u2014 Adam Jones carries no fleet flag.</b> For contrast, the store's largest customer, ${CLTV.vip.joes.n}, is the profile the flag exists for: ${CLTV.vip.joes.units} vehicles, all variable ops.`),
+    _cltv("Fleet Customer flag (NAME-FILE)"),
+    _lim(`This flag has no DB column yet \u2014 sourced from NAME-FILE pending the model decision (PRD \u00a77.3).`),
+    _nx([{ t: "Is Adam Jones on account?" }]) ] },
+
+{ id: "CLA5", personas: ["arap", "controller"], checking: "CLTV Data Mart",
+  kw: ["jones on account", "on account?"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>No AR flag, and nothing open.</b> He is not an accounts-receivable customer \u2014 his ${CLTV.adam.cp} of customer-pay service settled at time of service, and the vehicle purchase funded. Open balance <b>${CLTV.adam.ar}</b>, lifetime billed <b>${CLTV.adam.lifeSales}</b>.`),
+    _cltv("Accounts Receivables Customer flag (NAME-FILE) \u00b7 balance from the existing AR view"),
+    _lim(`The flag has no DB column yet (PRD \u00a77.3); the balance figures are the existing grounded fixture.`),
+    _nx([{ t: "Show me the aging report" }]) ] },
+
+{ id: "CLA6", personas: ["salesAssoc", "salesManager"], checking: "CLTV Data Mart",
+  kw: ["household outreach"],
+  blocks: () => [ _nd("rules"),
+    _m(`<b>Outreach brief: ${_d(CLTV_PH.household.name)}.</b> Service-only household member \u2014 ${_d(CLTV_PH.household.ros + " ROs")}, ${_d(CLTV_PH.household.life)} lifetime, last in <b>${_d(CLTV_PH.household.last)}</b>, no purchase history. She already knows the store; she has never been sold to.`),
+    _m(`<b>The angle:</b> a first-vehicle conversation, not a trade conversation. No equity to work, no deal history to reference \u2014 the opener is the service relationship itself. <i>\u201cYou've trusted us with the maintenance for a while \u2014 when the time comes for the next vehicle, we'd like a shot at it.\u201d</i>`),
+    _m(`<b>What not to do:</b> don't route this through Adam. He is three months into a new purchase; making his household a sales channel this early spends the goodwill the May deal earned.`),
+    _cltv("HOUSEHOLD_ID members, per-member RO_COUNT, NEWEST_RO_DATE, VEHICLE_SALE_COUNT = 0"),
+    _lim(`This stops at the brief. The outreach itself \u2014 a logged call task or email \u2014 is a write this prototype does not yet gate. All household figures inherit the placeholder register.`),
+    _nx([{ t: "Who do I follow up with next?" }, { t: "Who else in Adam Jones's household has bought or serviced with us?" }]) ] },
+
+/* ---- Family B: lifetime value ---- */
+{ id: "CLB2", personas: ["owner", "ops"], checking: "CLTV Data Mart",
+  kw: ["service customer or a sales"],
+  blocks: () => [ _nd("rules"),
+    _m(`<b>Both \u2014 in sequence, which is the interesting part.</b> By dollars he is a sales customer: <b>${CLTV.adam.vehPrice}</b> variable ops (93.7%) against <b>${CLTV.adam.fixed}</b> fixed ops (6.3%). By behavior he is a service customer who converted: six years in the service drive before the ${CLTV.adam.vehDate} purchase.`),
+    _cltv("LIFETIME_FIXED_OPS_SALES, LIFETIME_VARIABLE_OPS_SALES"),
+    _m(`Read him by dollars and you court him from sales. Read him by sequence and you retain him through service \u2014 which is where he came from and where the ${CLTV.adam.p2ySvcConf}-confidence forecast says he is at risk. The sequence is the better read.`),
+    _nx([{ t: "Will Adam Jones keep servicing with us after the sale?" }, { t: "Where does the margin on Adam Jones actually come from?" }]) ] },
+
+{ id: "CLB3", personas: ["controller", "owner"], checking: "CLTV Data Mart",
+  kw: ["margin on adam jones"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>${CLTV.adam.lifeGP} of lifetime gross, split.</b> Variable ops carries effectively all of it \u2014 the vehicle deal. Fixed ops contributed labor gross on ${CLTV.adam.fixed} of billings with zero parts margin, because there have never been parts on his ROs.`),
+    _cltv("LIFETIME_FIXED_OPS_GROSS_PROFIT, LIFETIME_VARIABLE_OPS_GROSS_PROFIT"),
+    _lim(`The fixture carries the lifetime GP total but not the fixed/variable GP split; the split narrative above is placeholder pending the fixture columns.`),
+    _nx([{ t: "Which of our high-spend customers are low-margin?" }]) ] },
+
+{ id: "CLB5", personas: ["controller", "owner"], checking: "CLTV Data Mart",
+  kw: ["high-spend", "low-margin", "low margin"],
+  blocks: () => [ _nd("rules"),
+    _m(`<b>${CLTV.vip.jim.n} is the one to look at.</b> Third-highest lifetime value on the store at <b>${CLTV.vip.jim.lv}</b> \u2014 and <b>${CLTV.vip.jim.m}</b> margin, against an ${CLTV.vip.blended} blended average. ${CLTV.vip.joes.n} runs ${CLTV.vip.joes.m} on $14.4M, thin but explainable by volume; ${CLTV.vip.terry.n} runs ${CLTV.vip.terry.m}. ${CLTV.vip.jim.n} is high-spend, low-margin, and unexplained.`),
+    _cltv("LIFETIME_TOTAL_SALES vs LIFETIME_GROSS_PROFIT, ranked"),
+    _m(`The recommendation is a review, not a repricing: pull his transactions and see whether the margin is policy or drift. Nothing here writes anything \u2014 this is a place to look, with a reason.`),
+    _nx([{ t: "Break his transactions out", p: true }, { t: "Show me the aging report" }]) ] },
+
+{ id: "CLB6", personas: ["controller", "owner"], checking: "CLTV Sales Transactions",
+  kw: ["break his transactions", "jim jones's transactions"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Where the ${CLTV.vip.jim.m} comes from.</b> ${CLTV.vip.jim.n}'s ${CLTV.vip.jim.lv} lifetime splits across <b>three vehicle deals\u2020</b>, and the margin problem is one deal:`),
+    _tbl(
+      [{ h: "Deal" }, { h: "Amount", num: true }, { h: "Gross", num: true }, { h: "Margin", num: true }],
+      CLTV_PH.jimDeals.map(x => [
+        _d(x.d), _d(x.amt), _d(x.gp),
+        // the bar carries the comparison; the figure stays readable ink
+        _cbar(_d(x.m), Math.round(parseFloat(x.m) / 11.0 * 100)),
+      ]),
+      "Per-deal margin across three vehicle deals"),
+    _cltv("per-deal DEAL_AMOUNT, DEAL_GROSS_PROFIT (FRONTGROSS + BACKGROSS) under his GOLDEN_ID"),
+    _m(`A declining-margin sequence ending near zero reads as negotiated drift, not policy \u2014 a fleet price sheet would be flat across deals. The determination is now specific: pull deal 3's structure and see who approved it. That is a review of a record, not an action on one.`),
+    _ph(),
+    _nx([{ t: "Which of our high-spend customers are low-margin?" }]) ] },
+
+/* ---- Family C: fixed ops lifetime ---- */
+{ id: "CLC1", personas: ["serviceManager", "ops"], checking: "CLTV Data Mart",
+  kw: ["service work has adam", "brought us over the years"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>${CLTV.adam.fixed} across six visits, 2020\u20132025.</b> All labor: <b>${CLTV.adam.cp}</b> customer-pay, the remainder warranty and internal. Steady, roughly annual \u2014 ${CLTV.adam.firstRO} to ${CLTV.adam.lastRO} \u2014 and always maintenance, never repair.`),
+    _cltv("LIFETIME_RO_LABOR_SALES, LIFETIME_RO_PARTS_SALES, RO_COUNT, OLDEST/NEWEST_RO_DATE"),
+    _m(`Six years of showing up is the asset. The dollar figure understates him \u2014 the forecast values his next two years of service at ${CLTV.adam.p2ySvc}, more than his entire history, because the new vehicle resets the maintenance clock.`),
+    _nx([{ t: "Is Adam Jones due for a service visit?" }, { t: "How often does Adam Jones actually come in?" }]) ] },
+
+{ id: "CLC2", personas: ["ops", "serviceManager"], checking: "CLTV Data Mart",
+  kw: ["customer-pay customer or", "pay customer or a warranty"],
+  blocks: () => [ _nd("rules"),
+    _m(`<b>Mostly warranty and internal \u2014 ${CLTV.adam.cp} of ${CLTV.adam.fixed} was customer-pay.</b> Roughly a third of his labor spend came out of his own pocket; the rest rode warranty or internal policy.`),
+    _cltv("LIFETIME_RO_CUSTOMER_PAY_LABOR_SALES vs LIFETIME_RO_WARRANTY_PAY_LABOR_SALES"),
+    _m(`That mix is about to matter more than it ever has: the new vehicle puts him back at the start of a warranty period. The customers who stay after warranty are the ones who built a customer-pay habit during it. His is partial \u2014 treat his warranty visits as retention visits.`),
+    _nx([{ t: "Which customers are about to fall off warranty?", p: true }]) ] },
+
+{ id: "CLC3", personas: ["ops", "serviceManager", "owner"], checking: "CLTV Data Mart",
+  kw: ["fall off warranty", "warranty cliff"],
+  blocks: () => [ _nd("rules"),
+    _m(`<b>Three in the next 90 days\u2020, ranked by what walks out with them:</b>`),
+    _tbl(
+      [{ h: "Customer" }, { h: "Ends" }, { h: "Lifetime svc", num: true }, { h: "CP share", num: true }],
+      CLTV_PH.cliff.map(x => [
+        _d(x.n), _d(x.ends),
+        _cbar(_d(x.svc), Math.round(parseFloat(x.svc.replace(/[$,]/g, "")) / 3410 * 100)),
+        _d(x.cp),
+      ]),
+      "Warranty expiry by customer, with lifetime service exposure"),
+    _cltv("NEWEST_VEHICLE_SALE_DATE + warranty term vs today \u00b7 LIFETIME_RO_WARRANTY_PAY_* vs _CUSTOMER_PAY_*"),
+    _m(`${CLTV_PH.cliff[1].n.split(" ")[1]}\u2020 already pays his own way \u2014 he likely stays. ${CLTV_PH.cliff[2].n.split(" ")[1]}\u2020 is 92%\u2020 warranty-carried: when the coverage ends, so does the reason he knows this store. He is the outreach \u2014 and that is a recommendation; the outreach itself is a campaign action this prototype does not yet gate.`),
+    _lim(`All three customers and every figure are placeholder values for review. Warranty term is not a CLTV column \u2014 the cliff date requires an OEM coverage assumption the SMEs should set.`),
+    _nx([{ t: "Alert me if a warranty account goes 60 days dark", p: true }, { t: "Who is due for service?" }]) ] },
+
+{ id: "CLC4", personas: ["controller"], checking: "CLTV Data Mart",
+  kw: ["internal work have we written"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>A slice of the $1,160 non-customer-pay labor\u2020.</b> Of his ${CLTV.adam.fixed} lifetime labor, ${CLTV.adam.cp} was customer-pay; the remainder split between warranty and internal \u2014 the internal share alone is <b>${_d(CLTV_PH.internalLabor)}</b>, mostly pre-delivery work on the ${CLTV.adam.vehDate} sale\u2020.`),
+    _cltv("LIFETIME_RO_INTERNAL_PAY_LABOR_SALES"),
+    _ph(),
+    _nx([{ t: "Where does the margin on Adam Jones actually come from?" }]) ] },
+
+{ id: "CLC5", personas: ["serviceManager"], checking: "CLTV Data Mart",
+  kw: ["money on labor or parts", "on adam jones, do we make"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Labor. Entirely.</b> Parts gross on his ROs is <b>${CLTV.adam.parts}</b> because parts sales on his ROs are ${CLTV.adam.parts} \u2014 six visits, labor only. Whatever margin fixed ops earned on him, it came from the labor line.`),
+    _cltv("LIFETIME_RO_LABOR_GROSS_PROFIT vs LIFETIME_RO_PARTS_GROSS_PROFIT"),
+    _m(`The Parts read applies here too: either his maintenance genuinely carried no parts for six years, or parts weren't captured against his ROs. Worth one look at the ROs before treating the pattern as real.`),
+    _nx([{ t: "What parts revenue has Adam Jones generated?" }, { t: "Is our service margin coming from labor or parts this month?" }]) ] },
+
+{ id: "CLC7", personas: ["ops", "serviceManager"], checking: null,
+  kw: ["60 days dark", "goes 60 days"],
+  blocks: () => [ _nd("auto"),
+    _m(`<b>Here is exactly what I would set up \u2014 nothing is running yet:</b>`),
+    _cfm([
+      { k: "Watch", v: "Customers inside a warranty period" },
+      { k: "Condition", v: "No repair order in 60 days" },
+      { k: "Checked", v: "Daily, against NEWEST_RO_DATE" },
+      { k: "Notifies", v: "You, in AIVA \u2014 nothing is sent to the customer" },
+    ], "A standing daily check; notifies you only. Outreach stays a human decision, one gate further on.",
+    [ { t: "Set the watch", res: "CLC7_YES", p: true }, { t: "Not now", res: "CLC7_NO", danger: true } ]),
+    _cltv("NEWEST_RO_DATE per GOLDEN_ID, scoped to in-warranty accounts \u00b7 same warranty-term assumption as the cliff"),
+    _lim(`The 60-day threshold is yours to set at the card; the warranty-term assumption is the catalog's open item.`) ] },
+
+/* ---- Family D: front counter ---- */
+{ id: "CLD1", personas: ["parts", "partsClerk"], checking: "CLTV Data Mart",
+  kw: ["over the counter, outside", "outside of repairs"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Nothing \u2014 lifetime.</b> Front-counter sales <b>${CLTV.adam.parts}</b>, gross <b>${CLTV.adam.parts}</b>, transaction count <b>${CLTV.adam.otc}</b>. He has never bought at the counter, retail or wholesale.`),
+    _cltv("LIFETIME_FRONT_COUNTER_SALES / _GROSS_PROFIT, OTC_COUNT \u00b7 parts_invoice_raw, SALETYPE \u2260 'RO'"),
+    _m(`Combined with ${CLTV.adam.parts} RO parts, he has never bought a physical item from this store in six years \u2014 only labor and one vehicle. A new-vehicle owner is the best accessory audience the counter gets, and his first service visit is the natural moment.`),
+    _nx([{ t: "When did Adam Jones last buy at the counter, and what does he usually get?" }, { t: "Who are my top wholesale accounts by margin?" }]) ] },
+
+{ id: "CLD3", personas: ["partsClerk", "parts"], checking: "CLTV Data Mart",
+  kw: ["last buy at the counter", "usually get"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Never, and nothing.</b> No counter purchase on file \u2014 OTC_COUNT is 0, so there is no last date and no usual basket. What the record does say: new vehicle delivered ${CLTV.adam.vehDate}, first maintenance due about now.`),
+    _cltv("OTC_COUNT, NEWEST_OTC_PARTS_DATE \u00b7 basket detail would come from the Front Counter Transactions table"),
+    _m(`Same prep as the existing brief: make sure the routine maintenance items for his model are on the shelf, so his first visit doesn't become his first special order.`),
+    _nx([{ t: "Do we have OEM-BP-447?" }]) ] },
+
+{ id: "CLD4", personas: ["parts"], checking: "CLTV Data Mart",
+  kw: ["wholesale accounts by margin", "top wholesale accounts"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Three accounts\u2020 above the wholesale line\u2020:</b>`),
+    _tbl(
+      [{ h: "Account" }, { h: "Lifetime OTC", num: true }, { h: "Margin", num: true }],
+      CLTV_PH.wholesale.map(x => [_d(x.n), _d(x.life), _d(x.m)]),
+      "Top wholesale counter accounts by margin"),
+    _m(`(${CLTV.vip.joes.n}, the store's biggest customer overall, is a vehicle account \u2014 zero counter activity, so he is correctly absent here.)`),
+    _cltv("LIFETIME_FRONT_COUNTER_WHOLESALE_GROSS_PROFIT ranked, retailWholesaleType = 'W'"),
+    _ph(),
+    _nx([{ t: "How does counter retail compare to wholesale this month?" }]) ] },
+
+/* ---- Family E: variable ops ---- */
+{ id: "CLE1", personas: ["salesManager", "salesAssoc"], checking: "CLTV Data Mart",
+  kw: ["vehicles has adam jones bought", "how many vehicles has"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>One.</b> Delivered <b>${CLTV.adam.vehDate}</b> \u2014 ${CLTV.adam.vehPrice}. Oldest and newest sale date are the same date, because it is the only one. Before that: six years of service on what was presumably a vehicle bought elsewhere.`),
+    _cltv("VEHICLE_SALE_COUNT, OLDEST/NEWEST_VEHICLE_SALE_DATE"),
+    _m(`The 5-year forecast tops out at $40K total \u2014 one more vehicle, not two. The window opens when the current deal's term winds down; until then the household is the live opportunity.`),
+    _nx([{ t: "Is Adam Jones a trade-in opportunity?" }, { t: "Who else in Adam Jones's household has bought or serviced with us?" }]) ] },
+
+{ id: "CLE4", personas: ["fi"], checking: "CLTV Data Mart",
+  kw: ["protection and accessories"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>One deal to sum, and the split needs the verification already flagged.</b> Lifetime insurance premiums <b>$\u2014</b> and accessory sales <b>$\u2014</b> pending the product-detail pull; the deal-level total gross is the grounded figure: <b>${CLTV.adam.lifeGP}</b> on the ${CLTV.adam.vehDate} sale.`),
+    _cltv("LIFETIME_INSURANCE_PREMIUM_TOTAL, LIFETIME_ACCESSORY_SALES_TOTAL"),
+    _lim(`The existing F&I brief marks his product penetration as incomplete on file. This answer shows dashes rather than placeholder dollars: inventing a premium here would contradict a caveat already on screen.`),
+    _nx([{ t: "What F&I products did Adam Jones take?" }]) ] },
+
+{ id: "CLE5", personas: ["salesAssoc", "salesManager", "fi"], checking: "CLTV Sales Transactions",
+  kw: ["trade in last time", "what did adam jones trade"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>No trade on the deal.</b> The ${CLTV.adam.vehDate} sale carries no Trade1 record \u2014 no year, make, model or VIN in the trade fields. Six years of service history before the purchase says there was a prior vehicle; it just didn't come to us.`),
+    _cltv("TRADE1_YEAR/MAKE/MODEL/VIN/ODOMETER (empty on this deal)"),
+    _lim(`The CDP sheet flags that TRADE1_MAKE currently sources make where it should source makeName. Immaterial here (the fields are empty); any customer whose answer shows a trade inherits that caveat until the fix lands.`),
+    _nx([{ t: "What did we structure Adam Jones's last deal at?" }]) ] },
+
+{ id: "CLE6", personas: ["fi", "salesManager"], checking: "CLTV Sales Transactions",
+  kw: ["structure adam jones", "last deal at", "deal structured"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Retail finance, funded.</b> Vehicle at <b>${CLTV.adam.vehPrice}</b>; structure on file: <b>${_d(CLTV_PH.dealStruct.term)} at ${_d(CLTV_PH.dealStruct.apr)}, ${_d(CLTV_PH.dealStruct.pmt)}</b>, term end <b>${_d(CLTV_PH.dealStruct.end)}</b>. Back gross is inside the ${CLTV.adam.lifeGP} deal gross; the product-level split needs verification, as the existing F&I brief says.`),
+    _cltv("DEAL_TYPE, DEAL_TERM, APR, MONTHLY_PAYMENT, DEAL_TERM_END"),
+    _m(`The term end is the number your trade cycle runs on \u2014 the same column the trade-opportunity answer reads. One deal, one row, two departments' timing questions.`),
+    _ph(),
+    _nx([{ t: "Is Adam Jones a trade-in opportunity?" }, { t: "How much has Adam Jones spent on protection and accessories across all his deals?" }]) ] },
+
+/* ---- Family F: recency ---- */
+{ id: "CLF3", personas: ["ops", "serviceManager"], checking: "CLTV Data Mart",
+  kw: ["actually come in", "how often does adam"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>About once a year.</b> Six ROs across the 64 months between ${CLTV.adam.firstRO} and ${CLTV.adam.lastRO} \u2014 one visit every <b>10.7 months</b> on average, and the record shows it steady rather than front-loaded.`),
+    _cltv("derived: RO_COUNT \u00f7 (NEWEST_RO_DATE \u2212 OLDEST_RO_DATE) \u2014 not a stored column"),
+    _m(`He is now ~4 months past delivery with no first service on the new vehicle. Against his own cadence that is early, not late \u2014 but the first visit on a new vehicle sets the habit, and his old cadence belonged to the old vehicle.`),
+    _nx([{ t: "Is Adam Jones due for a service visit?" }, { t: "Which customers are about to fall off warranty?" }]) ] },
+
+{ id: "CLF5", personas: ["owner"], checking: "CLTV Data Mart",
+  kw: ["lost from service", "have we lost from"],
+  blocks: () => [ _nd("rules"),
+    _m(`<b>Two files worth a phone call\u2020</b> \u2014 customers above <b>$5,000\u2020</b> lifetime gross with no RO in <b>18 months\u2020</b>:`),
+    _tbl(
+      [{ h: "Customer" }, { h: "Lifetime GP", num: true }, { h: "Last RO", num: true }],
+      CLTV_PH.lost.map(x => [_d(x.n), _d(x.gp), _d(x.last)]),
+      "Lapsed high-value service customers"),
+    _m(CLTV_PH.lost.map(x => `${_d(x.n)} \u2014 ${x.note}\u2020`).join("<br>")),
+    _cltv("NEWEST_RO_DATE older than threshold \u2227 LIFETIME_GROSS_PROFIT above threshold"),
+    _m(`Both thresholds are choices, not facts \u2014 18 months and $5,000 make the shape visible, and both should be yours. Two names, not two hundred, is what makes this actionable at your level.`),
+    _ph(),
+    _nx([{ t: "Who are my top three VIP customers?" }, { t: "Compare the stores for me" }]) ] },
+
+/* ---- Family G: predictions ---- */
+{ id: "CLG1", personas: ["serviceManager", "ops"], checking: "CLTV Data Mart",
+  kw: ["likely to spend with us in service", "spend with us in service"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>${CLTV.adam.p2ySvc} \u2014 and the model is honest about not being sure: ${CLTV.adam.p2ySvcConf} confidence.</b> That range assumes the service relationship continues onto the new vehicle; the low confidence is the model noticing that it hasn't yet.`),
+    _cltv("PREDICT_RO_TOTAL_SALES_RANGE_2Y + _CONFIDENCE_2Y \u00b7 as of CLTV_PREDICTION_DATE"),
+    _lim(`Prediction columns have no Snowflake validation status yet (PRD \u00a77.1).`),
+    _nx([{ t: "When was that prediction last updated?" }, { t: "Find her an appointment" }]) ] },
+
+{ id: "CLG2", personas: ["owner"], checking: "CLTV Data Mart",
+  kw: ["next five years", "worth to us over the next"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>${CLTV.adam.p5yTotal} in total sales, at ${CLTV.adam.p5yTotalConf} confidence \u2014 which is a wide way of saying \u201cone more vehicle, probably.\u201d</b> The lower bound is him never returning; the upper is a repeat purchase plus the service that comes with it. His lifetime to date, ${CLTV.adam.lifeSales}, sits inside that band.`),
+    _cltv("PREDICT_SALES_TOTAL_SALES_RANGE_5Y + confidence \u00b7 as of CLTV_PREDICTION_DATE"),
+    _m(`A ${CLTV.adam.p5yTotalConf}-confidence range this wide is the model being sure about uncertainty. The useful reading is not the number \u2014 it is that the store's actions (the first service visit, the household) move him inside the band, and nothing else does.`),
+    _nx([{ t: "When was that prediction last updated?" }, { t: "Is Adam Jones's value to us going up or down?" }]) ] },
+
+{ id: "CLG3", personas: ["ops", "owner"], checking: "CLTV Data Mart",
+  kw: ["going up or down", "value to us going"],
+  blocks: () => [ _nd("rules"),
+    _m(`<b>Up on paper, at risk in practice.</b> Lifetime to date: ${CLTV.adam.lifeSales}. Forward: the model puts his next two years at <b>${CLTV.adam.p2yTotal} total (${CLTV.adam.p2yTotalConf} confidence)</b> \u2014 but the service slice is <b>${CLTV.adam.p2ySvc} at only ${CLTV.adam.p2ySvcConf}</b>, and service is the piece your department keeps.`),
+    _cltv("PREDICT_*_2Y ranges + confidences vs lifetime-to-date roll-ups"),
+    _m(`A ${CLTV.adam.p2ySvcConf} confidence is the model saying \u201ccoin flip.\u201d His sales value is banked, his service value is undecided, and the deciding event is whether the first visit on the new vehicle happens. That visit is bookable today.`),
+    _lim(`Prediction columns have no validation status yet (PRD \u00a77.1). Ranges are the fixture's existing values.`),
+    _nx([{ t: "Find her an appointment" }, { t: "When was that prediction last updated?" }]) ] },
+
+{ id: "CLG4", personas: ["controller", "owner"], checking: "CLTV Data Mart",
+  kw: ["not trust yet", "predictions should i not trust"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Anything below ${_d(CLTV_PH.lowConf.threshold)} confidence \u2014 that's ${_d(CLTV_PH.lowConf.files)} customer files, ${_d(CLTV_PH.lowConf.share)} of the base.</b> Adam Jones's own service forecast is one of them at ${CLTV.adam.p2ySvcConf}. The common thread: a recent status change (new vehicle, address change, long gap) that broke the pattern the model learned.`),
+    _cltv("PREDICT_*_CONFIDENCE_* below threshold, counted per GOLDEN_ID"),
+    _m(`Treat these files as questions, not forecasts. Nothing about a low-confidence customer is bad \u2014 it means the next real transaction will teach the model more than the last hundred did.`),
+    _ph(),
+    _nx([{ t: "When was that prediction last updated?" }]) ] },
+
+{ id: "CLG5", personas: null, checking: "CLTV Data Mart",
+  kw: ["prediction last updated", "predictions last updated"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>${_d(CLTV_PH.predDate)}</b> \u2014 predictions refresh on the CDP's model schedule, not live; anything that happened since (including a first service visit, if he books one) is not in the number yet.`),
+    _cltv("CLTV_PREDICTION_DATE"),
+    _m(`This answer exists so that no prediction is ever more than one tap from its own age.`),
+    _ph() ] },
+
+/* ---- Family H: leads ---- */
+{ id: "CLH1", personas: ["salesManager"], checking: "CLTV Leads Detail (eLead)",
+  kw: ["been a lead", "how many did we close"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Three leads\u2020, one sale.</b> ${_d(CLTV_PH.leads.total + " lifetime leads")} \u2014 ${_d(CLTV_PH.leads.good + " good")}, ${_d(CLTV_PH.leads.bad + " bad")} (no usable contact info) \u2014 and 1 converted: the ${CLTV.adam.vehDate} purchase. On the net base that is a <b>${_d(CLTV_PH.leads.close)}</b> lifetime close rate on him.`),
+    _cltv("Lifetime Total/Good/Bad/Sold Lead Count \u00b7 no DB column yet \u2014 computed from eLead FACT_DEAL"),
+    _ph(),
+    _nx([{ t: "How fast do we respond to Adam Jones when he reaches out?" }, { t: "What happened the last time Adam Jones was in the showroom?" }]) ] },
+
+{ id: "CLH2", personas: ["salesManager", "owner"], checking: "CLTV Leads Detail (eLead)",
+  kw: ["close rate on repeat"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Repeat customers close at roughly twice the rate\u2020 of fresh leads.</b> Store-level: repeat-customer leads convert at <b>${_d(CLTV_PH.repeatClose.repeat)}</b> against <b>${_d(CLTV_PH.repeatClose.fresh)}</b> for first-contact leads, on trailing-12 volume\u2020.`),
+    _cltv("Lifetime Lead to Sale Conversion Rate, segmented on prior GOLDEN_ID activity \u00b7 derived, no DB column yet"),
+    _m(`Adam Jones is the pattern in one person \u2014 six years of service contact before a first purchase. The segmentation argues for treating the service drive as the top of the sales funnel, which is exactly the handoff the cross-product runner demonstrates.`),
+    _ph(),
+    _nx([{ t: "Which campaigns actually produced buyers?" }]) ] },
+
+{ id: "CLH3", personas: ["salesManager", "salesAssoc"], checking: "CLTV Leads Detail (eLead)",
+  kw: ["fast do we respond", "respond to adam jones"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Median ${_d(CLTV_PH.leads.respMed)} across his good leads</b> \u2014 inside the store's ${_d(CLTV_PH.leads.respTarget)} target, and his converted lead was answered in <b>${_d(CLTV_PH.leads.respSold)}</b>.`),
+    _cltv("Lifetime Average Lead Response Time \u00b7 no DB column yet \u2014 eLead FACT_RESPONSE_TIME"),
+    _ph(),
+    _nx([{ t: "Who on my team closes the leads they are handed?" }]) ] },
+
+{ id: "CLH4", personas: ["salesAssoc", "salesManager"], checking: "CLTV Leads Detail (eLead)",
+  kw: ["show up when he books"],
+  blocks: () => [ _nd("rules"),
+    _m(`<b>When he books, he shows \u2014 but he books rarely.</b> On file: <b>${_d(CLTV_PH.leads.appts.sched + " appointments scheduled")}, ${_d(CLTV_PH.leads.appts.shown + " shown")} \u2014 a ${_d(CLTV_PH.leads.appts.rate)} show rate</b> across his lead history.`),
+    _cltv("Lifetime Appointments Scheduled, Shown, Show Rate \u00b7 no DB column yet"),
+    _m(`A 100% show rate on a small base means confirmations are not your problem with him \u2014 getting the appointment made is. Skip the double-confirm cadence; spend the effort on the ask itself.`),
+    _ph(),
+    _nx([{ t: "Who do I follow up with next?" }]) ] },
+
+{ id: "CLH5", personas: ["salesManager", "salesAssoc"], checking: "CLTV Leads Detail (eLead)",
+  kw: ["usually reach us"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Showroom-first\u2020.</b> His lead history splits: ${_d(CLTV_PH.leads.ups.showroom + " showroom ups")}, ${_d(CLTV_PH.leads.ups.internet + " internet up")}, 0 phone, 0 campaign. He comes in person \u2014 consistent with someone who was already in the building for service.`),
+    _cltv("Lifetime Internet/Showroom/Phone/Campaign Up breakdowns \u00b7 no DB column yet \u2014 eLead DIM_UPTYPE"),
+    _ph(),
+    _nx([{ t: "Does Adam Jones show up when he books?" }]) ] },
+
+{ id: "CLH6", personas: ["owner", "salesManager"], checking: "CLTV Leads Detail (eLead)",
+  kw: ["campaigns actually produced"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>One of the spring campaigns earned its budget\u2020:</b> <i>${_d(CLTV_PH.campaigns[0].n)}</i> \u2014 <b>${_d(CLTV_PH.campaigns[0].sold + " sold leads")} of ${_d(CLTV_PH.campaigns[0].good + " good leads")} (${_d(CLTV_PH.campaigns[0].rate)})</b>. The other two spring campaigns produced ${_d("1")} and ${_d("0")} sales respectively on comparable volume\u2020.`),
+    _cltv("Lifetime Campaign Up Sold Leads per campaign \u00b7 no DB column yet \u2014 eLead DIM_SOURCE \u00d7 FACT_DEAL"),
+    _m(`The one that worked is the one aimed at existing service customers \u2014 the Adam Jones pattern again, run as a campaign.`),
+    _ph(),
+    _nx([{ t: "What is our close rate on repeat customers versus new?" }]) ] },
+
+{ id: "CLH7", personas: ["salesManager", "salesAssoc"], checking: "CLTV Leads Detail (eLead)",
+  kw: ["was in the showroom"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>The visit that became the sale.</b> His last showroom visit (${_d(CLTV_PH.showroom.when)}): <b>demo \u2014 ${_d(CLTV_PH.showroom.demo)} \u00b7 manager turnover \u2014 ${_d(CLTV_PH.showroom.to)} \u00b7 quoted \u2014 ${_d(CLTV_PH.showroom.quoted)} \u00b7 a return visit</b> (${CLTV_PH.showroom.beback}\u2020). Every stage box checked, and the deal closed within weeks.`),
+    _cltv("IS_DEMO, IS_TO, IS_WRITE_UP, BE_BACK \u00b7 eLead FACT_SHOWROOM_VISIT \u2014 buildable now"),
+    _ph(),
+    _nx([{ t: "How much have we contacted Adam Jones on this lead?" }]) ] },
+
+{ id: "CLH8", personas: ["salesAssoc", "salesManager"], checking: "CLTV Leads Detail (eLead)",
+  kw: ["much have we contacted", "contacted adam jones on this"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Eleven touches\u2020:</b> ${_d(CLTV_PH.touches.calls + " calls")}, ${_d(CLTV_PH.touches.emails + " emails")}, ${_d(CLTV_PH.touches.texts + " texts")} \u2014 the last outbound <b>${_d(CLTV_PH.touches.lastOut)}</b>, unanswered\u2020.`),
+    _cltv("Call Count, Email Count, Text Count \u00b7 eLead FACT_COMMUNICATION \u2014 buildable now"),
+    _m(`Volume without a reply is a channel problem, not an effort problem \u2014 his history says he is a showroom-and-text\u2020 customer, and most of these touches were email.`),
+    _ph(),
+    _nx([{ t: "Who do I follow up with next?" }]) ] },
+
+{ id: "CLH9", personas: ["salesManager"], checking: "CLTV Leads Detail (eLead)",
+  kw: ["usable contact info", "no usable contact"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>${_d(CLTV_PH.badLeads.n + " of " + CLTV_PH.badLeads.of)} \u2014 ${_d(CLTV_PH.badLeads.pct)} flagged bad.</b> Dealers typically exclude these from performance math, and the store's close-rate reporting already does\u2020.`),
+    _cltv("IS_BAD_LEAD \u00b7 eLead FACT_DEAL \u2014 buildable now"),
+    _ph(),
+    _nx([{ t: "What is our close rate on repeat customers versus new?" }]) ] },
+
+{ id: "CLH10", personas: ["salesManager"], checking: "CLTV Leads Detail (eLead)",
+  kw: ["closes the leads"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Close rate on assigned good leads, trailing 90 days\u2020:</b> ` +
+       CLTV_PH.team.map(x => `${_d(x.n)} <b>${_d(x.close)}</b>`).join(" \u00b7 ") +
+       ` \u2014 store line ${_d(CLTV_PH.storeLine)}.`),
+    _cltv("Salesperson \u00d7 Lead to Sale Converted \u00b7 eLead DIM_SALESPERSON, FACT_DEAL \u2014 buildable now"),
+    _m(`One number per person is a conversation starter, not a verdict \u2014 assignment mix moves these rates, and the mix is one chip away.`),
+    _ph(),
+    _nx([{ t: "How does the team's assignment mix differ?", p: true }]) ] },
+
+{ id: "CLH11", personas: ["salesManager"], checking: "CLTV Leads Detail (eLead)",
+  kw: ["assignment mix"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>The close-rate table, re-read through what each person is handed\u2020:</b>`),
+    _tbl([{ h: "Salesperson" }, { h: "Internet", num: true }, { h: "Showroom", num: true },
+          { h: "Phone", num: true }, { h: "Campaign", num: true }, { h: "Closes", num: true }],
+      CLTV_PH.team.map(x => [_d(x.n), _d(x.internet), _d(x.showroom), _d(x.phone), _d(x.campaign), _d(x.close)]),
+      "Lead mix and close rate by salesperson"),
+    _cltv("DIM_UPTYPE \u00d7 DIM_SALESPERSON \u00d7 Lead to Sale Converted \u00b7 eLead \u2014 buildable now"),
+    _m(`Showroom ups close at multiples of internet ups everywhere, and Vasquez\u2020 is handed the most of them. Parker's\u2020 ${_d("11%")} sits on the hardest mix on the team. The leaderboard question and this table only make sense together \u2014 compare people within an uptype, not across the blended rate. A reading, not a reassignment.`),
+    _ph(),
+    _nx([{ t: "Who on my team closes the leads they are handed?" }, { t: "How does Adam Jones usually reach us \u2014 web, phone, walk-in, or campaign?" }]) ] },
+
+/* ---- Family I: video ---- */
+{ id: "CLI1", personas: ["serviceManager", "ops"], checking: "TruVideo",
+  kw: ["watch the inspection videos", "videos we send"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>When we've sent them \u2014 yes.</b> ${_d(CLTV_PH.video.adamCreated + " videos created")}, ${_d(CLTV_PH.video.adamViewed + " viewed")} across his RO history, typically within <b>${_d(CLTV_PH.video.adamOpen)}</b> of send.`),
+    _cltv("Total RO Videos Created/Viewed Count \u00b7 TRUVIDEO_ALLSERVICE$VW \u2014 join caveat applies (PRD \u00a77.6)"),
+    _ph(),
+    _nx([{ t: "Which customers haven't opened their video yet?" }]) ] },
+
+{ id: "CLI2", personas: ["ops"], checking: "TruVideo",
+  kw: ["after they get a video", "approve work after"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Median ${_d(CLTV_PH.video.approveWith)} with a video, against ${_d(CLTV_PH.video.approveWithout)} without one</b> \u2014 the video roughly quarters\u2020 the approval wait, on trailing-30 sends\u2020.`),
+    _cltv("RESPONSE_TIME (minutes from send to customer response), compared against non-video estimates"),
+    _ph(),
+    _nx([{ t: "Do customers open videos more by text or by email?" }]) ] },
+
+{ id: "CLI3", personas: ["serviceManager", "ops"], checking: "TruVideo",
+  kw: ["opened their video", "haven't opened their"],
+  blocks: () => [ _nd("rules"),
+    _m(`<b>One estimate is sitting unwatched\u2020.</b> RO <b>${CLTV_PH.video.unwatchedRo}</b> \u2014 video sent <b>${_d(CLTV_PH.video.sentAgo)}</b>, <b>0 views</b>, estimate pending approval. Everything else sent today has been opened.`),
+    _cltv("VIEW_COUNT = 0 \u2227 estimate open \u00b7 TRUVIDEO_ALLSERVICE$VW joined to the RO"),
+    _m(`An unwatched video is an unapproved estimate wearing a different hat. The next step is the nudge \u2014 and that is the gated send this prototype already has: it stops at a confirmation card before anything goes out.`),
+    _lim(`Send time and view state are placeholder values; the RO number is the grounded constant. Video-to-RO join is an open item (PRD \u00a77.6).`),
+    _nx([{ t: "Send her the estimate", p: true }, { t: "Does Adam Jones watch the inspection videos we send?" }]) ] },
+
+{ id: "CLI4", personas: ["ops"], checking: "TruVideo",
+  kw: ["by text or by email", "videos more by text"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Text, and it isn't close\u2020.</b> Trailing 30 days\u2020: <b>${_d(CLTV_PH.video.textClick)} of text-sent videos clicked</b> against <b>${_d(CLTV_PH.video.emailClick)} of email-sent</b> \u2014 SENT_BY_TEXT outperforms on every RO cohort\u2020.`),
+    _cltv("SENT_BY_TEXT, SENT_BY_EMAIL, LINK_CLICK_COUNT"),
+    _ph(),
+    _nx([{ t: "Which customers haven't opened their video yet?" }]) ] },
+
+/* ---- Family J: store level ---- */
+{ id: "CLJ2", personas: ["ops", "serviceManager", "controller"], checking: "Intelligence Suite",
+  kw: ["break fixed ops gross", "warranty and internal"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>This month\u2020, labor + parts gross by pay type:</b> Customer pay <b>${_d(CLTV_PH.month.payType.cp)}</b> \u00b7 Warranty <b>${_d(CLTV_PH.month.payType.w)}</b> \u00b7 Internal <b>${_d(CLTV_PH.month.payType.i)}</b>.`),
+    _cltv("Total Customer/Warranty/Internal Pay Labor + Parts Gross Profit \u00b7 repair_order_clean$vw \u00b7 Confirmed Valid"),
+    _m(`The formula excludes open and voided ROs by definition \u2014 so this number moves when ROs close, not when work is written. A soft week here can be a closing-discipline story, not a sales story.`),
+    _ph(),
+    _nx([{ t: "Show me Toyota tech utilization" }, { t: "Which ROs are waiting on parts?" }]) ] },
+
+{ id: "CLJ3", personas: ["serviceManager", "ops"], checking: "Intelligence Suite",
+  kw: ["labor or parts this month", "service margin coming from"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Labor-led, as usual \u2014 but the gap is narrowing\u2020.</b> Labor gross <b>${_d(CLTV_PH.month.laborGP)}</b> against parts gross <b>${_d(CLTV_PH.month.partsGP)}</b> month-to-date; parts is up <b>${_d(CLTV_PH.month.partsShift)}</b> of share on last month.`),
+    _cltv("Total RO Labor Gross Profit vs Total RO Parts Gross Profit \u00b7 Confirmed Valid"),
+    _ph(),
+    _nx([{ t: "Break fixed ops gross out by customer pay, warranty and internal" }]) ] },
+
+{ id: "CLJ4", personas: ["parts"], checking: "Intelligence Suite",
+  kw: ["retail compare to wholesale", "counter retail compare"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Wholesale carries the volume, retail carries the margin\u2020.</b> OTC month-to-date: wholesale <b>${_d(CLTV_PH.month.otc.wSales)} at ${_d(CLTV_PH.month.otc.wM)}</b> margin, retail <b>${_d(CLTV_PH.month.otc.rSales)} at ${_d(CLTV_PH.month.otc.rM)}</b>. Definitions per the CDP sheet: RO-type invoices excluded; null wholesale-type counts as retail.`),
+    _cltv("Total Front Counter Retail/Wholesale Parts Sales + Gross Profit \u00b7 parts_invoice_raw \u00b7 Confirmed Valid"),
+    _ph(),
+    _nx([{ t: "Who are my top wholesale accounts by margin?" }]) ] },
+
+
+/* ============================================================
+   PI3 PARTIALS — the 23 rows the coverage audit marks Partial, wired as
+   the conversations the research describes. Conversation layer only;
+   the audit's viz column is deliberately future work. Six are gated and
+   use the standard confirm-and-log machinery; seventeen are advisory
+   and write nothing. Placeholders carry the dagger; FI-1 carries no
+   figures at all until Daniel Showalter signs off, and says so.
+   ============================================================ */
+
+/* ---- Accounting & Error Detection ---- */
+{ id: "AC1", personas: ["controller", "arap"], checking: "General Ledger",
+  kw: ["posting error", "expense postings"], app: "accounting", sec: null,
+  blocks: () => [ _nd("rules"),
+    _m(`<b>Two entries in this month's expense postings look wrong \u2014 nothing has been changed.</b><br>` +
+       `\u2022 <b>GL 6100 \u00b7 Advertising</b> \u2014 ${_d("$1,200")} posted twice, ${_d("4 days apart")}, same vendor reference. Reason flagged: duplicate amount\u2020.<br>` +
+       `\u2022 <b>GL 2410\u2020</b> \u2014 ABC Towing posted to a parts expense account${"\u2020"}. Reason flagged: unusual account for this vendor\u2020.`),
+    _m(`Both are flags, not findings \u2014 review each before touching anything. I can open either in the GL, or mark one reviewed so it stops surfacing.`),
+    _ph(),
+    { t: "srcft", s: "General Ledger \u00b7 expense postings, current month \u00b7 flag reasons: duplicate amount, vendor-account mismatch" },
+    _nx([{ t: "The GL account is already filled in" }, { t: "Where are the operational control variances?" }]) ] },
+
+{ id: "AC2", personas: ["arap", "controller"], checking: "Accounts Receivable",
+  kw: ["unapplied payments"], app: "accounting", sec: null,
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Three.</b> Suggested matches only \u2014 confirm before applying anything:`),
+    _tbl(
+      [{ h: "Amount", num: true }, { h: "Received" }, { h: "Likely match" }],
+      [
+        [_d("$1,840"), _d("Aug 28"), "INV-114051 \u2014 amounts agree\u2020"],
+        [_d("$620"),   _d("Sep 1"),  _d("partial on an open balance")],
+        [_d("$95"),    _d("Sep 2"),  "no confident match"],
+      ],
+      "Unapplied payments with suggested matches"),
+    _m(`The last one I have left blank rather than guessed at \u2014 a wrong match is worse than an open item.`),
+    _m(`The three-payment count is the same one the past-due answer carries; this is the direct ask. Applying one is a separate, gated step.`),
+    _ph(),
+    { t: "srcft", s: "Accounts Receivable \u00b7 unapplied receipts vs open invoices \u00b7 match suggestions are advisory" },
+    _nx([{ t: "Apply the payment", p: true }, { t: "Which invoices are past due?" }]) ] },
+
+{ id: "AC3", personas: ["arap", "controller"], checking: "Accounts Payable",
+  kw: ["vendor invoices", "vendor invoices are past due"], app: "accounting", sec: null,
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Two vendor invoices are past due</b> \u2014 total exposure ${_d("$2,730")}.`),
+    _tbl(
+      [{ h: "Vendor" }, { h: "Invoice" }, { h: "Amount", num: true }, { h: "Late", num: true }],
+      [
+        ["Testenger",  "INV-114051",     _d("$1,840"), _d("13d")],
+        ["ABC Towing", _d("8817"),       _d("$890"),   _d("5d")],
+        _total(["Total", "", _d("$2,730"), ""]),
+      ],
+      "Past-due vendor invoices"),
+    _m(`Testenger is the oldest item and the one to move first.`),
+    _m(`The receivable side of past-due was always answerable; this is the payable side the audit flagged as missing. I can pin either for follow-up.`),
+    _ph(),
+    { t: "srcft", s: "Accounts Payable \u00b7 open invoices past due date, sorted by days late" },
+    _nx([{ t: "Remind me Friday to follow up with Testenger on invoice INV-114051", p: true }, { t: "Just pay the Testenger invoice" }]) ] },
+
+{ id: "AC4", personas: ["arap", "controller"], checking: null,
+  kw: ["remind me friday", "follow up with testenger"],
+  blocks: () => [ _nd("auto"),
+    _m(`<b>Here is the pin \u2014 nothing is set yet:</b>`),
+    _cfm([
+      { k: "Pin", v: "Invoice INV-114051 \u00b7 Testenger \u00b7 " + _d("$1,840") },
+      { k: "Reminder", v: "Friday, in your Smart Activity pins" },
+      { k: "Effect", v: "A reminder chip on My Unify \u2014 visible to you only" },
+    ], "Reversible from the pin itself. Nothing is sent to the vendor.",
+    [ { t: "Pin it", res: "AC4_YES", p: true }, { t: "Not now", res: "AC4_NO", danger: true } ]),
+    { t: "srcft", s: "Smart Activity pins \u00b7 the same gated watch pattern as the store watch and RO aging flag" } ] },
+
+{ id: "AC9", personas: ["arap", "controller", "owner"], checking: "Intelligence Suite",
+  kw: ["across all my stores", "ar over 90 days across"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>AR over 90 days, by store \u2014 ${_d("Statler Ford")} carries the largest exposure:</b>`),
+    _tbl([{ h: "Store" }, { h: "Over 90", num: true }, { h: "Accts", num: true }, { h: "% of AR", num: true }], [
+      ["Statler Ford",   _cbar(_d("$41,200"), 100, "var(--crm-red)"), _d("11"), _d("38%")],
+      ["Statler Toyota", _cbar(_d("$28,900"), 70,  "var(--pa)"),      _d("7"),  _d("19%")],
+      ["Statler Honda",  _cbar(_d("$12,300"), 30,  "var(--se)"),      _d("4"),  _d("11%")],
+      ["Statler Mazda",  _cbar(_d("$6,100"),  15,  "var(--se)"),      _d("2"),  _d("9%")],
+    ], "AR over 90 days by store"),
+    _m(`This is every store your permissions reach \u2014 none excluded. One view instead of four store reports, which is the point the research made.`),
+    _ph(),
+    { t: "srcft", s: "AR aging \u00d7 store scope \u00b7 respects your store permissions and says so when one is excluded" },
+    _nx([{ t: "Show me the aging report" }, { t: "Add AR over 90 days across all stores to my dashboard", p: true }]) ] },
+
+/* ---- Reports & Cross-Department ---- */
+{ id: "RP2", personas: ["owner", "controller"], checking: "Financial Statements",
+  kw: ["financial statement"], app: "accounting", sec: null,
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>August 2026 Financial Statement \u2014 Statler Auto Group</b> \u00b7 status: <b>${_d("finalized Sep 2")}</b> \u00b7 all four stores consolidated\u2020.<br>` +
+       `Headline: net profit ${_d("up against July")} \u2014 the figure itself is on page one of the statement.`),
+    _m(`Retrieved, not summarised \u2014 the audit's point was reaching the document without navigating there. Open it in Accounting and it lands on this statement, not the module home.`),
+    _ph(),
+    { t: "srcft", s: "Financial Statements \u00b7 most recent finalized period \u00b7 document retrieval, headline only" },
+    _nx([{ t: "How are we doing this month?" }, { t: "Where does month-end close stand?" }]) ] },
+
+{ id: "RP4", personas: ["salesManager"], checking: "Modern Retail",
+  kw: ["sales trending", "who's leading"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Ahead of last month, behind goal pace\u2020.</b>`),
+    _stats([ { n: _d("41"), k: "Units MTD" }, { n: _d("36"), k: "Same pt. LM" },
+             { n: _d("45"), k: "Goal pace" }, { n: _d("\u22124"), k: "Vs goal" } ]),
+    _m(`` +
+       `<b>Leaderboard:</b> Colin Vasquez ${_d("14")} \u00b7 Lex Anderson ${_d("12")} \u00b7 Jay Parker ${_d("8")}\u2020 \u2014 Parker is ${_d("3 units")} behind his own pace, the only material gap.`),
+    _m(`Same roster as the close-rate answers \u2014 and the assignment-mix table is the fair way to read Parker's number before the conversation.`),
+    _ph(),
+    { t: "srcft", s: "Modern Retail \u00b7 units MTD vs prior month and goal pace \u00b7 per-salesperson" },
+    _nx([{ t: "How does the team's assignment mix differ?" }, { t: "How are we pacing this month?" }]) ] },
+
+{ id: "RP7", personas: ["controller", "owner"], checking: "Intelligence Suite",
+  kw: ["aged inventory report", "units over 90"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Reading that as: aged inventory \u00b7 over 90 days \u00b7 all stores.</b> Say the word and I'll adjust the filter.<br>` +
+       ``),
+    _tbl([{ h: "Store" }, { h: "Units > 90", num: true }, { h: "Oldest", num: true }], [
+      ["Statler Ford",   _cbar(_d("9"), 100, "var(--crm-red)"), _d("161 days")],
+      ["Statler Mazda",  _cbar(_d("6"), 67,  "var(--pa)"),      _d("140 days")],
+      ["Statler Toyota", _cbar(_d("5"), 56,  "var(--pa)"),      _d("124 days")],
+      ["Statler Honda",  _cbar(_d("3"), 33,  "var(--se)"),      _d("102 days")],
+    ], "Aged inventory over 90 days by store"),
+    _m(`The filter came from your sentence, not a filter panel \u2014 that is the use case. Narrow it (\u201cjust Ford\u201d, \u201cover 120\u201d) in plain language.`),
+    _ph(),
+    { t: "srcft", s: "Intelligence Suite reports \u00b7 natural-language filter, confirmed back in one line before the table" },
+    _nx([{ t: "Compare inventory aging across stores" }]) ] },
+
+/* ---- Sales & Inventory ---- */
+{ id: "SI1", personas: ["salesManager", "salesAssoc"], checking: "Vehicle Inventory",
+  kw: ["been on the lot", "stock #h9551"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Stock #H9551 \u2014 2024 Hyundai Venue SEL \u2014 ${_d("34 days")} on the lot.</b> Acquired ${_d("Aug 1")} at ${_d("$21,900")} cost \u00b7 internet price ${_d("$23,400")} \u00b7 aging bucket <b>${_d("31\u201360 days")}</b>, alongside ${_d("7 other units")} in the same bucket.`),
+    _m(`Worth knowing before pricing moves: this unit is attached to pending deal <b>12345</b> \u2014 if that deal books, the aging question answers itself.`),
+    _ph(),
+    { t: "srcft", s: "Vehicle Inventory \u00b7 per-unit days in stock, acquisition, price position, aging bucket" },
+    _nx([{ t: "How can I improve our margins on inventory that's been sitting?" }]) ] },
+
+{ id: "SI2", personas: ["salesManager"], checking: "Vehicle Inventory",
+  kw: ["improve our margins", "been sitting"],
+  blocks: () => [ _nd("rules"),
+    _m(`<b>The aged units group three ways, and each group wants a different move:</b><br>` +
+       `\u2022 <b>Priced above market\u2020</b> \u2014 ${_d("6 units")} sitting ${_d("$700\u2013$1,400")} over comparable listings. Option: reprice to market; trade-off is margin now vs floorplan cost later.<br>` +
+       `\u2022 <b>Mismatched to local demand\u2020</b> \u2014 ${_d("4 units")} in configurations that turn slowly here. Option: dealer trade or wholesale; trade-off is a small certain loss vs a slow uncertain one.<br>` +
+       `\u2022 <b>Held in reconditioning\u2020</b> \u2014 ${_d("3 units")} that aged before they ever hit the line. Option: fix the recon queue; this one is process, not pricing.`),
+    _m(`Recommendations, not actions \u2014 every one of these is yours to decide, and nothing here changes a price.`),
+    _ph(),
+    { t: "srcft", s: "Vehicle Inventory \u00b7 aged units grouped by likely cause \u00b7 advisory only" },
+    _nx([{ t: "Pull the aged inventory report filtered to units over 90 days" }]) ] },
+
+{ id: "SI3", personas: ["salesManager", "salesAssoc"], checking: "Vehicle Inventory",
+  kw: ["venue sel", "any venue"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>One match.</b> Stock <b>#H9551</b> \u2014 2024 Venue SEL \u00b7 ${_d("Abyss Black")} \u00b7 ${_d("34 days")} in stock \u00b7 ${_d("$23,400")} \u2014 and it is attached to pending deal <b>12345</b>, so treat it as spoken-for until that resolves.`),
+    _m(`I can widen this to in-transit units or the other Statler stores if one match isn't enough.`),
+    _ph(),
+    { t: "srcft", s: "Vehicle Inventory \u00b7 stock search by model/trim \u00b7 offer: widen to in-transit or group stores" },
+    _nx([{ t: "Who has it across the group?" }, { t: "How long has stock #H9551 been on the lot?" }]) ] },
+
+{ id: "SI6", personas: ["salesAssoc", "fi", "salesManager"], checking: null,
+  kw: ["credit check for", "run a credit check"],
+  blocks: () => [ _nd("auto"),
+    _m(`<b>You're permitted to run this. Here is what would happen \u2014 nothing has run yet:</b>`),
+    _cfm([
+      { k: "Customer", v: "Bonita Murray \u00b7 consent on file" + "\u2020" },
+      { k: "Type", v: "Soft pull \u2014 no score impact" + "\u2020" },
+      { k: "Bureau", v: _d("Equifax") },
+      { k: "Logged", v: "Yes \u2014 who, when, and the consent reference" },
+    ], "A hard pull is a different confirmation with a different warning. If you lacked this permission I would say so here \u2014 before the wall, not at it \u2014 and offer to notify your F&I Manager.",
+    [ { t: "Run the soft pull", res: "SI6_YES", p: true }, { t: "Not now", res: "SI6_NO", danger: true } ]),
+    { t: "srcft", s: "F&I \u00b7 credit \u00b7 permission checked first; consent reference required; every run is audited" } ] },
+
+/* ---- F&I ---- */
+{ id: "FI1", personas: ["fi"], checking: "Desking",
+  kw: ["60 and 72 months", "lenders that fit"],
+  blocks: () => [ _nd("rules"),
+    _m(`<b>Deal 129522 at 60 and 72 months \u2014 structure first, figures withheld:</b><br>` +
+       `\u2022 60 mo \u2014 payment <b>$\u2014</b> \u00b7 total interest <b>$\u2014</b><br>` +
+       `\u2022 72 mo \u2014 payment <b>$\u2014</b> \u00b7 total interest <b>$\u2014</b><br>` +
+       `Payment figures are withheld until the rate assumptions clear Daniel Showalter's review \u2014 showing estimates here before that would put unverified numbers in front of a customer conversation.`),
+    _m(`<b>Lender fit at this credit tier\u2020:</b> Hyundai Motor Finance (the deal's current lender \u2014 program guidelines match\u2020) \u00b7 ${_d("Coastal Credit Union")} \u00b7 ${_d("First Auto Acceptance")}. Guidelines fit is not approval \u2014 approvals come from the lender, and every figure here is an estimate until submitted.`),
+    _ph(),
+    { t: "srcft", s: "Desking \u00b7 term comparison structure + published lender guidelines vs credit tier \u00b7 figures pending F&I SME sign-off" },
+    _nx([{ t: "Why did deal 129522 kick back?" }, { t: "Show me the payoff quotes" }]) ] },
+
+{ id: "FI2", personas: ["fi"], checking: "Document Management",
+  kw: ["title application"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Illinois Title Application${"\u2020"} \u2014 pulled and associated with deal 129522.</b> From the deal record I can pre-fill: buyer name, address, VIN, sale date and lienholder\u2020. Two fields need a human: odometer attestation and signature.`),
+    _m(`One template by name, attached to the open deal \u2014 not the eleven-form jacket build, which stays its own flow.`),
+    _ph(),
+    { t: "srcft", s: "Document Management \u00b7 eForms template retrieval by name \u00b7 pre-fill from the deal record, gaps named" },
+    _nx([{ t: "Remind Bonita Murray we still need her proof of insurance", p: true }]) ] },
+
+{ id: "FI3", personas: ["fi"], checking: null,
+  kw: ["proof of insurance", "still need her"],
+  blocks: () => [ _nd("auto"),
+    _m(`<b>Outstanding on deal 129522:</b> the unsigned payoff authorization letter, and proof of insurance\u2020. Here is the reminder \u2014 it sends only if you confirm:`),
+    _cfm([
+      { k: "To", v: "Bonita Murray \u00b7 text" + "\u2020" },
+      { k: "Message", v: "\u201cHi Bonita \u2014 two quick items to finish your paperwork: proof of insurance, and one signature on the payoff letter. Reply here or bring them Friday.\u201d" },
+      { k: "Logged", v: "Yes \u2014 message, channel and timestamp" },
+    ], "Customer-facing. Nothing sends without your confirmation.",
+    [ { t: "Send it", res: "FI3_YES", p: true }, { t: "Not now", res: "FI3_NO", danger: true } ]),
+    { t: "srcft", s: "Deal 129522 \u00b7 outstanding-document checklist + drafted reminder \u00b7 gated send" } ] },
+
+/* ---- Parts & Service ---- */
+{ id: "PS1", personas: ["serviceManager", "ops"], checking: "Repair Orders",
+  kw: ["when will ro", "be done"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>RO 124213 \u2014 in progress, no hold.</b> Assigned tech is on it now\u2020 \u00b7 ${_d("1.4 hours")} of booked labor remaining \u00b7 parts on hand. Supportable ETA: <b>${_d("end of day")}</b>.<br>` +
+       `Contrast with RO 124211: that one I would not give an ETA for \u2014 it is on a parts hold, and the honest answer is what it's waiting on, not a guess.`),
+    _m(`ETAs only when the data supports one \u2014 that line comes straight from the research, and it is the rule this answer follows.`),
+    _ph(),
+    { t: "srcft", s: "Repair Orders \u00b7 status, assigned tech, hours remaining, holds \u00b7 ETA only when supportable" },
+    _nx([{ t: "Why is RO 124211 on hold?" }, { t: "Show me Toyota tech utilization" }]) ] },
+
+{ id: "PS4", personas: ["serviceManager", "ops", "tech"], checking: "OEM warranty",
+  kw: ["covered under warranty", "axle covered"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Yes, if it failed on its own.</b> The axle sits under the powertrain warranty on this VIN \u2014 ${_d("5 years / 60,000 miles")}, expiring ${_d("May 2031")} at current mileage\u2020 \u2014 and there is one open campaign on the vehicle (the recall already flagged on the record).<br>` +
+       `The \u201cif\u201d matters: coverage depends on cause of failure. Impact damage or a worn related component the customer declined earlier can void it \u2014 note the cause on the RO before promising anything.`),
+    _ph(),
+    { t: "srcft", s: "OEM warranty coverage by VIN \u00b7 component \u00d7 term \u00d7 open campaigns \u00b7 cause-of-failure caveat" },
+    _nx([{ t: "Show open campaigns and TSBs for this VIN" }, { t: "What should I inspect on Adam Jones's vehicle?" }]) ] },
+
+{ id: "PS9", personas: ["serviceManager"], checking: null,
+  kw: ["let parts know", "by 2 pm"],
+  blocks: () => [ _nd("auto"),
+    _m(`<b>Here is the request, in the format the parts desk works from \u2014 it sends only on your confirmation:</b>`),
+    _cfm([
+      { k: "To", v: "Parts desk \u00b7 open requests queue" },
+      { k: "Part", v: "OEM-BP-447" },
+      { k: "For", v: "RO 124211" },
+      { k: "Needed by", v: "2:00 PM today" },
+    ], "Structured request, not free text \u2014 it lands in the queue the desk already watches, and it is logged.",
+    [ { t: "Send the request", res: "PS9_YES", p: true }, { t: "Not now", res: "PS9_NO", danger: true } ]),
+    { t: "srcft", s: "Parts requests \u00b7 RO \u00d7 part \u00d7 needed-by \u00b7 gated send into the existing queue" } ] },
+
+{ id: "PS10", personas: ["serviceManager", "tech", "ops"], checking: "OEM service information",
+  kw: ["campaigns and tsbs", "open campaigns and"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Two items open on this VIN:</b><br>` +
+       `\u2022 <b>Recall</b> \u2014 the open recall already flagged on the vehicle record \u00b7 status: parts available \u00b7 labor op ${_d("R-2214, 0.8h")}<br>` +
+       `\u2022 <b>TSB ${_d("24-BD-031")}</b> \u2014 ${_d("front brake judder countermeasure")} \u00b7 informational, no campaign funding\u2020`),
+    _m(`Diagrams and the full bulletin stay at the OEM source \u2014 I link out rather than reproduce them, so the tech is always reading the current revision.`),
+    _ph(),
+    { t: "srcft", s: "OEM campaigns + TSBs by VIN \u00b7 number, title, status, labor op \u00b7 links out, never reproduced" },
+    _nx([{ t: "Is the axle covered under warranty on this VIN?" }, { t: "Review the inspection photos" }]) ] },
+
+{ id: "PS11", personas: ["partsClerk", "parts"], checking: "Purchase Orders",
+  kw: ["post to inventory", "did po"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>PO 178658 \u2014 mostly, with one line to chase.</b>`),
+    _tbl([{ h: "Line" }, { h: "Scanned" }, { h: "Posted" }, { h: "On hand" }], [
+      [_d("Line 1"), "\u2713", "\u2713", "\u2713"],
+      [_d("Line 2"), "\u2713", "\u2713", "\u2713"],
+      [_d("Line 3"), "\u2713", "\u2717", "\u2014"],
+    ], "PO 178658 receiving status by line"),
+    _m(`<b>${_d("Line 3")}</b> scanned ${_d("2h ago")} but has not posted, so it is not in on-hand yet. If it hasn't posted by end of shift, that's a put-away miss, not a timing lag.`),
+    _ph(),
+    { t: "srcft", s: "PO receiving \u00b7 scanned vs posted vs on-hand, per line \u00b7 the diary study's exact worry" },
+    _nx([{ t: "Do we have OEM-BP-447 in stock?" }, { t: "What's holding up SO-4471?" }]) ] },
+
+/* ---- Admin, IT & Agentic ---- */
+{ id: "AD1", personas: ["owner"], checking: "Common Admin",
+  kw: ["clean-up items", "cleanup items"],
+  blocks: () => [ _nd("rules"),
+    _m(`<b>Three groups need an eye \u2014 nothing changes until you ask:</b><br>` +
+       `\u2022 <b>User access</b> \u2014 ${_d("2 accounts")} with access but no login in 90 days\u2020. Recommended: review for deactivation.<br>` +
+       `\u2022 <b>Unposted items</b> \u2014 ${_d("1 accrual")} approved but not posted\u2020. Recommended: post or void before close.<br>` +
+       `\u2022 <b>Configuration</b> \u2014 ${_d("1 user")} without MFA enabled\u2020. Recommended: turn it on \u2014 that one is a gated action I can run.`),
+    _ph(),
+    { t: "srcft", s: "Common Admin \u00b7 access, unposted, configuration scans \u00b7 flagged with reasons, advisory" },
+    _nx([{ t: "Turn on MFA for J. Smith", p: true }, { t: "Where does month-end close stand?" }]) ] },
+
+{ id: "AD2", personas: ["owner"], checking: null,
+  kw: ["turn on mfa", "mfa for"],
+  blocks: () => [ _nd("auto"),
+    _m(`<b>You hold the admin permission for this. Here is the change \u2014 nothing applies until you confirm:</b>`),
+    _cfm([
+      { k: "User", v: _d("J. Smith") },
+      { k: "Change", v: "Multi-factor authentication: off \u2192 on" },
+      { k: "Effect", v: "MFA enrollment prompt at their next login \u2014 they are not logged out now" },
+      { k: "Logged", v: "Yes \u2014 who changed it, for whom, when" },
+    ], "If you lacked this permission I would say so here, before the wall \u2014 and route you to who has it, which is what the access-change answer already does.",
+    [ { t: "Apply the change", res: "AD2_YES", p: true }, { t: "Not now", res: "AD2_NO", danger: true } ]),
+    { t: "srcft", s: "Common Admin \u00b7 Users \u00b7 gated configuration change with audit entry" } ] },
+
+{ id: "AD5", personas: ["arap", "controller", "owner"], checking: null,
+  kw: ["to my dashboard", "add ar over 90"],
+  blocks: () => [ _nd("auto"),
+    _m(`<b>Here is the card and where it lands \u2014 nothing is added until you confirm:</b>`),
+    _cfm([
+      { k: "Card", v: "AR over 90 days \u00b7 all stores \u00b7 one row per store" },
+      { k: "Lands", v: "My Unify \u00b7 your dashboard, top of the second row" + "\u2020" },
+      { k: "Reversible", v: "Yes \u2014 \u201cremove that card\u201d in this conversation, or from the card menu" },
+    ], "Your dashboard only \u2014 nobody else's layout changes.",
+    [ { t: "Add the card", res: "AD5_YES", p: true }, { t: "Not now", res: "AD5_NO", danger: true } ]),
+    { t: "srcft", s: "My Unify \u00b7 dashboard personalization \u00b7 gated, reversible, per-user" } ] },
+
+
+/* ============================================================
+   PI3 GAPS — the nine rows the coverage audit marks NEW. All advisory
+   by the audit's own mode column: nothing here renders a confirm card
+   or writes to the log. AC-7 carries the same figures lock as FI-1.
+   Grounded constants chain across answers on purpose: the unposted
+   $1,200 accrual, RO 124211, and the two stale accounts each appear in
+   more than one answer, because one store's facts should agree with
+   themselves.
+   ============================================================ */
+
+/* AC-5 — anomaly detection over the month's financials */
+{ id: "AC5", personas: ["controller", "owner"], checking: "Financial Statements",
+  kw: ["change significantly", "significantly in this month"],
+  blocks: () => [ _nd("rules"),
+    _m(`<b>Three line items moved enough to look at \u2014 ranked by size of change:</b>`),
+    _bars([ { k: "Service labor", n: 18400, v: _d("+$18,400"), c: "var(--dr)" },
+            { k: "Used veh. gross", n: 9100, v: _d("\u2212$9,100"), c: "var(--crm-red)" },
+            { k: "Advertising 6100", n: 1200, v: _d("+$1,200"), c: "var(--pa)" } ],
+      "Largest month-over-month movements"),
+    _m(`<b>Service labor</b> (${_d("+11%")}) \u2014 likely driver: ${_d("two heavy engine ROs")}, one of them RO 124210. A single large RO, not a trend. ` +
+       `<b>Advertising</b> \u2014 ${_d("+$1,200")} exactly: that is the July accrual, expected. ` +
+       `<b>Used vehicle gross</b> (${_d("\u22127%")}) \u2014 no single driver in the data; this one deserves the source report, not my summary of it.`),
+    _m(`I rank movers and explain them where the data supports it; where it doesn't, I say so and open the report instead of guessing a story.`),
+    _ph(),
+    { t: "srcft", s: "Financial Statements \u00b7 month-over-month line items ranked by absolute and % change \u00b7 drivers named only when supportable" },
+    _nx([{ t: "Open last month's financial statement." }, { t: "Where are the operational control variances?" }]) ] },
+
+/* AC-6 — dashboard vs books reconciliation */
+{ id: "AC6", personas: ["controller"], checking: "Cash Management",
+  kw: ["match the gl", "cash position on my dashboard"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Close, not equal \u2014 and the gap is explainable.</b><br>` +
+       `\u2022 Dashboard cash position \u2014 ${_d("$412,300")} \u00b7 as of ${_d("7:00 AM")}<br>` +
+       `\u2022 GL cash balance \u2014 ${_d("$410,850")} \u00b7 as of ${_d("last posting, 4:41 PM yesterday")}<br>` +
+       `<b>Gap: ${_d("$1,450")}</b> \u2014 accounted for by the approved-but-unposted <b>$1,200</b> accrual to GL 6100, and ${_d("a $250 deposit in transit")}. Post the accrual and the two figures should agree to the deposit.`),
+    _m(`Two timestamps, one comparison, and the gap itemised \u2014 the manual reconciliation the research described, done in the asking.`),
+    _ph(),
+    { t: "srcft", s: "Cash Position card vs GL cash balance \u00b7 both as-of times shown \u00b7 gap itemised from unposted and in-transit items" },
+    _nx([{ t: "What clean-up items need my attention?" }, { t: "Accrue $1,200 to 6100 for July advertising" }]) ] },
+
+/* AC-7 — GST/PST quarterly report. FIGURES LOCK: none until sign-off. */
+{ id: "AC7", personas: ["controller"], checking: "Accounting Reports",
+  kw: ["gst and pst", "pst report", "gst / pst"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Reading that as: GST / PST \u00b7 Q2 (Apr\u2013Jun) \u00b7 all stores.</b> Say the word and I'll narrow it.<br>` +
+       `\u2022 GST collected \u2014 <b>$\u2014</b> \u00b7 remittable <b>$\u2014</b><br>` +
+       `\u2022 PST collected \u2014 <b>$\u2014</b> \u00b7 remittable <b>$\u2014</b><br>` +
+       `Tax figures are withheld until the report wording clears SME sign-off \u2014 a filing number shown here before that would be a number someone files.`),
+    _m(`One thing the run did surface that needs no figure: <b>some Q2 transactions are missing a tax code</b>\u2020, and they would change the filing. They are itemised in the full report \u2014 resolve those before remitting anything.`),
+    _ph(),
+    { t: "srcft", s: "Standard GST/PST quarterly report \u00b7 period and store confirmed back before running \u00b7 figures pending sign-off; missing-tax-code check included" },
+    _nx([{ t: "Where does month-end close stand?" }, { t: "Open last month's financial statement." }]) ] },
+
+/* AC-8 — sales by salesperson for commissions */
+{ id: "AC8", personas: ["controller"], checking: "Intelligence Suite",
+  kw: ["for commissions", "by salesperson for commissions"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Last month, by salesperson \u2014 for the commission worksheet:</b>`),
+    _tbl([{ h: "Salesperson" }, { h: "Units", num: true }, { h: "Front", num: true },
+          { h: "Back", num: true }, { h: "Total", num: true }], [
+      ["Colin Vasquez", _d("16"), _d("$28,400"), _d("$19,100"), _d("$47,500")],
+      ["Lex Anderson",  _d("13"), _d("$21,900"), _d("$16,700"), _d("$38,600")],
+      ["Jay Parker",    _d("9"),  _d("$13,200"), _d("$11,800"), _d("$25,000")],
+      _total(["Store",  _d("38"), _d("$63,500"), _d("$47,600"), _d("$111,100")]),
+    ], "Sales by salesperson for the commission worksheet"),
+    _m(`Note for the accrual: one deal (129522) has $750 of gross on a manager hold \u2014 commissionable only when it releases. I can hand this table to the payroll worksheet as an export when that flow exists; today it is read-only.`),
+    _ph(),
+    { t: "srcft", s: "Deals by salesperson, prior month \u00b7 units, front, back, total, with store total row \u00b7 export is future UI work" },
+    _nx([{ t: "Give me a quarterly sales summary by salesperson." }, { t: "Who on my team closes the leads they are handed?" }]) ] },
+
+/* RP-5 — consolidated period reports by salesperson */
+{ id: "RP5", personas: ["salesManager", "owner"], checking: "Intelligence Suite",
+  kw: ["quarterly sales summary"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Q3 to date, by salesperson \u2014 with quarter-over-quarter movement:</b>`),
+    _tbl([{ h: "Salesperson" }, { h: "Units", num: true }, { h: "Gross", num: true },
+          { h: "Avg / unit", num: true }, { h: "QoQ", num: true }], [
+      ["Colin Vasquez", _d("31"), _d("$96,200"), _d("$3,103"), _d("+9%")],
+      ["Lex Anderson",  _d("27"), _d("$79,800"), _d("$2,956"), _d("+2%")],
+      ["Jay Parker",    _d("19"), _d("$51,400"), _d("$2,705"), _d("\u22126%")],
+    ], "Quarterly sales summary by salesperson"),
+    _m(`` +
+       `Same view by month is one ask away \u2014 and Parker's decline reads differently next to his assignment mix, which is the fair companion table.`),
+    _ph(),
+    { t: "srcft", s: "Deals by salesperson \u00d7 quarter \u00b7 units, gross, avg gross per unit, QoQ delta \u00b7 monthly cut on request" },
+    _nx([{ t: "How does the team's assignment mix differ?" }, { t: "Summarise last month's sales by salesperson for commissions." }]) ] },
+
+/* RP-6 — day-end service report */
+{ id: "RP6", personas: ["serviceManager", "ops"], checking: "Service Reports",
+  kw: ["day-end service report", "day-end report"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Today's day-end, service:</b>`),
+    _stats([ { n: _d("22"), k: "Opened" }, { n: _d("19"), k: "Closed" },
+             { n: _d("41.5"), k: "Hrs sold" }, { n: _d("$7,880"), k: "Labor" },
+             { n: _d("$5,120"), k: "Parts" } ]),
+    _m(`` +
+       `\u2022 <b>Carryovers: 3\u2020</b> \u2014 including <b>RO 124211</b>, still on its parts hold<br>` +
+       `\u2022 <b>Awaiting authorization: 2\u2020</b> \u2014 the approvals queue has them`),
+    _m(`This is the tab-switching trip the research complained about, folded into one ask. The full report has the line detail.`),
+    _ph(),
+    { t: "srcft", s: "Service day-end \u00b7 opened/closed, hours sold, labor + parts sales, carryovers, pending authorizations" },
+    _nx([{ t: "What needs my approval?" }, { t: "Why is RO 124211 on hold?" }]) ] },
+
+/* PS-13 — hands-on tech how-tos with a decline built in */
+{ id: "PS13", personas: ["tech", "serviceManager"], checking: "OEM service information",
+  kw: ["paint code"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Paint code for this VIN: ${_d("R2T \u2014 Pearl White Tri-coat")}</b> \u2014 read from the vehicle record, cross-checked against the OEM build data\u2020.<br>` +
+       `Tri-coat matters for the repair method: OEM procedure calls for base + mid + clear blended into the adjacent panel\u2020 \u2014 spot repair on a tri-coat is where color mismatch complaints come from.`),
+    _m(`Two rules I hold on this family of question: chemical and safety guidance comes only from the OEM or the product's safety sheet, cited \u2014 and where no source exists (some trim-removal steps, some aftermarket products), <b>I decline rather than guess</b>. A wrong paint code costs a comeback; a wrong chemical costs more.`),
+    _ph(),
+    { t: "srcft", s: "Vehicle record + OEM build data \u00b7 paint code, procedure, safety caveat \u00b7 no-source questions are declined, not improvised" },
+    _nx([{ t: "Show open campaigns and TSBs for this VIN" }, { t: "What should I inspect on Adam Jones's vehicle?" }]) ] },
+
+/* AD-4 — user access audit */
+{ id: "AD4", personas: ["owner"], checking: "Common Admin",
+  kw: ["logged in for 90", "haven't logged in"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Two accounts \u2014 the same two the clean-up scan flagged:</b><br>` +
+       `\u2022 ${_d("M. Osei")} \u2014 last login ${_d("May 30")} \u00b7 role ${_d("Parts Clerk")} \u00b7 ${_d("Statler Ford")}<br>` +
+       `\u2022 ${_d("R. Calloway")} \u2014 last login ${_d("Apr 12")} \u00b7 role ${_d("Cashier")} \u00b7 ${_d("Statler Toyota")}<br>` +
+       `I can draft a deactivation list for your review \u2014 <b>I deactivate no one</b>. Access removal stays a human decision, and the access-change flow routes it to the person who owns it.`),
+    _ph(),
+    { t: "srcft", s: "Common Admin \u00b7 Users \u00b7 last login \u00d7 role \u00d7 store, threshold 90 days \u00b7 audit is advisory; deactivation is not offered as an action" },
+    _nx([{ t: "What clean-up items need my attention?" }, { t: "Turn on MFA for J. Smith", p: true }]) ] },
+
+/* CM-1 — missed-message digest by urgency */
+{ id: "CM1", personas: ["serviceManager", "ops"], checking: "Messages",
+  kw: ["what did i miss", "while i was away"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Since your last activity (${_d("1h 40m")} ago) \u2014 three items, one urgent:</b><br>` +
+       `\u2022 <b>Urgent</b> \u2014 parts desk replied on the <b>OEM-BP-447 / RO 124211</b> request: ${_d("\u201ccan't make 2:00, earliest 4:30\u201d")}. The customer wait decision is now yours.<br>` +
+       `\u2022 Normal \u2014 ${_d("a tech question on an MPI line")}\u2020, no deadline attached<br>` +
+       `\u2022 Normal \u2014 ${_d("a vendor voicemail transcription")}\u2020, callback requested this week`),
+    _m(`Urgency here is inferred from deadlines and who is blocked \u2014 the parts reply outranks the rest because an RO and a waiting customer sit behind it. I draft replies only when you ask.`),
+    _ph(),
+    { t: "srcft", s: "Messages + tasks since last activity \u00b7 grouped by inferred urgency \u00b7 phone-system routing itself stays out of scope per the audit" },
+    _nx([{ t: "Why is RO 124211 on hold?" }, { t: "What needs my approval?" }]) ] },
+
 /* ---------- Z. Workspace commands ---------- */
 { id: "Z1", personas: null, checking: null,
   kw: ["start over", "lets start over", "let's start over", "close all apps", "close everything", "back to desktop", "clear my screen", "reset my screen", "fresh start", "close all"],
@@ -15477,6 +16670,41 @@ const AIVA_INTENTS = [
 
 /* ---- Resolutions: what confirm cards and flag/stage chips resolve to ---- */
 const AIVA_RESOLUTIONS = {
+  AC4_YES: { log: { action: "Pinned invoice INV-114051 for follow-up",
+      inputs: [["Vendor", "Testenger"], ["Reminder", "Friday"], ["Where", "Smart Activity pins"]],
+      side: "A reminder chip on My Unify; visible to you only." },
+    blocks: [ _m("Pinned. Friday morning it surfaces in your Smart Activity \u2014 and unpinning it there removes the reminder too.") ] },
+  AC4_NO: { blocks: [ _m("Nothing pinned \u2014 and declining is not logged.") ] },
+  SI6_YES: { log: { action: "Ran soft credit pull \u2014 Bonita Murray",
+      inputs: [["Type", "Soft pull \u2014 no score impact"], ["Bureau", "Equifax\u2020"], ["Consent", "On file\u2020"]],
+      side: "Result attached to the deal; the pull is recorded with who ran it and when." },
+    blocks: [ _m("Done \u2014 soft pull complete\u2020. The summary is on the deal's credit tab, and the run is in the log with your name on it. A hard pull, if the deal gets there, is a separate confirmation.") ] },
+  SI6_NO: { blocks: [ _m("Not run \u2014 nothing touched the bureau, and nothing was logged.") ] },
+  FI3_YES: { log: { action: "Sent paperwork reminder \u2014 Bonita Murray, deal 129522",
+      inputs: [["Items", "Proof of insurance; payoff letter signature"], ["Channel", "Text\u2020"]],
+      side: "Customer-facing message; logged with timestamp." },
+    blocks: [ _m("Sent. When either item comes back I can check it off the deal's outstanding list \u2014 just tell me.") ] },
+  FI3_NO: { blocks: [ _m("Not sent. The outstanding list is unchanged, and nothing was logged.") ] },
+  PS9_YES: { log: { action: "Parts request \u2014 OEM-BP-447 for RO 124211",
+      inputs: [["Needed by", "2:00 PM today"], ["Queue", "Open parts requests"]],
+      side: "Structured request in the parts desk queue." },
+    blocks: [ _m("Sent to the parts desk queue. If OEM-BP-447 can't make 2:00, the counter's answer lands back here \u2014 not in a hallway conversation.") ] },
+  PS9_NO: { blocks: [ _m("Not sent \u2014 the queue is untouched.") ] },
+  AD2_YES: { log: { action: "Enabled MFA \u2014 J. Smith\u2020",
+      inputs: [["Change", "MFA off \u2192 on"], ["Effect", "Enrollment at next login"]],
+      side: "Configuration change in Common Admin, audited." },
+    blocks: [ _m("Applied. J. Smith\u2020 sees the enrollment prompt at next login \u2014 no session was interrupted, and the change is in the audit log under your name.") ] },
+  AD2_NO: { blocks: [ _m("No change applied, nothing logged.") ] },
+  AD5_YES: { log: { action: "Added dashboard card \u2014 AR over 90 days, all stores",
+      inputs: [["Where", "My Unify \u00b7 your dashboard"], ["Reversible", "Yes"]],
+      side: "Personal layout change; nobody else's dashboard is affected." },
+    blocks: [ _m("Added to your dashboard\u2020. Say \u201cremove that card\u201d any time and it comes off \u2014 same conversation, same gate.") ] },
+  AD5_NO: { blocks: [ _m("Nothing added \u2014 your dashboard is as it was.") ] },
+  CLC7_YES: { log: { action: "Set a watch \u2014 Warranty accounts, 60 days dark",
+      inputs: [["Threshold", "60 days"], ["Scope", "In-warranty accounts"], ["Notifies", "You only"]],
+      side: "A standing daily check; notifies you only." },
+    blocks: [ _m("The watch is set. I check daily against <b>NEWEST_RO_DATE</b>; the first account that goes 60 days dark inside its warranty period shows up here, and nothing is ever sent to a customer.") ] },
+  CLC7_NO: { blocks: [ _m("Nothing set \u2014 and declining is not logged. The log records what I did, not what I offered.") ] },
   /* ---- Customer lane ---- */
   CU_APPROVE: {
     fn: () => { aivaCaseNote(2, "Customer approved the $9,480 engine replacement"); },
@@ -15999,8 +17227,56 @@ function aivaActBtn(a, confirmIdx) {
 }
 
 function aivaRenderBlocks(blocks) {
+  // Provenance footnotes render last, whatever order the intent declared —
+  // after the text and the NEXT chips, where a citation belongs. One line
+  // here beats editing every intent that cites a column.
+  const FOOT = (b) => b.t === "cltvsrc" || b.t === "srcft";
+  blocks = blocks.filter(b => !FOOT(b)).concat(blocks.filter(FOOT));
   return blocks.map(b => {
     switch (b.t) {
+      /* ---- inline data visualization ----------------------------------
+         Status colour is never type here: build 05 measured --green at
+         3.00:1 and --amber at 2.14:1 on white, both failing AA. Colour
+         carries meaning as a fill, a bar or a dot; the figure beside it
+         is high-emphasis ink and passes on its own. */
+      case "tbl": {
+        const cols = b.cols || [];
+        const num = (c) => c && c.num;
+        const head = cols.map(c => `<th class="${num(c) ? "n" : ""}">${escapeHtml(c.h || c)}</th>`).join("");
+        const cell = (v, c) => {
+          if (v && typeof v === "object" && v.bar != null) {
+            // proportion drawn in the cell — the bar is the colour, the
+            // number stays readable ink beside it
+            const pct = Math.max(0, Math.min(100, Number(v.bar) || 0));
+            return `<td class="n"><span class="tb-wrap"><span class="tb-fill" style="width:${pct}%;background:${v.c || "var(--brand)"}"></span></span><span class="tb-v">${escapeHtml(String(v.v))}</span></td>`;
+          }
+          return `<td class="${num(c) ? "n" : ""}">${escapeHtml(String(v))}</td>`;
+        };
+        const body = (b.rows || []).map(r => {
+          const tot = r && r.total;
+          const cells = (tot ? r.cells : r) || [];
+          return `<tr class="${tot ? "tb-total" : ""}">${cells.map((v, i) => cell(v, cols[i])).join("")}</tr>`;
+        }).join("");
+        return `<div class="aiva-tbl-wrap"${b.cap ? ` aria-label="${escapeHtml(b.cap)}"` : ""}>` +
+          `<table class="aiva-tbl"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+      }
+      case "bars": {
+        const items = b.items || [];
+        const max = Math.max(...items.map(i => Math.abs(Number(i.n) || 0)), 1);
+        return `<div class="aiva-bars">${items.map(i => {
+          const pct = Math.round((Math.abs(Number(i.n) || 0) / max) * 100);
+          return `<div class="ab-row"><div class="ab-k">${escapeHtml(i.k)}</div>` +
+            `<div class="ab-track"><span class="ab-fill" style="width:${pct}%;background:${i.c || "var(--brand)"}"></span></div>` +
+            `<div class="ab-v">${escapeHtml(i.v != null ? String(i.v) : String(i.n))}</div></div>`;
+        }).join("")}</div>`;
+      }
+      case "stats": {
+        return `<div class="aiva-stats">${(b.items || []).map(i =>
+          `<div class="as-cell"><div class="as-n">${escapeHtml(String(i.n))}</div>` +
+          `<div class="as-k">${escapeHtml(i.k)}</div></div>`).join("")}</div>`;
+      }
+      case "cltvsrc": return `<div class="aiva-cltv-src">\u2726 CLTV \u00b7 ${escapeHtml(b.cols)}</div>`;
+      case "srcft":   return `<div class="aiva-cltv-src">\u2726 ${escapeHtml(b.s)}</div>`;
       // Pre-built markup, used by the demo inventory to emit chip rows that
       // are already escaped. Never fed anything user-supplied.
       case "raw":  return b.h;
@@ -20087,6 +21363,10 @@ window.askAiva = function(text) {
     if (intent.blocks.length === 1 && intent.blocks[0].t === "ticket") { aivaOpenTicket(); return; }
     let blocks = intent.blocks;
     if (typeof blocks === "function") blocks = blocks();
+    // Tier-1 CLTV regrounding for intents (B1, B5, C5, P1A, P2B).
+    if (typeof CLTV_GROUNDING !== "undefined" && CLTV_GROUNDING[intent.id]) {
+      blocks = blocks.concat([_cltv(CLTV_GROUNDING[intent.id])]);
+    }
     if (intent.usePersonaChips) {
       const me = currentPersonaKey();
       const chips = (AIVA_ACTIONS_BY_PERSONA[me] || []).map((t, i) => ({ t, p: i === 0 }));
