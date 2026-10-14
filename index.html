@@ -894,23 +894,48 @@
   .tile.faded { opacity: 0.32; cursor: default; }
   .tile.faded:hover { transform: none; background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.06); }
 
+  /* ============================================================
+     APPLICATION ICONS — CDK product-tile style
+     A rounded square, a vertical gradient, the abbreviation in white, and a
+     fan of ribbons across the bottom: a dark wedge in the bottom-left corner
+     and three lighter bands sweeping up to the right edge.
+
+     The fan is one shared SVG on ::after, so every surface that renders an
+     icon — the apps rail, the app tabs, the mega-menu tiles, the launcher,
+     the recent-apps strip — picks it up without being touched. A per-app
+     rule supplies only its two gradient stops.
+
+     The abbreviation is no longer italic: the reference sets it upright, and
+     at 28px an italic two-letter mark loses more legibility than it gains.
+     ============================================================ */
   .tile-icon {
-    width: 30px; height: 30px; border-radius: 7px;
-    color: white; font-weight: 700; font-size: 10px;
-    display: flex; align-items: center; justify-content: center; font-style: italic;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.15);
-    letter-spacing: -0.3px;
+    position: relative; isolation: isolate; overflow: hidden;
+    width: 30px; height: 30px; border-radius: 23%;
+    color: #fff; font-weight: 600; font-size: 11px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 2px rgba(21,27,37,0.28);
+    letter-spacing: -0.2px; line-height: 1;
+    /* the mark sits a little above centre, as the reference does, to leave
+       the ribbon zone clear */
+    padding-bottom: 14%;
+    font-style: normal;
   }
-  .tile-icon.se { background: linear-gradient(135deg, #4cb3ff, var(--se)); }
-  .tile-icon.dr { background: linear-gradient(135deg, #1bbfa8, var(--dr)); }
-  .tile-icon.crm-red { background: linear-gradient(135deg, #ee5d52, var(--crm-red)); }
-  .tile-icon.crm-dark { background: linear-gradient(135deg, #3a3a3a, var(--crm-dark)); border: 1px solid #4a4a4a; }
-  .tile-icon.fo { background: linear-gradient(135deg, #f06ba8, var(--fo)); }
-  .tile-icon.pa { background: linear-gradient(135deg, #fbbf24, var(--pa)); }
-  .tile-icon.fi { background: linear-gradient(135deg, #a78bfa, var(--fi)); }
-  .tile-icon.dm { background: linear-gradient(135deg, #94a3b8, var(--dm)); }
-  .tile-icon.is { background: linear-gradient(135deg, #c084fc, var(--is)); }
-  .tile-icon.us, .tile-icon.ca { background: linear-gradient(135deg, #2a2a2d, var(--us)); border: 1px solid #3a3a3d; font-style: normal; }
+  .tile-icon::after {
+    content: ""; position: absolute; inset: 0; z-index: -1;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' preserveAspectRatio='none'%3E%3Cpath d='M0,62.5 C18,61.0 42,59.0 64,56.0 L64,64 L0,64 Z' fill='rgba(0,0,0,.30)'/%3E%3Cpath d='M0,52.0 C18,50.5 42,43.0 64,40.0 L64,46.0 C42,49.0 18,54.5 0,56.0 Z' fill='rgba(255,255,255,.55)'/%3E%3Cpath d='M0,56.0 C18,54.5 42,49.0 64,46.0 L64,51.0 C42,54.0 18,58.0 0,59.5 Z' fill='rgba(255,255,255,.34)'/%3E%3Cpath d='M0,59.5 C18,58.0 42,54.0 64,51.0 L64,56.0 C42,59.0 18,61.0 0,62.5 Z' fill='rgba(255,255,255,.17)'/%3E%3C/svg%3E");
+    background-size: 100% 100%; background-repeat: no-repeat;
+    pointer-events: none;
+  }
+  .tile-icon.se { background: linear-gradient(170deg, #5C8CCA 0%, #27507F 100%); }  /* sampled from the reference */
+  .tile-icon.dr { background: linear-gradient(170deg, #4D938A 0%, #275A52 100%); }  /* sampled from the reference */
+  .tile-icon.crm-red { background: linear-gradient(170deg, #C9594E 0%, #7E2A22 100%); }  /* Modern Retail red, deepened */
+  .tile-icon.crm-dark { background: linear-gradient(170deg, #3E3E3E 0%, #161616 100%); }  /* sampled from the reference */
+  .tile-icon.fo { background: linear-gradient(170deg, #7F438C 0%, #562861 100%); }  /* sampled from the reference — was pink */
+  .tile-icon.pa { background: linear-gradient(170deg, #D9972F 0%, #8A5A10 100%); }  /* Parts amber, deepened */
+  .tile-icon.fi { background: linear-gradient(170deg, #8268C8 0%, #4A3681 100%); }  /* F&I violet, deepened */
+  .tile-icon.dm { background: linear-gradient(170deg, #6E7C8C 0%, #3B4651 100%); }  /* Document Mgmt slate, deepened */
+  .tile-icon.is { background: linear-gradient(170deg, #8E63BE 0%, #53356F 100%); }  /* Intelligence Suite purple, deepened */
+  .tile-icon.us, .tile-icon.ca { background: linear-gradient(170deg, #3E3E3E 0%, #161616 100%); }  /* neutral, matches the reference CRM tile */
   .tile-label { font-size: 10.5px; line-height: 1.25; max-width: 90px; color: rgba(255,255,255,0.85); }
 
   /* Resources */
@@ -8213,6 +8238,230 @@ body.theme-dark .aiva-tbl td, body.theme-dark .aiva-bars .ab-k,
 body.theme-dark .aiva-bars .ab-v, body.theme-dark .aiva-stats .as-n { color: rgba(255,255,255,0.95); }
 body.theme-dark .aiva-tbl td { border-bottom-color: rgba(255,255,255,0.08); }
 body.theme-dark .aiva-tbl .tb-wrap, body.theme-dark .aiva-bars .ab-track { background: rgba(255,255,255,0.12); }
+
+
+/* ==================================================================
+   DUPLICATE CUSTOMER RECORDS — list + merge screen
+   A standalone full-screen surface pinned beside the 54px header and
+   66px rail, the same geometry the AIVA stage uses, so it reads as a
+   place in Unify rather than a dialog. Colours ride on existing tokens;
+   dark theme needs no rules of its own.
+   ================================================================== */
+.dup-screen {
+  position: fixed; top: 54px; left: 66px; right: 6px; bottom: 6px;
+  /* An opaque surface, not a floating card: this screen replaces the
+     dashboard while it is open, so nothing behind it should read through.
+     The colour comes from the RDS layer, which is declared on :root and so
+     is in scope here — the F&I tokens are not. */
+  background: var(--rds-surface); color: var(--rds-ink);
+  border-radius: 14px; z-index: 60;
+  display: none; flex-direction: column; overflow: hidden;
+  box-shadow: 0 12px 40px 2px rgba(21,27,37,0.30);
+}
+.dup-screen.open { display: flex; }
+.dup-head {
+  padding: 16px 22px 0; border-bottom-width: 1px; border-bottom-style: solid;
+  border-bottom-color: var(--border); flex-shrink: 0;
+}
+.dup-title-row { display: flex; align-items: center; gap: 10px; }
+.dup-h1 { font-size: 19px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
+.dup-sub { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+.dup-back {
+  background: none; border: none; cursor: pointer; color: var(--text-2);
+  padding: 2px 4px 2px 0; display: inline-flex; align-items: center;
+}
+.dup-acts { display: flex; align-items: center; gap: 14px; margin-left: auto; }
+.dup-tabs { display: flex; gap: 22px; margin-top: 12px; }
+.dup-tab {
+  background: none; border: none; cursor: pointer; padding: 6px 0 9px;
+  font-size: 13px; color: var(--text-3); font-weight: 500;
+  border-bottom-width: 2px; border-bottom-style: solid; border-bottom-color: transparent;
+}
+.dup-tab.on { color: var(--text); font-weight: 600; border-bottom-color: var(--brand); }
+
+.dup-filters { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 22px 12px; }
+.dup-chip {
+  display: inline-flex; align-items: center; gap: 7px; cursor: pointer;
+  font-size: 12px; color: var(--text-2); background: var(--rds-surface);
+  border-width: 1px; border-style: solid; border-color: var(--border);
+  border-radius: 999px; padding: 5px 13px;
+}
+.dup-chip:hover { border-color: var(--text-3); }
+.dup-chip.on { background: var(--rds-primary-50); border-color: var(--brand); color: var(--brand); font-weight: 600; }
+.dup-chip .box {
+  width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0;
+  border-width: 1.5px; border-style: solid; border-color: var(--text-3);
+}
+.dup-chip.on .box { background: var(--brand); border-color: var(--brand); }
+.dup-chip .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.dup-chip .x { font-size: 13px; line-height: 1; opacity: 0.8; }
+
+.dup-body { flex: 1; overflow: auto; }
+.dup-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.dup-table th {
+  position: sticky; top: 0; background: var(--rds-surface-2); z-index: 1;
+  text-align: left; font-size: 11px; font-weight: 600; color: var(--text-2);
+  padding: 10px 14px; white-space: nowrap;
+  border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: var(--border);
+}
+.dup-table td {
+  padding: 11px 14px; color: var(--text-2); vertical-align: middle;
+  border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: var(--border-soft);
+}
+.dup-table tr.sel td {
+  background: var(--rds-primary-50);
+  box-shadow: inset 0 0 0 2px var(--brand);
+}
+.dup-table td.name { color: var(--text); font-weight: 500; }
+.dup-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.dup-manage {
+  background: none; border: none; cursor: pointer; padding: 0;
+  color: var(--brand); font-size: 12.5px; font-weight: 600;
+}
+.dup-manage:hover { text-decoration: underline; }
+.cause-badge {
+  display: inline-flex; align-items: center; gap: 5px; margin-right: 5px;
+  font-size: 11px; font-weight: 600; border-radius: 5px; padding: 3px 8px;
+}
+.cause-auto   { background: #FBEBD9; color: #8A5110; }
+.cause-manual { background: #E4E6F5; color: #3B3F8C; }
+.cause-phone  { background: #DFF0DC; color: #2A6A24; }
+body.theme-dark .cause-auto   { background: rgba(179,98,10,0.26); color: #E8A857; }
+body.theme-dark .cause-manual { background: rgba(59,63,140,0.34); color: #A8ACEE; }
+body.theme-dark .cause-phone  { background: rgba(42,106,36,0.30); color: #8FD186; }
+
+.dup-foot {
+  display: flex; align-items: center; justify-content: flex-end; gap: 18px;
+  padding: 10px 22px; flex-shrink: 0; font-size: 12px; color: var(--text-2);
+  border-top-width: 1px; border-top-style: solid; border-top-color: var(--border);
+}
+.dup-pg { background: none; border: none; cursor: pointer; color: var(--text-2); padding: 2px 5px; }
+.dup-pg:disabled { opacity: 0.3; cursor: default; }
+
+/* success toast with undo */
+.dup-toast {
+  position: absolute; top: 14px; right: 18px; z-index: 5; max-width: 330px;
+  display: flex; gap: 11px; align-items: flex-start;
+  background: var(--rds-surface); border-radius: 8px; padding: 13px 15px;
+  border-width: 1px; border-style: solid; border-color: var(--rds-success);
+  box-shadow: 0 3px 12px 0 rgba(21,27,37,0.22);
+}
+.dup-toast .tick {
+  width: 19px; height: 19px; border-radius: 50%; background: var(--rds-success); flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center; color: #fff;
+}
+.dup-toast p { margin: 0; font-size: 12.5px; line-height: 1.45; color: var(--text); }
+.dup-toast .undo {
+  background: none; border: none; cursor: pointer; padding: 4px 0 0;
+  color: var(--brand); font-size: 12.5px; font-weight: 600;
+}
+
+/* ---------- merge screen ---------- */
+.mrg-wrap { display: flex; min-height: 0; flex: 1; overflow: hidden; }
+.mrg-main { flex: 1; min-width: 0; overflow: auto; }
+.mrg-side {
+  flex: 0 0 236px; width: 236px; overflow-y: auto; padding: 18px 20px 28px;
+  border-left-width: 1px; border-left-style: solid; border-left-color: var(--border);
+}
+.mrg-intro { padding: 14px 22px 12px; }
+.mrg-intro p { margin: 0 0 7px; font-size: 12.5px; line-height: 1.55; color: var(--text-2); }
+.mrg-intro p:first-child { color: var(--text); }
+.mrg-intro p:last-child { margin-bottom: 0; }
+.mrg-intro b { color: var(--text); font-weight: 600; }
+
+.mrg-grid { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.mrg-grid th, .mrg-grid td {
+  vertical-align: top; padding: 11px 12px; text-align: left;
+  border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: var(--border-soft);
+}
+.mrg-grid th.mrg-rowlabel, .mrg-grid td.mrg-rowlabel {
+  width: 150px; min-width: 150px; color: var(--text-2); font-weight: 500;
+  background: var(--rds-surface-2);
+  border-right-width: 1px; border-right-style: solid; border-right-color: var(--border-soft);
+}
+.mrg-grid thead th { border-bottom-color: var(--border); padding-top: 14px; }
+.mrg-col-head { display: flex; align-items: center; gap: 7px; }
+.mrg-col-head .mrg-rec { font-size: 14px; font-weight: 700; color: var(--brand); letter-spacing: -0.01em; }
+.mrg-col-head.off .mrg-rec { color: var(--text-3); }
+.mrg-src { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-3); margin-top: 5px; }
+.mrg-src svg { flex-shrink: 0; }
+.mrg-upd { font-size: 11px; color: var(--text-3); margin-top: 1px; }
+.mrg-why { font-size: 11px; color: var(--rds-warning); margin-top: 3px; line-height: 1.4; }
+
+.mrg-chk {
+  width: 15px; height: 15px; flex-shrink: 0; cursor: pointer; border-radius: 3px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-width: 1.5px; border-style: solid; border-color: var(--text-3); background: transparent;
+}
+.mrg-chk.on { background: var(--brand); border-color: var(--brand); }
+.mrg-chk svg { color: #fff; display: none; }
+.mrg-chk.on svg { display: block; }
+
+.mrg-opt {
+  display: flex; align-items: flex-start; gap: 8px; cursor: pointer;
+  border-width: 1px; border-style: solid; border-color: var(--border);
+  border-radius: 7px; padding: 7px 11px 7px 9px; margin-bottom: 6px;
+  background: var(--rds-surface); line-height: 1.45; color: var(--text); max-width: 236px;
+}
+.mrg-opt:last-child { margin-bottom: 0; }
+.mrg-opt:hover { border-color: var(--text-3); }
+.mrg-opt.sel { background: var(--rds-primary-50); border-color: var(--rds-primary-50); color: var(--brand); font-weight: 600; }
+.mrg-radio {
+  width: 13px; height: 13px; border-radius: 50%; flex-shrink: 0; margin-top: 2px;
+  border-width: 1.5px; border-style: solid; border-color: var(--text-3);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.mrg-opt.sel .mrg-radio { border-color: var(--brand); }
+.mrg-opt.sel .mrg-radio::after { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--brand); }
+.mrg-val-sub { display: block; font-weight: 400; font-size: 11.5px; opacity: 0.85; }
+.mrg-plain { color: var(--text-2); line-height: 1.45; padding: 7px 0; }
+.mrg-match { display: block; font-size: 11px; color: var(--text-3); margin-top: 3px; }
+.mrg-dash { color: var(--text-3); padding: 7px 0; }
+.mrg-grid td.mrg-off, .mrg-grid th.mrg-off { background: var(--rds-surface-2); }
+.mrg-grid td.mrg-off .mrg-plain { color: var(--text-3); }
+
+.mrg-side h4 { margin: 0 0 14px; font-size: 14px; font-weight: 700; color: var(--text); }
+.mrg-pv-name { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.mrg-pv-name b { font-size: 14px; font-weight: 700; color: var(--text); }
+.mrg-status { font-size: 10.5px; font-weight: 700; padding: 1px 8px; border-radius: 999px; background: var(--rds-primary-50); color: var(--brand); }
+.mrg-pv-line { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; line-height: 1.5; color: var(--text-2); margin-bottom: 7px; }
+.mrg-pv-line svg { flex-shrink: 0; margin-top: 2px; color: var(--text-3); }
+.mrg-pv-grp { margin-top: 14px; }
+.mrg-pv-l { font-size: 11px; color: var(--text-3); line-height: 1.4; }
+.mrg-pv-v { font-size: 12px; color: var(--text); line-height: 1.5; }
+
+.mrg-ignore { font-size: 12.5px; font-weight: 600; color: var(--brand); background: none; border: none; cursor: pointer; padding: 6px 4px; }
+.mrg-ignore:hover { text-decoration: underline; }
+.mrg-merge {
+  font-size: 12.5px; font-weight: 600; color: #fff; background: var(--brand);
+  border: none; border-radius: 6px; padding: 7px 18px; cursor: pointer;
+}
+.mrg-merge:hover { background: var(--rds-primary-press); }
+.mrg-merge:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* kebab menu on a search row */
+.srch-kebab { position: relative; }
+.srch-menu {
+  position: absolute; right: 0; top: 26px; z-index: 40; min-width: 194px;
+  /* Fill and ink both set here. Previously the fill resolved to nothing and
+     the menu inherited dark text over whatever sat behind it. */
+  background: var(--rds-surface); color: var(--rds-ink);
+  border-radius: 8px; padding: 5px;
+  border-width: 1px; border-style: solid; border-color: var(--border);
+  box-shadow: 0 3px 12px 0 rgba(21,27,37,0.26);
+}
+.srch-menu button {
+  display: flex; align-items: center; gap: 9px; width: 100%; text-align: left;
+  background: none; border: none; cursor: pointer; border-radius: 5px;
+  padding: 8px 10px; font-size: 12.5px; color: var(--rds-ink);
+}
+.srch-menu button:hover { background: var(--rds-surface-2); }
+.srch-menu .count {
+  margin-left: auto; font-size: 11px; font-weight: 700; color: var(--brand);
+  background: var(--rds-primary-50); border-radius: 999px; padding: 1px 7px;
+}
+
+@media (max-width: 1040px) { .mrg-side { flex: 0 0 196px; width: 196px; } }
 </style>
 <style>
 /* ==================================================================
@@ -8496,7 +8745,7 @@ body input, body select, body textarea, body button {
 .tile-icon.dm        { background: #5B5F66; }   /* Gray 700 */
 .tile-icon.is        { background: #8514DD; }   /* Grape Ape Purple */
 .tile-icon.ca        { background: #151B25; }
-.tile-icon.us        { background: #1192E8; }   /* screenshot shows US blue, not black */
+.tile-icon.us { background: linear-gradient(170deg, #3E3E3E 0%, #161616 100%); }  /* neutral, matches the reference CRM tile */   /* screenshot shows US blue, not black */
 
 
 /* ==================================================================
@@ -9826,27 +10075,45 @@ body.theme-dark *::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,
 body.theme-dark .screen-prototype { min-height: 100vh; }
 </style>
 <style>
+/* ============================================================
+   F&I TOKENS — ALIASES, NOT DEFINITIONS
+   This sheet no longer decides any colour, radius or elevation. Every
+   token below reads from the RDS layer, so a change made once in RDS
+   reaches F&I without anyone remembering to make it twice. The local
+   names are kept only so the 573 scoped rules and the inline styles in
+   FI_APP_MARKUP do not have to be rewritten.
+
+   Three values had already drifted before this build and are now snapped
+   back: --blue-tint was two points off RDS Primary 50, --shadow was
+   0.18 alpha against RDS elevation 1 at 0.50, and --radius was 8px
+   against the RDS 4px. Corners and shadows therefore look different
+   after this build — that is RDS asserting itself, not a regression.
+
+   The three tints marked GAP have no RDS equivalent. They stay local and
+   flagged rather than being silently invented.
+   ============================================================ */
+
 /* ===== F&I application (new experience) — scoped to #newfiRoot ===== */
 #newfiRoot{
-    --black:#151B25;
-    --rail-bg:#ffffff;
-    --page-bg:#eef0f2;
-    --card-bg:#ffffff;
-    --border:#DCDDDE;
-    --text:#151B25;
-    --text-muted:#5B5F66;
-    --text-faint:rgba(21,27,37,0.70);   /* RDS helper text (medium emphasis) - 6.3:1 */
-    --text-disabled:rgba(21,27,37,0.40); /* RDS placeholder/disabled only - never body copy */
-    --blue:#006CFA;
-    --blue-dark:#0557C4;                /* RDS Primary 700 - 6.6:1 on white, 5.8:1 on the tint */
-    --blue-tint:#E8F0FE;
-    --green:#09AD00;
-    --green-tint:#e7f6ee;
-    --amber:#FA9C19;
-    --amber-tint:#fdf1de;
-    --gray-tint:#F3F3F3;
-    --radius:8px;
-    --shadow:0 1px 3px 0 rgba(21,27,37,0.18);
+    --black: var(--rds-ink);             /* same value as --text; kept as a name, not a second source */
+    --rail-bg: var(--rds-surface);       /* RDS surface — was a separate white for no reason */
+    --page-bg: #eef0f2;  /* GAP: RDS publishes no equivalent — for the design system owner */
+    --card-bg: var(--rds-surface);       /* RDS surface */
+    --border: var(--rds-line);           /* RDS divider line */
+    --text: var(--rds-ink);              /* RDS ink, high emphasis */
+    --text-muted: var(--rds-gray-700);   /* RDS Grey 700 */
+    --text-faint: var(--rds-ink-70);     /* RDS medium emphasis — helper text */   /* RDS helper text (medium emphasis) - 6.3:1 */
+    --text-disabled: var(--rds-ink-40);  /* RDS low emphasis — placeholder/disabled only */ /* RDS placeholder/disabled only - never body copy */
+    --blue: var(--rds-primary);          /* RDS Primary */
+    --blue-dark: var(--rds-primary-press); /* RDS Primary press — the AA-safe step for text on tint */                /* RDS Primary 700 - 6.6:1 on white, 5.8:1 on the tint */
+    --blue-tint: var(--rds-primary-50);  /* WAS #E8F0FE — drifted two points from RDS Primary 50 */
+    --green: var(--rds-success);         /* RDS Success — indicator only, never type (3.00:1) */
+    --green-tint: #e7f6ee;  /* GAP: RDS publishes no equivalent — for the design system owner */
+    --amber: var(--rds-warning);         /* RDS Warning — indicator only, never type (2.14:1) */
+    --amber-tint: #fdf1de;  /* GAP: RDS publishes no equivalent — for the design system owner */
+    --gray-tint: var(--rds-surface-2);   /* RDS secondary surface */
+    --radius: var(--rds-radius);         /* WAS 8px — RDS radius is 4px */
+    --shadow: var(--rds-e1);             /* WAS 0.18 alpha — RDS elevation 1 is 0.50 */
     font-family: 'Inter', Roboto, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
   }
 #newfiRoot *{box-sizing:border-box;}
@@ -9855,11 +10122,11 @@ body.theme-dark .screen-prototype { min-height: 100vh; }
 #newfiRoot input{font-family:inherit;}
 /* ---------- Top bar ---------- */
 #newfiRoot .topbar{
-    height:52px;background:var(--black);color:#fff;display:flex;align-items:center;
+    height:52px;background:var(--black);color:var(--rds-surface);display:flex;align-items:center;
     padding:0 16px;justify-content:space-between;position:sticky;top:0;z-index:100;
   }
 #newfiRoot .topbar .brand{font-weight:700;letter-spacing:.03em;font-size:14px;display:flex;align-items:center;gap:8px;}
-#newfiRoot .topbar .brand .dot{width:20px;height:20px;background:#fff;border-radius:4px;color:var(--black);
+#newfiRoot .topbar .brand .dot{width:20px;height:20px;background:var(--rds-surface);border-radius:4px;color:var(--black);
     display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;}
 #newfiRoot .topbar .right{display:flex;align-items:center;gap:16px;font-size:12px;opacity:.9;}
 #newfiRoot .topbar .avatar{width:26px;height:26px;border-radius:50%;background:#3a3f4b;display:flex;align-items:center;
@@ -9871,7 +10138,7 @@ body.theme-dark .screen-prototype { min-height: 100vh; }
     position:sticky;top:52px;align-self:flex-start;height:100%;flex:none;z-index:50;}
 #newfiRoot .rail .icon{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;
     color:var(--text-muted);font-size:16px;}
-#newfiRoot .rail .icon.active{background:var(--black);color:#fff;}
+#newfiRoot .rail .icon.active{background:var(--black);color:var(--rds-surface);}
 #newfiRoot .rail .spacer{flex:1;}
 #newfiRoot .content-col{flex:1;display:flex;flex-direction:column;min-width:0;}
 #newfiRoot .content-row{display:flex;gap:16px;align-items:flex-start;flex:1;min-width:0;
@@ -9905,19 +10172,19 @@ body.theme-dark .screen-prototype { min-height: 100vh; }
 #newfiRoot .deal-nav-hint{font-size:12px;color:var(--text-faint);margin:0 0 16px 2px;}
 /* ---------- Deal Assistant: floating, agentic, replaces the docked checklist ---------- */
 #newfiRoot .assistant-fab{position:absolute;right:28px;bottom:28px;width:52px;height:52px;border-radius:50%;
-    background:var(--black);color:#fff;display:none;align-items:center;justify-content:center;
+    background:var(--black);color:var(--rds-surface);display:none;align-items:center;justify-content:center;
     font-size:20px;box-shadow:0 8px 20px rgba(0,0,0,.28);cursor:pointer;z-index:150;}
 #newfiRoot .assistant-fab:hover{background:#2a2e38;}
 #newfiRoot .fab-badge{position:absolute;top:-2px;right:-2px;width:14px;height:14px;border-radius:50%;
-    background:var(--amber);border:2px solid #fff;display:none;}
-#newfiRoot .assistant-panel{position:absolute;right:20px;bottom:92px;width:340px;max-height:66vh;background:#fff;
+    background:var(--amber);border:2px solid var(--rds-surface);display:none;}
+#newfiRoot .assistant-panel{position:absolute;right:20px;bottom:92px;width:340px;max-height:66vh;background:var(--rds-surface);
     border-radius:12px;box-shadow:0 20px 50px rgba(0,0,0,.28);display:none;flex-direction:column;
     overflow:hidden;z-index:140;border:1px solid var(--border);}
 #newfiRoot .assistant-panel.open{display:flex;}
-#newfiRoot .assistant-head{background:var(--black);color:#fff;padding:12px 16px;display:flex;
+#newfiRoot .assistant-head{background:var(--black);color:var(--rds-surface);padding:12px 16px;display:flex;
     justify-content:space-between;align-items:center;flex:none;}
 #newfiRoot .assistant-head .title{font-weight:700;font-size:14px;display:flex;align-items:center;gap:8px;}
-#newfiRoot .assistant-head .close-x{color:#fff;font-size:16px;}
+#newfiRoot .assistant-head .close-x{color:var(--rds-surface);font-size:16px;}
 #newfiRoot .assistant-body{padding:12px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:8px;}
 #newfiRoot .a-msg{background:var(--gray-tint);border-radius:10px;padding:12px 12px;font-size:12px;line-height:1.45;}
 #newfiRoot .a-msg.ok{background:var(--green-tint);}
@@ -9946,7 +10213,7 @@ body.theme-dark .screen-prototype { min-height: 100vh; }
 #newfiRoot .sv-toggle{display:flex;gap:4px;padding:4px 8px;border-bottom:1px solid var(--border);flex:none;}
 #newfiRoot .sv-pill{flex:1;padding:4px 0;border:1px solid var(--border);border-radius:6px;background:none;
     font-size:12px;font-weight:600;color:var(--text-muted);cursor:pointer;transition:all .15s;}
-#newfiRoot .sv-pill.active{background:var(--black);color:#fff;border-color:var(--black);}
+#newfiRoot .sv-pill.active{background:var(--black);color:var(--rds-surface);border-color:var(--black);}
 #newfiRoot .switcher.collapsed .sv-toggle{display:none;}
 #newfiRoot .switcher.collapsed .sv-pill{display:none;}
 #newfiRoot .sw-item{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);
@@ -9959,7 +10226,7 @@ body.theme-dark .screen-prototype { min-height: 100vh; }
     font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none;
     position:relative;}
 #newfiRoot .sw-item .av .dot{position:absolute;top:-2px;right:-2px;width:9px;height:9px;border-radius:50%;
-    background:var(--amber);border:2px solid #fff;}
+    background:var(--amber);border:2px solid var(--rds-surface);}
 #newfiRoot .sw-item .meta{overflow:hidden;white-space:nowrap;min-width:0;}
 #newfiRoot .switcher.collapsed .meta{display:none;}
 #newfiRoot .sw-item .nm{font-size:12px;font-weight:700;text-overflow:ellipsis;overflow:hidden;}
@@ -9980,7 +10247,7 @@ body.theme-dark .screen-prototype { min-height: 100vh; }
     cursor:pointer;border-bottom:2px solid transparent;background:none;
     border-top:none;border-left:none;border-right:none;transition:all .15s;}
 #newfiRoot .cr-tab:hover{color:var(--text);}
-#newfiRoot .cr-tab.active{color:var(--blue);border-bottom-color:var(--blue);background:#fff;}
+#newfiRoot .cr-tab.active{color:var(--blue);border-bottom-color:var(--blue);background:var(--rds-surface);}
 /* ── Content tabs (sticky below deal header, content column only) ── */
 #newfiRoot .content-tabs{position:absolute;top:104px;left:292px;right:240px;z-index:59;
     background:var(--card-bg);border-bottom:2px solid var(--border);
@@ -10062,13 +10329,13 @@ body.sidebar-visible #newfiRoot .content-col{margin-right:240px;}
 #newfiRoot .row .k{color:var(--text-muted);}
 #newfiRoot .divider{border:none;border-top:1px solid var(--border);margin:8px 0;}
 #newfiRoot .field-label{font-size:12px;color:var(--text-muted);margin-bottom:3px;}
-#newfiRoot .field{border:1px solid var(--border);border-radius:6px;padding:8px 8px;font-size:14px;width:100%;background:#fff;}
+#newfiRoot .field{border:1px solid var(--border);border-radius:6px;padding:8px 8px;font-size:14px;width:100%;background:var(--rds-surface);}
 #newfiRoot .field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
 #newfiRoot .link{color:var(--blue);cursor:pointer;font-weight:600;text-decoration:none;font-size:12px;}
 #newfiRoot .link:hover{text-decoration:underline;}
-#newfiRoot .btn{border:1px solid var(--border);background:#fff;border-radius:6px;padding:8px 12px;font-size:12px;
+#newfiRoot .btn{border:1px solid var(--border);background:var(--rds-surface);border-radius:6px;padding:8px 12px;font-size:12px;
     font-weight:700;color:var(--text);}
-#newfiRoot .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff;}
+#newfiRoot .btn.primary{background:var(--blue);border-color:var(--blue);color:var(--rds-surface);}
 #newfiRoot .btn.primary:hover{background:var(--blue-dark);}
 #newfiRoot .btn.ghost{background:transparent;border-color:transparent;color:var(--blue);}
 #newfiRoot .btn:disabled{opacity:.45;cursor:not-allowed;}
@@ -10091,9 +10358,9 @@ body.sidebar-visible #newfiRoot .content-col{margin-right:240px;}
     align-items:center;justify-content:center;color:var(--text-muted);flex:none;}
 #newfiRoot .alldeals-filters{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
 #newfiRoot .alldeals-filters .spacer{flex:1;}
-#newfiRoot .chip-filter{border:1px solid var(--border);background:#fff;border-radius:20px;padding:4px 12px;
+#newfiRoot .chip-filter{border:1px solid var(--border);background:var(--rds-surface);border-radius:20px;padding:4px 12px;
     font-size:12px;font-weight:600;color:var(--text);}
-#newfiRoot .chip-filter.active{background:var(--black);border-color:var(--black);color:#fff;}
+#newfiRoot .chip-filter.active{background:var(--black);border-color:var(--black);color:var(--rds-surface);}
 #newfiRoot .v-result{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;
     padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;}
 #newfiRoot .v-result:last-child{border-bottom:none;}
@@ -10121,17 +10388,17 @@ body.sidebar-visible #newfiRoot .content-col{margin-right:240px;}
 #newfiRoot .ldr-main{flex:1;min-width:0;}
 #newfiRoot .ldr-name{font-size:14px;font-weight:700;color:var(--text);}
 #newfiRoot .ldr-meta{font-size:12px;color:var(--text-muted);margin-top:2px;}
-#newfiRoot .program-picker{border-bottom:1px solid var(--border);background:#fff;}
+#newfiRoot .program-picker{border-bottom:1px solid var(--border);background:var(--rds-surface);}
 #newfiRoot .prog-search{border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:12px;
     width:220px;font-family:inherit;}
 #newfiRoot .term-group, #newfiRoot .sort-group{display:flex;gap:0;align-items:center;}
 #newfiRoot .term-group label, #newfiRoot .sort-group label{font-size:12px;font-weight:700;color:var(--text-faint);margin-right:8px;white-space:nowrap;}
-#newfiRoot .pill{border:1px solid var(--border);background:#fff;padding:4px 12px;font-size:12px;font-weight:600;
+#newfiRoot .pill{border:1px solid var(--border);background:var(--rds-surface);padding:4px 12px;font-size:12px;font-weight:600;
     color:var(--text-muted);}
 #newfiRoot .pill:first-of-type{border-radius:8px 0 0 8px;}
 #newfiRoot .pill:last-of-type{border-radius:0 8px 8px 0;}
 #newfiRoot .pill:not(:first-of-type){border-left:none;}
-#newfiRoot .pill.active{background:var(--black);border-color:var(--black);color:#fff;}
+#newfiRoot .pill.active{background:var(--black);border-color:var(--black);color:var(--rds-surface);}
 #newfiRoot table.programs{width:100%;border-collapse:collapse;font-size:12px;}
 #newfiRoot table.programs th{text-align:left;font-size:10px;color:var(--text-muted);text-transform:uppercase;
     letter-spacing:.03em;padding:8px 12px;border-bottom:2px solid var(--border);white-space:nowrap;}
@@ -10146,7 +10413,7 @@ body.sidebar-visible #newfiRoot .content-col{margin-right:240px;}
 #newfiRoot .approval-badge{display:inline-block;padding:4px 8px;border-radius:20px;font-size:12px;font-weight:700;}
 #newfiRoot .approval-badge.high{background:var(--green-tint);color:var(--green);}
 #newfiRoot .approval-badge.moderate{background:var(--amber-tint);color:var(--amber);}
-#newfiRoot .approval-badge.approved{background:var(--green);color:#fff;}
+#newfiRoot .approval-badge.approved{background:var(--green);color:var(--rds-surface);}
 #newfiRoot .prog-footer{padding:12px 16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
 #newfiRoot .chip-filter.primary-chip{background:var(--blue-tint);border-color:#c7d8fb;color:var(--blue-dark);}
 #newfiRoot table.deals.wide th, #newfiRoot table.docs.wide th{white-space:nowrap;}
@@ -10160,7 +10427,7 @@ body.sidebar-visible #newfiRoot .content-col{margin-right:240px;}
 #newfiRoot .badge.red{background:#fdeaea;color:#c0392b;border-color:#f3c6c2;}
 /* ---------- Deal Jacket: Documents table ---------- */
 #newfiRoot .doc-filters{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
-#newfiRoot .radio-filter{display:flex;align-items:center;gap:8px;border:1px solid var(--border);background:#fff;
+#newfiRoot .radio-filter{display:flex;align-items:center;gap:8px;border:1px solid var(--border);background:var(--rds-surface);
     border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;color:var(--text-muted);}
 #newfiRoot .radio-filter b{font-weight:700;color:var(--text);}
 #newfiRoot .radio-filter .rdot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border);flex:none;}
@@ -10259,14 +10526,14 @@ body.sidebar-visible #newfiRoot .content-col{margin-right:240px;}
 /* Edit fields: minimal visual noise until focused */
 #newfiRoot .ds-row .edit-field{border:1px solid var(--border);border-radius:5px;
     padding:4px 8px;font-size:12px;font-weight:600;
-    width:110px;text-align:right;background:#fff;color:var(--text);
+    width:110px;text-align:right;background:var(--rds-surface);color:var(--text);
     transition:border-color .15s,box-shadow .15s;}
 #newfiRoot .ds-row .edit-field:focus{outline:none;border-color:var(--blue);
     box-shadow:0 0 0 2px rgba(37,99,235,.12);}
 /* Table edit fields fill their fixed-width cell */
 #newfiRoot table .edit-field{border:1px solid var(--border);border-radius:5px;
     padding:4px 8px;font-size:12px;
-    width:100%;box-sizing:border-box;background:#fff;color:var(--text);
+    width:100%;box-sizing:border-box;background:var(--rds-surface);color:var(--text);
     transition:border-color .15s,box-shadow .15s;}
 #newfiRoot table .edit-field:focus{outline:none;border-color:var(--blue);
     box-shadow:0 0 0 2px rgba(37,99,235,.12);}
@@ -10287,7 +10554,7 @@ body.sidebar-visible #newfiRoot .content-col{margin-right:240px;}
 #newfiRoot .mr-name{font-weight:700;font-size:12px;}
 #newfiRoot .mr-sub{font-size:12px;color:var(--text-muted);margin-top:1px;}
 #newfiRoot .menu-row .mr-right{display:flex;align-items:center;gap:12px;flex:none;font-size:12px;}
-#newfiRoot .menu-check{width:20px;height:20px;border-radius:50%;background:var(--green);color:#fff;
+#newfiRoot .menu-check{width:20px;height:20px;border-radius:50%;background:var(--green);color:var(--rds-surface);
     display:flex;align-items:center;justify-content:center;font-size:12px;flex:none;}
 #newfiRoot .menu-x{width:20px;height:20px;display:flex;align-items:center;justify-content:center;
     color:var(--text-faint);font-size:14px;flex:none;}
@@ -10347,7 +10614,7 @@ body.sidebar-visible #newfiRoot .content-col{margin-right:240px;}
 #newfiRoot .toggle-row{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-muted);}
 #newfiRoot .switch{width:34px;height:18px;border-radius:20px;background:var(--border);position:relative;cursor:pointer;
     flex:none;transition:background .15s;}
-#newfiRoot .switch .knob{width:14px;height:14px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;
+#newfiRoot .switch .knob{width:14px;height:14px;border-radius:50%;background:var(--rds-surface);position:absolute;top:2px;left:2px;
     transition:left .15s;box-shadow:0 1px 2px rgba(0,0,0,.3);}
 #newfiRoot .switch.on{background:var(--blue);}
 #newfiRoot .switch.on .knob{left:18px;}
@@ -10361,7 +10628,7 @@ body.sidebar-visible #newfiRoot .content-col{margin-right:240px;}
 #newfiRoot .gauge{display:flex;align-items:center;gap:8px;}
 #newfiRoot .gauge-ring{width:72px;height:72px;border-radius:50%;position:relative;flex:none;
     background:conic-gradient(var(--rc) calc(var(--pct)*3.6deg), var(--gray-tint) 0deg);}
-#newfiRoot .gauge-ring::after{content:'';position:absolute;inset:7px;background:#fff;border-radius:50%;}
+#newfiRoot .gauge-ring::after{content:'';position:absolute;inset:7px;background:var(--rds-surface);border-radius:50%;}
 #newfiRoot .gauge-num{position:relative;z-index:1;width:100%;height:100%;display:flex;align-items:center;
     justify-content:center;font-size:18px;font-weight:800;}
 #newfiRoot .gauge-meta b{display:block;font-size:12px;letter-spacing:.02em;}
@@ -10376,7 +10643,7 @@ body.sidebar-visible #newfiRoot .content-col{margin-right:240px;}
 #newfiRoot .compliance-item .ci-icon.ok{color:var(--green);}
 #newfiRoot .compliance-item .ci-icon.flag{color:#c0392b;}
 #newfiRoot .compliance-item.disabled{opacity:.4;}
-#newfiRoot .dropdown-menu{display:none;position:absolute;right:0;top:30px;background:#fff;border:1px solid var(--border);
+#newfiRoot .dropdown-menu{display:none;position:absolute;right:0;top:30px;background:var(--rds-surface);border:1px solid var(--border);
     border-radius:8px;box-shadow:0 8px 20px rgba(0,0,0,.14);z-index:20;min-width:220px;overflow:hidden;}
 #newfiRoot .dropdown-menu.open{display:block;}
 #newfiRoot .dd-item{padding:8px 12px;font-size:12px;border-bottom:1px solid var(--border);cursor:pointer;}
@@ -10387,11 +10654,11 @@ body.sidebar-visible #newfiRoot .content-col{margin-right:240px;}
     border-bottom:1px solid var(--border);font-size:12px;}
 #newfiRoot .ofac-match:last-child{border-bottom:none;}
 /* ---------- Credit forms: Soft/Hard Credit Check, Credit Application ---------- */
-#newfiRoot .modal-head.dark{background:var(--black);color:#fff;border-bottom:none;}
-#newfiRoot .modal-head.dark .close-x{color:#fff;font-size:20px;}
-#newfiRoot .sidesheet-head.dark{background:var(--black);color:#fff;}
-#newfiRoot .sidesheet-head.dark h3{color:#fff;}
-#newfiRoot .sidesheet-head.dark .close-x{color:#fff;}
+#newfiRoot .modal-head.dark{background:var(--black);color:var(--rds-surface);border-bottom:none;}
+#newfiRoot .modal-head.dark .close-x{color:var(--rds-surface);font-size:20px;}
+#newfiRoot .sidesheet-head.dark{background:var(--black);color:var(--rds-surface);}
+#newfiRoot .sidesheet-head.dark h3{color:var(--rds-surface);}
+#newfiRoot .sidesheet-head.dark .close-x{color:var(--rds-surface);}
 #newfiRoot .cc-body{padding:16px 24px;overflow-y:auto;}
 #newfiRoot .cc-row-label{font-weight:700;font-size:14px;margin:0 0 12px;}
 #newfiRoot .cc-required-note{font-size:12px;color:var(--text-muted);float:right;font-weight:400;}
@@ -10434,11 +10701,11 @@ body.sidebar-visible #newfiRoot .content-col{margin-right:240px;}
 #newfiRoot table.docs th{text-align:left;font-size:10px;color:var(--text-muted);text-transform:uppercase;
     letter-spacing:.03em;padding:8px 12px;border-bottom:1px solid var(--border);}
 #newfiRoot table.docs td{padding:8px 12px;border-bottom:1px solid var(--border);font-size:12px;}
-#newfiRoot .sign-shell{display:none;position:absolute;inset:0;background:#fff;z-index:110;flex-direction:column;}
+#newfiRoot .sign-shell{display:none;position:absolute;inset:0;background:var(--rds-surface);z-index:110;flex-direction:column;}
 /* ---------- Side-sheets: slide in from the right, narrower than full overlays ---------- */
 #newfiRoot .sidesheet-overlay{display:none;position:absolute;inset:0;background:rgba(15,17,22,.35);z-index:120;justify-content:flex-end;}
 #newfiRoot .sidesheet-overlay.open{display:flex;}
-#newfiRoot .sidesheet{width:480px;max-width:95vw;background:#fff;height:100%;display:flex;flex-direction:column;
+#newfiRoot .sidesheet{width:480px;max-width:95vw;background:var(--rds-surface);height:100%;display:flex;flex-direction:column;
     box-shadow:-20px 0 50px rgba(0,0,0,.16);}
 #newfiRoot .sidesheet-head{padding:16px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;
     align-items:center;flex:none;}
@@ -10467,7 +10734,7 @@ body.sidebar-visible #newfiRoot .content-col{margin-right:240px;}
 #newfiRoot .cust-linked-actions{display:flex;gap:8px;flex:none;}
 #newfiRoot .ss-person-head{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
 #newfiRoot .ss-role-badge{font-size:12px;font-weight:700;padding:4px 8px;border-radius:20px;
-    background:var(--black);color:#fff;white-space:nowrap;}
+    background:var(--black);color:var(--rds-surface);white-space:nowrap;}
 #newfiRoot .ss-role-badge.secondary{background:var(--gray-tint);color:var(--text-muted);}
 #newfiRoot .sign-shell.open{display:flex;}
 #newfiRoot .sign-head{height:56px;border-bottom:1px solid var(--border);display:flex;align-items:center;
@@ -10478,7 +10745,7 @@ body.sidebar-visible #newfiRoot .content-col{margin-right:240px;}
 #newfiRoot .sign-list .doc .t{font-size:12px;font-weight:600;}
 #newfiRoot .sign-list .doc .s{font-size:12px;margin-top:2px;}
 #newfiRoot .sign-preview{flex:1;background:var(--page-bg);padding:32px;overflow-y:auto;display:flex;justify-content:center;}
-#newfiRoot .paper{background:#fff;max-width:640px;padding:32px 32px;border-radius:6px;box-shadow:var(--shadow);
+#newfiRoot .paper{background:var(--rds-surface);max-width:640px;padding:32px 32px;border-radius:6px;box-shadow:var(--shadow);
     font-size:12px;color:#333;}
 #newfiRoot .paper h4{text-align:center;font-size:16px;margin-top:0;}
 #newfiRoot .print-queue{background:var(--amber-tint);border:1px solid #f0dcb0;border-radius:6px;padding:8px 12px;
@@ -10487,7 +10754,7 @@ body.sidebar-visible #newfiRoot .content-col{margin-right:240px;}
 #newfiRoot .modal-overlay{display:none;position:absolute;inset:0;background:rgba(15,17,22,.45);z-index:130;
     align-items:flex-start;justify-content:center;padding-top:8vh;}
 #newfiRoot .modal-overlay.open{display:flex;}
-#newfiRoot .modal{background:#fff;border-radius:10px;width:760px;max-width:92vw;max-height:78vh;display:flex;
+#newfiRoot .modal{background:var(--rds-surface);border-radius:10px;width:760px;max-width:92vw;max-height:78vh;display:flex;
     flex-direction:column;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.25);}
 #newfiRoot .modal-head{padding:16px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;
     align-items:center;}
@@ -10503,7 +10770,7 @@ body.sidebar-visible #newfiRoot .content-col{margin-right:240px;}
 /* ---------- Funding ---------- */
 #newfiRoot .checklist{display:flex;flex-direction:column;gap:8px;}
 #newfiRoot .checklist .item{display:flex;align-items:center;gap:8px;font-size:14px;}
-#newfiRoot .checklist .item .dot{width:16px;height:16px;border-radius:50%;background:var(--green);color:#fff;
+#newfiRoot .checklist .item .dot{width:16px;height:16px;border-radius:50%;background:var(--green);color:var(--rds-surface);
     display:flex;align-items:center;justify-content:center;font-size:10px;flex:none;}
 #newfiRoot .hold{background:var(--amber-tint);border:1px solid #f0dcb0;border-radius:8px;padding:12px 16px;
     font-size:12px;color:var(--amber);margin-top:12px;}
@@ -10589,10 +10856,10 @@ body.switcher-collapsed #newfiRoot #fullCreditReport { left: 60px !important; }
 }
 /* A standalone icon with no colour context takes the RDS default. */
 #newfiRoot td > .nfi-ico,
-#newfiRoot .icon-btn > .nfi-ico { color: #5B5F66; }
+#newfiRoot .icon-btn > .nfi-ico { color: var(--rds-gray-700); }
 
 /* RDS interaction-state opacities for interactive icons. */
-#newfiRoot .icon-btn { color: #5B5F66; }
+#newfiRoot .icon-btn { color: var(--rds-gray-700); }
 #newfiRoot .icon-btn:hover  { background: rgba(21,27,37,0.15); }
 #newfiRoot .icon-btn:active { background: rgba(21,27,37,0.20); }
 #newfiRoot [disabled] .nfi-ico, #newfiRoot .disabled .nfi-ico { opacity: 0.4; }
@@ -10629,11 +10896,11 @@ body.switcher-collapsed #newfiRoot #fullCreditReport { left: 60px !important; }
 #newfiRoot [class*="pos"] { color: var(--text); font-weight: 700; }
 
 /* Status words keep the hue, on the tint, with dark type. */
-#newfiRoot .badge.green { background: var(--green-tint); color: #151B25; border-color: var(--green); }
-#newfiRoot .badge.amber { background: var(--amber-tint); color: #151B25; border-color: var(--amber); }
-#newfiRoot .badge.red   { background: #FDE8E8;           color: #151B25; border-color: #EB0000; }
-#newfiRoot .badge.blue  { background: var(--blue-tint);  color: #151B25; border-color: var(--blue); }
-#newfiRoot .badge.gray  { background: var(--gray-tint);  color: #151B25; border-color: #C4C5C8; }
+#newfiRoot .badge.green { background: var(--green-tint); color: var(--rds-ink); border-color: var(--green); }
+#newfiRoot .badge.amber { background: var(--amber-tint); color: var(--rds-ink); border-color: var(--amber); }
+#newfiRoot .badge.red   { background: #FDE8E8;           color: var(--rds-ink); border-color: #EB0000; }
+#newfiRoot .badge.blue  { background: var(--blue-tint);  color: var(--rds-ink); border-color: var(--blue); }
+#newfiRoot .badge.gray  { background: var(--gray-tint);  color: var(--rds-ink); border-color: #C4C5C8; }
 
 /* A link on a tinted surface needs the darker primary step. */
 #newfiRoot .blue-tint .link,
@@ -12032,6 +12299,463 @@ const SEARCH_ICONS = {
   message:  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
 };
 
+
+/* ==================================================================
+   DUPLICATE CUSTOMER RECORDS
+   A standalone surface. openMergeScreen() and openDuplicatesList() own
+   their own overlay and depend on nothing in AIVA; the search kebab, the
+   list's Manage link and an AIVA answer are all callers.
+   ================================================================== */
+
+/* Candidate sets. The John Smith set is the prototype's own duplicate
+   seed: four records sharing (361) 552-3764, with names, IDs and emails
+   taken from the search constants and the address, salespeople and
+   vehicles from his customer record. Licence numbers, VINs and the
+   per-record update stamps are demonstration values. The Victoria
+   DeFontaine set reproduces the comp verbatim so the screen can be
+   reviewed against it. */
+const MERGE_SETS = {
+  johnSmith: {
+    title: "John Smith", matchedOn: "name, email, phone, and address",
+    records: [
+      { id: "C24890", label: "Record 1", src: "phone", srcLabel: "Phone System",
+        updated: "Updated 04/02/2025 by Phone System", on: true,
+        f: { name: "John Smith", email: "john.smith@aol.com", phone: "(361) 552-3764",
+             addr: "4400 Main St.\nPortland, OR 97201", status: "Active", sales: "Anna Brown",
+             voi: "2025 Ford F-150", voiSub: "Quote pending",
+             trade: "2021 Ford Mustang GT", tradeSub: "VIN: 1FA6P8CF4M5100412", dl: null } },
+      { id: "C13345", label: "Record 2", src: "manual", srcLabel: "Manual",
+        updated: "Updated 06/18/2021 by River Jones", on: true,
+        f: { name: "Smith, John", email: null, phone: "(361) 552-3764",
+             addr: "4400 Main Street\nPortland, OR 97201", status: "DMS Sold", sales: "River Jones",
+             voi: "2021 Ford Mustang GT", voiSub: null, trade: null, tradeSub: null,
+             dl: "#: A-454896173651", dlSub: "State: Oregon\nExp: 04/11/2028" } },
+      { id: "C88912", label: "Record 3", src: "manual", srcLabel: "Manual",
+        updated: "Updated 08/16/2022 by Evelyn Hayes", on: true,
+        f: { name: "John Smith", email: "Jsmith_ok@outlook.com", phone: "(361) 552-3764",
+             addr: "4400 Main St., Apt 2\nPortland, OR 97201", status: "CRM Sold", sales: "Evelyn Hayes",
+             voi: "2025 Ford F-150", voiSub: null, trade: null, tradeSub: null, dl: null } },
+      { id: "C77921", label: "Record 4", src: "phone", srcLabel: "Phone System",
+        updated: "Updated 07/31/2022 by Phone System", on: false,
+        why: "Different first name — likely a second person on this line",
+        f: { name: "Joanne Smith", email: "joanne.smith@aol.com", phone: "(361) 552-3764",
+             addr: "NA\nNA, OR 97201", status: "Inactive", sales: "Vincent Davis",
+             voi: null, voiSub: null, trade: null, tradeSub: null, dl: null } },
+    ],
+  },
+  victoria: {
+    title: "Victoria DeFontaine", matchedOn: "name, email, phone, and address",
+    records: [
+      { id: "V1", label: "Record 1", src: "phone", srcLabel: "Phone System",
+        updated: "Updated 02/28/2022 by Phone System", on: true,
+        f: { name: "Defontaine Victoria", email: "vmdefontaine1@gmail.com", email2: "vmdefontaine@gmail.com",
+             phone: "(323) 223-2638", addr: "4371 Wilkinson St.\nSpringfield, TN 37132",
+             status: "Active", sales: "River Jones",
+             voi: "2026 Honda Pilot Trailsport", voiSub: "VIN: 5LFRX9JE29CD419P2",
+             trade: "2022 Honda Pilot EX-L", tradeSub: "VIN: 1FMZU62E84ZB17720",
+             dl: "#: A-454896173651", dlSub: "State: Florida\nExp: 04/11/2028" } },
+      { id: "V2", label: "Record 2", src: "manual", srcLabel: "Manual",
+        updated: "Updated 04/16/2026 by River Jones", on: true,
+        f: { name: "Victoria DeFontaine", email: "vlynndefontaine@gmail.com",
+             phone: "(323) 223-2638", addr: "4371 Wilkinson St.\nSpringfield, TN 37132",
+             status: "DMS Sold", sales: "Lucy Nelson",
+             voi: "2022 Honda Pilot EX-L", voiSub: "VIN: 1FMZU62E84ZB17720",
+             trade: "2017 Honda Pilot EX-L", tradeSub: "VIN: WBAPH7C58BE675959",
+             dl: "#: A-754896173651", dlSub: "State: Florida\nExp: 04/11/2028" } },
+      { id: "V3", label: "Record 3", src: "manual", srcLabel: "Manual",
+        updated: "Updated 02/15/2022 by Lucy Nelson", on: true,
+        f: { name: "Victoria DeFontaine", email: "vmdefontaine121@gmail.com", email2: "vlynndefontaine@gmail.com",
+             phone: "(323) 223-2638", addr: "4371 Wilkinson St.\nSpringfield, TN 37132",
+             status: "CRM Sold", sales: "Lucy Nelson",
+             voi: "2022 Honda Pilot EX-L", voiSub: "VIN: 1FMZU62E84ZB17720",
+             trade: "2017 Honda Pilot EX-L", tradeSub: "VIN: WBAPH7C58BE675959", dl: null } },
+      { id: "V4", label: "Record 4", src: "manual", srcLabel: "Manual",
+        updated: "Updated 08/16/2022 by Evelyn Hayes", on: true,
+        f: { name: "Victoria De Fontaine", email: "vmdefontaine1@springfieldtn.g...",
+             email2: "vmdefontaine11@springfieldtn...", phone: "(256) 560-9723",
+             addr: "4371 Wilkinson St.\nSpringfield, TN 37132", status: "Inactive", sales: "Evelyn Hayes",
+             voi: null, voiSub: null, trade: null, tradeSub: null, dl: null } },
+      { id: "V5", label: "Record 5", src: "phone", srcLabel: "Phone System",
+        updated: "Updated 07/31/2022 by Phone System", on: true,
+        f: { name: "Victoria L DeFontaine", email: "vmldefontaine@springfieldtn.gov",
+             phone: "(256) 560-9723", addr: "NA\nNA, TN 30213", status: "Inactive",
+             sales: "Vincent Davis", voi: null, voiSub: null, trade: null, tradeSub: null, dl: null } },
+    ],
+  },
+};
+
+const MERGE_FIELDS = [
+  { k: "name",   label: "Name" },
+  { k: "email",  label: "Primary Email", alt: "email2" },
+  { k: "phone",  label: "Primary Phone" },
+  { k: "addr",   label: "Primary Address" },
+  { k: "status", label: "Status" },
+  { k: "sales",  label: "Primary Salesperson" },
+  { k: "voi",    label: "Primary Vehicle of Interest", sub: "voiSub" },
+  { k: "trade",  label: "Primary Trade", sub: "tradeSub" },
+  { k: "dl",     label: "Drivers License", sub: "dlSub" },
+];
+
+/* The list behind the Duplicates screen. John Smith and Victoria are the
+   two wired sets; the rest are list rows drawn from the prototype's own
+   customers, with Manage saying plainly that only the wired sets open. */
+const DUP_ROWS = [
+  { name: "John Smith",      set: "johnSmith", n: 4, date: "04/02/2025", cause: ["phone","manual"], origin: "CRM",             m: [3,2,4,3] },
+  { name: "Victoria DeFontaine", set: "victoria", n: 5, date: "04/16/2026", cause: ["auto","manual"], origin: "Digital Retail", m: [5,3,2,3] },
+  { name: "Christine Strick", set: null, n: 2, date: "04/16/2026", cause: ["auto"],            origin: "Digital Retail", m: [2,2,3,3] },
+  { name: "Caroline Lacy",    set: null, n: 3, date: "04/16/2026", cause: ["phone"],           origin: "Fixed Ops",      m: [2,2,2,2] },
+  { name: "Marcus Hill",      set: null, n: 2, date: "04/16/2026", cause: ["manual"],          origin: "DMS",            m: [2,3,2,0] },
+  { name: "Kavi Kapoor",      set: null, n: 3, date: "04/15/2026", cause: ["auto","manual"],   origin: "Accounting",     m: [2,3,2,0] },
+  { name: "Lin Zhao",         set: null, n: 2, date: "04/15/2026", cause: ["manual"],          origin: "F&I",            m: [0,2,0,2] },
+  { name: "Diana Reyes",      set: null, n: 2, date: "04/14/2026", cause: ["auto"],            origin: "CRM",            m: [5,3,2,3] },
+  { name: "Bonita Murray",    set: null, n: 3, date: "04/14/2026", cause: ["auto","manual"],   origin: "Fixed Ops",      m: [5,3,2,3] },
+  { name: "Waters Mechanics, LLC", set: null, n: 2, date: "04/12/2026", cause: ["manual"],     origin: "Accounting",     m: [2,0,2,2] },
+];
+
+const DUP_FILTERS = [
+  { k: "mtd",    label: "Month to Date", kind: "period" },
+  { k: "auto",   label: "Cause: Automatically created", dot: "#E0A050" },
+  { k: "manual", label: "Cause: Manually Created",      dot: "#5B61C4" },
+  { k: "phone",  label: "Cause: Phone System Push",     dot: "#5BA84F" },
+  { k: "o-Accounting", label: "Origin: Accounting" },
+  { k: "o-CRM",        label: "Origin: CRM" },
+  { k: "o-Digital Retail", label: "Origin: Digital Retail" },
+  { k: "o-DMS",        label: "Origin: DMS" },
+  { k: "o-Fixed Ops",  label: "Origin: Fixed Ops" },
+  { k: "o-F&I",        label: "Origin: F&I" },
+];
+
+const CAUSE_LABEL = { auto: "Automatic", manual: "Manual", phone: "Phone" };
+
+const MRG_ICON = {
+  phone: '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
+  manual: '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>',
+  tick:  '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  mail:  '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
+  pin:   '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+  back:  '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>',
+};
+
+let MERGE_STATE = null;
+let DUP_STATE = { tab: "dup", filters: { mtd: true }, page: 0, merged: [], toast: null, selected: null };
+
+function dupScreenEl() {
+  let el = document.getElementById("dupScreen");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "dupScreen";
+    el.className = "dup-screen";
+    document.body.appendChild(el);
+  }
+  return el;
+}
+window.closeDupScreen = function() {
+  const el = document.getElementById("dupScreen");
+  if (el) { el.classList.remove("open"); el.innerHTML = ""; }
+  MERGE_STATE = null;
+};
+
+/* ---------------- the list ---------------- */
+function dupVisibleRows() {
+  const f = DUP_STATE.filters;
+  const causes = ["auto", "manual", "phone"].filter(c => f[c]);
+  const origins = Object.keys(f).filter(k => f[k] && k.startsWith("o-")).map(k => k.slice(2));
+  return DUP_ROWS.filter(r => {
+    if (DUP_STATE.merged.indexOf(r.name) >= 0) return DUP_STATE.tab === "merged";
+    if (DUP_STATE.tab === "merged") return false;
+    if (causes.length && !r.cause.some(c => causes.indexOf(c) >= 0)) return false;
+    if (origins.length && origins.indexOf(r.origin) < 0) return false;
+    return true;
+  });
+}
+
+window.openDuplicatesList = function() {
+  const el = dupScreenEl();
+  el.classList.add("open");
+  dupRenderList();
+};
+
+window.dupSetTab = function(t) { DUP_STATE.tab = t; DUP_STATE.page = 0; dupRenderList(); };
+window.dupToggleFilter = function(k) {
+  DUP_STATE.filters[k] = !DUP_STATE.filters[k];
+  DUP_STATE.page = 0; dupRenderList();
+};
+window.dupPage = function(d) {
+  const rows = dupVisibleRows(), max = Math.max(0, Math.ceil(rows.length / 10) - 1);
+  DUP_STATE.page = Math.min(max, Math.max(0, DUP_STATE.page + d));
+  dupRenderList();
+};
+window.dupUndo = function() {
+  if (!DUP_STATE.toast) return;
+  DUP_STATE.merged = DUP_STATE.merged.filter(n => n !== DUP_STATE.toast);
+  DUP_STATE.toast = null;
+  dupRenderList();
+};
+
+function dupRenderList() {
+  const el = dupScreenEl();
+  const rows = dupVisibleRows();
+  const page = rows.slice(DUP_STATE.page * 10, DUP_STATE.page * 10 + 10);
+  const total = DUP_ROWS.length - DUP_STATE.merged.length;
+
+  const chips = DUP_FILTERS.map(f => {
+    const on = !!DUP_STATE.filters[f.k];
+    return `<button class="dup-chip ${on ? "on" : ""}" onclick="dupToggleFilter('${f.k}')" aria-pressed="${on}">
+      ${f.kind === "period" ? "" : `<span class="box"></span>`}
+      ${f.dot ? `<span class="dot" style="background:${f.dot}"></span>` : ""}
+      <span>${escapeHtml(f.label)}</span>
+      ${f.kind === "period" && on ? `<span class="x">×</span>` : ""}
+    </button>`;
+  }).join("");
+
+  const body = page.map(r => `
+    <tr class="${DUP_STATE.selected === r.name ? "sel" : ""}" onclick="DUP_STATE.selected='${escapeHtml(r.name)}';dupRenderList()">
+      <td class="name">${escapeHtml(r.name)}</td>
+      <td class="num">${r.n}</td>
+      <td>${r.date}</td>
+      <td>${r.cause.map(c => `<span class="cause-badge cause-${c}">${MRG_ICON[c === "phone" ? "phone" : "manual"]}${CAUSE_LABEL[c]}</span>`).join("")}</td>
+      <td>${escapeHtml(r.origin)}</td>
+      <td class="num">${r.m[0]}</td><td class="num">${r.m[1]}</td>
+      <td class="num">${r.m[2]}</td><td class="num">${r.m[3]}</td>
+      <td><button class="dup-manage" onclick="event.stopPropagation();dupManage('${r.set || ""}','${escapeHtml(r.name)}')">Manage</button></td>
+    </tr>`).join("");
+
+  el.innerHTML = `
+    ${DUP_STATE.toast ? `<div class="dup-toast">
+        <span class="tick">${MRG_ICON.tick}</span>
+        <div><p><b>${escapeHtml(DUP_STATE.toast)}</b> has been successfully merged and removed from this list.</p>
+        <button class="undo" onclick="dupUndo()">Undo</button></div>
+      </div>` : ""}
+    <div class="dup-head">
+      <div class="dup-title-row">
+        <div>
+          <div class="dup-h1">Duplicate Customer Records</div>
+          <div class="dup-sub">Customer Master · candidate sets are demonstration data</div>
+        </div>
+        <div class="dup-acts"><button class="mrg-ignore" onclick="closeDupScreen()">Close</button></div>
+      </div>
+      <div class="dup-tabs">
+        <button class="dup-tab ${DUP_STATE.tab === "dup" ? "on" : ""}" onclick="dupSetTab('dup')">Duplicates (${total})</button>
+        <button class="dup-tab ${DUP_STATE.tab === "merged" ? "on" : ""}" onclick="dupSetTab('merged')">Previously Merged</button>
+      </div>
+    </div>
+    <div class="dup-filters">${chips}</div>
+    <div class="dup-body">
+      <table class="dup-table">
+        <thead><tr>
+          <th>Name</th><th style="text-align:right"># of Records</th><th>1st Dup. Date</th>
+          <th>Cause</th><th>Origin</th>
+          <th style="text-align:right">Name Matches</th><th style="text-align:right">Email Matches</th>
+          <th style="text-align:right">Phone Matches</th><th style="text-align:right">Address Matches</th>
+          <th></th>
+        </tr></thead>
+        <tbody>${body || `<tr><td colspan="10" style="padding:28px;text-align:center;color:var(--text-3)">No records match these filters.</td></tr>`}</tbody>
+      </table>
+    </div>
+    <div class="dup-foot">
+      <span>Rows per page: 10</span>
+      <span>${rows.length ? (DUP_STATE.page * 10 + 1) : 0}–${Math.min(rows.length, DUP_STATE.page * 10 + 10)} of ${rows.length}</span>
+      <span>Page ${DUP_STATE.page + 1} of ${Math.max(1, Math.ceil(rows.length / 10))}</span>
+      <button class="dup-pg" onclick="dupPage(-1)" ${DUP_STATE.page === 0 ? "disabled" : ""} aria-label="Previous page">‹</button>
+      <button class="dup-pg" onclick="dupPage(1)" ${(DUP_STATE.page + 1) * 10 >= rows.length ? "disabled" : ""} aria-label="Next page">›</button>
+    </div>`;
+}
+
+window.dupManage = function(setKey, name) {
+  if (!setKey) { toast(name + " — candidate set not populated in this prototype"); return; }
+  openMergeScreen(setKey, true);
+};
+
+/* ---------------- the merge screen ---------------- */
+function mrgOn() { return MERGE_STATE.set.records.filter(r => MERGE_STATE.on[r.id]); }
+
+/* The record index currently supplying a field. A selection on an excluded
+   record falls through to the next included record that has a value, so the
+   preview can never quote a record the user has just unchecked. */
+function mrgPick(key) {
+  const recs = MERGE_STATE.set.records, chosen = MERGE_STATE.sel[key];
+  const ok = (i) => i >= 0 && recs[i] && MERGE_STATE.on[recs[i].id] && recs[i].f[key];
+  if (ok(chosen)) return chosen;
+  for (let i = 0; i < recs.length; i++) if (ok(i)) return i;
+  return -1;
+}
+function mrgValue(key) { const i = mrgPick(key); return i < 0 ? null : MERGE_STATE.set.records[i].f[key]; }
+function mrgSubOf(key, subKey) { const i = mrgPick(key); return i < 0 ? null : MERGE_STATE.set.records[i].f[subKey]; }
+
+window.openMergeScreen = function(setKey, fromList) {
+  const set = MERGE_SETS[setKey];
+  if (!set) { toast("No candidate set for that customer"); return; }
+  const on = {}; set.records.forEach(r => { on[r.id] = !!r.on; });
+  const sel = {};
+  MERGE_FIELDS.forEach(f => { sel[f.k] = set.records.findIndex(r => on[r.id] && r.f[f.k]); });
+  MERGE_STATE = { key: setKey, set, on, sel, fromList: !!fromList };
+  dupScreenEl().classList.add("open");
+  mrgRender();
+};
+
+window.mergeToggleRecord = function(id) { MERGE_STATE.on[id] = !MERGE_STATE.on[id]; mrgRender(); };
+window.mergePick = function(key, idx) { MERGE_STATE.sel[key] = idx; mrgRender(); };
+window.mergeBack = function() {
+  if (MERGE_STATE && MERGE_STATE.fromList) { MERGE_STATE = null; dupRenderList(); }
+  else closeDupScreen();
+};
+
+function mrgRender() {
+  const el = dupScreenEl(), S = MERGE_STATE.set, recs = S.records;
+  const nOn = mrgOn().length;
+
+  const ths = recs.map(r => {
+    const isOn = MERGE_STATE.on[r.id];
+    return `<th class="${isOn ? "" : "mrg-off"}">
+      <div class="mrg-col-head ${isOn ? "" : "off"}">
+        <span class="mrg-rec">${escapeHtml(r.label)}</span>
+        <span class="mrg-chk ${isOn ? "on" : ""}" role="checkbox" tabindex="0" aria-checked="${isOn}"
+              aria-label="Include ${escapeHtml(r.label)}" onclick="mergeToggleRecord('${r.id}')"
+              onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();mergeToggleRecord('${r.id}')}">${MRG_ICON.tick}</span>
+      </div>
+      <div class="mrg-src">${MRG_ICON[r.src] || ""}${escapeHtml(r.srcLabel)}</div>
+      <div class="mrg-upd">${escapeHtml(r.updated)}</div>
+      ${r.why ? `<div class="mrg-why">${escapeHtml(r.why)}</div>` : ""}
+    </th>`;
+  }).join("");
+
+  const rows = MERGE_FIELDS.map(f => {
+    const cells = recs.map((r, i) => {
+      const isOn = MERGE_STATE.on[r.id];
+      const v = r.f[f.k], sub = f.sub ? r.f[f.sub] : null, alt = f.alt ? r.f[f.alt] : null;
+      if (!v) return `<td class="${isOn ? "" : "mrg-off"}"><div class="mrg-dash">–</div></td>`;
+      const twin = recs.findIndex((o, j) => j < i && o.f[f.k] === v);
+      const br = (s) => escapeHtml(s).replace(/\n/g, "<br>");
+      if (twin >= 0) {
+        return `<td class="${isOn ? "" : "mrg-off"}"><div class="mrg-plain">${br(v)}
+          ${sub ? `<span class="mrg-val-sub">${br(sub)}</span>` : ""}
+          <span class="mrg-match">Matches ${escapeHtml(recs[twin].label)}</span></div></td>`;
+      }
+      if (!isOn) {
+        return `<td class="mrg-off"><div class="mrg-plain">${br(v)}
+          ${sub ? `<span class="mrg-val-sub">${br(sub)}</span>` : ""}</div></td>`;
+      }
+      const opt = (val, idx, isAlt) => {
+        const selected = !isAlt && mrgPick(f.k) === idx;
+        return `<div class="mrg-opt ${selected ? "sel" : ""}" role="radio" tabindex="0" aria-checked="${selected}"
+          onclick="mergePick('${f.k}', ${idx})"
+          onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();mergePick('${f.k}', ${idx})}">
+          <span class="mrg-radio"></span><span>${br(val)}
+          ${!isAlt && sub ? `<span class="mrg-val-sub">${br(sub)}</span>` : ""}</span></div>`;
+      };
+      return `<td>${opt(v, i, false)}${alt ? opt(alt, i, true) : ""}</td>`;
+    }).join("");
+    return `<tr><td class="mrg-rowlabel">${escapeHtml(f.label)}</td>${cells}</tr>`;
+  }).join("");
+
+  el.innerHTML = `
+    <div class="dup-head">
+      <div class="dup-title-row">
+        <button class="dup-back" onclick="mergeBack()" aria-label="Back">${MRG_ICON.back}</button>
+        <div>
+          <div class="dup-h1">Similar Customers for ${escapeHtml(S.title)}</div>
+          <div class="dup-sub">Customer Master · candidate set is demonstration data</div>
+        </div>
+        <div class="dup-acts">
+          <button class="mrg-ignore" onclick="mergeIgnore()">Ignore</button>
+          <button class="mrg-merge" onclick="mergeConfirm()" ${nOn < 2 ? "disabled" : ""}>Merge</button>
+        </div>
+      </div>
+      <div style="height:12px"></div>
+    </div>
+    <div class="mrg-wrap">
+      <div class="mrg-main">
+        <div class="mrg-intro">
+          <p><b>Review the details below and update primary selections as needed.</b> We've highlighted the most likely values — change anything that doesn't look right.</p>
+          <p>These ${recs.length} records appear to be the same customer, matched on ${escapeHtml(S.matchedOn)}. Merging combines them into one record. Your selections become primary — no information is lost.</p>
+          <p>Ignored records won't be suggested as matches again unless their information changes enough to qualify.</p>
+        </div>
+        <table class="mrg-grid">
+          <thead><tr><th class="mrg-rowlabel"></th>${ths}</tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      <div class="mrg-side">${mrgPreview()}</div>
+    </div>`;
+}
+
+function mrgPreview() {
+  const br = (s) => escapeHtml(s).replace(/\n/g, "<br>");
+  const line = (icon, v) => v ? `<div class="mrg-pv-line">${icon}<span>${br(v)}</span></div>` : "";
+  const grp = (l, v, sub) => v ? `<div class="mrg-pv-grp"><div class="mrg-pv-l">${escapeHtml(l)}</div>
+      <div class="mrg-pv-v">${br(v)}</div>${sub ? `<div class="mrg-pv-v">${br(sub)}</div>` : ""}</div>` : "";
+  const status = mrgValue("status");
+  return `<h4>Combined Record Preview</h4>
+    <div class="mrg-pv-name"><b>${escapeHtml(mrgValue("name") || "–")}</b>
+      ${status ? `<span class="mrg-status">${escapeHtml(status)}</span>` : ""}</div>
+    ${line(MRG_ICON.phone, mrgValue("phone"))}
+    ${line(MRG_ICON.mail, mrgValue("email"))}
+    ${line(MRG_ICON.pin, mrgValue("addr"))}
+    ${grp("Primary Salesperson", mrgValue("sales"))}
+    ${grp("Primary Vehicle of Interest", mrgValue("voi"), mrgSubOf("voi", "voiSub"))}
+    ${grp("Primary Trade", mrgValue("trade"), mrgSubOf("trade", "tradeSub"))}
+    ${grp("Drivers License", mrgValue("dl"), mrgSubOf("dl", "dlSub"))}
+    <div class="mrg-pv-grp"><div class="mrg-pv-l">Records combined</div>
+      <div class="mrg-pv-v">${mrgOn().length} of ${MERGE_STATE.set.records.length}</div></div>`;
+}
+
+/* Merging changes a system of record, so the button hands off to the same
+   confirmation card every other write uses rather than committing itself. */
+window.mergeConfirm = function() {
+  const S = MERGE_STATE, on = mrgOn();
+  if (on.length < 2) { toast("Select at least two records to merge"); return; }
+  const name = mrgValue("name") || S.set.title;
+  MERGE_PENDING = { name: S.set.title, ids: on.map(r => r.id) };
+  const rows = [
+    { k: "Surviving record", v: name + " · " + on[0].id },
+    { k: "Records combined", v: on.map(r => r.id).join(", ") },
+    { k: "Primary email", v: mrgValue("email") || "–" },
+    { k: "Primary phone", v: mrgValue("phone") || "–" },
+    { k: "Excluded", v: S.set.records.filter(r => !S.on[r.id]).map(r => r.id).join(", ") || "none" },
+  ];
+  closeDupScreen();
+  openAIVA();
+  aivaAppendReply([
+    _nd("auto"),
+    _m("<b>Here is the merge — nothing has been written yet:</b>"),
+    _cfm(rows, "Nothing is deleted. The records you combine become one Golden Record and their history is carried onto it; excluded records stay exactly as they are.",
+      [{ t: "Merge records", res: "MERGE_YES", p: true }, { t: "Not now", res: "MERGE_NO", danger: true }]),
+  ], null);
+};
+let MERGE_PENDING = null;
+
+window.mergeIgnore = function() {
+  const name = MERGE_STATE ? MERGE_STATE.set.title : "";
+  if (MERGE_STATE && MERGE_STATE.fromList) { MERGE_STATE = null; dupRenderList(); }
+  else closeDupScreen();
+  toast(name + " — left as they are, nothing merged");
+};
+
+/* ---------------- entry point from a search row ---------------- */
+const DUP_BY_NAME = { "John Smith": "johnSmith", "Joanne Smith": "johnSmith",
+                      "Victoria DeFontaine": "victoria" };
+
+window.srchKebab = function(ev, id, name) {
+  ev.stopPropagation();
+  document.querySelectorAll(".srch-menu").forEach(m => m.remove());
+  const host = ev.currentTarget.parentElement;
+  const setKey = DUP_BY_NAME[name];
+  const count = setKey ? MERGE_SETS[setKey].records.length : 0;
+  const menu = document.createElement("div");
+  menu.className = "srch-menu";
+  menu.onclick = (e) => e.stopPropagation();
+  menu.innerHTML = `
+    ${setKey ? `<button onclick="document.querySelectorAll('.srch-menu').forEach(m=>m.remove());openMergeScreen('${setKey}')">
+        Find similar records <span class="count">${count}</span></button>` : ""}
+    <button onclick="document.querySelectorAll('.srch-menu').forEach(m=>m.remove());openDuplicatesList()">All duplicate records</button>
+    <button onclick="document.querySelectorAll('.srch-menu').forEach(m=>m.remove());toast('Open ${escapeHtml(name)}')">Open customer record</button>`;
+  host.appendChild(menu);
+  setTimeout(() => document.addEventListener("click", function once() {
+    document.querySelectorAll(".srch-menu").forEach(m => m.remove());
+    document.removeEventListener("click", once);
+  }), 0);
+};
+
 /* ---------- Helpers ---------- */
 
 function escapeHtml(str) {
@@ -12088,6 +12812,7 @@ const SEARCH_ROW_RENDERERS = {
       <div class="search-row-actions">
         <button class="search-row-action" title="New RO" onclick="event.stopPropagation();toast('Create RO for ${escapeHtml(c.name)}')">+</button>
         <button class="search-row-action" title="Schedule" onclick="event.stopPropagation();toast('Schedule appointment for ${escapeHtml(c.name)}')">📅</button>
+        <span class="srch-kebab"><button class="search-row-action" title="More" aria-haspopup="true" onclick="srchKebab(event, '${c.id}', '${escapeHtml(c.name)}')">⋮</button></span>
       </div>
     </div>`,
   repairOrders: (r, q) => `
@@ -13348,6 +14073,7 @@ const AIVA_PAGE_ACTIONS = {
     { q: "Start the deal",                     p: ["salesManager", "salesAssoc"] }, // P4A runner
   ],
   "crm::Customers": [
+    { q: "Are there duplicate records for John Smith?", p: ["salesManager", "salesAssoc", "fi"] },
     { q: "Do we have any Venue SEL in stock?", p: ["salesManager", "salesAssoc"] },
     { q: "Run a credit check for Bonita Murray", p: ["salesAssoc"] },
     { q: "Who is this customer?",              p: ["salesManager", "salesAssoc"] }, // AX2
@@ -13925,6 +14651,14 @@ window.aivaShowCapabilities = function() {
   const spots    = Object.keys(AIVA_SPOTLIGHTS).length;
   const clarify  = AIVA_INTENTS.filter(i => i.clarify).length;
   const sourced  = AIVA_INTENTS.filter(i => i.checking).length;
+  // Counted the same way as everything else in this panel: walk the
+  // registry, render each intent's blocks, and look at what comes out.
+  const _blocks = (i) => { try { return JSON.stringify(typeof i.blocks === "function" ? i.blocks() : i.blocks); }
+                           catch (e) { return ""; } };
+  const cited   = AIVA_INTENTS.filter(i => /"t":"cltvsrc"|"t":"srcft"/.test(_blocks(i))).length;
+  const drawn   = AIVA_INTENTS.filter(i => /"t":"tbl"|"t":"bars"|"t":"stats"/.test(_blocks(i))).length;
+  const marked  = AIVA_INTENTS.filter(i => /†/.test(_blocks(i))).length;
+  const cltv    = AIVA_INTENTS.filter(i => /^CL[A-J]/.test(i.id)).length;
   const pageTopics = (page.topics || []).length;
   const here = escapeHtml(page.label);
 
@@ -13945,12 +14679,28 @@ window.aivaShowCapabilities = function() {
         ${records} grounded records by number — repair orders, deals, parts,
         POs, invoices, support cases — and I say which system each answer
         came from on ${sourced} of my replies.`),
+    _m(`On ${cited} answers I go further than naming the system: a small line
+        at the end of the reply names the actual columns the figures were
+        computed from. It sits below the answer rather than inside it, because
+        a citation should be findable without competing with what it supports.`),
+    _m(`${drawn} answers draw rather than list — a table, a bar comparison
+        or a row of figures, rendered inside the reply. Colour is never the
+        only signal there: a bar carries the comparison while the number stays
+        in readable dark text, because our green and amber do not pass
+        contrast standards as type.`),
 
     /* ---- Rules engine: recommends, changes nothing ---- */
     _nd("rules"),
     _m(`<b>I recommend, and I show my reasoning.</b> I rank options against
         your constraints and tell you why the top one is on top. Nothing here
         is written — a recommendation you ignore costs you nothing.`),
+    _m(`${cltv} of my answers read the customer lifetime-value data mart:
+        what a customer has been worth across every department, how the
+        household connects, and what the model expects next. A prediction
+        always arrives as a range with its confidence, never as a single
+        number, and asking when it was last calculated is always one tap
+        away — a forecast whose age you cannot see is a forecast you
+        should not act on.`),
     _m(`I ask a clarifying question rather than guess when a request is
         ambiguous (${clarify} of my intents do this), I point at the actual
         field on screen when the answer is a place rather than a fact
@@ -13984,9 +14734,19 @@ window.aivaShowCapabilities = function() {
           documentation I cannot cite. When something sits outside what I can
           reach, I say so and offer to flag it for your CDK team rather than
           guess.`),
-    _lim(`This is a prototype. The data is a fixed, grounded set — the records,
-          customers and accounts are the same every time — and the integrations
-          behind the write actions are simulated, not live.`),
+    _lim(`Where no source exists I will not improvise one. Ask me for a
+          procedure I cannot cite — a torque spec, a disconnect sequence —
+          and you get the manufacturer's link instead of my best guess. Two
+          answers go further and show no figures at all, because a tax filing
+          and a customer quote are the wrong places to put a number that has
+          not been signed off.`),
+    _lim(`This is a prototype. The records, customers and accounts are the
+          same every time. But not every figure is verified: ${marked} of my
+          answers carry at least one placeholder value, and each one is marked
+          on screen with a dagger (†). The feature around it is built and
+          tested — the number is a stand-in waiting on sign-off. Treat a
+          daggered figure as a shape to review, never as a fact to report.
+          The integrations behind the write actions are simulated, not live.`),
 
     _nx([
       { t: "What topics are on this page?" },
@@ -16654,6 +17414,33 @@ const AIVA_INTENTS = [
     { t: "srcft", s: "Messages + tasks since last activity \u00b7 grouped by inferred urgency \u00b7 phone-system routing itself stays out of scope per the audit" },
     _nx([{ t: "Why is RO 124211 on hold?" }, { t: "What needs my approval?" }]) ] },
 
+
+/* ---- Duplicate customer records ---- */
+{ id: "DUP1", personas: ["salesManager", "salesAssoc", "fi", "serviceManager", "arap", "owner"],
+  checking: "Customer Master",
+  kw: ["duplicate records for", "similar customers", "duplicate customer", "same phone number"],
+  blocks: () => [ _nd("rules"),
+    _m(`<b>Four records share the phone number (361) 552-3764.</b> Three of them look like the same man:`),
+    _tbl([{ h: "Record" }, { h: "Name" }, { h: "Email" }, { h: "Source" }],
+      [["C24890", "John Smith", "john.smith@aol.com", "Phone System"],
+       ["C13345", "Smith, John", "—", "Manual"],
+       ["C88912", "John Smith", "Jsmith_ok@outlook.com", "Manual"],
+       ["C77921", "Joanne Smith", "joanne.smith@aol.com", "Phone System"]],
+      "Records matching on name, email, phone and address"),
+    _m(`<b>The fourth is probably not a duplicate.</b> Joanne Smith has a different first name and her own email on the same line — a second person in the household, not a second record for the same person. She is unchecked by default on the merge screen; put her back in if you disagree.`),
+    { t: "srcft", s: "Customer Master · matched on name, email, phone and address · candidate sets are demonstration data" },
+    _nx([{ t: "Review and merge these records", js: "openMergeScreen('johnSmith')", p: true },
+          { t: "Show me all duplicate customer records", js: "openDuplicatesList()" }]) ] },
+
+{ id: "DUP2", personas: null, checking: "Customer Master",
+  kw: ["all duplicate customer", "duplicate records list", "how many duplicate"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>${DUP_ROWS.length} candidate sets</b> are open on the customer master, covering ${DUP_ROWS.reduce((a, r) => a + r.n, 0)} records. They come from four origins — CRM, DMS, Digital Retail and Fixed Ops — and three causes: automatic matching, manual entry, and phone system pushes.`),
+    _m(`Two sets are populated end to end in this prototype: <b>John Smith</b> (4 records) and <b>Victoria DeFontaine</b> (5 records). The rest are list rows.`),
+    { t: "srcft", s: "Customer Master · duplicate candidate sets · demonstration data" },
+    _nx([{ t: "Show me all duplicate customer records", js: "openDuplicatesList()", p: true },
+          { t: "Are there duplicate records for John Smith?" }]) ] },
+
 /* ---------- Z. Workspace commands ---------- */
 { id: "Z1", personas: null, checking: null,
   kw: ["start over", "lets start over", "let's start over", "close all apps", "close everything", "back to desktop", "clear my screen", "reset my screen", "fresh start", "close all"],
@@ -16670,6 +17457,15 @@ const AIVA_INTENTS = [
 
 /* ---- Resolutions: what confirm cards and flag/stage chips resolve to ---- */
 const AIVA_RESOLUTIONS = {
+  MERGE_YES: { log: { action: "Merged customer records",
+      inputs: [["Set", "see confirmation"], ["Effect", "Records resolved to one Golden Record"]],
+      side: "Source records retained with their history; excluded records unchanged." },
+    fn: () => { if (typeof MERGE_PENDING !== "undefined" && MERGE_PENDING) {
+        DUP_STATE.merged.push(MERGE_PENDING.name);
+        DUP_STATE.toast = MERGE_PENDING.name; MERGE_PENDING = null; } },
+    blocks: [ _m("Merged. Those records now resolve to one Golden Record, and search will return a single row. Nothing was deleted \u2014 each source record is kept and its history carried onto the combined record."),
+      _nx([{ t: "Show me all duplicate customer records", js: "openDuplicatesList()" }]) ] },
+  MERGE_NO: { blocks: [ _m("Nothing merged \u2014 and declining is not logged. The records are exactly as they were.") ] },
   AC4_YES: { log: { action: "Pinned invoice INV-114051 for follow-up",
       inputs: [["Vendor", "Testenger"], ["Reminder", "Friday"], ["Where", "Smart Activity pins"]],
       side: "A reminder chip on My Unify; visible to you only." },
