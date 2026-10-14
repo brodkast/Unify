@@ -12131,6 +12131,14 @@ const SEARCH_DATA = {
     { id: 'C13345',  name: 'John Smith',        phone: '(361) 552-3764' },
     { id: 'C88912',  name: 'John Smith',        phone: '(361) 552-3764', email: 'Jsmith_ok@outlook.com' },
     { id: 'C77921',  name: 'Joanne Smith',      phone: '(361) 552-3764', email: 'joanne.smith@aol.com' },
+    /* Adam Jones — the canonical customer-intelligence record, on the master
+       three times. These are the same application IDs CLA1 names: Drive
+       84112, eLead AJ-2094, CDK Service 55871. Karen is his household member
+       (CLA2), not a fourth copy of him. */
+    { id: 'C84112',  name: 'Adam Jones',       phone: '(503) 555-0142', email: 'adam.jones@gmail.com', verified: true, segment: 'Gold' },
+    { id: 'AJ-2094', name: 'Jones, Adam',      phone: '(503) 555-0142', email: 'ajones1984@yahoo.com' },
+    { id: 'C55871',  name: 'Adam J Jones',     phone: '(503) 555-0142', email: 'ajones.svc@outlook.com' },
+    { id: 'C77430',  name: 'Karen Jones',      phone: '(503) 555-0142', email: 'karen.jones@gmail.com' },
     { id: 'C99117',  name: 'Christine Strick',  phone: '(206) 123-4567', email: 'cstrick@email.com',   isNew: true },
     { id: 'C18930',  name: 'Waters Mechanics, LLC', orgType: 'business' },
     { id: 'C28405',  name: 'Waterson Auto Shop',    orgType: 'business', daysOverdue: 61 },
@@ -12150,6 +12158,7 @@ const SEARCH_DATA = {
     { id: 'RO124211', customer: 'Bonita Murray',      vehicle: '2021 Lexus RX 350',      status: 'Awaiting parts' },
     { id: 'RO124213', customer: 'Gallagher, M.',      vehicle: '2019 Audi Q5',           status: 'Awaiting parts' },
     { id: 'RO98664',  customer: 'Caroline Lacy',      vehicle: '2022 Toyota Camry XLE',  status: 'Awaiting MPI' },
+    { id: 'RO118907', customer: 'Adam Jones',         vehicle: '2019 Honda Civic LX',     status: 'Closed' },
   ],
   invoices: [
     { id: 'INV8960',   customer: 'John Smith',            kind: 'Parts Invoice' },
@@ -12177,12 +12186,14 @@ const SEARCH_DATA = {
     { id: 'V8842110298', name: '2024 Toyota RAV4 XLE',     stock: '456DEF', vin: '8842110298', voi: 'Diana Reyes' },
     { id: 'V2244998101', name: '2024 Tesla Model Y',       stock: '789GHI', vin: '2244998101', voi: 'Lin Zhao' },
     { id: 'V5510002871', name: '2023 Chevrolet Silverado', stock: '111JKL', vin: '5510002871', voi: 'Marcus Hill' },
+    { id: 'V3391007742', name: '2026 Honda Civic Sport',   stock: '334PQR', vin: '3391007742', voi: 'Adam Jones' },
   ],
   deals: [
     { id: 'D129520', customer: 'Christine Strick', type: 'Finance',     manager: 'Anna Brown' },
     { id: 'D129518', customer: 'Marcus Gonzalez',  type: 'Finance',     manager: 'Anna Brown' },
     { id: 'D129521', customer: 'Sasha Chen',       type: 'Lease',       manager: 'Anna Brown' },
     { id: 'D129522', customer: 'Derek Park',       type: 'Finance',     manager: 'Anna Brown', flag: 'Kicked back' },
+    { id: 'D129515', customer: 'Adam Jones',       type: 'Finance',     manager: 'Anna Brown' },
   ],
   smartDealPackets: [
     { id: 'SDP-129520', customer: 'Christine Strick', created: 'May 3, 2025 12:15 pm' },
@@ -12201,6 +12212,7 @@ const SEARCH_DATA = {
     { name: 'Waterson_AutoShop-Stmt10152025.pdf', kind: 'pdf' },
     { name: 'RO-124210-MPI-2025.pdf',             kind: 'pdf' },
     { name: 'Deal-129520-Contracts.pdf',          kind: 'pdf' },
+    { name: 'Deal-129515-Adam-Jones-Contracts.pdf', kind: 'pdf' },
   ],
   purchaseOrders: [
     { id: 'PO178658', vendor: 'Commercial Partner Supply, Inc.', status: 'Needs Review' },
@@ -12247,21 +12259,22 @@ const SEARCH_CONFIG = {
   fi:             ['customers', 'vehicles', 'deals', 'smartDealPackets', 'files', 'employees'],
   salesManager:   ['customers', 'vehicles', 'deals', 'employees', 'reports'],
   salesAssoc:     ['customers', 'vehicles', 'deals'],
+  controller:     ['customers', 'invoices', 'vendors', 'reports', 'goals', 'files'],
 };
 
 /* Suggested searches shown when the search dropdown opens before typing. */
 const SEARCH_PROMPTS = {
-  owner:          ['John Smith', 'Front Gross Profit', 'August sales units'],
+  owner:          ['Adam Jones', 'John Smith', 'Front Gross Profit'],
   ops:            ['John Smith', 'RO aging', 'Open Parts Tickets'],
-  serviceManager: ['John Smith', 'RO #124210', 'OEM-BP-447'],
+  serviceManager: ['Adam Jones', 'RO #124210', 'OEM-BP-447'],
   parts:          ['John Smith', 'OEM-BP-447', 'PO #178658'],
   partsClerk:     ['John Smith', 'OEM-BP-447', '8904673561'],
   tech:           ['RO #124210', 'OEM-BP-447'],
   arap:           ['John Smith', 'Waters Mechanics', 'Past Due invoices'],
-  fi:             ['John Smith', 'Christine Strick', 'Deal #129520'],
-  salesManager:   ['John Smith', 'CIT Report', 'Deal #129522'],
-  salesAssoc:     ['John Smith', 'Christine Strick', '2025 Honda CR-V'],
-  controller:     ['John Smith', 'AR Aging', 'Cash Position'],
+  fi:             ['Adam Jones', 'Christine Strick', 'Deal #129520'],
+  salesManager:   ['Adam Jones', 'John Smith', 'CIT Report'],
+  salesAssoc:     ['Adam Jones', 'John Smith', 'Christine Strick'],
+  controller:     ['Adam Jones', 'AR Aging', 'Cash Position'],
 };
 
 /* Category display labels and icons for search results. */
@@ -12343,6 +12356,45 @@ const MERGE_SETS = {
              voi: null, voiSub: null, trade: null, tradeSub: null, dl: null } },
     ],
   },
+  /* Adam Jones. Records 1-3 are the Drive, eLead and CDK Service IDs that
+     CLA1 already names; record 4 is the household member from CLA2. The
+     ordering is deliberate: the DMS record carries the purchase and the
+     licence, so it is the one worth surviving. */
+  adamJones: {
+    title: "Adam Jones", matchedOn: "name, phone, and address",
+    records: [
+      { id: "C84112", label: "Record 1", src: "auto", srcLabel: "DMS \u00b7 Drive",
+        updated: "Updated 05/07/2026 by Drive", on: true,
+        f: { name: "Adam Jones", email: "adam.jones@gmail.com", phone: "(503) 555-0142",
+             addr: "2209 NE Kelsey Ln.\nGresham, OR 97030", status: "DMS Sold",
+             sales: "Mike Reynolds",
+             voi: "2026 Honda Civic Sport", voiSub: "Delivered May 7, 2026 \u00b7 $25,365",
+             trade: null, tradeSub: null,
+             dl: "#: J-224719038", dlSub: "State: Oregon\nExp: 09/22/2029" } },
+      { id: "AJ-2094", label: "Record 2", src: "manual", srcLabel: "CRM \u00b7 eLead",
+        updated: "Updated 04/19/2026 by Mike Reynolds", on: true,
+        f: { name: "Jones, Adam", email: "ajones1984@yahoo.com", phone: "(503) 555-0142",
+             addr: "2209 NE Kelsey Lane\nGresham, OR 97030", status: "CRM Sold",
+             sales: "Mike Reynolds",
+             voi: "2026 Honda Civic Sport", voiSub: "Lead worked from service",
+             trade: null, tradeSub: null, dl: null } },
+      { id: "C55871", label: "Record 3", src: "phone", srcLabel: "Fixed Ops \u00b7 Service",
+        updated: "Updated 11/20/2025 by Phone System", on: true,
+        f: { name: "Adam J Jones", email: "ajones.svc@outlook.com", phone: "(503) 555-0142",
+             addr: "2209 NE Kelsey Ln., Apt B\nGresham, OR 97030", status: "Active",
+             sales: null,
+             voi: null, voiSub: null,
+             trade: "2019 Honda Civic LX", tradeSub: "Serviced here, bought elsewhere",
+             dl: null } },
+      { id: "C77430", label: "Record 4", src: "phone", srcLabel: "Phone System",
+        updated: "Updated 02/11/2026 by Phone System", on: false,
+        why: "Household member \u2014 same line and same address, different person",
+        f: { name: "Karen Jones", email: "karen.jones@gmail.com", phone: "(503) 555-0142",
+             addr: "2209 NE Kelsey Ln.\nGresham, OR 97030", status: "Active",
+             sales: "Vincent Davis",
+             voi: null, voiSub: null, trade: null, tradeSub: null, dl: null } },
+    ],
+  },
   victoria: {
     title: "Victoria DeFontaine", matchedOn: "name, email, phone, and address",
     records: [
@@ -12400,6 +12452,7 @@ const MERGE_FIELDS = [
    two wired sets; the rest are list rows drawn from the prototype's own
    customers, with Manage saying plainly that only the wired sets open. */
 const DUP_ROWS = [
+  { name: "Adam Jones",       set: "adamJones", n: 4, date: "05/07/2026", cause: ["auto","phone"], origin: "DMS",            m: [3,0,4,4] },
   { name: "John Smith",      set: "johnSmith", n: 4, date: "04/02/2025", cause: ["phone","manual"], origin: "CRM",             m: [3,2,4,3] },
   { name: "Victoria DeFontaine", set: "victoria", n: 5, date: "04/16/2026", cause: ["auto","manual"], origin: "Digital Retail", m: [5,3,2,3] },
   { name: "Christine Strick", set: null, n: 2, date: "04/16/2026", cause: ["auto"],            origin: "Digital Retail", m: [2,2,3,3] },
@@ -12732,7 +12785,9 @@ window.mergeIgnore = function() {
 };
 
 /* ---------------- entry point from a search row ---------------- */
-const DUP_BY_NAME = { "John Smith": "johnSmith", "Joanne Smith": "johnSmith",
+const DUP_BY_NAME = { "Adam Jones": "adamJones", "Jones, Adam": "adamJones",
+  "Adam J Jones": "adamJones", "Karen Jones": "adamJones",
+  "John Smith": "johnSmith", "Joanne Smith": "johnSmith",
                       "Victoria DeFontaine": "victoria" };
 
 window.srchKebab = function(ev, id, name) {
@@ -12766,22 +12821,31 @@ function highlight(text, query) {
   if (!query || !text) return escapeHtml(text || '');
   const esc = escapeHtml(text);
   // Case-insensitive substring highlight (escape regex special chars in query)
-  const qEsc = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  return esc.replace(new RegExp(qEsc, 'gi'), m => `<b>${m}</b>`);
+  // Bold each word of the query, longest first, so a multi-word search
+  // highlights its parts wherever they landed in the row.
+  const tokens = query.split(/\s+/).filter(Boolean)
+    .sort((a, b) => b.length - a.length)
+    .map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  if (!tokens.length) return esc;
+  return esc.replace(new RegExp('(' + tokens.join('|') + ')', 'gi'), m => `<b>${m}</b>`);
 }
 
-/* Matches if any of the fields contains the query string (case-insensitive). */
+/* Matches when every word of the query appears somewhere in the row.
+   The whole-string version could not find "Jones, Adam" from "Adam Jones",
+   which is the one case a duplicate search has to handle: the same person
+   filed under a different name order in another system. A single-word query
+   behaves exactly as it did before. */
 function matchAny(item, fields, query) {
-  const q = query.toLowerCase();
-  return fields.some(f => {
-    const v = item[f];
-    return v != null && String(v).toLowerCase().includes(q);
-  });
+  const hay = fields.map(f => item[f]).filter(v => v != null)
+                    .join(" \u0000 ").toLowerCase();
+  const tokens = query.toLowerCase().split(/\s+/).filter(Boolean);
+  if (!tokens.length) return false;
+  return tokens.every(t => hay.includes(t));
 }
 
 /* Per-category search + result row rendering. */
 const SEARCH_MATCHERS = {
-  customers: (q) => SEARCH_DATA.customers.filter(c => matchAny(c, ['name','id','phone','email'], q)).slice(0, 4),
+  customers: (q) => SEARCH_DATA.customers.filter(c => matchAny(c, ['name','id','phone','email'], q)).slice(0, 6),
   repairOrders: (q) => SEARCH_DATA.repairOrders.filter(r => matchAny(r, ['id','customer','vehicle','status'], q)).slice(0, 4),
   invoices: (q) => SEARCH_DATA.invoices.filter(i => matchAny(i, ['id','customer','kind'], q)).slice(0, 4),
   parts: (q) => SEARCH_DATA.parts.filter(p => matchAny(p, ['id','name'], q)).slice(0, 4),
@@ -13001,15 +13065,32 @@ window.runSuggestedSearch = function(text) {
   input.focus();
 };
 
+/* A search result for a record the prototype actually models should open
+   that record, not announce it. These are the same keys AIVA opens in the
+   detail drawer, so finding an RO by search and being handed it by AIVA land
+   in the same place. Anything unmodelled still toasts — the fallback is
+   honest about what is not there. */
+const SEARCH_RECORD_KEY = {
+  repairOrder:    (id) => id.replace(/^RO/, 'RO-'),
+  part:           (id) => 'PART-' + id,
+  deal:           (id) => id.replace(/^D/, 'DEAL-'),
+  purchaseOrder:  (id) => id.replace(/^PO/, 'PO-'),
+  invoice:        (id) => id.replace(/^INV/, 'INV-'),
+  partsTicket:    (id) => 'CASE-PT-' + id.replace(/^PT/, ''),
+};
+
 window.selectSearchResult = function(kind, id, label) {
   closeSearchDropdown();
   document.getElementById('globalSearchInput').value = '';
   document.getElementById('globalSearch').classList.remove('has-text');
-  if (kind === 'customer') {
-    openCustomerRecord(id);
-  } else {
-    toast(`Opening ${kind}: ${label || id}`);
+  if (kind === 'customer') { openCustomerRecord(id); return; }
+  const fn = SEARCH_RECORD_KEY[kind];
+  const key = fn ? fn(id) : null;
+  if (key && typeof AIVA_RECORDS !== 'undefined' && AIVA_RECORDS[key]) {
+    aivaOpenRecord(key);
+    return;
   }
+  toast(`Opening ${kind}: ${label || id}`);
 };
 
 function openSearchDropdown() {
@@ -14545,6 +14626,10 @@ window.aivaDemoInventory = function() {
   const sites     = new Set(aivaHelpIndex().map(t => t.s)).size;
   const entities  = Object.keys(CTX_LABEL).length;
   const intents   = AIVA_INTENTS.length;
+  const dupRows   = DUP_ROWS.length;
+  const dupRecs   = DUP_ROWS.reduce((a, r) => a + r.n, 0);
+  const mrgSets   = Object.keys(MERGE_SETS).length;
+  const mrgFlds   = MERGE_FIELDS.length;
 
   const me  = currentPersonaKey();
   const mine = aivaDemoCommands(me);
@@ -14570,6 +14655,15 @@ window.aivaDemoInventory = function() {
         ${entities} entity types carried forward between turns. Help answers
         come from ${topics} indexed topics across ${sites} CDK sites.`),
 
+    _m(`<b>Identity resolution.</b> ${dupRows} duplicate candidate sets on
+        the customer master, covering ${dupRecs} records, with the cause and
+        origin of each. ${mrgSets} of them are populated end to end behind a
+        side-by-side merge screen — one column per record,
+        ${mrgFlds} fields deep, with a live preview of the combined record.
+        Three things reach it: the kebab on a customer row in search results,
+        the Manage link in the duplicates list, and asking for it. The merge
+        itself is gated and audited like every other write.`),
+
     _m(`<b>Three classes, one gate.</b> Monitoring and Rules Engine work is
         advisory and cannot write to the log \u2014 that is enforced in code,
         not by convention. Automation changes state, always behind a
@@ -14594,6 +14688,7 @@ window.aivaDemoInventory = function() {
     _nx([
       { t: "Show every command, by persona", js: "aivaDemoByPersona()", p: true },
       { t: "Run the cross-product flow", js: "aivaRunOpen()" },
+      { t: "Show me all duplicate customer records", js: "openDuplicatesList()" },
       { t: "Show me the activity log", res: "OPEN_LOG" },
     ]),
   ].filter(Boolean), null);
@@ -14651,6 +14746,11 @@ window.aivaShowCapabilities = function() {
   const spots    = Object.keys(AIVA_SPOTLIGHTS).length;
   const clarify  = AIVA_INTENTS.filter(i => i.clarify).length;
   const sourced  = AIVA_INTENTS.filter(i => i.checking).length;
+  // Identity resolution, counted the same way: the candidate sets on the
+  // customer master, the records they cover, and how deep the merge grid is.
+  const dupSets  = DUP_ROWS.length;
+  const dupRecs  = DUP_ROWS.reduce((a, r) => a + r.n, 0);
+  const mrgFlds  = MERGE_FIELDS.length;
   // Counted the same way as everything else in this panel: walk the
   // registry, render each intent's blocks, and look at what comes out.
   const _blocks = (i) => { try { return JSON.stringify(typeof i.blocks === "function" ? i.blocks() : i.blocks); }
@@ -14719,6 +14819,17 @@ window.aivaShowCapabilities = function() {
         can see reflected on the screen behind me. The log is the durable
         record: it survives clearing the conversation, and it carries the
         inputs I used and who confirmed them.`),
+    _m(`<b>I can also resolve a customer who exists more than once.</b>
+        ${dupSets} duplicate candidate sets are open on the customer master,
+        covering ${dupRecs} records. For a set I put every record side by side,
+        ${mrgFlds} fields deep, and you choose which value survives on each
+        one — I mark the values I think are right rather than deciding for
+        you, and a record you exclude drops out of the preview immediately.
+        Merging is a write, so it goes through the same confirmation card and
+        the same audit entry as everything else here. Nothing is deleted: the
+        source records are kept and their history is carried onto the
+        combined record.`),
+
     _m(`I can hand a customer's case from one department to the next —
         Service, Parts, Sales, F&amp;I, Accounting — carrying who sent it and
         why, so the next person does not start cold.`),
@@ -14751,6 +14862,7 @@ window.aivaShowCapabilities = function() {
     _nx([
       { t: "What topics are on this page?" },
       { t: "What does this prototype demo?", js: "aivaDemoInventory()", p: true },
+      { t: "Show me all duplicate customer records", js: "openDuplicatesList()" },
       { t: "Show me the activity log", res: "OPEN_LOG" },
     ]),
   ], null);
@@ -17416,6 +17528,24 @@ const AIVA_INTENTS = [
 
 
 /* ---- Duplicate customer records ---- */
+/* Adam's set is not a generic duplicate: it is the same three application
+   IDs CLA1 names, which lets this answer make the distinction the platform
+   actually rests on — stitched for analytics, unmerged on the master. */
+{ id: "DUP3", personas: ["salesManager", "salesAssoc", "fi", "serviceManager", "arap", "owner"],
+  checking: "Customer Master",
+  kw: ["duplicate records for adam", "duplicates for adam", "adam jones duplicate",
+       "similar customers for adam", "merge adam"],
+  blocks: () => [ _nd("rules"),
+    _m(`<b>Adam Jones exists three times on the customer master</b> \u2014 and they are the three IDs I already use to answer questions about him:`),
+    _tbl([{ h: "Record" }, { h: "Name" }, { h: "Source" }, { h: "Last updated" }],
+      MERGE_SETS.adamJones.records.map(r => [r.id, r.f.name, r.srcLabel, r.updated.replace(/^Updated /, "")])),
+    _m(`The data mart stitches those three under one Golden ID, which is why his six years of service and his ${CLTV.adam.vehPrice} purchase read as one story when you ask me. <b>The customer master has not been told.</b> Analytics resolved him; the record did not. Merging is what closes that gap.`),
+    _m(`<b>The fourth record is not him.</b> ${CLTV_PH.household.name} shares the phone line <i>and</i> the address, because she lives there \u2014 four matching fields, the strongest score in the list. She is his household member, not a fourth copy of him, so she is unchecked on the merge screen. Match strength is evidence, not a decision.`),
+    { t: "srcft", s: "Customer Master \u00b7 matched on name, phone and address \u00b7 candidate sets are demonstration data" },
+    _nx([{ t: "Review and merge these records", js: "openMergeScreen('adamJones')", p: true },
+         { t: "Who else in Adam Jones's household has bought or serviced with us?" },
+         { t: "Show me all duplicate customer records", js: "openDuplicatesList()" }]) ] },
+
 { id: "DUP1", personas: ["salesManager", "salesAssoc", "fi", "serviceManager", "arap", "owner"],
   checking: "Customer Master",
   kw: ["duplicate records for", "similar customers", "duplicate customer", "same phone number"],
@@ -17435,8 +17565,8 @@ const AIVA_INTENTS = [
 { id: "DUP2", personas: null, checking: "Customer Master",
   kw: ["all duplicate customer", "duplicate records list", "how many duplicate"],
   blocks: () => [ _nd("monitor"),
-    _m(`<b>${DUP_ROWS.length} candidate sets</b> are open on the customer master, covering ${DUP_ROWS.reduce((a, r) => a + r.n, 0)} records. They come from four origins — CRM, DMS, Digital Retail and Fixed Ops — and three causes: automatic matching, manual entry, and phone system pushes.`),
-    _m(`Two sets are populated end to end in this prototype: <b>John Smith</b> (4 records) and <b>Victoria DeFontaine</b> (5 records). The rest are list rows.`),
+    _m(`<b>${DUP_ROWS.length} candidate sets</b> are open on the customer master, covering ${DUP_ROWS.reduce((a, r) => a + r.n, 0)} records. They come from ${new Set(DUP_ROWS.map(r => r.origin)).size} origins — ${[...new Set(DUP_ROWS.map(r => r.origin))].sort().join(", ")} — and three causes: automatic matching, manual entry, and phone system pushes.`),
+    _m(`${Object.keys(MERGE_SETS).length} sets are populated end to end in this prototype: ${Object.values(MERGE_SETS).map(s => `<b>${s.title}</b> (${s.records.length} records)`).join(", ")}. The rest are list rows.`),
     { t: "srcft", s: "Customer Master · duplicate candidate sets · demonstration data" },
     _nx([{ t: "Show me all duplicate customer records", js: "openDuplicatesList()", p: true },
           { t: "Are there duplicate records for John Smith?" }]) ] },
@@ -18498,6 +18628,17 @@ if (typeof window.openDetailDrawer !== "function") {
 /* Record details AIVA can open — grounded in the same values the
    persona activity lists and cards already show. */
 const AIVA_RECORDS = {
+  "RO-118907": { title: "RO #118907 \u2014 Jones, A.", rows: [
+    ["Status", "Closed"], ["Closed", "Nov 20, 2025"],
+    ["Vehicle", "2019 Honda Civic LX"], ["Job", "Oil change \u00b7 tire rotation \u00b7 multi-point"],
+    ["Pay type", "Customer pay"], ["Advisor", "Diana Reyes"],
+    ["Note", "Sixth and last RO before the May 2026 purchase"],
+    ["Store", "Statler Toyota"] ] },
+  "DEAL-129515": { title: "Deal #129515 \u2014 Jones, A.", rows: [
+    ["Status", "Funded"], ["Type", "Finance"], ["Delivered", "May 7, 2026"],
+    ["Vehicle", "2026 Honda Civic Sport \u00b7 stock 334PQR"],
+    ["Selling price", "$25,365"], ["Salesperson", "Mike Reynolds"],
+    ["F&I Manager", "Anna Brown"], ["Store", "Statler Toyota"] ] },
   "RO-98664": { title: "RO #98664 — Lacy, C.", rows: [
     ["Status", "MPI awaiting approval"], ["Waiting since", "9:12am"],
     ["Advisor", "J. Hallenbeck"], ["Technician", "M. Scott"],
@@ -25047,6 +25188,49 @@ const CUSTOMER_RECORDS = {
     ],
   },
 };
+
+/* Adam Jones's Golden Record. Every figure that exists in the CLTV fixture
+   is read from it rather than retyped, so the record cannot disagree with
+   what AIVA says about the same customer. The fields the fixture does not
+   carry — scores, address, contact details — are demonstration values of the
+   same kind the other records in this object hold. */
+CUSTOMER_RECORDS['C84112'] = (() => {
+  const a = CLTV.adam, h = CLTV_PH.household;
+  return {
+    name: 'Adam Jones', gid: 'GID-4418702', household: 'H-30774',
+    lifetimeValue: a.lifeSales, vehiclePref: 'Compact Sedans',
+    churnScore: '24%', churnLabel: 'Moderate Risk', segment: 'Gold',
+    phone: '(503) 555-0142', email: 'adam.jones@gmail.com',
+    doNotCall: 'No', doNotEmail: 'No',
+    addr1: '2209 NE Kelsey Ln.', addr2: '', city: 'Gresham', state: 'OR', zip: '97030',
+    related: h.name,
+    delivScore: '94/100', prisonFlag: 'No', deceasedFlag: 'No',
+    seasonal: 'No', educational: 'No',
+    firstSeen: a.firstRO, lastInteraction: a.vehDate + ' (Sales)',
+    salesperson: 'Mike Reynolds', serviceAdvisor: 'Diana Reyes',
+    ltv: a.vehPrice + ' (Sales) + ' + a.fixed + ' (Service)', status: 'Active',
+    vehicles: [
+      '2026 Honda Civic Sport \u00b7 Finance \u00b7 Active',
+      '2019 Honda Civic LX \u00b7 Serviced here, bought elsewhere',
+      '2021 Subaru Outback \u00b7 Household (' + h.name + ')',
+    ],
+    engagement: [
+      a.firstRO.replace(/(\w+) (\d+), (\d+)/, '$3-$1-$2') + ': First repair order',
+      '2025-Nov-20: Sixth repair order',
+      '2026-May-07: Bought 2026 Honda Civic Sport',
+    ],
+    lastQuote: '\u2014', openDeals: 0, closedDeals: 1, leadSource: 'Service customer',
+    lastService: a.lastRO + ' \u2013 Oil change, tire rotation', openCalls: 'None',
+    warranty: 'Active till May 2029', visits: a.roCount, spent: a.fixed, loyalty: '8.1/10',
+    timeline: [
+      { date: a.vehDate, event: 'Purchase \u2014 Service customer of 6 years bought a 2026 Honda Civic Sport', workflow: 'Sales', amount: a.vehPrice },
+      { date: a.lastRO, event: 'Service Visit \u2014 Oil change, tire rotation, multi-point (RO #118907)', workflow: 'Service', amount: '$212' },
+      { date: 'Jun 04, 2024', event: 'Service Visit \u2014 Brake inspection and front pads', workflow: 'Service', amount: '$418' },
+      { date: 'Aug 22, 2022', event: 'Service Visit \u2014 Scheduled maintenance', workflow: 'Service', amount: '$332' },
+      { date: a.firstRO, event: 'First Visit \u2014 Walked in for an oil change on a vehicle bought elsewhere', workflow: 'Service', amount: '$89' },
+    ],
+  };
+})();
 
 let ACTIVE_CUST_ID = null;
 let ACTIVE_CUST_TAB = 'summary';
