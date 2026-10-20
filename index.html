@@ -915,9 +915,19 @@
     display: flex; align-items: center; justify-content: center;
     box-shadow: 0 1px 2px rgba(21,27,37,0.28);
     letter-spacing: -0.2px; line-height: 1;
-    /* the mark sits a little above centre, as the reference does, to leave
-       the ribbon zone clear */
-    padding-bottom: 14%;
+    /* The mark sits a little above centre, as the reference does, to leave
+       the ribbon zone clear.
+
+       This MUST be an em, not a percentage. A percentage padding resolves
+       against the containing block's width, not the icon's own: inside a
+       40px-tall pill ~311px wide, `14%` computed to 43.6px of padding on a
+       30px box, which grew the tile past its own row, collapsed the content
+       box to zero and pushed the glyph off the top of the icon. An em
+       follows the element's font-size, so the offset scales with the glyph
+       in every context the icon renders in and can never be set by whatever
+       happens to contain it. 0.38em of the 11px base is 4.2px — the value
+       this line was always meant to carry. */
+    padding-bottom: 0.38em;
     font-style: normal;
   }
   .tile-icon::after {
@@ -11025,7 +11035,7 @@ body.switcher-collapsed #newfiRoot #fullCreditReport { left: 60px !important; }
         </div>
         <div class="pm-item has-sub" data-pm="view" role="menuitem" aria-haspopup="true">
           <svg class="pm-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="6" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/></svg><span class="pm-label">Unify View</span><svg class="pm-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-          <div class="pm-sub" data-sub-for="view"><div class="pm-sub-item" data-view="top"><span class="pm-tick"></span>Horizontal</div><div class="pm-sub-item is-on" data-view="side"><span class="pm-tick">✓</span>Vertical</div></div>
+          <div class="pm-sub" data-sub-for="view"><div class="pm-sub-item is-on" data-view="top"><span class="pm-tick">✓</span>Horizontal</div><div class="pm-sub-item" data-view="side"><span class="pm-tick"></span>Vertical</div></div>
         </div>
         <div class="pm-item" data-pm="dealerAdmin" role="menuitem">
           <svg class="pm-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="18.5" cy="16.5" r="2.5"/></svg><span class="pm-label">Dealer Admin</span>
@@ -22811,10 +22821,11 @@ function initSidebarNav() {
 }
 
 initSidebarNav();
-/* Vertical is the default layout. setLayoutMode leaves the panel
-   minimized, so a fresh load shows the rail only and the panel appears
-   when Menu is clicked. */
-setLayoutMode('side');
+/* Horizontal is the default layout: a fresh load shows the top bar with
+   the Menu button dropping the full-width mega menu. Vertical is one click
+   away under Avatar -> Unify View, and setLayoutMode handles either
+   direction, so this line is the only thing that decides which one boots. */
+setLayoutMode('top');
 
 
 /* ============================================================
