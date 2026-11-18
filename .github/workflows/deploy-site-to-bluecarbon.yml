@@ -1,11 +1,24 @@
 name: Deploy repo to Linode
 
 on:
+  # Publish automatically whenever content is pushed to main.
+  # Workflow-only changes under .github/ do not trigger a deploy.
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '.github/**'
+
+  # Manual run, with an optional subdirectory (unchanged).
   workflow_dispatch:
     inputs:
       remote_subdirectory:
         description: Subdirectory inside the base directory
         type: string
+
+concurrency:
+  group: deploy-bluecarbon
+  cancel-in-progress: false
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -25,6 +38,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Prepare SSH key
         env:
@@ -62,6 +77,37 @@ jobs:
             -p "$SSH_PORT" \
             "$LINODE_USER@$LINODE_HOST" \
             "mkdir -p '${{ steps.remote-path.outputs.remote_dir }}'"
+
+      # On a push, remove from the server exactly the files that the push
+      # deleted from the repo. Nothing else on the server is touched.
+      - name: Remove files deleted from the repo
+        if: github.event_name == 'push'
+        env:
+          BEFORE: ${{ github.event.before }}
+          REMOTE_DIR: ${{ steps.remote-path.outputs.remote_dir }}
+        run: |
+          if ! git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
+            echo "Previous commit not available; skipping removal."
+            exit 0
+          fi
+
+          list="$RUNNER_TEMP/deleted.list"
+          git diff --no-renames --name-only --diff-filter=D -z \
+            "$BEFORE" "$GITHUB_SHA" -- . ':(exclude).github' > "$list"
+
+          if [ ! -s "$list" ]; then
+            echo "No files were deleted in this push."
+            exit 0
+          fi
+
+          echo "Removing from $REMOTE_DIR:"
+          tr '\0' '\n' < "$list"
+
+          ssh \
+            -i ~/.ssh/id_ed25519 \
+            -p "$SSH_PORT" \
+            "$LINODE_USER@$LINODE_HOST" \
+            "cd '$REMOTE_DIR' && xargs -0 rm -f --" < "$list"
 
       - name: Upload repo contents
         run: |
