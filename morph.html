@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Morphing Stage Model — Space-Transforming UI Paradigm</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            obsidian: '#0B0E14',
+            stage: '#10141D',
+            panel: '#151B27',
+            borderHairline: 'rgba(255, 255, 255, 0.09)',
+            amberAccent: '#F59E0B',
+            cyanAccent: '#06B6D4',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --morph-progress: 0; /* 0 = Macro Orbit, 0.5 = Focused Creation, 1.0 = Z-Axis Semantic Zoom */
+      --grid-scale: 1;
+      --spring-ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --bg-canvas: #0B0E14;
+      --bg-surface: #131823;
+      --bg-surface-elevated: #19202E;
+      --text-primary: #F1F5F9;
+      --text-secondary: #94A3B8;
+      --text-muted: #64748B;
+      --border-color: rgba(255, 255, 255, 0.1);
+      --ghost-border: rgba(6, 182, 212, 0.32);
+      --grid-dot: rgba(255, 255, 255, 0.08);
+    }
+
+    html.light {
+      --bg-canvas: #F4F6F9;
+      --bg-surface: #FFFFFF;
+      --bg-surface-elevated: #F8FAFC;
+      --text-primary: #0F172A;
+      --text-secondary: #475569;
+      --text-muted: #64748B;
+      --border-color: rgba(15, 23, 42, 0.11);
+      --ghost-border: rgba(2, 132, 199, 0.35);
+      --grid-dot: rgba(15, 23, 42, 0.09);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-canvas);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+      height: 100dvh;
+      width: 100vw;
+      user-select: none;
+      transition: background-color 0.35s ease, color 0.35s ease;
+    }
+
+    /* Architectural Spatial Grid that warps subtly with Z-Axis depth */
+    .spatial-grid {
+      position: fixed;
+      inset: -10%;
+      width: 120%;
+      height: 120%;
+      background-image:
+        radial-gradient(circle, var(--grid-dot) 1.25px, transparent 1.25px),
+        linear-gradient(to right, rgba(148, 163, 184, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(148, 163, 184, 0.03) 1px, transparent 1px);
+      background-size: 32px 32px, 128px 128px, 128px 128px;
+      background-position: center center;
+      transform: scale(var(--grid-scale));
+      transition: transform 0.18s ease-out;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Center Crosshair Reticle showing stationary user focal lock */
+    .focal-reticle {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 680px;
+      height: 680px;
+      border-radius: 9999px;
+      border: 1px dashed rgba(245, 158, 11, 0.12);
+      pointer-events: none;
+      z-index: 1;
+      transition: transform 0.45s var(--spring-ease), opacity 0.45s ease;
+    }
+
+    .focal-reticle::before {
+      content: '';
+      position: absolute;
+      inset: 90px;
+      border-radius: 9999px;
+      border: 1px solid rgba(6, 182, 212, 0.08);
+    }
+
+    /* Fixed Horizon Frame (Top & Bottom) */
+    .horizon-bar {
+      background: color-mix(in srgb, var(--bg-surface) 84%, transparent);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-color: var(--border-color);
+      z-index: 50;
+    }
+
+    /* Custom Range Scrubber Styling */
+    input[type="range"].temporal-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+    }
+    input[type="range"].temporal-slider::-webkit-slider-runnable-track {
+      height: 6px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #06B6D4 0%, #F59E0B 50%, #A855F7 100%);
+      opacity: 0.85;
+    }
+    input[type="range"].temporal-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 18px;
+      width: 18px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      border: 3px solid #F59E0B;
+      margin-top: -6px;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.65);
+      transition: transform 0.15s ease;
+    }
+    input[type="range"].temporal-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.18);
+    }
+
+    /* Primary Invariant Focal Anchor */
+    .focal-anchor {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      box-shadow:
+        0 25px 60px -15px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(245, 158, 11, 0.18);
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      will-change: width, height, border-radius, box-shadow;
+    }
+
+    .focal-anchor.smooth-morph {
+      transition:
+        width 0.55s var(--spring-ease),
+        height 0.55s var(--spring-ease),
+        border-radius 0.55s var(--spring-ease),
+        box-shadow 0.55s var(--spring-ease),
+        background-color 0.35s ease;
+    }
+
+    /* Satellite Orbital / Docked Cards */
+    .satellite-card {
+      position: fixed;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      backdrop-filter: blur(12px);
+      z-index: 15;
+      overflow: hidden;
+      cursor: pointer;
+      will-change: transform, width, height, opacity, border-color;
+    }
+
+    .satellite-card.smooth-morph {
+      transition:
+        left 0.55s var(--spring-ease),
+        top 0.55s var(--spring-ease),
+        width 0.55s var(--spring-ease),
+        height 0.55s var(--spring-ease),
+        transform 0.55s var(--spring-ease),
+        opacity 0.45s ease,
+        border-color 0.35s ease,
+        background-color 0.35s ease;
+    }
+
+    .satellite-card:hover {
+      border-color: rgba(6, 182, 212, 0.55);
+      box-shadow: 0 12px 32px -8px rgba(6, 182, 212, 0.2);
+    }
+
+    /* Reversible Ghost Outline Traces (visible when satellites compress into peripheral rails) */
+    .ghost-trace {
+      position: fixed;
+      border: 1.5px dashed var(--ghost-border);
+      border-radius: 16px;
+      pointer-events: none;
+      z-index: 8;
+      transition: opacity 0.45s ease, transform 0.55s var(--spring-ease);
+    }
+
+    /* Intent-Driven Gravitation Micro-Palette */
+    .gravitation-palette {
+      position: fixed;
+      z-index: 40;
+      background: color-mix(in srgb, var(--bg-surface-elevated) 94%, transparent);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.55), 0 0 20px rgba(245, 158, 11, 0.15);
+      border-radius: 14px;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition:
+        left 0.38s var(--spring-ease),
+        top 0.38s var(--spring-ease),
+        opacity 0.25s ease,
+        transform 0.38s var(--spring-ease);
+    }
+
+    /* Z-Axis Semantic Layers Stack */
+    .z-stack-container {
+      perspective: 1200px;
+      transform-style: preserve-3d;
+    }
+
+    .z-layer-card {
+      transition:
+        transform 0.55s var(--spring-ease),
+        opacity 0.45s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+    }
+
+    /* X-Ray Pattern Annotation Badges */
+    .xray-pin {
+      position: fixed;
+      z-index: 45;
+      pointer-events: auto;
+      transition:
+        left 0.5s var(--spring-ease),
+        top 0.5s var(--spring-ease),
+        opacity 0.3s ease,
+        transform 0.3s ease;
+    }
+
+    .xray-pulse {
+      animation: pulseRing 2.2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+    }
+
+    @keyframes pulseRing {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.5); }
+      50% { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
+    }
+
+    /* Scrollbar refinement inside focal anchor */
+    .custom-scroll::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.25);
+      border-radius: 999px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Spatial Grid & Stationary Reticle -->
+  <div id="spatialGrid" class="spatial-grid"></div>
+  <div id="focalReticle" class="focal-reticle"></div>
+
+  <!-- =====================================================================
+       TOP HORIZON FRAME (Edge-Tethered Affordance — Never Moves or Morphs)
+       ===================================================================== -->
+  <header class="horizon-bar fixed top-0 left-0 right-0 h-14 border-b px-3 sm:px-6 flex items-center justify-between gap-3">
+    <!-- Left: Paradigm Identity & Active Spatial State -->
+    <div class="flex items-center gap-2.5 min-w-0">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500/20 to-cyan-500/20 border border-amber-500/40 flex items-center justify-center shrink-0">
+        <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 2v4m0 12v4M2 12h4m12 0h4m-2.93-7.07-2.83 2.83m-8.48 8.48-2.83 2.83m0-14.14 2.83 2.83m8.48 8.48 2.83 2.83"/>
+        </svg>
+      </div>
+      <div class="truncate">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-semibold tracking-wider uppercase text-amber-400">Morphing Stage</span>
+          <span class="hidden md:inline-block text-[11px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20" id="stateBadge">01 · MACRO ORBIT</span>
+        </div>
+        <p class="text-[11px] text-slate-400 truncate hidden sm:block">User Stationary · Workspace Reshapes Around Focal Anchor</p>
+      </div>
+    </div>
+
+    <!-- Center: Temporal Scrubber (Reversible Ghosting & Continuous State Interpolation) -->
+    <div class="flex items-center gap-2.5 sm:gap-3 flex-1 max-w-md mx-2">
+      <span class="text-[10px] font-mono uppercase tracking-wider text-cyan-400 hidden lg:inline">Macro</span>
+      <div class="relative flex-1 flex items-center">
+        <input
+          id="temporalScrubber"
+          type="range"
+          min="0"
+          max="100"
+          value="0"
+          aria-label="Temporal Morph Scrubber"
+          class="temporal-slider w-full"
+        />
+      </div>
+      <span class="text-[10px] font-mono uppercase tracking-wider text-purple-400 hidden lg:inline">Z-Depth</span>
+      <span id="scrubberPercent" class="text-xs font-mono font-semibold w-10 text-right text-amber-400">0%</span>
+    </div>
+
+    <!-- Right: Spatial Constancy Meter & Theme Switch -->
+    <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+      <div class="hidden xl:flex items-center gap-2 px-2.5 py-1 rounded-lg border border-emerald-500/25 bg-emerald-500/10">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-[11px] font-mono text-emerald-300">Anchor Lock: 100%</span>
+      </div>
+
+      <button
+        id="compareBtn"
+        class="px-2.5 py-1.5 rounded-lg text-xs font-medium border border-slate-700/80 hover:border-amber-500/50 bg-slate-800/60 text-slate-200 transition flex items-center gap-1.5"
+        title="Compare vs Traditional Page Navigation"
+      >
+        <svg class="w-3.5 h-3.5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7" rx="1"/>
+          <rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="14" y="14" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/>
+        </svg>
+        <span class="hidden sm:inline">Why This Works</span>
+      </button>
+
+      <button
+        id="themeToggle"
+        class="p-2 rounded-lg border border-slate-700/80 hover:border-cyan-500/50 bg-slate-800/60 text-slate-200 transition"
+        title="Toggle Studio Theme"
+        aria-label="Toggle Light or Dark Theme"
+      >
+        <svg id="sunIcon" class="w-4 h-4 hidden text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72 1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        <svg id="moonIcon" class="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- =====================================================================
+       REVERSIBLE GHOST TRACES (Shows original orbital slots when compressed)
+       ===================================================================== -->
+  <div id="ghost-0" class="ghost-trace opacity-0"></div>
+  <div id="ghost-1" class="ghost-trace opacity-0"></div>
+  <div id="ghost-2" class="ghost-trace opacity-0"></div>
+  <div id="ghost-3" class="ghost-trace opacity-0"></div>
+
+  <!-- =====================================================================
+       4 ORBITAL SATELLITE NODES (Morph between Orbit Cards & Peripheral Rails)
+       ===================================================================== -->
+  <!-- Satellite 0: Top-Left — Live Telemetry & Metrics -->
+  <aside id="sat-0" data-sat="0" class="satellite-card smooth-morph rounded-2xl p-3.5 flex flex-col justify-between">
+    <div class="sat-header flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 shrink-0"></span>
+        <span class="text-xs font-semibold tracking-wide uppercase truncate">Telemetry & SLA</span>
+      </div>
+      <span class="sat-badge text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-400">99.98%</span>
+    </div>
+    <div class="sat-body mt-2.5 space-y-2">
+      <div class="flex items-baseline justify-between">
+        <span class="text-[11px] text-slate-400">P99 Latency</span>
+        <span class="text-sm font-mono font-semibold text-cyan-400">14.2 ms</span>
+      </div>
+      <div class="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+        <div class="h-full bg-gradient-to-r from-cyan-500 to-emerald-400 w-[84%] rounded-full"></div>
+      </div>
+      <p class="text-[11px] text-slate-400 leading-snug">Edge mesh auto-balancing active across 12 regions.</p>
+    </div>
+    <div class="sat-rail-hint hidden items-center justify-between text-[10px] font-mono text-cyan-400">
+      <span>SLA 99.98%</span>
+      <span>⇄ Expand</span>
+    </div>
+  </aside>
+
+  <!-- Satellite 1: Top-Right — Service Dependencies -->
+  <aside id="sat-1" data-sat="1" class="satellite-card smooth-morph rounded-2xl p-3.5 flex flex-col justify-between">
+    <div class="sat-header flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <span class="w-2.5 h-2.5 rounded-full bg-amber-400 shrink-0"></span>
+        <span class="text-xs font-semibold tracking-wide uppercase truncate">Dependencies</span>
+      </div>
+      <span class="sat-badge text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-400">4 Nodes</span>
+    </div>
+    <div class="sat-body mt-2.5 space-y-1.5 text-xs">
+      <div class="flex items-center justify-between px-2 py-1 rounded bg-slate-800/50 border border-slate-700/50">
+        <span class="font-mono text-[11px]">auth-gateway</span>
+        <span class="text-[10px] text-emerald-400">● OK</span>
+      </div>
+      <div class="flex items-center justify-between px-2 py-1 rounded bg-slate-800/50 border border-slate-700/50">
+        <span class="font-mono text-[11px]">vector-store</span>
+        <span class="text-[10px] text-emerald-400">● OK</span>
+      </div>
+    </div>
+    <div class="sat-rail-hint hidden items-center justify-between text-[10px] font-mono text-amber-400">
+      <span>4 Deps</span>
+      <span>⇄ Expand</span>
+    </div>
+  </aside>
+
+  <!-- Satellite 2: Bottom-Left — Temporal Changelog / Revisions -->
+  <aside id="sat-2" data-sat="2" class="satellite-card smooth-morph rounded-2xl p-3.5 flex flex-col justify-between">
+    <div class="sat-header flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <span class="w-2.5 h-2.5 rounded-full bg-purple-400 shrink-0"></span>
+        <span class="text-xs font-semibold tracking-wide uppercase truncate">State History</span>
+      </div>
+      <span class="sat-badge text-[10px] font-mono px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-400">v2.4.1</span>
+    </div>
+    <div class="sat-body mt-2.5 space-y-1.5">
+      <div class="text-[11px] flex items-center justify-between">
+        <span class="text-slate-300 font-medium">Schema lock updated</span>
+        <span class="text-[10px] font-mono text-slate-400">2m ago</span>
+      </div>
+      <div class="text-[11px] flex items-center justify-between">
+        <span class="text-slate-400">Rate limit policy merged</span>
+        <span class="text-[10px] font-mono text-slate-500">18m ago</span>
+      </div>
+    </div>
+    <div class="sat-rail-hint hidden items-center justify-between text-[10px] font-mono text-purple-400">
+      <span>v2.4.1</span>
+      <span>⇄ Expand</span>
+    </div>
+  </aside>
+
+  <!-- Satellite 3: Bottom-Right — Collaborators & Live Presence -->
+  <aside id="sat-3" data-sat="3" class="satellite-card smooth-morph rounded-2xl p-3.5 flex flex-col justify-between">
+    <div class="sat-header flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 shrink-0"></span>
+        <span class="text-xs font-semibold tracking-wide uppercase truncate">Co-Presence</span>
+      </div>
+      <span class="sat-badge text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400">3 Active</span>
+    </div>
+    <div class="sat-body mt-2.5">
+      <div class="flex items-center -space-x-2 mb-2">
+        <div class="w-7 h-7 rounded-full bg-cyan-600 border-2 border-slate-900 flex items-center justify-center text-[10px] font-bold text-white">AK</div>
+        <div class="w-7 h-7 rounded-full bg-amber-600 border-2 border-slate-900 flex items-center justify-center text-[10px] font-bold text-white">MR</div>
+        <div class="w-7 h-7 rounded-full bg-purple-600 border-2 border-slate-900 flex items-center justify-center text-[10px] font-bold text-white">SL</div>
+        <span class="pl-3 text-[11px] text-slate-400">Inspecting Data Layer</span>
+      </div>
+    </div>
+    <div class="sat-rail-hint hidden items-center justify-between text-[10px] font-mono text-emerald-400">
+      <span>3 Online</span>
+      <span>⇄ Expand</span>
+    </div>
+  </aside>
+
+  <!-- =====================================================================
+       PRIMARY INVARIANT FOCAL ANCHOR (Dead Center — Never Leaves Origin)
+       ===================================================================== -->
+  <main id="focalAnchor" class="focal-anchor smooth-morph rounded-3xl">
+    <!-- Anchor Top Header (Always present across every morph state for Object Permanence) -->
+    <div class="px-5 py-3.5 border-b border-slate-700/40 flex items-center justify-between gap-3 shrink-0 bg-gradient-to-r from-amber-500/10 via-transparent to-cyan-500/10">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_12px_#F59E0B] shrink-0"></div>
+        <div class="truncate">
+          <div class="flex items-center gap-2">
+            <h1 class="text-sm sm:text-base font-semibold tracking-tight truncate">NexusCore Realtime Pipeline</h1>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30 shrink-0">INVARIANT ANCHOR</span>
+          </div>
+          <p id="anchorSubtitle" class="text-xs text-slate-400 truncate">Click anchor to expand workspace · Scroll wheel to dive Z-Axis layers</p>
+        </div>
+      </div>
+
+      <!-- Direct Anchor Action Pill -->
+      <div class="flex items-center gap-2 shrink-0">
+        <button
+          id="anchorExpandBtn"
+          class="px-3 py-1.5 rounded-xl text-xs font-medium bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 transition flex items-center gap-1.5"
+        >
+          <span id="anchorActionLabel">Expand Focus</span>
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Anchor Dynamic Interior Container -->
+    <div id="anchorBody" class="flex-1 overflow-y-auto custom-scroll p-5 relative">
+
+      <!-- VIEW A: MACRO OVERVIEW SUMMARY (Visible at morph 0%) -->
+      <div id="viewMacro" class="h-full flex flex-col justify-between gap-4">
+        <div class="grid grid-cols-3 gap-3">
+          <div class="p-3 rounded-2xl bg-slate-800/40 border border-slate-700/50">
+            <div class="text-[10px] font-mono uppercase text-slate-400">Throughput</div>
+            <div class="text-lg sm:text-xl font-bold font-mono text-cyan-400 mt-0.5">48.2k/s</div>
+          </div>
+          <div class="p-3 rounded-2xl bg-slate-800/40 border border-slate-700/50">
+            <div class="text-[10px] font-mono uppercase text-slate-400">Active Nodes</div>
+            <div class="text-lg sm:text-xl font-bold font-mono text-amber-400 mt-0.5">16</div>
+          </div>
+          <div class="p-3 rounded-2xl bg-slate-800/40 border border-slate-700/50">
+            <div class="text-[10px] font-mono uppercase text-slate-400">Integrity</div>
+            <div class="text-lg sm:text-xl font-bold font-mono text-emerald-400 mt-0.5">Verified</div>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-800/30 border border-slate-700/40 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-200">Core Architectural Specification</span>
+            <span class="text-[11px] font-mono text-cyan-400">Click anywhere inside to morph →</span>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Instead of navigating away to separate pages for metrics, editing, or schema inspection, this workspace stays anchored under your gaze while surrounding modules orbit, compress, or open in Z-depth.
+          </p>
+        </div>
+      </div>
+
+      <!-- VIEW B: FOCUSED CREATION / SUBDIVIDED WORKSPACE (Visible around morph 50%) -->
+      <div id="viewFocus" class="hidden h-full flex-col gap-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-700/40">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-mono uppercase tracking-wider text-amber-400">Subdivided Edit Workspace</span>
+            <span class="text-[11px] text-slate-400">· Select any block below to trigger Intent Gravitation</span>
+          </div>
+          <span id="gravitationStatus" class="text-[11px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/25">
+            Cursor Tool Gravitation: Ready
+          </span>
+        </div>
+
+        <!-- Subdivided 2-Column Grid inside the expanded Anchor -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 flex-1 min-h-0">
+          <!-- Left Column: Interactive Specification Blocks -->
+          <div class="md:col-span-7 flex flex-col gap-3">
+            <div
+              data-gravitate="ingest"
+              class="intent-block p-3.5 rounded-2xl bg-slate-800/45 border border-slate-700/60 hover:border-amber-400/60 cursor-pointer transition group"
+            >
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-xs font-mono font-semibold text-cyan-400">01. EVENT_INGEST_STREAM</span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 group-hover:bg-amber-500/20 group-hover:text-amber-300 transition">Click to Gravitate Tools</span>
+              </div>
+              <p class="text-xs text-slate-300 leading-relaxed" id="blockText-ingest">
+                Ingests distributed telemetry frames via gRPC multiplexing with zero-copy buffer serialization and automatic backpressure throttling.
+              </p>
+            </div>
+
+            <div
+              data-gravitate="transform"
+              class="intent-block p-3.5 rounded-2xl bg-slate-800/45 border border-slate-700/60 hover:border-amber-400/60 cursor-pointer transition group"
+            >
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-xs font-mono font-semibold text-amber-400">02. SEMANTIC_ENRICHMENT_NODE</span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-300">Click to Gravitate Tools</span>
+              </div>
+              <p class="text-xs text-slate-300 leading-relaxed" id="blockText-transform">
+                Maps incoming entity vectors against the live knowledge graph in sub-4ms windows while preserving deterministic ordering guarantees.
+              </p>
+            </div>
+
+            <div
+              data-gravitate="consensus"
+              class="intent-block p-3.5 rounded-2xl bg-slate-800/45 border border-slate-700/60 hover:border-amber-400/60 cursor-pointer transition group"
+            >
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-xs font-mono font-semibold text-purple-400">03. STATE_COMMIT_LOG</span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-500/10 text-purple-300">Click to Gravitate Tools</span>
+              </div>
+              <p class="text-xs text-slate-300 leading-relaxed" id="blockText-consensus">
+                Appends immutable state snapshots with cryptographic Merkle proofs for instant temporal rollback across edge replicas.
+              </p>
+            </div>
+          </div>
+
+          <!-- Right Column: Live Parameter & Topology Inspector -->
+          <div class="md:col-span-5 p-4 rounded-2xl bg-slate-900/50 border border-slate-700/50 flex flex-col justify-between gap-3">
+            <div>
+              <div class="text-xs font-semibold uppercase tracking-wider text-slate-300 mb-3">Live Pipeline Controls</div>
+              <div class="space-y-3">
+                <div>
+                  <div class="flex justify-between text-xs mb-1">
+                    <span class="text-slate-400">Batch Window</span>
+                    <span id="batchVal" class="font-mono text-cyan-400">12 ms</span>
+                  </div>
+                  <input id="batchSlider" type="range" min="2" max="50" value="12" class="w-full accent-cyan-400 cursor-pointer" />
+                </div>
+                <div>
+                  <div class="flex justify-between text-xs mb-1">
+                    <span class="text-slate-400">Replication Quorum</span>
+                    <span id="quorumVal" class="font-mono text-amber-400">3 / 5 Nodes</span>
+                  </div>
+                  <input id="quorumSlider" type="range" min="1" max="5" value="3" class="w-full accent-amber-400 cursor-pointer" />
+                </div>
+              </div>
+            </div>
+
+            <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 text-[11px] text-amber-200/90 leading-relaxed">
+              <strong>Notice the Spatial Constancy:</strong> The 4 satellite modules compressed into peripheral rails with dashed ghost outlines so you can restore them anytime without losing your place.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW C: Z-AXIS SEMANTIC ZOOM (Visible around morph 100%) -->
+      <div id="viewZAxis" class="hidden h-full flex-col gap-3">
+        <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-700/40">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-mono uppercase tracking-wider text-purple-400">Z-Axis Semantic Depth Stack</span>
+            <span class="text-[11px] text-slate-400">· Expanding inside-out rather than navigating to sub-pages</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button data-zlayer="all" class="z-filter-btn px-2.5 py-1 rounded-lg text-[11px] font-mono bg-purple-500/25 text-purple-200 border border-purple-400/50">All 3 Layers</button>
+            <button data-zlayer="0" class="z-filter-btn px-2.5 py-1 rounded-lg text-[11px] font-mono bg-slate-800/70 text-slate-300 border border-slate-700">L1: Surface</button>
+            <button data-zlayer="1" class="z-filter-btn px-2.5 py-1 rounded-lg text-[11px] font-mono bg-slate-800/70 text-slate-300 border border-slate-700">L2: Logic</button>
+            <button data-zlayer="2" class="z-filter-btn px-2.5 py-1 rounded-lg text-[11px] font-mono bg-slate-800/70 text-slate-300 border border-slate-700">L3: Schema</button>
+          </div>
+        </div>
+
+        <!-- 3-Tier Semantic Depth Cards -->
+        <div class="z-stack-container grid grid-cols-1 lg:grid-cols-3 gap-4 flex-1 items-stretch pt-1">
+          <!-- Layer 1: Presentation / Interface -->
+          <div id="zCard-0" class="z-layer-card p-4 rounded-2xl bg-gradient-to-b from-cyan-500/10 to-slate-900/70 border border-cyan-500/40 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300">Z-Depth +1 · UI Surface</span>
+                <span class="text-xs font-mono text-cyan-400">60 FPS</span>
+              </div>
+              <h3 class="text-sm font-semibold text-slate-100 mb-1.5">Reactive View Projection</h3>
+              <p class="text-xs text-slate-400 leading-relaxed mb-3">
+                Binds spatial coordinates directly to state vectors, interpolating layout geometry continuously without DOM unmount/remount cycles.
+              </p>
+            </div>
+            <pre class="text-[11px] font-mono p-2.5 rounded-xl bg-black/40 text-cyan-300 border border-cyan-500/20 overflow-x-auto"><code>anchor.morph({
+  origin: '50% 50%',
+  continuity: 'FLIP-spring'
+});</code></pre>
+          </div>
+
+          <!-- Layer 2: Execution & Routing Logic -->
+          <div id="zCard-1" class="z-layer-card p-4 rounded-2xl bg-gradient-to-b from-amber-500/10 to-slate-900/70 border border-amber-500/40 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-300">Z-Depth 0 · Logic Engine</span>
+                <span class="text-xs font-mono text-amber-400">3.8 ms</span>
+              </div>
+              <h3 class="text-sm font-semibold text-slate-100 mb-1.5">Intent Gravitation Solver</h3>
+              <p class="text-xs text-slate-400 leading-relaxed mb-3">
+                Computes semantic proximity between active selection and tool affordances, minimizing Fitts's Law travel distance dynamically.
+              </p>
+            </div>
+            <pre class="text-[11px] font-mono p-2.5 rounded-xl bg-black/40 text-amber-300 border border-amber-500/20 overflow-x-auto"><code>gravitateTools({
+  target: activeNode,
+  peripheryOpacity: 0.28
+});</code></pre>
+          </div>
+
+          <!-- Layer 3: Underlying Data Schema -->
+          <div id="zCard-2" class="z-layer-card p-4 rounded-2xl bg-gradient-to-b from-purple-500/10 to-slate-900/70 border border-purple-500/40 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-purple-500/20 text-purple-300">Z-Depth -1 · Data Schema</span>
+                <span class="text-xs font-mono text-purple-400">Immutable</span>
+              </div>
+              <h3 class="text-sm font-semibold text-slate-100 mb-1.5">Merkle Event Graph</h3>
+              <p class="text-xs text-slate-400 leading-relaxed mb-3">
+                Stores every spatial mutation as a reversible delta frame, powering the top Horizon Temporal Scrubber with zero state loss.
+              </p>
+            </div>
+            <pre class="text-[11px] font-mono p-2.5 rounded-xl bg-black/40 text-purple-300 border border-purple-500/20 overflow-x-auto"><code>{
+  "frameId": "0x9F4A",
+  "reversible": true,
+  "anchorLock": [0.5, 0.5]
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- =====================================================================
+       INTENT-DRIVEN GRAVITATION MICRO-PALETTE (Flies to active selection)
+       ===================================================================== -->
+  <div id="gravitationPalette" class="gravitation-palette opacity-0 pointer-events-none scale-90" style="left: 50%; top: 50%;">
+    <span class="text-[10px] font-mono uppercase px-2 text-amber-400 font-semibold" id="paletteContextLabel">Node</span>
+    <button data-action="optimize" class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-amber-500/20 hover:bg-amber-500/35 text-amber-200 transition">
+      ⚡ Optimize
+    </button>
+    <button data-action="inspect" class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-cyan-500/20 hover:bg-cyan-500/35 text-cyan-200 transition">
+      🔍 Z-Zoom
+    </button>
+    <button data-action="pin" class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-purple-500/20 hover:bg-purple-500/35 text-purple-200 transition">
+      📌 Lock
+    </button>
+    <button id="closePaletteBtn" class="p-1.5 rounded-lg text-slate-400 hover:text-white transition" title="Dismiss">
+      ✕
+    </button>
+  </div>
+
+  <!-- =====================================================================
+       INTERACTIVE UX PATTERN X-RAY OVERLAY PINS
+       ===================================================================== -->
+  <div id="xrayLayer" class="hidden">
+    <!-- Pin 1: Invariant Focal Anchor -->
+    <div id="pin-anchor" class="xray-pin" style="left: 50%; top: 24%;">
+      <div class="xray-pulse px-3 py-1.5 rounded-full bg-amber-500 text-slate-950 font-semibold text-xs shadow-lg flex items-center gap-1.5 cursor-pointer" data-pattern="1">
+        <span>1. Invariant Focal Anchor</span>
+      </div>
+    </div>
+
+    <!-- Pin 2: Topological Morphing -->
+    <div id="pin-morph" class="xray-pin" style="left: 72%; top: 50%;">
+      <div class="px-3 py-1.5 rounded-full bg-cyan-500 text-slate-950 font-semibold text-xs shadow-lg flex items-center gap-1.5 cursor-pointer" data-pattern="2">
+        <span>2. Topological Morph</span>
+      </div>
+    </div>
+
+    <!-- Pin 3: Reversible Ghost Trace -->
+    <div id="pin-ghost" class="xray-pin" style="left: 16%; top: 22%;">
+      <div class="px-3 py-1.5 rounded-full bg-purple-500 text-white font-semibold text-xs shadow-lg flex items-center gap-1.5 cursor-pointer" data-pattern="3">
+        <span>3. Reversible Ghost Trace</span>
+      </div>
+    </div>
+
+    <!-- Pin 4: Fixed Horizon Frame -->
+    <div id="pin-horizon" class="xray-pin" style="left: 50%; bottom: 72px; transform: translateX(-50%);">
+      <div class="px-3 py-1.5 rounded-full bg-emerald-500 text-slate-950 font-semibold text-xs shadow-lg flex items-center gap-1.5 cursor-pointer" data-pattern="4">
+        <span>4. Edge-Tethered Horizon Frame</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pattern Explanation Toast / Card when an X-Ray Pin is clicked -->
+  <div id="patternDetailCard" class="hidden fixed bottom-20 left-1/2 -translate-x-1/2 z-50 w-[92vw] max-w-lg p-4 rounded-2xl bg-slate-900/95 border border-amber-500/40 shadow-2xl backdrop-blur-xl">
+    <div class="flex items-start justify-between gap-3">
+      <div>
+        <span id="patternDetailTag" class="text-[10px] font-mono uppercase tracking-wider text-amber-400">Cognitive Principle</span>
+        <h3 id="patternDetailTitle" class="text-sm font-bold text-white mt-0.5">Pattern Title</h3>
+        <p id="patternDetailBody" class="text-xs text-slate-300 mt-1.5 leading-relaxed">Explanation text.</p>
+      </div>
+      <button id="closePatternDetail" class="text-slate-400 hover:text-white p-1">✕</button>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       COMPARISON MODAL ("Why This Works" — Traditional vs Morphing Stage)
+       ===================================================================== -->
+  <div id="compareModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="w-full max-w-2xl rounded-3xl bg-slate-900 border border-slate-700 p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div>
+          <span class="text-[10px] font-mono uppercase tracking-wider text-cyan-400">Spatial Cognition & Usability</span>
+          <h2 class="text-lg font-bold text-white">Traditional Navigation vs. Morphing Stage Model</h2>
+        </div>
+        <button id="closeCompareModal" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300">✕</button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+        <div class="p-4 rounded-2xl bg-slate-800/50 border border-rose-500/25 space-y-2">
+          <div class="font-semibold text-rose-400 uppercase tracking-wider text-[11px]">Traditional (User Walks)</div>
+          <p class="text-slate-300 leading-relaxed">• Hard page swaps destroy visual context and force working memory resets.</p>
+          <p class="text-slate-300 leading-relaxed">• User travels to fixed toolbars (high Fitts's Law distance).</p>
+          <p class="text-slate-300 leading-relaxed">• Deep folder hierarchies require breadcrumbs & Back buttons.</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-slate-800/50 border border-emerald-500/30 space-y-2">
+          <div class="font-semibold text-emerald-400 uppercase tracking-wider text-[11px]">Morphing Stage (Space Reshapes)</div>
+          <p class="text-slate-300 leading-relaxed">• <strong>Invariant Anchor</strong> locks the core object at screen center (0% re-orientation cost).</p>
+          <p class="text-slate-300 leading-relaxed">• <strong>Topological Morphing</strong> preserves Gestalt object permanence.</p>
+          <p class="text-slate-300 leading-relaxed">• <strong>Intent Gravitation</strong> brings tools directly to your cursor.</p>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-2">
+        <button id="gotItBtn" class="px-4 py-2 rounded-xl text-xs font-semibold bg-amber-500 hover:bg-amber-400 text-slate-950 transition">
+          Experience Live Stage
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       BOTTOM HORIZON FRAME (Intent Triggers & X-Ray Pattern Toggle)
+       ===================================================================== -->
+  <footer class="horizon-bar fixed bottom-0 left-0 right-0 h-16 border-t px-3 sm:px-6 flex items-center justify-between gap-2">
+    <!-- Left: Intent / Spatial Mode Pills -->
+    <div class="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-1">
+      <button
+        data-mode="0"
+        class="mode-pill px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shrink-0 bg-cyan-500/20 text-cyan-300 border border-cyan-500/40"
+      >
+        <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+        <span>1. Macro Orbit</span>
+      </button>
+
+      <button
+        data-mode="50"
+        class="mode-pill px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shrink-0 bg-slate-800/60 text-slate-300 border border-slate-700/70 hover:border-amber-500/40"
+      >
+        <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+        <span>2. Focused Edit</span>
+      </button>
+
+      <button
+        data-mode="100"
+        class="mode-pill px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shrink-0 bg-slate-800/60 text-slate-300 border border-slate-700/70 hover:border-purple-500/40"
+      >
+        <span class="w-2 h-2 rounded-full bg-purple-400"></span>
+        <span>3. Z-Axis Depth</span>
+      </button>
+    </div>
+
+    <!-- Right: Pattern X-Ray Overlay Toggle -->
+    <div class="flex items-center gap-2 shrink-0">
+      <span class="hidden md:inline text-[11px] font-mono text-slate-400">Scroll wheel on stage to zoom Z-axis</span>
+      <button
+        id="xrayToggle"
+        aria-pressed="false"
+        class="px-3.5 py-2 rounded-xl text-xs font-semibold border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 transition flex items-center gap-2"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+        <span>X-Ray UX Patterns</span>
+      </button>
+    </div>
+  </footer>
+
+  <!-- =====================================================================
+       INTERACTIVE MORPHING ENGINE (Continuous Interpolation + Physics)
+       ===================================================================== -->
+  <script>
+    (function () {
+      // State variables
+      let progress = 0; // 0 to 100 continuous spatial morph state
+      let isScrubbing = false;
+      let xrayActive = false;
+      let activeGravitationTarget = null;
+
+      // DOM References
+      const scrubber = document.getElementById('temporalScrubber');
+      const scrubberPercent = document.getElementById('scrubberPercent');
+      const stateBadge = document.getElementById('stateBadge');
+      const spatialGrid = document.getElementById('spatialGrid');
+      const focalReticle = document.getElementById('focalReticle');
+      const focalAnchor = document.getElementById('focalAnchor');
+      const anchorExpandBtn = document.getElementById('anchorExpandBtn');
+      const anchorActionLabel = document.getElementById('anchorActionLabel');
+      const anchorSubtitle = document.getElementById('anchorSubtitle');
+
+      const viewMacro = document.getElementById('viewMacro');
+      const viewFocus = document.getElementById('viewFocus');
+      const viewZAxis = document.getElementById('viewZAxis');
+
+      const satellites = [
+        document.getElementById('sat-0'),
+        document.getElementById('sat-1'),
+        document.getElementById('sat-2'),
+        document.getElementById('sat-3'),
+      ];
+
+      const ghosts = [
+        document.getElementById('ghost-0'),
+        document.getElementById('ghost-1'),
+        document.getElementById('ghost-2'),
+        document.getElementById('ghost-3'),
+      ];
+
+      const modePills = document.querySelectorAll('.mode-pill');
+      const xrayToggle = document.getElementById('xrayToggle');
+      const xrayLayer = document.getElementById('xrayLayer');
+      const gravitationPalette = document.getElementById('gravitationPalette');
+      const paletteContextLabel = document.getElementById('paletteContextLabel');
+      const gravitationStatus = document.getElementById('gravitationStatus');
+
+      // Pattern descriptions for X-Ray inspection
+      const PATTERN_INFO = {
+        1: {
+          tag: 'Spatial Indexing & Object Permanence',
+          title: '1. The Anchor-and-Orbit Pattern (Invariant Focal Point)',
+          body: 'The primary artifact stays locked at dead center (50%, 50%) across every mode. Because human working memory indexes objects by screen location, keeping the focal object stationary eliminates cognitive re-orientation.'
+        },
+        2: {
+          tag: 'Gestalt Continuity & Common Fate',
+          title: '2. Topological Morphing (Continuous Interpolation)',
+          body: 'Instead of hard page swaps, containers stretch, subdivide, and compress continuously. Scrubbing the top slider proves to the visual cortex that Card A became Workspace A.'
+        },
+        3: {
+          tag: 'User Control & Freedom (Reversibility)',
+          title: '3. Reversible Ghosting & Peripheral Rails',
+          body: 'When sibling modules compress to the edges during Focused Edit mode, dashed ghost traces mark their orbital origin—reassuring users that context is tucked away, not destroyed.'
+        },
+        4: {
+          tag: 'Proprioceptive Reference Frame',
+          title: '4. Edge-Tethered Affordances (Fixed Horizon Frame)',
+          body: 'The top and bottom horizon bars are exempt from internal spatial morphs. Like a cockpit windshield frame, they prevent disorientation and offer constant global controls.'
+        }
+      };
+
+      // Linear interpolation helper
+      function lerp(a, b, t) {
+        return a + (b - a) * t;
+      }
+
+      // Compute responsive geometry for Macro Orbit (0%), Focus Edit (50%), and Z-Axis Depth (100%)
+      function renderSpatialStage(val, smooth = true) {
+        progress = Math.max(0, Math.min(100, val));
+        scrubber.value = Math.round(progress);
+        scrubberPercent.textContent = `${Math.round(progress)}%`;
+
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const isMobile = vw < 768;
+
+        // Toggle smooth CSS transitions vs instant 1:1 manual scrubbing
+        if (smooth) {
+          focalAnchor.classList.add('smooth-morph');
+          satellites.forEach(s => s.classList.add('smooth-morph'));
+        } else {
+          focalAnchor.classList.remove('smooth-morph');
+          satellites.forEach(s => s.classList.remove('smooth-morph'));
+        }
+
+        // Phase interpolation factors:
+        // t1: 0 -> 1 as progress goes 0 -> 50 (Macro Orbit -> Focused Creation)
+        // t2: 0 -> 1 as progress goes 50 -> 100 (Focused Creation -> Z-Axis Semantic Zoom)
+        const t1 = Math.min(1, progress / 50);
+        const t2 = Math.max(0, (progress - 50) / 50);
+
+        // 1. Focal Anchor Dimensions (Always centered at 50vw, 50vh!)
+        const macroW = isMobile ? Math.min(vw * 0.9, 380) : Math.min(vw * 0.44, 520);
+        const macroH = isMobile ? 250 : 280;
+
+        const focusW = isMobile ? vw * 0.94 : Math.min(vw * 0.78, 980);
+        const focusH = isMobile ? vh * 0.64 : Math.min(vh * 0.68, 560);
+
+        const zW = isMobile ? vw * 0.95 : Math.min(vw * 0.88, 1140);
+        const zH = isMobile ? vh * 0.70 : Math.min(vh * 0.74, 620);
+
+        const currentW = progress <= 50 ? lerp(macroW, focusW, t1) : lerp(focusW, zW, t2);
+        const currentH = progress <= 50 ? lerp(macroH, focusH, t1) : lerp(focusH, zH, t2);
+
+        focalAnchor.style.width = `${currentW}px`;
+        focalAnchor.style.height = `${currentH}px`;
+
+        // 2. Ambient Grid & Reticle Depth Scaling
+        const gridScale = 1 + (progress / 100) * 0.28;
+        document.documentElement.style.setProperty('--grid-scale', gridScale.toFixed(3));
+        focalReticle.style.transform = `translate(-50%, -50%) scale(${1 + t1 * 0.35 + t2 * 0.25})`;
+        focalReticle.style.opacity = `${Math.max(0.15, 1 - t1 * 0.65)}`;
+
+        // 3. Satellite Orbital Positions vs. Compressed Peripheral Rails
+        const satMacroW = isMobile ? 155 : 225;
+        const satMacroH = isMobile ? 105 : 136;
+
+        // Orbital coordinates around the center anchor
+        const orbitOffsets = isMobile
+          ? [
+              { x: vw * 0.26, y: vh * 0.19 },
+              { x: vw * 0.74, y: vh * 0.19 },
+              { x: vw * 0.26, y: vh * 0.80 },
+              { x: vw * 0.74, y: vh * 0.80 },
+            ]
+          : [
+              { x: vw * 0.5 - macroW * 0.5 - 145, y: vh * 0.5 - macroH * 0.48 },
+              { x: vw * 0.5 + macroW * 0.5 + 145, y: vh * 0.5 - macroH * 0.48 },
+              { x: vw * 0.5 - macroW * 0.5 - 145, y: vh * 0.5 + macroH * 0.48 },
+              { x: vw * 0.5 + macroW * 0.5 + 145, y: vh * 0.5 + macroH * 0.48 },
+            ];
+
+        // Docked Peripheral Rail coordinates (compressed edges during Focus / Z-Axis)
+        const railW = isMobile ? 130 : 148;
+        const railH = 38;
+        const railOffsets = isMobile
+          ? [
+              { x: vw * 0.25, y: 78 },
+              { x: vw * 0.75, y: 78 },
+              { x: vw * 0.25, y: vh - 86 },
+              { x: vw * 0.75, y: vh - 86 },
+            ]
+          : [
+              { x: 92, y: vh * 0.34 },
+              { x: vw - 92, y: vh * 0.34 },
+              { x: 92, y: vh * 0.66 },
+              { x: vw - 92, y: vh * 0.66 },
+            ];
+
+        satellites.forEach((sat, idx) => {
+          const orb = orbitOffsets[idx];
+          const rail = railOffsets[idx];
+          const ghost = ghosts[idx];
+
+          // Update Ghost Trace box to always show where the orbital card came from
+          ghost.style.left = `${orb.x - satMacroW / 2}px`;
+          ghost.style.top = `${orb.y - satMacroH / 2}px`;
+          ghost.style.width = `${satMacroW}px`;
+          ghost.style.height = `${satMacroH}px`;
+          ghost.style.opacity = t1 > 0.25 ? `${Math.min(0.75, (t1 - 0.25) * 1.1) * (1 - t2 * 0.6)}` : '0';
+
+          // Interpolate satellite position and dimensions
+          const sx = lerp(orb.x, rail.x, t1);
+          const sy = lerp(orb.y, rail.y, t1);
+          const sw = lerp(satMacroW, railW, t1);
+          const sh = lerp(satMacroH, railH, t1);
+
+          sat.style.left = `${sx - sw / 2}px`;
+          sat.style.top = `${sy - sh / 2}px`;
+          sat.style.width = `${sw}px`;
+          sat.style.height = `${sh}px`;
+          sat.style.opacity = `${1 - t2 * 0.55}`; // Fade softly into peripheral awareness at deep Z-axis
+
+          // Toggle compact rail presentation vs full card body
+          const body = sat.querySelector('.sat-body');
+          const badge = sat.querySelector('.sat-badge');
+          const railHint = sat.querySelector('.sat-rail-hint');
+          if (t1 > 0.55) {
+            body.classList.add('hidden');
+            badge.classList.add('hidden');
+            railHint.classList.remove('hidden');
+            railHint.classList.add('flex');
+          } else {
+            body.classList.remove('hidden');
+            badge.classList.remove('hidden');
+            railHint.classList.add('hidden');
+            railHint.classList.remove('flex');
+          }
+        });
+
+        // 4. Switch Anchor Internal Views seamlessly based on spatial depth threshold
+        if (progress < 28) {
+          viewMacro.classList.remove('hidden');
+          viewFocus.classList.add('hidden');
+          viewZAxis.classList.add('hidden');
+          stateBadge.textContent = '01 · MACRO ORBIT';
+          stateBadge.className = 'hidden md:inline-block text-[11px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-400 border border-cyan-500/30';
+          anchorActionLabel.textContent = 'Expand Focus';
+          anchorSubtitle.textContent = 'Click anchor to expand workspace · Scroll wheel to dive Z-Axis layers';
+          hideGravitationPalette();
+        } else if (progress < 74) {
+          viewMacro.classList.add('hidden');
+          viewFocus.classList.remove('hidden');
+          viewFocus.classList.add('flex');
+          viewZAxis.classList.add('hidden');
+          stateBadge.textContent = '02 · FOCUSED EDIT';
+          stateBadge.className = 'hidden md:inline-block text-[11px] font-mono px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-400 border border-amber-500/30';
+          anchorActionLabel.textContent = 'Z-Axis Depth';
+          anchorSubtitle.textContent = 'Siblings docked to peripheral rails · Select any block to gravitate tools';
+        } else {
+          viewMacro.classList.add('hidden');
+          viewFocus.classList.add('hidden');
+          viewZAxis.classList.remove('hidden');
+          viewZAxis.classList.add('flex');
+          stateBadge.textContent = '03 · Z-AXIS SEMANTIC DEPTH';
+          stateBadge.className = 'hidden md:inline-block text-[11px] font-mono px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-400 border border-purple-500/30';
+          anchorActionLabel.textContent = 'Return to Orbit';
+          anchorSubtitle.textContent = 'Inside-out semantic layer inspection · Outer context softened';
+          hideGravitationPalette();
+        }
+
+        // 5. Update Bottom Horizon Mode Pills highlight
+        modePills.forEach(pill => {
+          const targetMode = Number(pill.dataset.mode);
+          const isActive =
+            (targetMode === 0 && progress < 28) ||
+            (targetMode === 50 && progress >= 28 && progress < 74) ||
+            (targetMode === 100 && progress >= 74);
+
+          if (isActive) {
+            pill.classList.remove('bg-slate-800/60', 'text-slate-300', 'border-slate-700/70');
+            if (targetMode === 0) pill.classList.add('bg-cyan-500/20', 'text-cyan-300', 'border-cyan-500/40');
+            if (targetMode === 50) pill.classList.add('bg-amber-500/20', 'text-amber-300', 'border-amber-500/40');
+            if (targetMode === 100) pill.classList.add('bg-purple-500/20', 'text-purple-300', 'border-purple-500/40');
+          } else {
+            pill.className = 'mode-pill px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shrink-0 bg-slate-800/60 text-slate-300 border border-slate-700/70 hover:border-slate-500';
+          }
+        });
+
+        // 6. Reposition X-Ray pins dynamically to match morphed elements
+        updateXRayPins(currentW, currentH, railOffsets);
+      }
+
+      function updateXRayPins(anchorW, anchorH, railOffsets) {
+        if (!xrayActive) return;
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+
+        const pinAnchor = document.getElementById('pin-anchor');
+        const pinMorph = document.getElementById('pin-morph');
+        const pinGhost = document.getElementById('pin-ghost');
+
+        pinAnchor.style.left = `${vw * 0.5}px`;
+        pinAnchor.style.top = `${Math.max(66, vh * 0.5 - anchorH * 0.5 - 18)}px`;
+        pinAnchor.style.transform = 'translateX(-50%)';
+
+        pinMorph.style.left = `${Math.min(vw - 175, vw * 0.5 + anchorW * 0.5 - 20)}px`;
+        pinMorph.style.top = `${vh * 0.5}px`;
+        pinMorph.style.transform = 'translateY(-50%)';
+
+        pinGhost.style.left = `${Math.max(16, railOffsets[0].x - 60)}px`;
+        pinGhost.style.top = `${Math.max(70, railOffsets[0].y - 44)}px`;
+      }
+
+      // Intent-Driven Gravitation Logic
+      function gravitatePaletteToElement(el, label) {
+        const rect = el.getBoundingClientRect();
+        activeGravitationTarget = el;
+
+        // Highlight selected block and dim siblings slightly
+        document.querySelectorAll('.intent-block').forEach(b => {
+          if (b === el) {
+            b.classList.add('border-amber-400', 'bg-amber-500/10');
+            b.classList.remove('opacity-60');
+          } else {
+            b.classList.remove('border-amber-400', 'bg-amber-500/10');
+            b.classList.add('opacity-60');
+          }
+        });
+
+        const paletteWidth = 275;
+        const left = Math.min(window.innerWidth - paletteWidth - 16, Math.max(16, rect.left + rect.width * 0.5 - paletteWidth * 0.5));
+        const top = Math.max(68, rect.top - 46);
+
+        paletteContextLabel.textContent = label.toUpperCase();
+        gravitationPalette.style.left = `${left}px`;
+        gravitationPalette.style.top = `${top}px`;
+        gravitationPalette.classList.remove('opacity-0', 'pointer-events-none', 'scale-90');
+        gravitationPalette.classList.add('opacity-100', 'scale-100');
+
+        gravitationStatus.textContent = `Tools Gravitated → ${label.toUpperCase()}`;
+      }
+
+      function hideGravitationPalette() {
+        activeGravitationTarget = null;
+        document.querySelectorAll('.intent-block').forEach(b => {
+          b.classList.remove('border-amber-400', 'bg-amber-500/10', 'opacity-60');
+        });
+        gravitationPalette.classList.add('opacity-0', 'pointer-events-none', 'scale-90');
+        gravitationPalette.classList.remove('opacity-100', 'scale-100');
+        if (gravitationStatus) {
+          gravitationStatus.textContent = 'Cursor Tool Gravitation: Ready';
+        }
+      }
+
+      // ===================================================================
+      // EVENT LISTENERS
+      // ===================================================================
+
+      // 1. Temporal Scrubber (Continuous 0% -> 100% spatial scrubbing)
+      scrubber.addEventListener('input', (e) => {
+        isScrubbing = true;
+        renderSpatialStage(Number(e.target.value), false);
+      });
+      scrubber.addEventListener('change', () => {
+        isScrubbing = false;
+      });
+
+      // 2. Bottom Horizon Mode Pills
+      modePills.forEach(pill => {
+        pill.addEventListener('click', () => {
+          renderSpatialStage(Number(pill.dataset.mode), true);
+        });
+      });
+
+      // 3. Clicking the Focal Anchor or its Expand button cycles spatial intent smoothly
+      anchorExpandBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (progress < 28) renderSpatialStage(50, true);
+        else if (progress < 74) renderSpatialStage(100, true);
+        else renderSpatialStage(0, true);
+      });
+
+      viewMacro.addEventListener('click', () => {
+        renderSpatialStage(50, true);
+      });
+
+      // 4. Clicking any compressed Satellite Rail restores Macro Orbit or highlights it
+      satellites.forEach(sat => {
+        sat.addEventListener('click', () => {
+          if (progress >= 28) {
+            renderSpatialStage(0, true);
+          } else {
+            // Subtle pulse feedback in Macro Orbit
+            sat.classList.add('border-cyan-400');
+            setTimeout(() => sat.classList.remove('border-cyan-400'), 600);
+          }
+        });
+      });
+
+      // 5. Mouse Wheel Z-Axis Semantic Zoom anywhere on stage background
+      let wheelTimeout;
+      window.addEventListener('wheel', (e) => {
+        // Allow normal scrolling inside anchorBody if overflowing, otherwise morph Z-axis
+        const insideScrollable = e.target.closest('#anchorBody');
+        if (insideScrollable && insideScrollable.scrollHeight > insideScrollable.clientHeight) {
+          return;
+        }
+        const delta = e.deltaY * 0.08;
+        renderSpatialStage(progress + delta, false);
+        clearTimeout(wheelTimeout);
+        wheelTimeout = setTimeout(() => {
+          // Snap gently to nearest landmark if very close
+          if (Math.abs(progress - 0) < 7) renderSpatialStage(0, true);
+          else if (Math.abs(progress - 50) < 7) renderSpatialStage(50, true);
+          else if (Math.abs(progress - 100) < 7) renderSpatialStage(100, true);
+        }, 180);
+      }, { passive: true });
+
+      // 6. Intent-Driven Gravitation blocks inside Focused Edit view
+      document.querySelectorAll('.intent-block').forEach(block => {
+        block.addEventListener('click', (e) => {
+          e.stopPropagation();
+          gravitatePaletteToElement(block, block.dataset.gravitate);
+        });
+      });
+
+      document.getElementById('closePaletteBtn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        hideGravitationPalette();
+      });
+
+      // Gravitation Palette micro-actions
+      gravitationPalette.querySelectorAll('button[data-action]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const action = btn.dataset.action;
+          if (action === 'inspect') {
+            hideGravitationPalette();
+            renderSpatialStage(100, true);
+          } else if (action === 'optimize' && activeGravitationTarget) {
+            const p = activeGravitationTarget.querySelector('p');
+            if (p && !p.dataset.optimized) {
+              p.dataset.optimized = 'true';
+              p.innerHTML += ' <span class="inline-block px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px]">✓ Zero-Copy Optimized (-32% CPU)</span>';
+            }
+          } else if (action === 'pin' && activeGravitationTarget) {
+            gravitationStatus.textContent = `Pinned: ${activeGravitationTarget.dataset.gravitate.toUpperCase()}`;
+          }
+        });
+      });
+
+      // 7. Z-Axis Semantic Layer Filter Buttons
+      document.querySelectorAll('.z-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = btn.dataset.zlayer;
+          document.querySelectorAll('.z-filter-btn').forEach(b => {
+            b.className = 'z-filter-btn px-2.5 py-1 rounded-lg text-[11px] font-mono bg-slate-800/70 text-slate-300 border border-slate-700';
+          });
+          btn.className = 'z-filter-btn px-2.5 py-1 rounded-lg text-[11px] font-mono bg-purple-500/25 text-purple-200 border border-purple-400/50';
+
+          [0, 1, 2].forEach(idx => {
+            const card = document.getElementById(`zCard-${idx}`);
+            if (target === 'all' || Number(target) === idx) {
+              card.style.opacity = '1';
+              card.style.transform = target === 'all' ? 'scale(1)' : 'scale(1.02)';
+            } else {
+              card.style.opacity = '0.28';
+              card.style.transform = 'scale(0.96)';
+            }
+          });
+        });
+      });
+
+      // 8. Live Sliders inside Focused Edit Workspace
+      const batchSlider = document.getElementById('batchSlider');
+      const batchVal = document.getElementById('batchVal');
+      batchSlider.addEventListener('input', (e) => {
+        batchVal.textContent = `${e.target.value} ms`;
+      });
+
+      const quorumSlider = document.getElementById('quorumSlider');
+      const quorumVal = document.getElementById('quorumVal');
+      quorumSlider.addEventListener('input', (e) => {
+        quorumVal.textContent = `${e.target.value} / 5 Nodes`;
+      });
+
+      // 9. X-Ray UX Patterns Overlay Toggle & Pin Inspection
+      xrayToggle.addEventListener('click', () => {
+        xrayActive = !xrayActive;
+        xrayToggle.setAttribute('aria-pressed', String(xrayActive));
+        if (xrayActive) {
+          xrayLayer.classList.remove('hidden');
+          xrayToggle.classList.add('bg-amber-500', 'text-slate-950');
+          xrayToggle.classList.remove('bg-amber-500/10', 'text-amber-300');
+          renderSpatialStage(progress, true);
+        } else {
+          xrayLayer.classList.add('hidden');
+          document.getElementById('patternDetailCard').classList.add('hidden');
+          xrayToggle.classList.remove('bg-amber-500', 'text-slate-950');
+          xrayToggle.classList.add('bg-amber-500/10', 'text-amber-300');
+        }
+      });
+
+      document.querySelectorAll('.xray-pin [data-pattern]').forEach(pin => {
+        pin.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const info = PATTERN_INFO[pin.dataset.pattern];
+          if (!info) return;
+          document.getElementById('patternDetailTag').textContent = info.tag;
+          document.getElementById('patternDetailTitle').textContent = info.title;
+          document.getElementById('patternDetailBody').textContent = info.body;
+          document.getElementById('patternDetailCard').classList.remove('hidden');
+        });
+      });
+
+      document.getElementById('closePatternDetail').addEventListener('click', () => {
+        document.getElementById('patternDetailCard').classList.add('hidden');
+      });
+
+      // 10. Comparison Modal ("Why This Works")
+      const compareModal = document.getElementById('compareModal');
+      document.getElementById('compareBtn').addEventListener('click', () => {
+        compareModal.classList.remove('hidden');
+      });
+      document.getElementById('closeCompareModal').addEventListener('click', () => {
+        compareModal.classList.add('hidden');
+      });
+      document.getElementById('gotItBtn').addEventListener('click', () => {
+        compareModal.classList.add('hidden');
+      });
+
+      // 11. Light / Dark Studio Theme Toggle
+      const themeToggle = document.getElementById('themeToggle');
+      const sunIcon = document.getElementById('sunIcon');
+      const moonIcon = document.getElementById('moonIcon');
+      themeToggle.addEventListener('click', () => {
+        const html = document.documentElement;
+        const isDark = html.classList.contains('dark');
+        if (isDark) {
+          html.classList.remove('dark');
+          html.classList.add('light');
+          sunIcon.classList.remove('hidden');
+          moonIcon.classList.add('hidden');
+        } else {
+          html.classList.remove('light');
+          html.classList.add('dark');
+          moonIcon.classList.remove('hidden');
+          sunIcon.classList.add('hidden');
+        }
+      });
+
+      // 12. Responsive Resize Handling
+      window.addEventListener('resize', () => {
+        renderSpatialStage(progress, false);
+      });
+
+      // Initialize Stage at 0% (Macro Orbit)
+      renderSpatialStage(0, false);
+    })();
+  </script>
+</body>
+</html>
