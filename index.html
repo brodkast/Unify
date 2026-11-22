@@ -11213,6 +11213,52 @@ body.switcher-collapsed #newfiRoot #fullCreditReport { left: 60px !important; }
    steps left of AIVA so both are reachable and neither occludes the other. */
 #newfiRoot .assistant-fab   { right: 84px; bottom: 20px; box-shadow: 0 3px 12px 0 rgba(21,27,37,0.42); }
 #newfiRoot .assistant-panel { right: 84px; bottom: 84px; }
+
+/* ============================================================
+   CUSTOMER INSIGHT, DRAWN — build 38
+   Charts inside an AIVA reply. Two series colours and nothing else: ink,
+   muted text and grid lines are the panel's own text colour at reduced
+   opacity, so the dark theme needs no second set of greys.
+   ============================================================ */
+.zg { --zg-p: #2a78d6; --zg-s: #eb6834; }
+body.theme-dark .zg { --zg-p: #3987e5; --zg-s: #d95926; }
+.zg .zg-mut { opacity: 0.64; }
+.zg .zg-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 2px; }
+.zg .zg-tag { font-size: 11.5px; border-width: 1px; border-style: solid; border-color: currentColor;
+  border-radius: 999px; padding: 3px 9px; opacity: 0.86; }
+.zg .zg-tag b { font-weight: 600; }
+.zg .zg-lg { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 11.5px; margin: 10px 0 2px; }
+.zg .zg-lg i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+.zg .zg-h { font-size: 13px; font-weight: 600; margin: 16px 0 7px; }
+.zg .zg-h span { font-weight: 400; font-size: 11.5px; margin-left: 6px; opacity: 0.64; }
+.zg .zg-seg { display: flex; gap: 2px; height: 8px; }
+.zg .zg-seg div { height: 8px; border-radius: 4px; }
+.zg .zg-segk { display: flex; justify-content: space-between; font-size: 11.5px; margin-top: 5px; }
+.zg .zg-segk b, .zg .zg-mix b { font-weight: 600; }
+.zg .zg-mix { display: flex; align-items: center; gap: 8px; font-size: 11.5px; margin-top: 9px; }
+.zg .zg-mix .bar { flex: 1; height: 4px; border-radius: 2px; background: currentColor; opacity: 0.7; }
+.zg .zg-ml { display: grid; grid-template-columns: 92px 1fr 46px; column-gap: 8px; row-gap: 3px;
+  align-items: center; font-size: 11.5px; }
+.zg .zg-ml .k { grid-row: span 2; line-height: 1.25; }
+.zg .zg-ml .b { height: 7px; border-radius: 0 4px 4px 0; min-width: 2px; }
+.zg .zg-ml .v { text-align: right; font-variant-numeric: tabular-nums; font-weight: 500; }
+.zg .zg-ml .gap { grid-column: 1 / -1; height: 6px; }
+.zg .zg-note { font-size: 11px; margin-top: 2px; opacity: 0.64; }
+.zg svg { display: block; width: 100%; height: auto; overflow: visible; }
+.zg svg text { font-family: inherit; fill: currentColor; }
+.zg svg .m { opacity: 0.64; }
+.zg svg .grid { stroke: currentColor; opacity: 0.14; }
+.zg svg .now { stroke: currentColor; stroke-dasharray: 2 2; }
+.zg svg .p { fill: var(--zg-p); } .zg svg .s { fill: var(--zg-s); }
+.zg svg .c { fill: currentColor; opacity: 0.7; }
+.zg .zg-p { background: var(--zg-p); } .zg .zg-s { background: var(--zg-s); }
+.zg .zg-c { background: currentColor; opacity: 0.7; }
+.zg .zg-rec { display: grid; grid-template-columns: 20px 1fr; gap: 8px; font-size: 12.5px;
+  line-height: 1.4; margin: 0 0 8px; }
+.zg .zg-rec .n { width: 20px; height: 20px; border-radius: 50%; border-width: 1.5px; border-style: solid;
+  border-color: currentColor; font-size: 11px; font-weight: 600; display: flex; align-items: center;
+  justify-content: center; }
+.zg .zg-rec b { font-weight: 600; }
 </style>
 </head>
 <body class="in-login">
@@ -12324,6 +12370,41 @@ const PERSONAS = {
         { h: 'Exception & Compliance', p: 'Investigate flagged transactions, authorize high-level approvals, and prepare audit documentation.' },
       ] },
   },
+  /* IT Manager — Persona Standardization Project, BO_2_it mgr. The source
+     lists this role's KPIs as TBD, so the cards below invent none: they
+     restate counts the clean-up and access answers already report. */
+  itAdmin: {
+    label: 'IT Manager / System Admin', short: 'IT Admin', color: '#0e7490',
+    bannerNote: 'Access & roles · security · system set-up.',
+    activity: [
+      { icon: 'ca', text: 'User Permissions', sub: 'Common Admin' },
+      { icon: 'ca', text: 'Access Review', sub: '2 dormant accounts†' },
+      { icon: 'ca', text: 'MFA Enrollment', sub: '1 user without MFA†' },
+      { icon: 'dm', text: 'Support Cases', sub: '#PT-4419 · #PT-4423' },
+    ],
+    apps: appsFor(['ca','is','dm']),
+    workflows: [
+      { icon: 'ca', label: 'User Permissions' }, { icon: 'ca', label: 'Roles' },            { icon: 'ca', label: 'MFA' },
+      { icon: 'ca', label: 'Access Review' },    { icon: 'ca', label: 'Data Sources' },     { icon: 'dm', label: 'Support Cases' },
+    ],
+    dashboardsLabel: 'System',
+    cards: [
+      { kind: 'kpi-list', title: 'Access Hygiene',
+        list: [
+          { k: 'Dormant accounts (90 days)', v: '2†' },
+          { k: 'Users without MFA',          v: '1†' },
+          { k: 'Open support cases',         v: '2' },
+        ] },
+    ],
+    myApps: ['ca','is','dm'],
+    myAppsLabels: ['Common Admin','Intelligence Suite','Document Mgmt'],
+    workflowGroup: { icon: 'ca', title: 'System Administration',
+      subs: [
+        { h: 'Access & Roles', p: 'Grant views and functions, assign roles, and review who can reach what.' },
+        { h: 'Security', p: 'Multi-factor enrollment, dormant-account review, and security practice across the dealership.' },
+        { h: 'Set-up & Compliance', p: 'Vendor, OEM and state requirements, and the settings each product needs to run.' },
+      ] },
+  },
 };
 
 /* ============================================================
@@ -12513,6 +12594,7 @@ const SEARCH_CONFIG = {
   salesManager:   ['customers', 'vehicles', 'deals', 'employees', 'reports'],
   salesAssoc:     ['customers', 'vehicles', 'deals'],
   controller:     ['customers', 'invoices', 'vendors', 'reports', 'goals', 'files'],
+  itAdmin:        ['employees', 'files', 'reports', 'customers'],
 };
 
 /* Suggested searches shown when the search dropdown opens before typing. */
@@ -12528,6 +12610,7 @@ const SEARCH_PROMPTS = {
   salesManager:   ['Adam Jones', 'John Smith', 'CIT Report'],
   salesAssoc:     ['Adam Jones', 'John Smith', 'Christine Strick'],
   controller:     ['Adam Jones', 'AR Aging', 'Cash Position'],
+  itAdmin:        ['John Smith', 'Adam Jones'],
 };
 
 /* Category display labels and icons for search results. */
@@ -14764,10 +14847,61 @@ const AIVA_PAGE_ACTIONS = {
     { q: "Pull up the Illinois title application form for this deal", p: ["fi"] },
     { q: "Remind Bonita Murray we still need her proof of insurance", p: ["fi"] },
   ],
+  /* PI4 research — the questions build 36 added to close the sixteen
+     partially-covered recommendations. Not a page: this key exists so the
+     set is part of the registry "Show every command, by persona" reads,
+     which is what makes that list the whole wired set and not most of it.
+     Every line was validated against aivaMatchIntent under each listed
+     persona (t36.mjs). */
+  "pi4": [
+    { q: "How are we doing today?", p: ["owner", "salesManager"] },
+    { q: "Are we on pace to hit the gross goal, and how many business days are left?", p: ["owner", "salesManager", "controller"] },
+    { q: "What will month-end look like at our current run rate?", p: ["owner", "salesManager", "controller"] },
+    { q: "How much did the projection change from yesterday, and why?", p: ["owner", "salesManager", "controller"] },
+    { q: "How is front gross calculated?", p: ["owner", "salesManager", "controller", "serviceManager", "ops", "fi"] },
+    { q: "What did we do yesterday?", p: ["owner", "salesManager"] },
+    { q: "What does CIT mean?" },
+    { q: "What is my effective labor rate today?", p: ["serviceManager", "ops"] },
+    { q: "What is each advisor's effective labor rate, and who is discounting the most?", p: ["serviceManager", "ops"] },
+    { q: "What's our F&I PVR, front and back?", p: ["fi", "owner", "salesManager"] },
+    { q: "How many solds do I have?", p: ["salesManager", "owner"] },
+    { q: "How do I pull WIP?", p: ["serviceManager", "ops", "controller"] },
+    { q: "Which reps are below the store average, and who needs coaching?", p: ["salesManager", "owner"] },
+    { q: "How do we compare with peer dealers?", p: ["owner", "salesManager", "controller"] },
+    { q: "Exactly which dealers, and how many, am I being compared against?", p: ["owner", "salesManager", "controller"] },
+    { q: "How fresh is this data?" },
+    { q: "Which system is the source of truth for each kind of data?", p: ["owner", "controller", "itAdmin"] },
+    { q: "Set the DMS as the source of truth for customer contact info", p: ["owner", "controller", "itAdmin"] },
+    { q: "Where should I spend my time today?", p: ["owner"] },
+    { q: "Send me this brief every morning", p: ["owner", "salesManager", "controller", "serviceManager", "salesAssoc"] },
+    { q: "Which aged units should I reprice?", p: ["owner", "salesManager"] },
+    { q: "Who should I call today?", p: ["salesAssoc", "salesManager"] },
+    { q: "Which customers have not visited in the last 6 months?", p: ["salesAssoc", "salesManager"] },
+    { q: "Whose lease is maturing in the next 90 days?", p: ["salesAssoc", "salesManager"] },
+    { q: "Which customers are in an equity position?", p: ["salesAssoc", "salesManager"] },
+    { q: "Which warranty claims are outstanding, and why haven't they been paid?", p: ["serviceManager", "ops", "controller"] },
+    { q: "What's waiting, by advisor?", p: ["serviceManager", "ops"] },
+    { q: "Which parts were received today?", p: ["serviceManager", "ops", "parts", "partsClerk"] },
+    { q: "Find the plastic shield under the front bumper for the 2025 Camry SE", p: ["parts", "partsClerk"] },
+    { q: "Does OEM-BP-447 fit VIN 4T1G11AK5RU321889?", p: ["parts", "partsClerk"] },
+    { q: "Notify the advisor and draft the customer note", p: ["parts", "partsClerk", "serviceManager", "ops"] },
+    { q: "Run the pre-signing checklist on deal 129523", p: ["fi"] },
+    { q: "How many deals have I sent to each lender against incentive targets?", p: ["fi", "controller", "owner"] },
+    { q: "Which expense lines are over budget month-to-date?", p: ["controller", "arap"] },
+    { q: "Did revenue spike or drop unexpectedly anywhere this month?", p: ["controller", "owner"] },
+    { q: "How do I assign the Enterprise Administrator role in Common Admin?", p: ["itAdmin", "owner"] },
+    { q: "How do I set up Intelligence Suite access for a new user?", p: ["itAdmin", "owner"] },
+    { q: "How do I add access or functions for a user?", p: ["itAdmin", "owner"] },
+    { q: "How do I deal with a check engine light on this vehicle?", p: ["tech", "serviceManager"] },
+    { q: "Show me the wiring diagram for the fuel sensor circuit", p: ["tech", "serviceManager"] },
+    { q: "What is the procedure to replace the front brake pads?", p: ["tech", "serviceManager"] },
+    { q: "How do I fit this aftermarket lift kit?", p: ["tech", "serviceManager"] },
+  ],
   "home": [
+    { q: "What did the PI4 research add for my role?" },
     { q: "What did I miss while I was away?", p: ["serviceManager", "ops"] },
-    { q: "What clean-up items need my attention?", p: ["owner"] },
-    { q: "Show me users who haven't logged in for 90 days.", p: ["owner"] },
+    { q: "What clean-up items need my attention?", p: ["owner", "itAdmin"] },
+    { q: "Show me users who haven't logged in for 90 days.", p: ["owner", "itAdmin"] },
     { q: "Add AR over 90 days across all stores to my dashboard", p: ["arap", "controller"] },
     { q: "How long has stock #H9551 been on the lot?", p: ["salesManager", "salesAssoc"] },
   ],
@@ -14791,7 +14925,7 @@ const AIVA_PAGE_ACTIONS = {
 /* Chips pinned to the head of the welcome card's first tier, ahead of the
    customer question and the page's own work. */
 const AIVA_PINNED_BY_PERSONA = {
-  owner: ["Find the documents for Adam Jones"],
+  owner: ["Find the documents for Adam Jones", "Tell me everything about Don Zogg"],
 };
 
 /* How many chips a role's welcome card shows per section. Absent means
@@ -14878,6 +15012,10 @@ const AIVA_METRICS_BY_PERSONA = {
     "Where are the operational control variances?", // D2  variance
     "Show me the aging \u2014 who owes us?",         // AX5 computed aging
   ],
+  itAdmin: [
+    "How fresh is this data?",                                     // FR1
+    "Which system is the source of truth for each kind of data?",  // FR2
+  ],
 };
 
 /* Page-agnostic fallback: used when the loaded page has no entry in
@@ -14885,6 +15023,7 @@ const AIVA_METRICS_BY_PERSONA = {
 const AIVA_ACTIONS_BY_PERSONA = {
   owner: [
     "Find the documents for Adam Jones",                             // documents (DOC1)
+    "Tell me everything about Don Zogg",                             // customer, in charts (DZ1)
     "Show me the store scorecard",                                   // live view (AX6)
     "Why is Mazda at 61%?",                                          // grounded ask (B2)
     "Compare the stores for me",                                     // clarifies (CL8)
@@ -14949,6 +15088,12 @@ const AIVA_ACTIONS_BY_PERSONA = {
     "Where does month-end close stand?",                             // grounded ask (B4)
     "Close the month",                                               // clarifies (CL7)
     "Accrue $1,200 to 6100 for July advertising",                    // gated action (F76)
+  ],
+  itAdmin: [
+    "How do I assign the Enterprise Administrator role in Common Admin?", // how-to (IT1)
+    "How do I add access or functions for a user?",                       // how-to (IT3)
+    "Show me users who haven't logged in for 90 days.",                   // grounded ask (AD4)
+    "Turn on MFA for J. Smith",                                           // gated action (AD2)
   ],
 };
 
@@ -16277,6 +16422,253 @@ const _cltv = (cols) => ({ t: "cltvsrc", cols });
 const _ph = () => _lim("Figures marked \u2020 are placeholder values for review \u2014 " +
   "the shape of the answer is the point, not the numbers.");
 const _d = (v) => `${v}\u2020`;
+
+/* ============================================================
+   DON ZOGG — a supplied customer, build 38
+   Every figure here was supplied with the request; none is invented, so
+   none carries a dagger. What the answer derives — the store split, the
+   combined margin, each bar's width — it computes from these when it
+   renders, and nothing derived is typed in.
+   ============================================================ */
+const ZOGG = {
+  name: "Don Zogg",
+  today: 2026.89,                      // "last visit about 3 months ago" from 20 Aug 2026
+  stores: [
+    { key: "p", name: "Primary store", sales: 48.6, gp: 32.9, margin: 67.7, ros: 203,
+      roFrom: 2017.62, roTo: 2026.64, roFromT: "13 Aug 2017", roToT: "20 Aug 2026",
+      lastVisit: "Aug 2026, about 3 months ago",
+      parts: 65, partsSpend: 6200, partsSpendT: "$6.2K", partsLast: 2026.44, partsLastT: "Jun 2026",
+      pred2: [5, 20], pred5: [12, 40] },
+    { key: "s", name: "Second store", sales: 2.3, gp: 1.4, margin: 62.2, ros: 25,
+      roFrom: 2017.92, roTo: 2026.24, roFromT: "4 Dec 2017", roToT: "30 Mar 2026",
+      lastVisit: "Mar 2026",
+      parts: 4, partsSpend: 202, partsSpendT: "$202", partsLast: 2018.12, partsLastT: "Feb 2018",
+      pred2: [2, 5], pred5: [6, 12] },
+  ],
+  combined: { sales: 50.9, gp: 34.3, pred2: [7, 25], pred5: [18, 52] },
+  recs: [
+    ["Treat him as a top-tier service customer", " and keep him in the loyalty and retention program."],
+    ["Offer a vehicle purchase or trade-in.", " He has no vehicle sales on record, so sales-side revenue is untapped."],
+    ["Invite him back to the service lane at the primary store.", " His last visit was about 3 months ago, on a regular cadence."],
+    ["Re-engage him at the second store", ", where his last visit was in Mar 2026 and his last parts purchase in 2018."],
+  ],
+  next: [
+    "Which service-only customers have lifetime sales above $40K?",
+    "Show Don Zogg's recent repair orders",
+    "What vehicles has Don Zogg serviced?",
+    "Which customers visit more than one store?",
+    "How many customers have no vehicle purchases but over 100 repair orders?",
+    "Who are the top 10 customers by predicted 5Y service sales?",
+  ],
+};
+
+/* The whole answer body. One function, so the charts and the figures they
+   are drawn from cannot drift: everything below reads ZOGG. */
+function zoggHtml() {
+  const [P, S] = ZOGG.stores, C = ZOGG.combined;
+  const k = (n) => "$" + n.toFixed(1) + "K";
+  const share = (st) => Math.round(st.sales / C.sales * 100) + "%";
+  const cMargin = (C.gp / C.sales * 100).toFixed(1) + "%";
+
+  // Paired bars: each row has its own scale; margin is drawn against 100.
+  const rows = [
+    ["Gross profit", P.gp, S.gp, k(P.gp), k(S.gp), Math.max(P.gp, S.gp)],
+    ["Margin", P.margin, S.margin, P.margin + "%", S.margin + "%", 100],
+    ["Repair orders", P.ros, S.ros, String(P.ros), String(S.ros), Math.max(P.ros, S.ros)],
+    ["Parts purchases", P.parts, S.parts, String(P.parts), String(S.parts), Math.max(P.parts, S.parts)],
+    ["Parts spend", P.partsSpend, S.partsSpend, P.partsSpendT, S.partsSpendT, Math.max(P.partsSpend, S.partsSpend)],
+  ];
+  const ml = rows.map(r =>
+    `<div class="k">${r[0]}</div>` +
+    `<div class="b zg-p" style="width:${(r[1] / r[5] * 100).toFixed(1)}%" title="${P.name} · ${r[0]}: ${r[3]}"></div><div class="v">${r[3]}</div>` +
+    `<div class="b zg-s" style="width:${(r[2] / r[5] * 100).toFixed(1)}%" title="${S.name} · ${r[0]}: ${r[4]}"></div><div class="v">${r[4]}</div>` +
+    `<div class="gap"></div>`).join("");
+
+  // Timeline, 2017 to 2027.
+  const W = 330, L = 4, R = 326, Y0 = 2017, Y1 = 2027;
+  const x = (y) => (L + (y - Y0) / (Y1 - Y0) * (R - L)).toFixed(1);
+  const ticks = [2017, 2019, 2021, 2023, 2025, 2027].map(y =>
+    `<line class="grid" x1="${x(y)}" y1="14" x2="${x(y)}" y2="92"/>` +
+    `<text class="m" x="${x(y)}" y="9" font-size="9.5" text-anchor="${y === Y0 ? "start" : y === Y1 ? "end" : "middle"}">${y}</text>`).join("");
+  const lane = (st, y) => {
+    const dx = +x(st.partsLast), late = st.partsLast > 2022;
+    return `<text x="${x(st.roFrom)}" y="${y - 5}" font-size="10"><tspan font-weight="600">${st.ros}</tspan> repair orders · last visit ${st.lastVisit}</text>` +
+      `<rect class="${st.key}" x="${x(st.roFrom)}" y="${y}" width="${(x(st.roTo) - x(st.roFrom)).toFixed(1)}" height="8" rx="4"><title>${st.name} · repair orders ${st.roFromT} – ${st.roToT}</title></rect>` +
+      `<rect class="${st.key}" x="${dx - 4.5}" y="${y + 11.5}" width="9" height="9" transform="rotate(45 ${dx} ${y + 16})"><title>${st.name} · latest parts purchase ${st.partsLastT}</title></rect>` +
+      `<text class="m" x="${late ? dx - 9 : dx + 9}" y="${y + 19.5}" font-size="9.5" text-anchor="${late ? "end" : "start"}">latest parts purchase ${st.partsLastT}</text>`;
+  };
+  const timeline =
+    `<svg viewBox="0 0 ${W} 122" role="img" aria-label="Repair-order activity by store, 2017 to today">${ticks}` +
+    lane(P, 30) + lane(S, 66) +
+    `<line class="now" x1="${x(ZOGG.today)}" y1="14" x2="${x(ZOGG.today)}" y2="92"/>` +
+    `<text x="${x(ZOGG.today)}" y="103" font-size="9" text-anchor="end">today</text>` +
+    `<g font-size="10"><rect class="c" x="4" y="111.5" width="14" height="6" rx="3"/><text class="m" x="23" y="118">repair-order span</text>` +
+    `<rect class="c" x="124" y="111" width="7" height="7" transform="rotate(45 127.5 114.5)"/><text class="m" x="137" y="118">latest counter parts purchase</text></g></svg>`;
+
+  // Predicted ranges on one scale.
+  const X0 = 62, X1 = 300, MAX = 60, px = (v) => X0 + v / MAX * (X1 - X0);
+  const band = (y, r, cls, who, per) =>
+    `<rect class="${cls}" x="${px(r[0]).toFixed(1)}" y="${y}" width="${(px(r[1]) - px(r[0])).toFixed(1)}" height="8" rx="4"><title>${who} · ${per}: $${r[0]}K–$${r[1]}K</title></rect>` +
+    `<text x="${(px(r[1]) + 5).toFixed(1)}" y="${y + 8}" font-size="10" font-weight="500">$${r[0]}K–$${r[1]}K</text>`;
+  const grid = [0, 20, 40, 60].map(v =>
+    `<line class="grid" x1="${px(v)}" y1="14" x2="${px(v)}" y2="118"/>` +
+    `<text class="m" x="${px(v)}" y="9" font-size="9.5" text-anchor="middle">$${v}K</text>`).join("");
+  const group = (y, per, key) =>
+    `<text x="0" y="${y + 8}" font-size="10" font-weight="600">${per}</text>` +
+    band(y, P[key], "p", P.name, per) + band(y + 14, S[key], "s", S.name, per) +
+    `<text class="m" x="0" y="${y + 36}" font-size="10">combined</text>` + band(y + 28, C[key], "c", "Combined", per);
+  const ranges =
+    `<svg viewBox="0 0 ${W} 122" role="img" aria-label="Predicted service sales over 2 and 5 years">${grid}` +
+    group(20, "2 years", "pred2") + group(76, "5 years", "pred5") + `</svg>`;
+
+  return `<div class="zg"><div class="ci-title">Key Insights: ${ZOGG.name}</div>
+    <div class="ci-metrics">
+      <div class="ci-metric"><span class="k">Lifetime Sales</span><span class="v">${k(C.sales)}</span></div>
+      <div class="ci-metric"><span class="k">Lifetime GP</span><span class="v">${k(C.gp)}</span></div>
+      <div class="ci-metric"><span class="k">Margin</span><span class="v">${cMargin}</span></div></div>
+    <p class="ci-note">Combined across two stores</p>
+    <div class="zg-tags"><span class="zg-tag"><b>${ZOGG.stores.length}</b> store profiles</span><span class="zg-tag">Service-only</span><span class="zg-tag">Same postal code</span><span class="zg-tag"><b>Likely the same person</b></span></div>
+    <div class="zg-lg"><span><i class="zg-p"></i>${P.name}</span><span><i class="zg-s"></i>${S.name}</span><span><i class="zg-c"></i>Combined</span></div>
+
+    <div class="zg-h">Lifetime sales by store</div>
+    <div class="zg-seg" role="img" aria-label="${P.name} ${k(P.sales)}, ${share(P)}; ${S.name} ${k(S.sales)}, ${share(S)}">
+      <div class="zg-p" style="flex:${P.sales}" title="${P.name}: ${k(P.sales)} · ${share(P)}"></div>
+      <div class="zg-s" style="flex:${S.sales}" title="${S.name}: ${k(S.sales)} · ${share(S)}"></div></div>
+    <div class="zg-segk"><span><b>${k(P.sales)}</b> <span class="zg-mut">· ${share(P)}</span></span><span><b>${k(S.sales)}</b> <span class="zg-mut">· ${share(S)}</span></span></div>
+    <div class="zg-mix"><span><b>100%</b> <span class="zg-mut">fixed ops</span></span><span class="bar" title="Fixed ops: 100% of revenue"></span><span><b>$0</b> <span class="zg-mut">variable ops</span></span></div>
+
+    <div class="zg-h">Store by store</div>
+    <div class="zg-ml">${ml}</div>
+    <div class="zg-note">Bars in each row share one scale; margin is drawn against 100%.</div>
+
+    <div class="zg-h">Activity <span>2017 → today</span></div>${timeline}
+    <div class="zg-h">Predicted service sales</div>${ranges}
+
+    <div class="ci-sec">Recommendations</div>
+    ${ZOGG.recs.map((r, i) => `<div class="zg-rec"><span class="n">${i + 1}</span><span><b>${r[0]}</b><span class="zg-mut">${r[1]}</span></span></div>`).join("")}
+  </div>`;
+}
+
+/* ============================================================
+   PI4 RESEARCH FIXTURE — build 36
+   Placeholder values behind the answers added to close the sixteen
+   partially-covered recommendations in the PI4 affinity synthesis.
+
+   Same rule as CLTV_PH: everything in this object renders with a dagger
+   and the review line, and none of it is real until an SME closes its row.
+   Where an answer needs a figure the prototype already holds (front gross
+   $152.4k, the $225k goal, 47 units, PVR $1,847, the 8 contracts in
+   transit), it reads the existing constant and carries no dagger; where it
+   needs one the prototype does not hold, the figure lives here.
+
+   The pace figures are derived, not chosen: need = goal − MTD, per-day =
+   need ÷ days left, run rate = MTD ÷ days elapsed × days in month. Change
+   the day counts and every downstream number moves with them.
+   ============================================================ */
+const PI4_PH = (() => {
+  const mtd = 152.4, goal = 225, units = 47;           // grounded — B1, C5
+  const days = { total: 26, elapsed: 17 };             // placeholder
+  days.left = days.total - days.elapsed;
+  const need = goal - mtd;
+  const yGross = 11.2;                                  // placeholder — yesterday's front gross, $k
+  const k = (n) => "$" + n.toFixed(1) + "k";
+  const runRate = mtd / days.elapsed * days.total;
+  const runRatePrev = (mtd - yGross) / (days.elapsed - 1) * days.total;
+  return {
+    days,
+    need: k(need),
+    perDay: "$" + (need / days.left).toFixed(2) + "k",
+    perDayNow: "$" + (mtd / days.elapsed).toFixed(2) + "k",
+    runRate: k(runRate),
+    runRatePct: Math.round(runRate / goal * 100) + "%",
+    runRatePrev: k(runRatePrev),
+    runRateDelta: "+" + k(runRate - runRatePrev),
+    unitGoal: 70, unitsNeed: 70 - units,
+    unitsPerDay: ((70 - units) / days.left).toFixed(1),
+    unitsRunRate: Math.round(units / days.elapsed * days.total),
+    perUnit: "$" + Math.round(mtd * 1000 / units).toLocaleString("en-US"),  // derived from grounded figures
+    today: { units: 2, gross: "$5.1k", asOf: "11:40am" },
+    yesterday: { units: 4, gross: k(yGross), lost: 2 },   // units and lost are grounded (C5)
+    snapshot: { backGross: "$86.8k", openRos: 38, csi: "91.2" },
+    elr: { today: "$142.10", yesterday: "$138.40", lastMonth: "$136.90",
+           cp: "$151.00", warranty: "$128.00", internal: "$118.00" },
+    advisors: [   // names are the Intelligence Suite fixture's; rates are placeholder
+      { n: "John L.",    elr: "$151", disc: "2.1%" },
+      { n: "Paul M.",    elr: "$146", disc: "3.4%" },
+      { n: "George H.",  elr: "$139", disc: "4.0%" },
+      { n: "Richard S.", elr: "$133", disc: "6.2%" },
+      { n: "George M.",  elr: "$121", disc: "11.8%" },
+    ],
+    coaching: [   // each rep against their own trailing three months
+      { n: "Jay Parker",    now: "11%", was: "17%", resp: "41 min", why: "response time has doubled; internet-heavy mix" },
+      { n: "Lex Anderson",  now: "19%", was: "20%", resp: "24 min", why: "steady — inside normal variation" },
+      { n: "Colin Vasquez", now: "24%", was: "22%", resp: "12 min", why: "up; showroom-heavy mix helps" },
+    ],
+    depts: [
+      { d: "Sales — Statler Mazda", vs: "61% of goal", gap: "−39 pts", why: "unit volume, not gross per unit" },
+      { d: "Parts",                    vs: "96% of plan", gap: "−4 pts",  why: "counter retail soft; wholesale on plan" },
+      { d: "F&I",                      vs: "103% of plan", gap: "+3 pts",     why: "PVR holding at $1,847" },
+      { d: "Service",                  vs: "101% of plan", gap: "+1 pt",      why: "gross $284.6k MTD, up 4%" },
+    ],
+    reprice: [   // stock numbers, vehicles and days are the Vehicle Inventory fixture's
+      { stock: "T1029", ymm: "2024 Toyota 4Runner SR5", days: 63, over: "$1,350", opt: "Reprice to market" },
+      { stock: "T1026", ymm: "2025 Toyota Tacoma TRD",  days: 41, over: "$700",   opt: "Hold one more week" },
+      { stock: "T1028", ymm: "2025 Toyota Highlander XLE", days: 27, over: "$0",  opt: "No change" },
+    ],
+    peers: { group: "Toyota franchise · West region · 80–120 new units a month", n: 42,
+             rows: [ ["Front gross per unit", null, "$3,010", "$3,420"],
+                     ["F&I PVR", "$1,847", "$1,790", "$2,060"],
+                     ["Effective labor rate", "$136.90", "$141.00", "$152.00"],
+                     ["Aged units over 60 days", "1 of 8", "9%", "5%"] ] },
+    fresh: [   // every time below is the one the existing answers already state
+      ["Variable Operations Overview", "Intelligence Suite", "as of 6:40am"],
+      ["Inventory", "DMS · Parts", "as of 7:20am"],
+      ["Repair Orders", "DMS · Service", "live"],
+      ["CIT Report", "DMS · Accounting", "live"],
+      ["AR Aging", "DMS · Accounting", "as of this morning"],
+      ["Special Orders", "DMS · Parts", "updated Aug 12"],
+    ],
+    sot: [ ["Customer contact info", "CRM (eLead)", "DMS"],
+           ["Vehicle and service history", "DMS", "—"],
+           ["Leads and appointments", "CRM (eLead)", "—"],
+           ["Deal and funding status", "DMS", "—"] ],
+    calls: [
+      { n: "Marcus Hill",    why: "Promised follow-up, 45 min overdue", last: "today" , ph: false },
+      { n: "Juan Gonzalez",  why: "Open deal — waiting on his answer", last: "2 days ago", ph: true },
+      { n: "R. Delgado",     why: "Warranty ends Oct 2026 — $3,410 service history", last: "5 weeks ago", ph: true },
+      { n: "P. Lindqvist",   why: "Lease matures in 61 days", last: "4 months ago", ph: true },
+      { n: "D. Reyes-Ortega", why: "No visit since Jan 2025 — 11-year history", last: "19 months ago", ph: true },
+    ],
+    lapsed: [ { n: "D. Reyes-Ortega", last: "Jan 2025", life: "$8,940" },
+              { n: "T. Nakamura",     last: "Oct 2024", life: "$6,210" },
+              { n: "A. Brandt",       last: "Dec 2025", life: "$3,380" } ],
+    leases: [ { n: "P. Lindqvist", veh: "2023 RAV4 XLE",   ends: "61 days",  miles: "under allowance" },
+              { n: "S. Okonkwo",   veh: "2023 Camry SE",   ends: "78 days",  miles: "over by 2,100" },
+              { n: "H. Varga",     veh: "2023 Highlander", ends: "88 days",  miles: "under allowance" } ],
+    equity: [ { n: "C. Abernathy", veh: "2021 Tacoma SR5", eq: "$4,200", pmt: "within $20 of current" },
+              { n: "M. Fontaine",  veh: "2020 RAV4 LE",    eq: "$2,900", pmt: "within $35 of current" } ],
+    claims: [ { id: "WC-88214", ro: "123876", amt: "$1,940", days: 34, why: "Returned — technician story missing cause and correction" },
+              { id: "WC-88377", ro: "123902", amt: "$620",   days: 21, why: "Rejected — labor op does not match the repair" },
+              { id: "WC-88512", ro: "124018", amt: "$1,115", days: 9,  why: "Submitted — waiting on OEM parts return" } ],
+    waiting: [ { n: "John L.",    parts: 0, auth: 1, aged: 0 },
+               { n: "Paul M.",    parts: 1, auth: 0, aged: 1 },
+               { n: "George H.",  parts: 0, auth: 1, aged: 0 },
+               { n: "Richard S.", parts: 0, auth: 0, aged: 2 },
+               { n: "George M.",  parts: 0, auth: 0, aged: 0 } ],
+    received: [ { so: "SO-4468", part: "Thermostat housing", ro: "RO 124213", who: "Gallagher", adv: "Paul M.", at: "8:52am" },
+                { so: "SO-4470", part: "Door mirror glass, LH", ro: "Counter", who: "L. Petrov", adv: "—", at: "9:30am" },
+                { so: "SO-4473", part: "Wheel-speed sensor, RR", ro: "RO 124018", who: "Brandt", adv: "Richard S.", at: "10:05am" } ],
+    partFind: { asked: "the plastic shield under the front bumper", oem: "Cover, engine under, No. 1",
+                pn: "OEM-EU-118", onHand: 1, bin: "C-04" },
+    lenders: [ { n: "Hyundai Motor Finance", ph: false, sent: 19, target: 25 },
+               { n: "Coastal Credit Union",  ph: true,  sent: 11, target: 12 },
+               { n: "First Auto Acceptance", ph: true,  sent: 6,  target: 10 } ],
+    budget: [ { gl: "6000", over: "$3,850", pct: "+2.4%", why: "overtime in the last two pay periods" },
+              { gl: "6100", over: "$1,200", pct: "+6.0%", why: "the duplicate posting the error check already flagged" } ],
+    dtc: { code: "P0171", ro: "124213" },
+  };
+})();
+
 
 /* ============================================================
    TIER 1 — provenance on existing answers
@@ -17934,7 +18326,7 @@ const AIVA_INTENTS = [
     _nx([{ t: "Do we have OEM-BP-447 in stock?" }, { t: "What's holding up SO-4471?" }]) ] },
 
 /* ---- Admin, IT & Agentic ---- */
-{ id: "AD1", personas: ["owner"], checking: "Common Admin",
+{ id: "AD1", personas: ["owner", "itAdmin"], checking: "Common Admin",
   kw: ["clean-up items", "cleanup items"],
   blocks: () => [ _nd("rules"),
     _m(`<b>Three groups need an eye \u2014 nothing changes until you ask:</b><br>` +
@@ -17945,7 +18337,7 @@ const AIVA_INTENTS = [
     { t: "srcft", s: "Common Admin \u00b7 access, unposted, configuration scans \u00b7 flagged with reasons, advisory" },
     _nx([{ t: "Turn on MFA for J. Smith", p: true }, { t: "Where does month-end close stand?" }]) ] },
 
-{ id: "AD2", personas: ["owner"], checking: null,
+{ id: "AD2", personas: ["owner", "itAdmin"], checking: null,
   kw: ["turn on mfa", "mfa for"],
   blocks: () => [ _nd("auto"),
     _m(`<b>You hold the admin permission for this. Here is the change \u2014 nothing applies until you confirm:</b>`),
@@ -18086,7 +18478,7 @@ const AIVA_INTENTS = [
     _nx([{ t: "Show open campaigns and TSBs for this VIN" }, { t: "What should I inspect on Adam Jones's vehicle?" }]) ] },
 
 /* AD-4 — user access audit */
-{ id: "AD4", personas: ["owner"], checking: "Common Admin",
+{ id: "AD4", personas: ["owner", "itAdmin"], checking: "Common Admin",
   kw: ["logged in for 90", "haven't logged in"],
   blocks: () => [ _nd("monitor"),
     _m(`<b>Two accounts \u2014 the same two the clean-up scan flagged:</b><br>` +
@@ -18223,6 +18615,673 @@ const AIVA_INTENTS = [
     { t: "srcft", s: "Customer Master · duplicate candidate sets · demonstration data" },
     _nx([{ t: "Show me all duplicate customer records", js: "openDuplicatesList()", p: true },
           { t: "Are there duplicate records for John Smith?" }]) ] },
+
+/* ============================================================
+   PI4 RESEARCH — the sixteen partials, closed (build 36)
+   Each intent below answers something the PI4 affinity synthesis asks for
+   that build 35 covered only in part. They are grouped the way the audit
+   grouped them, by WHY the recommendation was partial:
+
+     T*   the missing time axis — today, yesterday, pace, run rate
+     V*   dealer vocabulary, which turned out to be a metrics gap
+     PP*  people performance, measured against a person's own past
+     PB*  peer benchmarks, with the peer group named
+     FR*  freshness, and which system is the source of truth
+     GM*  the owner's morning read
+     SA*  who to call, and why
+     SV*  what is waiting, and on whom
+     PA*  finding the part, and telling people it arrived
+     FI*  checking the deal during the deal; lender pace
+     AC*  over-budget lines and unexplained swings
+     IT*  set-up how-tos for the role that had no persona
+     TE*  repair questions, with the source or with a refusal
+
+   Guardrails come from the research, not from taste: coaching never
+   becomes discipline, drafts never send themselves, flags never post, and
+   a repair answer without a source is declined.
+   ============================================================ */
+
+/* ---------- R0 — what this build added, for whoever is asking ---------- */
+{ id: "R0", personas: null, checking: null,
+  kw: ["pi4 research", "research add", "research added", "pi4"],
+  blocks: () => {
+    const me = currentPersonaKey();
+    const mine = (AIVA_PAGE_ACTIONS["pi4"] || []).filter(a => !a.p || a.p.includes(me)).map(a => a.q);
+    return [
+      _m(`<b>${mine.length} questions from the PI4 research now answer for your role.</b> ` +
+         `Each closes something the affinity synthesis asked for that this build covered only in part.`),
+      { t: "raw", h: `<div class="aiva-actions">${aivaDemoChipRow(me, mine)}</div>` },
+      _lim(`Figures the prototype does not hold are marked † and sit in one fixture for SME review. ` +
+           `The shape of each answer is the claim; the numbers are not.`),
+      _nx([{ t: "Show every command, by persona", js: "aivaDemoByPersona()" }]) ];
+  } },
+
+/* ---------- T. The time axis ---------- */
+{ id: "T1", personas: ["owner", "salesManager"], checking: "your Variable Operations Overview",
+  kw: ["how are we doing today", "doing today", "today's numbers", "live store view", "store snapshot"],
+  app: "is", sec: "Dealer Overview",
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Today so far: ${_d(PI4_PH.today.units + " units")} and ${_d(PI4_PH.today.gross)} front gross.</b> ` +
+       `Yesterday closed at ${PI4_PH.yesterday.units} units and ${_d(PI4_PH.yesterday.gross)}.`),
+    _pv(`Variable Operations Overview · today · as of ${PI4_PH.today.asOf}†`),
+    _stats([ { n: "$152.4k", k: "Front gross MTD" }, { n: _d(PI4_PH.snapshot.backGross), k: "Back gross MTD" },
+             { n: "47", k: "Units MTD" }, { n: PI4_PH.perUnit, k: "Front per unit" },
+             { n: "$1,847", k: "F&I PVR" }, { n: _d(PI4_PH.snapshot.openRos), k: "Open ROs" },
+             { n: _d(PI4_PH.elr.today), k: "ELR today" }, { n: _d(PI4_PH.snapshot.csi), k: "CSI" } ]),
+    _m(`<b>How each is calculated:</b><br>` +
+       `• <b>Front per unit</b> — front gross MTD ÷ units MTD: $152.4k ÷ 47<br>` +
+       `• <b>F&amp;I PVR</b> — F&amp;I gross ÷ retail units delivered<br>` +
+       `• <b>ELR</b> — labor sales ÷ hours billed, all pay types<br>` +
+       `• <b>Open ROs</b> — repair orders opened and not yet closed`),
+    _ph(),
+    { t: "srcft", s: "Variable Operations Overview + Service day sheet · day-level figures · each tile carries its formula" },
+    _nx([{ t: "Are we on pace to hit the gross goal, and how many business days are left?", p: true },
+         { t: "What did we do yesterday?" }, { t: "What will month-end look like at our current run rate?" }]) ] },
+
+{ id: "T2", personas: ["owner", "salesManager", "controller"], checking: "Goals & Forecasting",
+  kw: ["on pace", "business days", "days left", "per day", "pace to"],
+  app: "is", sec: "Dealer Overview",
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Ahead of pace.</b> ${_d(PI4_PH.days.elapsed + " of " + PI4_PH.days.total)} selling days are gone and front gross is at 68% of goal.`),
+    _pv(`Goals & Forecasting · Jul 2026 MTD · as of ${PI4_PH.today.asOf}†`),
+    _stats([ { n: _d(PI4_PH.days.left), k: "Business days left" },
+             { n: PI4_PH.need, k: "Gross still needed" },
+             { n: _d(PI4_PH.perDay), k: "Needed per day" },
+             { n: _d(PI4_PH.perDayNow), k: "Averaging per day" },
+             { n: _d(PI4_PH.unitsNeed), k: "Units still needed" },
+             { n: _d(PI4_PH.unitsPerDay), k: "Units per day" } ]),
+    _m(`<b>The arithmetic:</b> $225k goal − $152.4k booked = ${PI4_PH.need} to go. ` +
+       `Spread over ${_d(PI4_PH.days.left)} days that is ${_d(PI4_PH.perDay)} a day, against the ${_d(PI4_PH.perDayNow)} a day the month has averaged. ` +
+       `Units are measured against an objective of ${_d(PI4_PH.unitGoal)}.`),
+    _ph(),
+    { t: "srcft", s: "Goals & Forecasting · pace = (goal − MTD) ÷ business days left · day counts need SME confirmation" },
+    _nx([{ t: "What will month-end look like at our current run rate?", p: true },
+         { t: "How is front gross calculated?" }]) ] },
+
+{ id: "T3", personas: ["owner", "salesManager", "controller"], checking: "Goals & Forecasting",
+  kw: ["run rate", "month-end look", "projection change", "change from yesterday", "since yesterday"],
+  app: "is", sec: "Dealer Overview",
+  blocks: () => [ _nd("rules"),
+    _m(`<b>At the current run rate, month-end front gross lands near ${_d(PI4_PH.runRate)} — ${_d(PI4_PH.runRatePct)} of goal</b>, and about ${_d(PI4_PH.unitsRunRate)} units.`),
+    _pv(`Goals & Forecasting · run rate · as of ${PI4_PH.today.asOf}†`),
+    _m(`<b>Change since yesterday: ${_d(PI4_PH.runRateDelta)}.</b> Yesterday morning the same calculation read ${_d(PI4_PH.runRatePrev)}. ` +
+       `The whole movement is one day: yesterday booked ${_d(PI4_PH.yesterday.gross)}, above the ${_d(PI4_PH.perDayNow)} the month had been averaging. ` +
+       `One strong day, not a trend.`),
+    _m(`A run rate is a straight line through the month so far. It knows nothing about the last week of the month, incentives that expire, or the deals in transit — read it as a position, not a forecast.`),
+    _ph(),
+    { t: "srcft", s: "Goals & Forecasting · run rate = MTD ÷ days elapsed × days in month · recomputed daily, prior value retained" },
+    _nx([{ t: "Are we on pace to hit the gross goal, and how many business days are left?" },
+         { t: "How do we compare with peer dealers?" }]) ] },
+
+{ id: "T4", personas: ["owner", "salesManager", "controller", "serviceManager", "ops", "fi"], checking: null,
+  kw: ["calculated", "how do you calculate", "show the math", "formula"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>The formulas behind the numbers I quote:</b>`),
+    _tbl([{ h: "Measure" }, { h: "Formula" }],
+      [ ["Front gross", "Selling price − vehicle cost − reconditioning, before F&I"],
+        ["Front per unit", "Front gross ÷ units delivered"],
+        ["F&I PVR", "F&I gross ÷ retail units delivered"],
+        ["Effective labor rate", "Labor sales ÷ hours billed"],
+        ["Pace to goal", "(Goal − MTD) ÷ business days left"],
+        ["Run rate", "MTD ÷ days elapsed × days in month"],
+        ["Contracts in transit", "Deals delivered, not yet funded by the lender"] ],
+      "Definitions as this store uses them"),
+    _m(`These are the standard definitions. A store that counts differently — pack inside front gross, say — should see its own definition here, and that is a setting, not something I should guess.`),
+    { t: "srcft", s: "Metric definitions · shown with every figure they produce · store-specific overrides not yet modelled" },
+    _nx([{ t: "How fresh is this data?" }, { t: "What does CIT mean?" }]) ] },
+
+{ id: "T5", personas: ["owner", "salesManager"], checking: "the Sales Leaderboard",
+  kw: ["yesterday"],
+  app: "crm", sec: "Pipeline",
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Yesterday: ${PI4_PH.yesterday.units} booked, ${PI4_PH.yesterday.lost} lost, ${_d(PI4_PH.yesterday.gross)} front gross.</b>`),
+    _pv("Sales Leaderboard · yesterday · closed at end of day"),
+    _m(`That is ${_d(PI4_PH.yesterday.gross)} against a daily average of ${_d(PI4_PH.perDayNow)} — an above-average day, and the reason the month-end projection moved up.`),
+    _ph(),
+    { t: "srcft", s: "Sales Leaderboard · day-level · units and losses as the leaderboard reports them" },
+    _nx([{ t: "How are we doing today?", p: true }, { t: "How much did the projection change from yesterday, and why?" }]) ] },
+
+/* ---------- V. Vocabulary — and the metrics underneath it ---------- */
+{ id: "V1", personas: null, checking: null,
+  kw: ["what does", "stand for", "mean", "glossary", "shorthand", "define"],
+  guard: (raw) => /\b(cit|elr|pvr|wip|csi|solds|shows|ro)\b/.test(raw) || /glossary|shorthand/.test(raw),
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>The shorthand I read, and what I take each to mean:</b>`),
+    _tbl([{ h: "Term" }, { h: "Meaning" }],
+      [ ["RO", "Repair order — one service visit, opened at write-up and closed at invoice"],
+        ["ELR", "Effective labor rate — labor sales ÷ hours billed"],
+        ["CIT", "Contracts in transit — delivered deals the lender has not funded yet"],
+        ["PVR", "Per vehicle retailed — F&I gross ÷ retail units"],
+        ["WIP", "Work in process — open repair orders not yet invoiced"],
+        ["Solds", "Units sold and booked in the period"],
+        ["Shows", "Appointments where the customer arrived"],
+        ["CSI", "Customer satisfaction index, as the manufacturer scores it"] ],
+      "Dealer shorthand"),
+    _m(`You can use any of these in a question as they are — “how many solds”, “pull WIP”, “ELR today” — without translating first.`),
+    { t: "srcft", s: "Glossary · industry-standard definitions · a store's own variants are not yet modelled" },
+    _nx([{ t: "How fresh is this data?" }]) ] },
+
+{ id: "V2", personas: ["serviceManager", "ops"], checking: "Service Reports",
+  kw: ["effective labor rate", "labor rate today", "elr"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Effective labor rate today: ${_d(PI4_PH.elr.today)}.</b>`),
+    _pv(`Service day sheet · today · as of ${PI4_PH.today.asOf}†`),
+    _stats([ { n: _d(PI4_PH.elr.today), k: "Today" }, { n: _d(PI4_PH.elr.yesterday), k: "Yesterday" },
+             { n: _d(PI4_PH.elr.lastMonth), k: "Last month" } ]),
+    _tbl([{ h: "Pay type" }, { h: "ELR", num: true }],
+      [ ["Customer pay", _d(PI4_PH.elr.cp)], ["Warranty", _d(PI4_PH.elr.warranty)], ["Internal", _d(PI4_PH.elr.internal)] ],
+      "Today, by pay type"),
+    _m(`Labor sales ÷ hours billed. A morning figure rests on few closed ROs and will move through the day — the comparison to last month is the steadier read.`),
+    _ph(),
+    { t: "srcft", s: "Service day sheet · ELR = labor sales ÷ hours billed · by pay type" },
+    _nx([{ t: "What is each advisor's effective labor rate, and who is discounting the most?", p: true },
+         { t: "Run today's day-end service report" }]) ] },
+
+{ id: "V3", personas: ["serviceManager", "ops"], checking: "Service Reports",
+  kw: ["each advisor", "discounting the most", "discounting"],
+  blocks: () => [ _nd("rules"),
+    _m(`<b>Effective labor rate and discounting, by advisor — month to date†:</b>`),
+    _tbl([{ h: "Advisor" }, { h: "ELR", num: true }, { h: "Discount", num: true }],
+      PI4_PH.advisors.map(a => [a.n, _d(a.elr), _d(a.disc)]),
+      "Ranked by effective labor rate"),
+    _m(`<b>${PI4_PH.advisors[4].n}</b> discounts the most at ${_d(PI4_PH.advisors[4].disc)} of labor, and it shows in the lowest rate on the team. ` +
+       `Before that becomes a conversation: check the pay-type mix. An advisor carrying more warranty and internal work shows a lower rate without discounting anything.`),
+    _lim(`This is a starting point for coaching. I do not weigh in on discipline or pay.`),
+    _ph(),
+    { t: "srcft", s: "Service Reports · ELR and discount % by advisor · pay-type mix not yet separated" },
+    _nx([{ t: "What is my effective labor rate today?" }, { t: "What's waiting, by advisor?" }]) ] },
+
+{ id: "V4", personas: ["fi", "owner", "salesManager"], checking: "F&I Overview",
+  kw: ["our pvr", "f&i pvr", "front and back"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>F&amp;I PVR is $1,847</b> — back-end gross per retail unit, holding on its six-month trend.`),
+    _pv("F&I Overview · Jul 2026 MTD"),
+    _stats([ { n: PI4_PH.perUnit, k: "Front per unit" }, { n: "$1,847", k: "Back per unit (PVR)" },
+             { n: "47", k: "Units MTD" } ]),
+    _m(`Front per unit is derived here from two figures already on your dashboard: $152.4k front gross ÷ 47 units. PVR is the F&amp;I Overview's own number.`),
+    { t: "srcft", s: "F&I Overview · PVR = F&I gross ÷ retail units · front per unit derived from Variable Operations" },
+    _nx([{ t: "How is front gross calculated?" }, { t: "What does CIT mean?" }]) ] },
+
+{ id: "V5", personas: ["salesManager", "owner"], checking: "the Sales Leaderboard",
+  kw: ["how many solds", "solds", "new and used units"],
+  app: "crm", sec: "Pipeline",
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>47 solds month to date</b>, new and used — ${PI4_PH.yesterday.units} of them yesterday and ${_d(PI4_PH.today.units)} so far today.`),
+    _pv("Sales Leaderboard · MTD · 12 reps"),
+    _m(`Reading “solds” as units sold and booked. The 8 contracts in transit are inside that 47 — sold, delivered, not yet funded.`),
+    _ph(),
+    { t: "srcft", s: "Sales Leaderboard · units booked · “solds” read as booked units" },
+    _nx([{ t: "Are we on pace to hit the gross goal, and how many business days are left?", p: true },
+         { t: "What did we do yesterday?" }]) ] },
+
+{ id: "V6", personas: ["serviceManager", "ops", "controller"], checking: "Repair Orders",
+  kw: ["pull wip", "wip report", "show me wip", "work in process"],
+  app: "service", sec: "Repair Orders",
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Work in process: ${_d(PI4_PH.snapshot.openRos)} open repair orders.</b> The ones that are not simply in the shop:`),
+    _pv("Repair Orders · live"),
+    _tbl([{ h: "RO" }, { h: "Customer" }, { h: "State" }],
+      [ ["124211", "Murray, B.", "Awaiting parts — back order"],
+        ["124213", "Gallagher", "Awaiting parts over 48h"],
+        ["124210", "Gray, S.", "In progress — parts committed"],
+        ["98664",  "Lacy, C.", "Awaiting MPI approval"] ],
+      "Open ROs needing something"),
+    _m(`WIP is every RO opened and not yet invoiced. The full list is the Repair Orders page with the status filter cleared — this is the part of it that is waiting on someone.`),
+    _ph(),
+    { t: "srcft", s: "Repair Orders · status ≠ closed · the four rows are existing repair orders" },
+    _nx([{ t: "Which warranty claims are outstanding, and why haven't they been paid?", p: true },
+         { t: "Open Repair Orders", open: "service", sec: "Repair Orders" }]) ] },
+
+/* ---------- PP. People performance ---------- */
+{ id: "PP1", personas: ["salesManager", "owner"], checking: "CLTV Leads Detail (eLead)",
+  kw: ["below the store average", "who needs coaching", "needs coaching", "coaching list"],
+  blocks: () => [ _nd("rules"),
+    _m(`<b>One rep is below the store line of ${_d(CLTV_PH.storeLine)} — and below their own last three months†:</b>`),
+    _tbl([{ h: "Rep" }, { h: "Now", num: true }, { h: "Own 3-mo", num: true }, { h: "Response", num: true }],
+      PI4_PH.coaching.map(c => [_d(c.n), _d(c.now), _d(c.was), _d(c.resp)]),
+      "Close rate against each rep's own trailing three months"),
+    _m(`<b>${_d(PI4_PH.coaching[0].n)}</b> is the conversation: ${_d(PI4_PH.coaching[0].now)} now against ${_d(PI4_PH.coaching[0].was)} before, and ${PI4_PH.coaching[0].why}†. ` +
+       `The comparison that matters is the second column, not the store line — a rep handed mostly internet leads sits under the store average without anything having slipped.`),
+    _lim(`Coaching and praise only. I do not weigh in on discipline, terminations or pay — that stays with you.`),
+    _cltv("Salesperson × Lead to Sale Converted, trailing 90 days vs prior 90 · eLead — buildable now"),
+    _ph(),
+    _nx([{ t: "How do we compare with peer dealers?" }, { t: "What did we do yesterday?" }]) ] },
+
+/* ---------- PB. Peer benchmarks ---------- */
+{ id: "PB1", personas: ["owner", "salesManager", "controller"], checking: "Peer Benchmarks",
+  kw: ["peer dealers", "peer benchmark", "peers", "stack up"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Statler Toyota against ${_d(PI4_PH.peers.n)} peer dealers†:</b>`),
+    _tbl([{ h: "Measure" }, { h: "You", num: true }, { h: "Peer median", num: true }, { h: "Top quartile", num: true }],
+      PI4_PH.peers.rows.map(r => [r[0], r[1] === null ? PI4_PH.perUnit : (r[1] === "$1,847" ? r[1] : _d(r[1])), _d(r[2]), _d(r[3])]),
+      "Month to date"),
+    _m(`<b>Who you are compared with:</b> ${_d(PI4_PH.peers.group)} — ${_d(PI4_PH.peers.n)} dealers, anonymised, none named. ` +
+       `Every measure uses the definition in the formula list, applied the same way to each store.`),
+    _lim(`A benchmark is only fair when the stores count the same way. Labor operation codes are logged differently across dealerships, so the labor-rate row is the least reliable on this table until those are standardised.`),
+    _ph(),
+    { t: "srcft", s: "Peer Benchmarks · anonymised cohort by brand, region and volume · cohort size shown · not yet a live data source" },
+    _nx([{ t: "Exactly which dealers, and how many, am I being compared against?", p: true },
+         { t: "How is front gross calculated?" }]) ] },
+
+{ id: "PB2", personas: ["owner", "salesManager", "controller"], checking: "Peer Benchmarks",
+  kw: ["compared against", "which dealers", "how many dealers"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>${_d(PI4_PH.peers.n)} dealers, chosen on three things:</b> same brand, same region, similar volume — ${_d(PI4_PH.peers.group)}.`),
+    _m(`I can tell you how many and how they were chosen. I cannot tell you which: the cohort is anonymised in both directions, and your own figures appear in other dealers' comparisons the same way.`),
+    _lim(`If the cohort falls below a size where one store could be picked out, the comparison is withheld instead of shown.`),
+    _ph(),
+    { t: "srcft", s: "Peer Benchmarks · cohort definition and size · membership never disclosed" },
+    _nx([{ t: "How do we compare with peer dealers?" }]) ] },
+
+/* ---------- FR. Freshness and source of truth ---------- */
+{ id: "FR1", personas: null, checking: null,
+  kw: ["how fresh", "last refreshed", "data as of", "how current"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>How current each source is right now:</b>`),
+    _tbl([{ h: "Source" }, { h: "System" }, { h: "Freshness" }],
+      PI4_PH.fresh.concat([["Customer predictions", "CDP Insights", "scored " + _d(CLTV_PH.predDate)]]),
+      "What my answers are read from"),
+    _m(`Every answer names its source and, where the source is not live, the time it was read. “Live” means read at the moment you asked; a time means a scheduled refresh.`),
+    _ph(),
+    { t: "srcft", s: "Source registry · the refresh times are the ones each answer already states" },
+    _nx([{ t: "When were these predictions last updated?" }, { t: "What does CIT mean?" }]) ] },
+
+{ id: "FR2", personas: ["owner", "controller", "itAdmin"], checking: "Common Admin",
+  kw: ["source of truth"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Which system wins when two disagree†:</b>`),
+    _tbl([{ h: "Data" }, { h: "Source of truth" }, { h: "Also held in" }],
+      PI4_PH.sot.map(r => [r[0], _d(r[1]), r[2] === "—" ? r[2] : _d(r[2])]),
+      "Set per kind of data, per dealership"),
+    _m(`Only one row has a real conflict: contact info lives in both the CRM and the DMS, and the two can differ. I read from the system named here and never pick between them myself.`),
+    _ph(),
+    { t: "srcft", s: "Common Admin · data source settings · one source of truth per data type" },
+    _nx([{ t: "Set the DMS as the source of truth for customer contact info", p: true },
+         { t: "How fresh is this data?" }]) ] },
+
+{ id: "FR3", personas: ["owner", "controller", "itAdmin"], checking: null,
+  kw: ["as the source of truth", "set the dms", "set the crm"],
+  blocks: () => [ _nd("auto"),
+    _m(`<b>Here is the change — nothing applies until you confirm:</b>`),
+    _cfm([
+      { k: "Data", v: "Customer contact info" },
+      { k: "Change", v: "Source of truth: CRM (eLead)† → DMS" },
+      { k: "Effect", v: "Answers read contact details from the DMS; the CRM copy is shown as secondary" },
+      { k: "Does not", v: "Overwrite either system — no record is changed" },
+      { k: "Logged", v: "Yes — who changed it and when" },
+    ], "This changes which system I read from. It does not reconcile the two — where they differ, the duplicate review is the place to resolve it.",
+    [ { t: "Apply the change", res: "FR3_YES", p: true }, { t: "Not now", res: "FR3_NO", danger: true } ]),
+    { t: "srcft", s: "Common Admin · data source settings · gated configuration change with audit entry" } ] },
+
+/* ---------- GM. The owner's morning read ---------- */
+{ id: "GM1", personas: ["owner"], checking: "your Variable Operations Overview",
+  kw: ["spend my time", "which department", "below plan"],
+  app: "is", sec: "Dealer Overview",
+  blocks: () => [ _nd("rules"),
+    _m(`<b>Start with Mazda.</b> Each department against plan, biggest gap first†:`),
+    _pv(`Variable Operations + Fixed Ops + Financial Statements · as of ${PI4_PH.today.asOf}†`),
+    _tbl([{ h: "Department" }, { h: "Against plan", num: true }, { h: "Gap", num: true }],
+      PI4_PH.depts.map((d, i) => [d.d, i === 0 ? d.vs : _d(d.vs), i === 0 ? d.gap : _d(d.gap)]),
+      "Biggest gap first"),
+    _m(PI4_PH.depts.map((d, i) => `• <b>${d.d}</b> — ${d.why}${i === 1 ? "†" : ""}`).join("<br>")),
+    _m(`Accounting has no plan figure to sit on this table, but it has a deadline: month-end close shows 4 items remaining.`),
+    _ph(),
+    { t: "srcft", s: "Department plan vs actual · Mazda, F&I and Service rows restate existing figures · plan percentages for Parts, F&I and Service are placeholders" },
+    _nx([{ t: "Why is Mazda at 61%?", p: true }, { t: "Send me this brief every morning" },
+         { t: "Where does month-end close stand?" }]) ] },
+
+{ id: "GM2", personas: ["owner", "salesManager", "controller", "serviceManager", "salesAssoc"], checking: null,
+  kw: ["every morning", "morning brief", "each morning"],
+  blocks: () => [ _nd("auto"),
+    _m(`<b>Here is the schedule — nothing is set yet:</b>`),
+    _cfm([
+      { k: "Brief", v: "Your morning read — what is off plan and what is waiting on you" },
+      { k: "When", v: "Every selling day, 7:00am" },
+      { k: "Where", v: "A card at the top of My Unify — visible to you only" },
+      { k: "Contains", v: "Yesterday's problems flagged, each number with its source and time" },
+    ], "It reads; it does not act. Nothing in the brief is sent to anyone else, and switching it off is one sentence.",
+    [ { t: "Schedule it", res: "GM2_YES", p: true }, { t: "Not now", res: "GM2_NO", danger: true } ]),
+    { t: "srcft", s: "Smart Activity · scheduled brief · the same gated watch pattern as the store watch and the invoice pin" } ] },
+
+{ id: "GM3", personas: ["owner", "salesManager"], checking: "Vehicle Inventory",
+  kw: ["reprice", "units should i"],
+  blocks: () => [ _nd("rules"),
+    _m(`<b>One unit is worth repricing today; one is worth a week more.</b>`),
+    _pv("Vehicle Inventory · Statler Toyota · as of 7:20am"),
+    _tbl([{ h: "Stock" }, { h: "Vehicle" }, { h: "Days", num: true }, { h: "Over market", num: true }, { h: "Option" }],
+      PI4_PH.reprice.map(r => [r.stock, r.ymm, String(r.days), _d(r.over), _d(r.opt)]),
+      "Available units, oldest first"),
+    _m(`<b>T1029</b> has sat 63 days and is priced ${_d(PI4_PH.reprice[0].over)} above comparable listings — the trade-off is margin now against floorplan cost later. ` +
+       `<b>T1026</b> is close enough to market that a week of patience costs less than the cut.`),
+    _lim(`Options, not decisions. I change no prices — the stock numbers and days are the inventory's own; the market comparison is a placeholder.`),
+    _ph(),
+    { t: "srcft", s: "Vehicle Inventory · days on lot from the inventory record · market delta not yet a live source" },
+    _nx([{ t: "How do we compare with peer dealers?" }, { t: "How are we doing today?" }]) ] },
+
+/* ---------- SA. Who to call ---------- */
+{ id: "SA1", personas: ["salesAssoc", "salesManager"], checking: "your follow-up list",
+  kw: ["who should i call", "call today", "call list", "who to call"],
+  blocks: () => [ _nd("rules"),
+    _m(`<b>Five worth a call today, in this order — each with the reason it is on the list:</b>`),
+    _pv(`CRM follow-ups + CDP Insights · as of ${PI4_PH.today.asOf}†`),
+    _tbl([{ h: "Customer" }, { h: "Why now" }, { h: "Last contact" }],
+      PI4_PH.calls.map(c => [c.ph ? _d(c.n) : c.n, c.ph ? _d(c.why) : c.why, c.ph ? _d(c.last) : c.last]),
+      "Ranked by what is at stake and how soon"),
+    _m(`The order is a suggestion. Your dealership sets what counts as a priority and you choose who to call — I am keeping the hot ones in front of you, not handing out work.`),
+    _ph(),
+    { t: "srcft", s: "CRM follow-ups + warranty, lease and visit data · ranking rule is a placeholder for the dealership's own" },
+    _nx([{ t: "Whose lease is maturing in the next 90 days?", p: true },
+         { t: "Which customers are in an equity position?" },
+         { t: "Which customers have not visited in the last 6 months?" }]) ] },
+
+{ id: "SA2", personas: ["salesAssoc", "salesManager"], checking: "CDP Insights",
+  kw: ["not visited", "not been in", "haven't visited", "not seen in"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Three customers with history here and no visit in six months†:</b>`),
+    _tbl([{ h: "Customer" }, { h: "Last visit", num: true }, { h: "Lifetime gross", num: true }],
+      PI4_PH.lapsed.map(c => [_d(c.n), _d(c.last), _d(c.life)]),
+      "No sales or service visit in 6 months"),
+    _m(`Six months is your number, read from the question — say “two years” and the list changes. The first two are the same files the service-retention check surfaces.`),
+    _ph(),
+    _cltv("Last RO date + last deal date vs threshold · CLTV summary — buildable now"),
+    _nx([{ t: "Who should I call today?", p: true }]) ] },
+
+{ id: "SA3", personas: ["salesAssoc", "salesManager"], checking: "Lease Portfolio",
+  kw: ["lease is maturing", "lease matur", "leases ending", "lease maturity"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Three leases mature in the next 90 days†:</b>`),
+    _tbl([{ h: "Customer" }, { h: "Vehicle" }, { h: "Matures in", num: true }, { h: "Mileage" }],
+      PI4_PH.leases.map(l => [_d(l.n), _d(l.veh), _d(l.ends), _d(l.miles)]),
+      "Soonest first"),
+    _m(`${_d(PI4_PH.leases[1].n)} is over the mileage allowance — that customer has a reason to talk before the turn-in bill arrives, which makes it the warmest of the three.`),
+    _ph(),
+    { t: "srcft", s: "Lease Portfolio · maturity date and mileage vs allowance · not yet a live data source" },
+    _nx([{ t: "Which customers are in an equity position?", p: true }, { t: "Who should I call today?" }]) ] },
+
+{ id: "SA4", personas: ["salesAssoc", "salesManager"], checking: "Equity Mining",
+  kw: ["equity position", "equity mining", "positive equity"],
+  blocks: () => [ _nd("rules"),
+    _m(`<b>Two customers could move into a newer vehicle at close to their current payment†:</b>`),
+    _tbl([{ h: "Customer" }, { h: "Vehicle" }, { h: "Equity", num: true }, { h: "New payment" }],
+      PI4_PH.equity.map(e => [_d(e.n), _d(e.veh), _d(e.eq), _d(e.pmt)]),
+      "Estimated equity over payoff"),
+    _m(`Equity here is an estimated trade value less the payoff. Both ends of that subtraction are estimates until an appraisal and a payoff quote replace them — good enough to decide who to call, not good enough to quote.`),
+    _ph(),
+    { t: "srcft", s: "Equity Mining · estimated value − estimated payoff · not yet a live data source" },
+    _nx([{ t: "Whose lease is maturing in the next 90 days?" }, { t: "Who should I call today?" }]) ] },
+
+/* ---------- SV. What is waiting, and on whom ---------- */
+{ id: "SV1", personas: ["serviceManager", "ops", "controller"], checking: "Warranty Claims",
+  kw: ["warranty claims are outstanding", "claims outstanding", "outstanding warranty claims", "been paid", "unpaid claims"],
+  app: "service", sec: "Repair Orders",
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Three warranty claims are unpaid† — oldest first, with the reason each is stuck:</b>`),
+    _pv("Warranty Claims · as of this morning†"),
+    _tbl([{ h: "Claim" }, { h: "RO" }, { h: "Amount", num: true }, { h: "Days", num: true }],
+      PI4_PH.claims.map(c => [_d(c.id), _d(c.ro), _d(c.amt), _d(c.days)]),
+      "Outstanding warranty claims"),
+    _m(PI4_PH.claims.map(c => `• <b>${_d(c.id)}</b> — ${c.why}†`).join("<br>")),
+    _m(`The first one is not waiting on the manufacturer — it is waiting on us. A returned story is the cheapest of the three to fix.`),
+    _ph(),
+    { t: "srcft", s: "Warranty Claims · status, age and rejection reason per claim · not yet a live data source" },
+    _nx([{ t: "How do I pull WIP?", p: true }]) ] },
+
+{ id: "SV2", personas: ["serviceManager", "ops"], checking: "Repair Orders",
+  kw: ["waiting, by advisor", "by advisor", "per advisor"],
+  app: "service", sec: "Repair Orders",
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>What is waiting, by advisor†:</b>`),
+    _pv("Repair Orders · live"),
+    _tbl([{ h: "Advisor" }, { h: "On parts", num: true }, { h: "On approval", num: true }, { h: "Past 5 days", num: true }],
+      PI4_PH.waiting.map(a => [a.n, _d(a.parts), _d(a.auth), _d(a.aged)]),
+      "Open ROs that need something"),
+    _m(`<b>${PI4_PH.waiting[3].n}</b> carries the two oldest; <b>${PI4_PH.waiting[1].n}</b> has the one that just changed — the part for RO 124213 arrived this morning, so that customer can be called before they call you.`),
+    _lim(`Only as good as parts posting. A part on the shelf that was never scanned still shows as waiting here.`),
+    _ph(),
+    { t: "srcft", s: "Repair Orders · status by advisor · advisor assignment is a placeholder" },
+    _nx([{ t: "Which parts were received today?", p: true },
+         { t: "Which warranty claims are outstanding, and why haven't they been paid?" }]) ] },
+
+{ id: "SV3", personas: ["serviceManager", "ops", "parts", "partsClerk"], checking: "Special Orders",
+  kw: ["received today", "arrived today", "parts arrived", "special orders received"],
+  app: "parts", sec: "Special Orders",
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Three special-order parts were scanned in today†:</b>`),
+    _pv(`Special Orders · receipts · as of ${PI4_PH.today.asOf}†`),
+    _tbl([{ h: "Order" }, { h: "Part" }, { h: "For" }, { h: "Advisor" }, { h: "Scanned", num: true }],
+      PI4_PH.received.map(r => [_d(r.so), _d(r.part), _d(r.ro + " · " + r.who), r.adv === "—" ? r.adv : _d(r.adv), _d(r.at)]),
+      "Received and scanned today"),
+    _m(`SO-4471 is not on this list — the fuel sensor cartridge is still with the vendor, behind the PO in Needs Review.`),
+    _lim(`This list starts at the scan. A part that reached the shelf without one is not here, and nobody is told it arrived.`),
+    _ph(),
+    { t: "srcft", s: "Special Orders · receipt scans joined to RO and advisor · only scanned receipts appear" },
+    _nx([{ t: "Notify the advisor and draft the customer note", p: true }]) ] },
+
+/* ---------- PA. Finding the part, and saying it arrived ---------- */
+{ id: "PA1", personas: ["parts", "partsClerk"], checking: "the parts catalog",
+  kw: ["plastic shield", "under the front bumper", "what is the part called", "find the right part"],
+  app: "parts", sec: "Inventory",
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>The catalog calls it “${_d(PI4_PH.partFind.oem)}”</b> — which is why searching “splash shield” or “skid plate” finds nothing.`),
+    _pv("Parts catalog + Inventory · as of 7:20am"),
+    _tbl([{ h: "Match" }, { h: "Result" }],
+      [ ["You asked for", PI4_PH.partFind.asked],
+        ["OEM name", _d(PI4_PH.partFind.oem)],
+        ["Part number", _d(PI4_PH.partFind.pn)],
+        ["Fits", "2025 Toyota Camry SE · VIN 4T1G11AK5RU321889 — " + _d("confirmed against the build")],
+        ["On hand", _d(PI4_PH.partFind.onHand + " · bin " + PI4_PH.partFind.bin)] ],
+      "Plain-language match, then a fit check"),
+    _m(`Matched on what the part does and where it sits, then checked against this VIN. If two parts had fit the description I would have shown both and asked.`),
+    _ph(),
+    { t: "srcft", s: "Parts catalog · description-to-OEM-name match + VIN application check · stock as of the inventory time shown" },
+    _nx([{ t: "Who has it across the group?" }, { t: "Does OEM-BP-447 fit VIN 4T1G11AK5RU321889?" }]) ] },
+
+{ id: "PA2", personas: ["parts", "partsClerk"], checking: "the parts catalog",
+  kw: ["fit vin", "bp-447 fit", "does this part fit", "fit check"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>OEM-BP-447 against VIN 4T1G11AK5RU321889: ${_d("fits")}.</b>`),
+    _pv("Parts catalog · application data"),
+    _m(`That VIN is the 2025 Toyota Camry SE in inventory as stock T1024. The catalog application for OEM-BP-447 covers its model year, engine and trim†. ` +
+       `Two are on hand in bin A-12, and one of those is already committed to RO 124210.`),
+    _lim(`A fit check reads the catalog's application table. Where the table has no entry for a VIN I say so — “probably fits” is not an answer I give on parts.`),
+    _ph(),
+    { t: "srcft", s: "Parts catalog · VIN application check · on-hand and commitment from Inventory" },
+    _nx([{ t: "Do we have OEM-BP-447 in stock?" }, { t: "Who has it across the group?" }]) ] },
+
+{ id: "PA3", personas: ["parts", "partsClerk", "serviceManager", "ops"], checking: "Special Orders",
+  kw: ["notify the advisor", "draft the customer note", "draft the note"],
+  blocks: () => [ _nd("auto"),
+    _m(`<b>Two things, kept separate: a message to the advisor, and a note to the customer.</b>`),
+    _cfm([
+      { k: "Part", v: _d(PI4_PH.received[0].so + " · " + PI4_PH.received[0].part) },
+      { k: "For", v: "RO 124213 · Gallagher" },
+      { k: "Notify", v: _d(PI4_PH.received[0].adv) + " — in Unify, not by text" },
+      { k: "Says", v: "The part is in and scanned; the RO can come off its parts hold" },
+    ], "This sends an internal message to the advisor. It sends nothing to the customer.",
+    [ { t: "Notify the advisor", res: "PA3_YES", p: true }, { t: "Not now", res: "PA3_NO", danger: true } ]),
+    _ctl("Drafted from: " + PI4_PH.received[0].so + "† receipt scan + RO 124213",
+      "The customer note is drafted and <b>has not been sent</b>. The advisor reads it, edits it, and sends it — the customer hears from a person.",
+      [{ t: "Review the draft", open: "documentMgmt", sec: "eForms", p: true }, { t: "Discard the draft", res: "GEN_NO" }]),
+    { t: "srcft", s: "Special Orders · receipt scan → advisor message (gated) + customer note (draft only)" } ] },
+
+/* ---------- FI. During the deal, not after it ---------- */
+{ id: "FI4", personas: ["fi"], checking: "the deal jacket",
+  kw: ["pre-signing", "signing checklist", "before the customer leaves", "co-buyer"],
+  blocks: () => [ _nd("rules"),
+    _m(`<b>Deal 129523, Bonita Murray — not ready to sign. Two items are open:</b>`),
+    _pv("Deal jacket · Deal #129523 · live"),
+    _tbl([{ h: "Item" }, { h: "State" }],
+      [ ["Retail instalment contract", _d("Ready")],
+        ["Buyer's order", _d("Ready")],
+        ["Odometer statement", "On file"],
+        ["Title application", "On file"],
+        ["Payoff letter", "<b>Unsigned</b>"],
+        ["Proof of insurance", "<b>Not received</b>"],
+        ["Co-buyer forms", _d("Not required — no co-buyer on the deal")] ],
+      "Pre-signing checklist"),
+    _m(`Both open items can be closed while she is still here — that is the point of running this now and not at funding. ` +
+       `<b>On co-buyers:</b> if one is added, the co-buyer credit application and signature pages have to be selected by hand. They do not populate from the deal codes, so I list them here the moment a second buyer appears.`),
+    _lim(`You confirm the checklist. I never sign, submit or mark a deal complete.`),
+    _ph(),
+    { t: "srcft", s: "Deal jacket + state requirements · forms suggested from deal codes · the four document states are the packet's own" },
+    _nx([{ t: "Remind Bonita Murray we still need her proof of insurance", p: true },
+         { t: "Pull up the Illinois title application form for this deal" }]) ] },
+
+{ id: "FI5", personas: ["fi", "controller", "owner"], checking: "F&I Overview",
+  kw: ["each lender", "each bank", "incentive target", "lender incentive", "deals per lender"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Deals sent to each lender this month, against the incentive target†:</b>`),
+    _pv("F&I Overview · Jul 2026 MTD"),
+    _tbl([{ h: "Lender" }, { h: "Sent", num: true }, { h: "Target", num: true }, { h: "Pace" }],
+      PI4_PH.lenders.map(l => {
+        const pct = l.sent / l.target, due = PI4_PH.days.elapsed / PI4_PH.days.total;
+        return [l.ph ? _d(l.n) : l.n, _d(l.sent), _d(l.target),
+                _d(pct >= due ? "Ahead" : "Behind") ];
+      }), "Financed deals by lender"),
+    _m(`Pace is each lender's count against how much of the month is gone. ${_d(PI4_PH.lenders[2].n)} is the one behind — ${_d(PI4_PH.lenders[2].sent + " of " + PI4_PH.lenders[2].target)} with ${_d(PI4_PH.days.left)} selling days left.`),
+    _lim(`Counts only. Which lender a deal goes to is decided on the customer's approval and the deal, never on a target — I show the position and stop there.`),
+    _ph(),
+    { t: "srcft", s: "F&I Overview · funded and submitted deals by lender vs program targets · targets need F&I SME sign-off" },
+    _nx([{ t: "How is front gross calculated?" }]) ] },
+
+/* ---------- AC. Over budget, and unexplained ---------- */
+{ id: "AC10", personas: ["controller", "arap"], checking: "Financial Statements",
+  kw: ["over budget", "expense lines", "over-budget"],
+  blocks: () => [ _nd("rules"),
+    _m(`<b>Two expense lines are over budget month to date†:</b>`),
+    _pv("Financial Statements · Jul 2026 MTD vs budget"),
+    _bars(PI4_PH.budget.map((b, i) => ({ k: b.gl + " · " + AIVA_GL[b.gl], n: i === 0 ? 3850 : 1200,
+                                         v: _d(b.over + " (" + b.pct + ")"), c: i === 0 ? "var(--crm-red)" : "var(--pa)" })),
+      "Over budget, largest first"),
+    _m(PI4_PH.budget.map(b => `• <b>${b.gl} · ${AIVA_GL[b.gl]}</b> — ${b.why}†`).join("<br>")),
+    _m(`The advertising line is over by exactly the amount of the duplicate posting. Reverse that entry and the line is back on budget — the overage is an error, not spending.`),
+    _lim(`Flags for review. I post, reverse and reclassify nothing.`),
+    _ph(),
+    { t: "srcft", s: "Financial Statements · actual vs budget by GL line, month to date · budget figures not yet loaded" },
+    _nx([{ t: "Show me anything in this month's expense postings that looks like a posting error.", p: true },
+         { t: "Show me the aging report" }]) ] },
+
+{ id: "AC11", personas: ["controller", "owner"], checking: "Financial Statements",
+  kw: ["revenue spike", "unexpectedly", "anomal", "revenue swing"],
+  blocks: () => [ _nd("rules"),
+    _m(`<b>Two revenue lines moved more than their usual range. One has an explanation; one does not†.</b>`),
+    _pv("Financial Statements · Jul 2026 vs trailing six months"),
+    _tbl([{ h: "Line" }, { h: "Change", num: true }, { h: "Read" }],
+      [ ["4200 · Service Labor Sales", _d("+$18,400"), "Explained"],
+        ["4100 · Used Vehicle Sales", _d("−$9,100 gross"), "<b>Unexplained</b>"] ],
+      "Outside the normal monthly range"),
+    _m(`<b>Service labor</b> is two heavy engine repair orders, one of them RO 124210 — large, and not a pattern. ` +
+       `<b>Used vehicle gross</b> has no single driver in the data, and that is the one to look at.`),
+    _m(`An unusual number is a reason to open the report, not a finding. Verify either before acting on it.`),
+    _ph(),
+    { t: "srcft", s: "Financial Statements · month vs trailing range per revenue line · the same two movements the month-over-month check reports" },
+    _nx([{ t: "Did anything change significantly in this month’s financials versus last month?", p: true },
+         { t: "Open last month's financial statement." }]) ] },
+
+/* ---------- IT. Set-up how-tos ---------- */
+{ id: "IT1", personas: ["itAdmin", "owner"], checking: "Common Admin Help",
+  kw: ["enterprise administrator", "assign the", "administrator role"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Assigning the Enterprise Administrator role in Common Admin:</b>`),
+    _ol([ "Open <b>Common Admin</b> and go to <b>User Permissions</b>.",
+          "Select the user by name.†",
+          "Add the <b>Enterprise Administrator</b> role and save. It applies at their next sign-in.†" ]),
+    _lim(`Steps marked † are drafted from the Common Admin help index and need confirming against the article before anyone relies on them.`),
+    _src("commonAdmin"),
+    _nx([{ t: "Open Common Admin", open: "ca", p: true }, { t: "How do I add access or functions for a user?" },
+         { t: "What clean-up items need my attention?" }]) ] },
+
+{ id: "IT2", personas: ["itAdmin", "owner"], checking: "Intelligence Suite Help",
+  kw: ["set up intelligence suite", "intelligence suite access", "new user"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Giving a new user Intelligence Suite:</b>`),
+    _ol([ "In <b>Common Admin</b>, open <b>User Permissions</b> and select the user.",
+          "Add the Intelligence Suite role that matches their job.†",
+          "Choose which stores they can see.†",
+          "The tile appears on their My Unify at next sign-in." ]),
+    _lim(`Steps marked † are drafted from the help index and need confirming against the article.`),
+    _src("intelligence"),
+    _nx([{ t: "Open Common Admin", open: "ca", p: true },
+         { t: "How do I assign the Enterprise Administrator role in Common Admin?" }]) ] },
+
+{ id: "IT3", personas: ["itAdmin", "owner"], checking: "Common Admin Help",
+  kw: ["add access", "functions for a user", "add functions"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Adding access or functions for a user:</b>`),
+    _ol([ "Open <b>Common Admin</b> and go to <b>User Permissions</b>.",
+          "Select the user's name.",
+          "Add the view or function they need.",
+          "It applies at their next sign-in — they do not need to be logged out now." ]),
+    _m(`This is the admin's side of the access request users raise from their own screen — same four steps, seen from the other end.`),
+    _src("commonAdmin"),
+    _nx([{ t: "Open Common Admin", open: "ca", p: true }, { t: "Turn on MFA for J. Smith" },
+         { t: "Show me users who haven't logged in for 90 days." }]) ] },
+
+/* ---------- TE. Repair questions ---------- */
+{ id: "TE1", personas: ["tech", "serviceManager"], checking: "OEM service information",
+  kw: ["check engine", "engine light", "warning light"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Start from the code, not the light.</b> The scan session on RO ${PI4_PH.dtc.ro} stored <b>${_d(PI4_PH.dtc.code)}</b> — system too lean, bank 1.`),
+    _pv(`Scan tool session · RO ${PI4_PH.dtc.ro}†`),
+    _ol([ "Confirm the code is current, not history, and note the freeze-frame data.",
+          "Open the OEM diagnostic procedure for this code on this engine — linked below, not reproduced here.",
+          "Check for an open campaign or TSB on the VIN before any parts are ordered." ]),
+    _m(`The meaning of the code is standard. The test sequence, the specifications and the pass values are the manufacturer's, and they change by engine — so I point you at the current procedure instead of summarising it.`),
+    _ph(),
+    { t: "srcft", s: "OEM service information · diagnostic procedure by code and engine · linked at the source, current revision" },
+    _nx([{ t: "Show open campaigns and TSBs for this VIN", p: true },
+         { t: "Show me the wiring diagram for the fuel sensor circuit" }]) ] },
+
+{ id: "TE2", personas: ["tech", "serviceManager"], checking: "OEM service information",
+  kw: ["wiring diagram", "wiring"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>The fuel sensor circuit diagram is at the OEM source — I link to it, I do not redraw it.</b>`),
+    _pv("OEM service information · electrical · current revision†"),
+    _m(`A diagram copied into a chat is a diagram that goes stale. The link opens the manufacturer's current revision for this VIN, with connector views and pin-outs on the same page†.`),
+    _m(`Worth knowing before you open it: the fuel sensor cartridge for this job is special order SO-4471, and it is still with the vendor.`),
+    _ph(),
+    { t: "srcft", s: "OEM service information · wiring diagrams · link-out only, never reproduced" },
+    _nx([{ t: "Show open campaigns and TSBs for this VIN" }]) ] },
+
+{ id: "TE3", personas: ["tech", "serviceManager"], checking: "OEM service information",
+  kw: ["procedure to replace", "repair procedure", "brake pads", "torque"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>Front brake pad replacement — the OEM procedure is linked; one bulletin applies first.</b>`),
+    _pv("OEM service information · brakes · current revision†"),
+    _m(`<b>${_d("TSB 24-BD-031")}</b> covers front brake judder on this vehicle. Read it before the pads come off — if the countermeasure applies, the repair is different.`),
+    _m(`Torque values, wear limits and bedding steps are in the procedure. I do not quote a specification from memory: a wrong number here is a comeback or worse, so the figure comes from the open document or not at all.`),
+    _ph(),
+    { t: "srcft", s: "OEM service information · repair procedure + applicable TSB · specifications read at the source" },
+    _nx([{ t: "Show open campaigns and TSBs for this VIN", p: true }, { t: "Is the axle covered under warranty?" }]) ] },
+
+{ id: "TE4", personas: ["tech", "serviceManager"], checking: "OEM service information",
+  kw: ["aftermarket"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>I have no source for that, so I am not going to answer it.</b>`),
+    _m(`An aftermarket kit is outside the manufacturer's service information, and I hold no document from the kit's maker. Anything I told you would be a guess presented as a procedure.`),
+    _lim(`No answer without a source. The kit manufacturer's instructions are the place to look; if they are on file as a document, I can find them.`),
+    { t: "srcft", s: "OEM service information · no matching source · declined, not improvised" },
+    _nx([{ t: "What's the paint code for this VIN?" }, { t: "Show open campaigns and TSBs for this VIN" }]) ] },
+
+/* ---------- DZ. A supplied customer, answered in charts (build 38) ---------- */
+{ id: "DZ1", personas: ["owner"], checking: "CDP Insights",
+  kw: ["don zogg", "donn zogg", "zogg", "everything about don"],
+  blocks: () => [ _nd("rules"),
+    _m(zoggHtml()),
+    _nx(ZOGG.next.map(q => ({ t: q }))),
+    _cltv("Two store profiles, matched on name and postal code · lifetime sales, gross profit and predicted service sales") ] },
+
+/* The six follow-ups the answer suggests. None has data behind it in this
+   build, and saying so beats the generic fallback a chip would otherwise
+   fall into. */
+{ id: "DZ2", personas: ["owner"], checking: null,
+  kw: ["service-only customers", "recent repair orders", "what vehicles", "zogg serviced",
+       "visit more than one store", "no vehicle purchases", "predicted 5y service", "top 10 customers"],
+  blocks: () => [ _nd("monitor"),
+    _m(`<b>That follow-up is not built in this prototype yet.</b> It is one of the six questions the Don Zogg answer suggests, and none of them has data behind it here.`),
+    _m(`What I hold for him is what the answer shows: two store profiles, their lifetime sales and gross profit, repair-order and parts counts with first and last dates, and the predicted service ranges. No repair-order detail, no vehicles, and no list of other customers to rank him against.`),
+    _lim(`I would sooner say that than draw a chart from figures I do not have.`),
+    _nx([{ t: "Tell me everything about Don Zogg", p: true }, { t: "What is Adam Jones worth to the store?" }]) ] },
 
 /* ---------- Z. Workspace commands ---------- */
 { id: "Z1", personas: null, checking: null,
@@ -18781,6 +19840,23 @@ const AIVA_RESOLUTIONS = {
     _m("Saturday holds <b>6 appointments</b> so far — first is a 10:00am test drive, Maria Hernandez, 2025 CR-V."),
     _pv("Scheduling · Sat"),
     _m("Tent-sale walk-ins usually stack after 11 — worth keeping the early slots tight.") ] },
+
+  /* ---- build 36: the gated actions the PI4 answers offer ---- */
+  FR3_YES: { log: { action: "Changed source of truth — customer contact info",
+      inputs: [["From", "CRM (eLead)†"], ["To", "DMS"], ["Records changed", "None"]],
+      side: "Configuration change in Common Admin, audited. No customer record was modified." },
+    blocks: [ _m("Applied. Contact details now read from the DMS, with the CRM copy shown as secondary. No record in either system was changed, and the setting is in the audit log under your name.") ] },
+  FR3_NO: { blocks: [ _m("No change applied, nothing logged.") ] },
+  GM2_YES: { log: { action: "Scheduled a morning brief",
+      inputs: [["When", "Every selling day, 7:00am"], ["Where", "My Unify · visible to you only"]],
+      side: "A recurring read-only card. Nothing is sent to anyone else." },
+    blocks: [ _m("Scheduled. The first one lands tomorrow at 7:00am at the top of My Unify. Say “stop the morning brief” any time and it is gone.") ] },
+  GM2_NO: { blocks: [ _m("Nothing scheduled — and declining is not logged.") ] },
+  PA3_YES: { log: { action: "Notified advisor — special-order part received",
+      inputs: [["Part", "SO-4468†"], ["For", "RO 124213 · Gallagher"], ["To", "Paul M.†"]],
+      side: "Internal Unify message to the advisor. Nothing was sent to the customer." },
+    blocks: [ _m("Sent to the advisor. The customer note is still a draft — it goes when a person sends it.") ] },
+  PA3_NO: { blocks: [ _m("Nobody was notified, nothing logged. The draft is still there if you want it.") ] },
 
   TRACK: { log: { action: "Started tracking a metric", inputs: [["Metric", "Front gross"], ["Until", "Month-end"]] }, blocks: [ _m("Tracking front gross to month-end. I'll surface it here when the pace moves more than 2% either way — no noise in between.") ] },
   FORM_CANCEL: { blocks: [ _m("Cancelled — nothing was staged and nothing was recorded.") ] },
@@ -23575,6 +24651,11 @@ const TASKS_BY_PERSONA = {
     { id: 'sa2', text: 'Send walk-around video',                 meta: 'Diana Reyes · RAV4 XLE' },
     { id: 'sa3', text: 'Confirm 4:45 PM appointment',            meta: 'Lin Zhao · Tesla Model Y' },
   ],
+  itAdmin: [
+    { id: 'it1', text: 'Review 2 dormant accounts†',           meta: 'No login in 90 days' },
+    { id: 'it2', text: 'Enable MFA — 1 user†',             meta: 'Common Admin · gated' },
+    { id: 'it3', text: 'Follow up Support Case #PT-4423',       meta: 'CDK Support · open' },
+  ],
 };
 
 const WIDGETS_BY_PERSONA = {
@@ -23588,6 +24669,7 @@ const WIDGETS_BY_PERSONA = {
   fi:             ['taskList'],
   salesManager:   ['taskList'],
   salesAssoc:     ['taskList'],
+  itAdmin:        ['taskList'],
 };
 
 /* Widget catalog — every widget is available to every persona via the
@@ -24021,7 +25103,7 @@ function renderWorkflowGroup(g) {
 const OWNER_DEPARTMENTS = [
   { label: 'Sales',      sub: 'Variable Operations', personas: ['salesManager', 'salesAssoc', 'fi'] },
   { label: 'Fixed Ops',  sub: 'Service & Parts',     personas: ['ops', 'serviceManager', 'parts', 'partsClerk', 'tech'] },
-  { label: 'Accounting', sub: 'Business Operations', personas: ['arap', 'controller'] },
+  { label: 'Accounting', sub: 'Business Operations', personas: ['arap', 'controller', 'itAdmin'] },
 ];
 
 function ownerConsolidatedCardsHTML(isInline) {
@@ -24088,7 +25170,7 @@ function renderPersona(key) {
 
   document.getElementById('personaBanner').innerHTML = `
     <span><b>${p.label}</b> — ${p.bannerNote}</span>
-    <span class="meta">Comp ${Object.keys(PERSONAS).indexOf(key)+1} of 8</span>`;
+    <span class="meta">Comp ${Object.keys(PERSONAS).indexOf(key)+1} of ${Object.keys(PERSONAS).length}</span>`;
   const personaBannerEl = document.getElementById('personaBanner');
   personaBannerEl.style.borderLeftColor = p.color;
 
@@ -31321,6 +32403,7 @@ function personaDescription(key) {
     salesManager: 'Floor performance, leaderboard, CITs.',
     salesAssoc: 'Showroom companion, leads, AIVA.',
     controller: 'GL oversight, month-end close, compliance.',
+    itAdmin: 'Access, roles, security, set-up.',
   })[key] || '';
 }
 
