@@ -11259,6 +11259,52 @@ body.theme-dark .zg { --zg-p: #3987e5; --zg-s: #d95926; }
   border-color: currentColor; font-size: 11px; font-weight: 600; display: flex; align-items: center;
   justify-content: center; }
 .zg .zg-rec b { font-weight: 600; }
+
+/* ============================================================
+   EXPANDED AIVA WINDOW — build 39
+   One panel, two sizes. .aiva-wide pins it to the work area, using the
+   geometry the full-screen CI stage already uses. Specificity (0,2,0)
+   beats the base .aiva-panel rules and, declared last, the .expanded
+   width; the dragged inline position is cleared by aivaToggleWide().
+   ============================================================ */
+.aiva-panel.aiva-wide {
+  top: 54px; left: 66px; right: 6px; bottom: 6px;
+  width: auto; height: auto; max-height: none; min-height: 0;
+}
+body.runner-on .aiva-panel.aiva-wide {
+  bottom: calc(var(--run-h, 132px) + 16px);
+  max-height: none; min-height: 0;
+}
+.aiva-panel.aiva-wide .aiva-head { cursor: default; }
+.aiva-panel.aiva-wide:not(.expanded) .aiva-col { flex: 1; width: auto; }
+.aiva-panel.aiva-wide:not(.expanded) .aiva-body { padding: 18px 32px 10px; }
+/* Ordinary replies keep a readable line; a charted card takes the room. */
+.aiva-panel.aiva-wide:not(.expanded) .aiva-body > * { max-width: 880px; }
+.aiva-panel.aiva-wide:not(.expanded) .aiva-body > .aiva-welcome:has(.zg) { max-width: none; }
+.aiva-panel.aiva-wide:not(.expanded) .aiva-actions { flex-direction: row; flex-wrap: wrap; }
+#aivaWideBtn[aria-pressed="true"] { color: var(--rds-primary, var(--brand)); }
+/* The demo launcher is pinned bottom-right, where the wide panel's footer
+   now sits. It steps aside while the panel is wide and open. */
+body:has(.aiva-panel.aiva-wide:not(.minimized)) .run-launch { display: none; }
+
+/* The charted customer card: a stack when narrow, columns when wide. */
+.zg { position: relative; }
+.zg .zg-expand {
+  position: absolute; top: -2px; right: 0;
+  display: inline-flex; align-items: center; gap: 5px;
+  background: transparent; border-width: 1px; border-style: solid; border-color: currentColor;
+  border-radius: 999px; padding: 3px 10px; font: inherit; font-size: 11.5px; font-weight: 600;
+  color: inherit; opacity: 0.8; cursor: pointer;
+}
+.zg .zg-expand:hover { opacity: 1; }
+.zg .zg-expand svg { width: 12px; height: 12px; }
+.aiva-panel.aiva-wide:not(.expanded) .zg .zg-expand { display: none; }
+.aiva-panel.aiva-wide:not(.expanded) .zg .zg-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  column-gap: 36px; row-gap: 8px; align-items: start;
+}
+.aiva-panel.aiva-wide:not(.expanded) .zg .zg-col > .zg-h:first-child,
+.aiva-panel.aiva-wide:not(.expanded) .zg .zg-col > .ci-sec:first-child { margin-top: 0; }
 </style>
 </head>
 <body class="in-login">
@@ -11597,6 +11643,9 @@ body.theme-dark .zg { --zg-p: #3987e5; --zg-s: #d95926; }
       </button>
       <button class="aiva-head-btn" id="aivaSavedBtn" title="Saved prompts" onclick="aivaToggleSaved()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+      </button>
+      <button class="aiva-head-btn" id="aivaWideBtn" title="Expand AIVA" aria-label="Expand AIVA" aria-pressed="false" onclick="aivaToggleWide()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
       </button>
       <button class="aiva-head-btn" title="Minimize" onclick="closeAIVA()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -16521,7 +16570,7 @@ function zoggHtml() {
     `<svg viewBox="0 0 ${W} 122" role="img" aria-label="Predicted service sales over 2 and 5 years">${grid}` +
     group(20, "2 years", "pred2") + group(76, "5 years", "pred5") + `</svg>`;
 
-  return `<div class="zg"><div class="ci-title">Key Insights: ${ZOGG.name}</div>
+  return `<div class="zg"><button class="zg-expand" type="button" onclick="aivaToggleWide(true)" title="Expand AIVA to show this whole answer without scrolling"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>Expand</button><div class="zg-grid"><div class="zg-col zg-c1"><div class="ci-title">Key Insights: ${ZOGG.name}</div>
     <div class="ci-metrics">
       <div class="ci-metric"><span class="k">Lifetime Sales</span><span class="v">${k(C.sales)}</span></div>
       <div class="ci-metric"><span class="k">Lifetime GP</span><span class="v">${k(C.gp)}</span></div>
@@ -16537,16 +16586,16 @@ function zoggHtml() {
     <div class="zg-segk"><span><b>${k(P.sales)}</b> <span class="zg-mut">· ${share(P)}</span></span><span><b>${k(S.sales)}</b> <span class="zg-mut">· ${share(S)}</span></span></div>
     <div class="zg-mix"><span><b>100%</b> <span class="zg-mut">fixed ops</span></span><span class="bar" title="Fixed ops: 100% of revenue"></span><span><b>$0</b> <span class="zg-mut">variable ops</span></span></div>
 
-    <div class="zg-h">Store by store</div>
+    </div><div class="zg-col zg-c2"><div class="zg-h">Store by store</div>
     <div class="zg-ml">${ml}</div>
     <div class="zg-note">Bars in each row share one scale; margin is drawn against 100%.</div>
 
-    <div class="zg-h">Activity <span>2017 → today</span></div>${timeline}
+    </div><div class="zg-col zg-c3"><div class="zg-h">Activity <span>2017 → today</span></div>${timeline}
     <div class="zg-h">Predicted service sales</div>${ranges}
 
-    <div class="ci-sec">Recommendations</div>
+    </div><div class="zg-col zg-c4"><div class="ci-sec">Recommendations</div>
     ${ZOGG.recs.map((r, i) => `<div class="zg-rec"><span class="n">${i + 1}</span><span><b>${r[0]}</b><span class="zg-mut">${r[1]}</span></span></div>`).join("")}
-  </div>`;
+  </div></div></div>`;
 }
 
 /* ============================================================
@@ -24252,6 +24301,49 @@ window.closeAIVA = function() {
   btnClose?.classList.add('is-collapsed');
   aivaShowFabAt(rect);
 };
+/* ---- Expanded window (build 39) -------------------------------------
+   One panel, two sizes. Going wide clears the dragged position so the
+   CSS geometry applies, and remembers it so coming back puts the panel
+   where the user left it. The latest reply is kept in view across the
+   change, since its height changes with the width. */
+let AIVA_WIDE_PREV = null;
+const AIVA_ICON_EXPAND = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
+const AIVA_ICON_COLLAPSE = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
+window.aivaToggleWide = function(force) {
+  const p = document.getElementById("aivaPanel");
+  if (!p) return;
+  const isWide = p.classList.contains("aiva-wide");
+  const on = typeof force === "boolean" ? force : !isWide;
+  if (on !== isWide) {
+    if (on) {
+      AIVA_WIDE_PREV = { left: p.style.left, top: p.style.top, right: p.style.right, bottom: p.style.bottom };
+      p.style.left = ""; p.style.top = ""; p.style.right = ""; p.style.bottom = "";
+      p.classList.add("aiva-wide");
+    } else {
+      p.classList.remove("aiva-wide");
+      if (AIVA_WIDE_PREV) Object.assign(p.style, AIVA_WIDE_PREV);
+      AIVA_WIDE_PREV = null;
+    }
+  }
+  if (p.classList.contains("minimized")) openAIVA();
+  const b = document.getElementById("aivaWideBtn");
+  if (b) {
+    const w = p.classList.contains("aiva-wide");
+    b.setAttribute("aria-pressed", w ? "true" : "false");
+    b.title = w ? "Return AIVA to its usual size" : "Expand AIVA";
+    b.setAttribute("aria-label", b.title);
+    b.innerHTML = w ? AIVA_ICON_COLLAPSE : AIVA_ICON_EXPAND;
+  }
+  // Keep the newest reply's start in view at the new width.
+  const body = document.getElementById("aivaBody");
+  const replies = body ? body.querySelectorAll(".aiva-welcome") : [];
+  const last = replies.length ? replies[replies.length - 1] : null;
+  if (body && last) {
+    const max = body.scrollHeight - body.clientHeight;
+    body.scrollTop = Math.max(0, Math.min(max, last.offsetTop - body.offsetTop - 8));
+  }
+};
+
 window.toggleAIVA = function() {
   const p = document.getElementById('aivaPanel');
   if (p.classList.contains('minimized')) openAIVA(); else closeAIVA();
@@ -24424,6 +24516,8 @@ function initAivaDrag() {
   head.addEventListener('mousedown', (e) => {
     // Ignore drags that begin on header buttons (save, minimize)
     if (e.target.closest('.aiva-head-btn')) return;
+    // The wide panel fills the work area, so there is nowhere to drag it.
+    if (panel.classList.contains('aiva-wide')) return;
     const rect = panel.getBoundingClientRect();
     dragState = {
       offsetX: e.clientX - rect.left,
