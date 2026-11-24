@@ -25308,15 +25308,25 @@ function renderPersona(key) {
   // Show the persona banner expanded on switch, minimize after 1s, then
   // fully hide it 5s later. Hovering during the minimized window re-expands
   // it. On every persona switch we clear the prior timers and start fresh.
+  // Build 43: shown in full (no 6px minimized step), hidden 6s after it is
+  // actually on screen. While the login screen is up the clock waits.
   personaBannerEl.classList.remove('minimized', 'hidden');
   clearTimeout(personaBannerEl._minimizeTimer);
   clearTimeout(personaBannerEl._hideTimer);
-  personaBannerEl._minimizeTimer = setTimeout(() => {
-    personaBannerEl.classList.add('minimized');
-  }, 1000);
-  personaBannerEl._hideTimer = setTimeout(() => {
-    personaBannerEl.classList.add('hidden');
-  }, 6000);
+  if (personaBannerEl._loginWatch) { personaBannerEl._loginWatch.disconnect(); personaBannerEl._loginWatch = null; }
+  const startPersonaBannerClock = () => {
+    personaBannerEl._hideTimer = setTimeout(() => { personaBannerEl.classList.add('hidden'); }, 6000);
+  };
+  if (document.body.classList.contains('in-login')) {
+    personaBannerEl._loginWatch = new MutationObserver(() => {
+      if (document.body.classList.contains('in-login')) return;
+      personaBannerEl._loginWatch.disconnect(); personaBannerEl._loginWatch = null;
+      startPersonaBannerClock();
+    });
+    personaBannerEl._loginWatch.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  } else {
+    startPersonaBannerClock();
+  }
 
   // Refresh AIVA's welcome message so it echoes the new persona's banner context
   if (typeof updateAivaWelcome === 'function') updateAivaWelcome(key);
